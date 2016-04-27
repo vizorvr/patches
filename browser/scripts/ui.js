@@ -726,6 +726,8 @@ VizorUI.prototype.showStartDialog = function() {
 		(VizorUI.userIsLoggedIn() &&  times > 2) ||
 			(!VizorUI.userIsLoggedIn() &&  times > 5)
 
+	var doNotShowDialog = false		;	// @todo REMOVE
+
 	var d = new Date()
 	d.setTime(d.getTime() + (86400*1000))	// tomorrow
 	Cookies.set(cookieName, {seen: times}, {expires: d})
@@ -747,7 +749,7 @@ VizorUI.prototype.showStartDialog = function() {
 	})
 
 	var $slides = jQuery('.minislides', welcomeModal)
-	var ms = new Minislides($slides);
+	new Minislides($slides[0], {nextOn:'a.slide-next img'})
 
 	jQuery('a.modal-close', $slides).on('click', function(e){
 		e.preventDefault();

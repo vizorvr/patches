@@ -1,23 +1,22 @@
 <header>
 	<nav class="clearfix in" style="position:relative">
 		<h1 id="brandTop" class="brandTop">
-			<svg style="fill:#fff;" width="68" height="24" >
+            <span>Vizor</span>
+			<svg style="fill:#fff;">
 				<use xlink:href="#vizor-top-logo" />
 			</svg>
 		</h1>
 		<div class="nomobile">
 			<ul>
-				<li><a class="scrollto" href="#whyusevizor">Why Vizor?</a></li>
-				<li><a class="scrollto" href="#howitworks">How it works</a></li>
-				<li><a class="scrollto" href="#vizorteam">Meet the team</a></li>
-				<li><a href="//blog.vizor.io">Blog</a></li>
+				<li><a href="#/about">About</a></li>
+				<li><a href="//blog.vizor.io">Tutorials</a></li>
 				{{#unless user.username}}
 
 				<li class="signin nomobile">
 					<a id="homeSignin" href="#/login" class="sign-btn">Sign in</a>
 				</li>
 				<li class="signup nomobile">
-					<a class="sign-btn btn scrollto" href="#getstarted">Sign up</a>
+					<a id="homeSignup" class="sign-btn btn" href="#/signup">Sign up</a>
 				</li>
 				{{else}}
 					<li class="nomobile wider"><a class="sign-btn btn openeditor" href="/edit">Open the Editor</a></li>
@@ -33,19 +32,11 @@
 </header>
 
 <!-- main content -->
-	{{> srv/home/createAndShareVR }}
-	<div class="scrolldownContainer">
-		<a class="nofx scrollto noselect" href="#whyusevizor"><img src="/images/home/oval_arrow.svg" class="scrolldownPrompt"/></a>
-	</div>
-	{{> srv/home/whyUseVizor }}
-	{{> srv/home/howItWorks }}
-	{{> srv/home/meetTheTeam }}
-
-	{{> srv/home/getStarted }}
-	{{> srv/home/getNewsletter }}
+	{{> srv/home/homeVRontheWeb }}
+	{{> srv/home/homeFeatured }}
 <!-- /main content -->
 
-
+{{!--
 <footer class="dark">
 	<div class="in clearfix">
 		<h6 id="footerBrand">
@@ -72,4 +63,27 @@
 			</ul>
 		</div>
 	</div>
+</footer>
+--}}
+
+<footer class="dark">
+    <nav class="in links">
+        <a href="edit/" class="nomobile">Try the editor</a>
+        <a href="#/about">About <span class="nomobile">us</span></a>
+        <a href="http://blog.vizor.io" target="_blank">Tutorials</a>
+        <a class="googledocs legal terms" href="https://docs.google.com/document/d/172dWVz8bSEDxS_y2InXpqWhVvbM7w1Z9MSp1-Lw1rIc/edit?usp=sharing" target="_blank">Terms</a>
+        <a class="googledocs legal" href="https://docs.google.com/document/d/1L87rs9baSoR4PfOZ2cY9BFp3Pb43y8cFvS93k1HLk60/edit?usp=sharing" target="_blank">Attribution</a>
+    </nav>
+    <nav class="in icons">
+        <a class="btn svg tiny nopopup email" href="mailto:info@vizor.io?subject=hello"" data-svgref="icon-email">Email us</a>
+        <a class="btn svg tiny nopopup twitter" href="https://twitter.com/Vizor_VR" data-svgref="icon-twitter2">@Vizor_VR on Twitter</a>
+        <a class="btn svg tiny nopopup facebook" href="https://www.facebook.com/vrvizor" data-svgref="icon-facebook">Vizor on Facebook</a>
+        <a class="btn svg tiny nopopup github" href="https://github.com/vizorvr/vizor" target="_blank" data-svgref="icon-github">Vizor on GitHub</a>
+        <a class="btn svg tiny nopopup angellist" href="https://angel.co/vizor" data-svgref="icon-angellist" target="_blank">Vizor on Angellist</a>
+    </nav>
+
+    <h6 id="brandBottom">
+        <span>Explore VR on the Web</span>
+        <a class="scrollto" href="#contentwrap"><svg height="32" width="32"><use xlink:href="#vizor-mark"></use></svg></a>
+    </h6>
 </footer>

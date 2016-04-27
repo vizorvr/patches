@@ -714,10 +714,10 @@ div.bootbox.modal {
   }
 }
 
+
+
 #editorIntro.minislides {
   .modal-intro-dimensions;
-  position: relative;
-  overflow: hidden;
   border-radius: 5px 5px;
   .launch-button {
 	color: #fff;
@@ -735,58 +735,16 @@ div.bootbox.modal {
 	z-index: 5;
   }
   div.slideSwitcher {
-	position: absolute;
 	width: 300px;
 	right: 20px;
-	bottom: 20px;
-	z-index: 5;
-	height: 20px;
-	text-align: center;
-	line-height: 14px;
-	button.slide-step {
-	  vertical-align: middle;
-	  background: none;
-	  display: inline-block;
-	  height: 14px;
-	  width: 14px;
-	  padding:0;
-	  border-radius: 14px 14px;
-	  border: 2px solid white;
-	  transition: background @modal-welcome-transition-length;
-	  &:hover {
-		background: rgba(255,255,255,0.5);
-	  }
-	  &.selected {
-		background: white;
-	  }
-	}
-	button+button {margin-left: 7px;}
+    left: auto;
   }
   div.slides {
 	.modal-intro-tight;
-	z-index: 1;
-	position:absolute;
-	left:0;
-	top:0;
-	bottom:0;
 	height: @modal-welcome-height;
 	transition: left @modal-welcome-transition-length;
-	&.horizontal {
-	 width: 10000px;
-	 section {
-	    position: relative;
-	  	float: left;
-	 }
-	}
 	&.crossfade {
 	  width: @modal-welcome-width;
-	  section {
-		display: none;
-		position: absolute;
-		top:0;
-		left:0;
-		float:none;
-	  }
 	}
 	section {
 	  .modal-intro-dimensions;
@@ -822,7 +780,7 @@ div.bootbox.modal {
 			background: url(/images/v2/chevron.svg) left center no-repeat;
 			padding-left: 20px;
 			color: #fff;
-			&:hover {
+			body.deviceDesktop &:hover {
 			  text-decoration: underline;
 			}
 		  }

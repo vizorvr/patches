@@ -27,8 +27,22 @@ var siteUI = new function() {
 	this.lastLayout = null;
 	this.lastPortrait = null;
 	this.isEmbedded = null;
-	this.isDragging = null;
 
+	var _isDragging = null	// fallback when no E2.ui, e.g. on site
+	Object.defineProperty(this, 'isDragging', {
+		get: function() {
+			if (E2 && E2.ui && E2.ui.isDragging) {
+				_isDragging = E2 && E2.ui && E2.ui.isDragging()
+			}
+			return _isDragging
+		},
+		set: function(v) {
+			_isDragging = v
+			if (E2 && E2.ui && E2.ui.setDragging)
+				E2.ui.setDragging(v)
+			return v
+		}
+	})
 
 	this.onResize = function() {
 		that.tagBodyClass();
@@ -210,6 +224,17 @@ var siteUI = new function() {
 			return false;
 		});
 
+		jQuery('a#homeSignup', $body).on('click', function(e){
+			e.preventDefault();
+			e.stopPropagation();
+			VizorUI.openSignupModal()
+			.then(function(){
+				document.location.href="/edit";
+			});
+			return false;
+		});
+
+
 		jQuery('h3.readmore a', $body)
 			.on('click', function(e){
 				if (this.href.split('#').length <= 1) return true;	// not for us
@@ -313,6 +338,40 @@ var siteUI = new function() {
 			return false;
 		});
 
+		VizorUI.replaceSVGButtons($('footer'))
+
+		var ms = []
+		var switchSlides = function(e){
+			var m
+			if (e.detail.layout === 'mobile') {
+				if (ms.length > 0) {
+					while (m = ms.pop()) {
+						m.detach()
+					}
+				}
+				var content = document.getElementById('featuredVR').querySelectorAll('div.mobileslides')
+				Array.prototype.forEach.call(content, function(div){
+					var m = new Minislides(div,  {
+						slideQuery:':scope>article',
+						slideContainerQuery:'.side-by-side',
+						transitionMethod: 'horizontal'}
+					)
+					ms.push(m)
+				})
+
+			} else {
+				if (ms.length > 0) {
+					while (m = ms.pop()) {
+						m.detach()
+					}
+				}
+			}
+		}.bind(this)
+
+		document.addEventListener('uiLayoutChanged', switchSlides)
+		if (this.getLayoutMode() === 'mobile')
+			switchSlides({detail:{layout:'mobile'}})
+
 	}
 
 
@@ -351,6 +410,8 @@ var siteUI = new function() {
 	this.tagBodyClass = function() {
 		var $body = jQuery('body');
 
+		var devicePixelRatio = window.devicePixelRatio || 1
+
 		var isBrowser = VizorUI.isBrowser
 		$body
 			.toggleClass('uaSafari', isBrowser.Safari())
@@ -365,13 +426,16 @@ var siteUI = new function() {
 			.toggleClass('inIframe', that.isEmbedded)
 			.toggleClass('inVR', !!that.isInVR())
 
+		$body.attr('data-dpr', devicePixelRatio)
+
 		var l = that.getLayoutMode();
 		if (l !== that.lastLayout) {
-			that.lastLayout = l;
 			$body
 				.toggleClass('layoutMobile',  l === 'mobile')
 				.toggleClass('layoutTablet',  l === 'tablet')
 				.toggleClass('layoutDesktop', l === 'desktop')
+			document.dispatchEvent(new CustomEvent('uiLayoutChanged', {detail:{layout: l, lastLayout: that.lastLayout}}))
+			that.lastLayout = l;
 		}
 
 		// because of how .isPortraitLike() works on Android, this needs a delay
@@ -873,15 +937,20 @@ VizorUI.replaceSVGButtons = function($selector) {
 		$button.data('svgref', false).attr('data-svgref','');
 
 		if ($button.hasClass('tiny') && ($button.text() !== '')) {
-			$button.popover({
-				content: $button.text(),
-				delay: {
-					show: 1000,
-					hide: 100
-				},
-				placement: 'auto top',
-				trigger: 'hover'
-			});
+			if (!$button.hasClass('nopopup')) {
+				$button.popover({
+					content: $button.text(),
+					delay: {
+						show: 1000,
+						hide: 100
+					},
+					placement: 'auto top',
+					trigger: 'hover'
+				});
+			} else {
+				if (!$button.attr('title'))
+					$button.attr('title', $button.text())
+			}
 			$button.text('');
 		}
 		// place an empty <svg> wherever you want the image, or one will be appended

@@ -1,0 +1,41 @@
+{{!--
+
+e.g.
+
+{
+    "_id": "5718d795d8c04a8f68b4c270",
+    "name": "robot-vs-rocket-man-4",
+    "owner": "eesn",
+    "previewUrlSmall": "/data/previews/eesn/robot-vs-rocket-man-4-preview-440x330.png",
+    "updatedAt": "2016-04-21T13:37:25.032Z",
+    "stat": {
+        "size": 0,
+        "numAssets": 15
+    },
+    "path": "/eesn/robot-vs-rocket-man-4",
+    "id": "5718d795d8c04a8f68b4c270"
+}
+
+--}}
+
+
+<article class="small vizor graph" data-id="{{id}}" data-owner="{{owner}}" itemscope itemtype="http://schema.org/CreativeWork">
+    <a href="{{{path}}}" itemprop="sameAs url">
+        <img src="{{{previewUrlSmall}}}" alt="{{name}} thumbnail" itemprop="thumbnailUrl" />
+    </a>
+    <div class="text" itemprop="description">
+        <h3><span itemprop="name">{{graphName}}</span></h3>
+        <p class="by"><span>
+            by <span itemprop="creator" class="author" itemscope itemtype="http://schema.org/Person">
+                    <a itemprop="sameAs" rel="author" target="_top"
+                       {{#if graph.owner}}
+                            href="/{{graph.owner}}"
+                       {{else}}
+                           {{#if graphOwnerLink}} href="{{graphOwnerLink}}" {{/if}}
+                       {{/if}}>
+                        <span itemprop="name">{{graphOwner}}</span></a>
+                </span><!-- /creator -->
+            {{#if graph.size}}<span itemprop="contentSize">({{graph.size}})</span>{{/if}}
+        </span></p>
+    </div>
+</article>
