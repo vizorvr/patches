@@ -10,6 +10,10 @@ var GridFsStorage = require('../lib/gridfs-storage');
 var secrets = require('../config/secrets');
 var _ = require('lodash')
 
+var E2 = require('../browser/scripts/core').E2
+
+var loadingPlugins = Object.keys(E2.LOADING_NODES)
+
 var argv = require('minimist')(process.argv.slice(2))
 
 if (argv._.length < 1) {
@@ -101,16 +105,6 @@ function pullAsset(gridFsUrl) {
 
 	return dfd.promise
 }
-
-var loadingPlugins = [
-	'three_loader_model',
-	'three_loader_scene',
-	'url_texture_generator',
-	'url_audio_buffer_generator',
-	'url_audio_generator',
-	'url_json_generator',
-	'url_video_generator',
-]
 
 var assets = []
 
