@@ -133,6 +133,17 @@ var UIDragAwareHelper = function(domNode, onStart, trackX, trackY) {
 					e.preventDefault()
 				if (e.stopPropagation)
 					e.stopPropagation()
+			} else {
+				if (window.pageYOffset !== data.pageYOffset) {
+					data.startPosition.x += ed.delta.x
+					data.lastPosition.x += ed.delta.x
+					data.pageXOffset = window.pageXOffset
+				}
+				if (window.pageXOffset !== data.pageXOffset) {
+					data.startPosition.y += ed.delta.y
+					data.lastPosition.y += ed.delta.y
+					data.pageYOffset = window.pageYOffset
+				}
 			}
 
 			return true
@@ -156,7 +167,9 @@ var UIDragAwareHelper = function(domNode, onStart, trackX, trackY) {
 				dragThresholdPx	: that.minDelta,
 				dragged			: false,
 				canceldrag : function(e){e.preventDefault(); e.stopPropagation(); return false;},
-				pointerEvents	: window.getComputedStyle(domNode).pointerEvents
+				pointerEvents	: window.getComputedStyle(domNode).pointerEvents,
+				pageXOffset		: window.pageXOffset,
+				pageYOffset		: window.pageYOffset
 			}
 
 			if (!onStart(makeEventData(data, {x: t.pageX, y: t.pageY}),e)) return true

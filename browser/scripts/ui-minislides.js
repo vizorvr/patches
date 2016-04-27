@@ -123,7 +123,6 @@ Minislides.prototype.init = function(opts) {
 	})
 
 	this.attach(opts.slideFunction)
-	console.log(this.selected)
 	this.showSlide(this.selected)
 
 	setTimeout(function(){
@@ -162,7 +161,7 @@ Minislides.prototype.initDrag = function() {
 
 	var el = this.container
 	var drag = new UIDragAwareHelper(el, undefined, true, false)
-	drag.minDelta = 10
+	drag.minDelta = 12
 
 	var prev = this.prevSlide.bind(this)
 	var next = this.nextSlide.bind(this)
