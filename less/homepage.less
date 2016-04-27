@@ -249,6 +249,7 @@ body.bHome.layoutTablet.deviceMobile.landscape #contentwrap {
   }
 }
 
+
 body.bHome.layoutMobile #contentwrap {
 	article.graph.small {
 	  	width: 375px;
@@ -262,6 +263,19 @@ body.bHome.layoutMobile #contentwrap {
 	}
 	h2 {
 	  text-align: center;
+	}
+  }
+}
+
+@media screen and (-webkit-min-device-pixel-ratio: 3) {	// S6 homepage
+  body.bHome.layoutMobile.deviceMobile.uaChrome #contentwrap {
+	section#featuredVR {
+	  article.graph.small {
+		width: 360px;
+		max-width: 99%;
+		height: 206px;
+		max-height: none;
+	  }
 	}
   }
 }
