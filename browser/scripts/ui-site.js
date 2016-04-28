@@ -54,7 +54,7 @@ var siteUI = new function() {
 		var $body = jQuery('body');
 		this._setupDragRecognition()
 
-		$(window).on('resize', this.onResize)
+		window.addEventListener('resize', this.onResize, true)
 
 		if (that.hasOrientationChange) {
 			$(window).on('orientationchange', function () {
@@ -160,13 +160,17 @@ var siteUI = new function() {
 
 
 	this.init = function() {
-		that.tagBodyClass();
-		that.attach();
+		that.tagBodyClass()
+		that.attach()
 
-		if (jQuery('body.bHome').length > 0) {
-			that.initHomepage();
+		if (jQuery('body.bHome.bIndex').length > 0) {
+			that.initHomepage()
 		}
-	};
+		else if (jQuery('body.bHome.bAbout').length > 0) {
+			that.initAbout()
+		}
+
+	}
 
 	this.initCollapsible = function($container) {
 		var $links = jQuery('a.trigger', $container)
@@ -209,64 +213,27 @@ var siteUI = new function() {
 		})
 	}
 
-	this.initHomepage = function($body) {
-        mixpanel.track('Front Page')
-
-		$body = $body || jQuery('body');
-
-		jQuery('a#homeSignin', $body).on('click', function(e){
-			e.preventDefault();
-			e.stopPropagation();
+	this.initHome = function($body) {
+		$body = $body || jQuery('body')
+		jQuery('a#homeSignin', $body).on('click', function(e) {
+			e.preventDefault()
+			e.stopPropagation()
 			VizorUI.openLoginModal()
 			.then(function(){
-				document.location.href="/edit";
-			});
-			return false;
-		});
+				document.location.href="/edit"
+			})
+			return false
+		})
 
-		jQuery('a#homeSignup', $body).on('click', function(e){
-			e.preventDefault();
-			e.stopPropagation();
+		jQuery('a#homeSignup', $body).on('click', function(e) {
+			e.preventDefault()
+			e.stopPropagation()
 			VizorUI.openSignupModal()
 			.then(function(){
-				document.location.href="/edit";
-			});
-			return false;
-		});
-
-
-		jQuery('h3.readmore a', $body)
-			.on('click', function(e){
-				if (this.href.split('#').length <= 1) return true;	// not for us
-				e.preventDefault();
-				e.stopPropagation();
-				if (!$body.hasClass('layoutMobile')) return false;
-
-				var anchor = '#'+ this.href.split('#')[1];
-				var $target = jQuery(anchor);
-				var $a = jQuery(this);
-
-				var wasVisible = $target.is(':visible');
-				if (wasVisible) {
-					$target
-						.slideUp('medium', function(){
-							jQuery(this)
-								.addClass('nomobile')
-								.css({margin: '0'})
-						})
-				} else {
-					$target
-						.hide()
-						.removeClass('nomobile')
-						.css({margin: '0 0 10px 0'})
-						.slideDown('medium')
-				}
-
-				$a
-					.toggleClass('closed', wasVisible)
-					.toggleClass('open', !wasVisible);
-				return false;
-			});
+				document.location.href="/edit"
+			})
+			return false
+		})
 
 		$('.team-member').click(function() {
 			window.open($(this).find('.profile-link').attr('href'));
@@ -276,21 +243,6 @@ var siteUI = new function() {
 			$("html, body").animate({scrollTop: teamY}, 500);
 			e.preventDefault();
 			return false;
-		});
-
-		var $homePlayerContainer = jQuery('#player_home');
-		
-		$(window).on('vizorLoaded', function() {
-			// E2.app.canInitiateCameraMove = function(){return false};	// disable panning on homepage player, see #790
-			E2.app.calculateCanvasArea = function() {
-                return{
-                    width: $homePlayerContainer.innerWidth(),
-                    height: $homePlayerContainer.innerHeight()
-                }
-            }
-
-			// WebVRConfig.canInitiateCameraMove = E2.app.canInitiateCameraMove // see above
-			WebVRConfig.getContainerMeta = E2.app.calculateCanvasArea
 		});
 
 		jQuery('button#mobileMenuOpenButton').on('mousedown touchdown', function(e){
@@ -339,6 +291,34 @@ var siteUI = new function() {
 		});
 
 		VizorUI.replaceSVGButtons($('footer'))
+		
+	}
+
+	this.initAbout = function($body) {
+		mixpanel.track('About Page')
+		this.initHome()
+	}
+
+
+	this.initHomepage = function($body) {
+        mixpanel.track('Front Page')
+		this.initHome()
+
+		var $homePlayerContainer = jQuery('#player_home');
+		
+		$(window).on('vizorLoaded', function() {
+			// E2.app.canInitiateCameraMove = function(){return false};	// disable panning on homepage player, see #790
+			E2.app.calculateCanvasArea = function() {
+                return{
+                    width: $homePlayerContainer.innerWidth(),
+                    height: $homePlayerContainer.innerHeight()
+                }
+            }
+
+			// WebVRConfig.canInitiateCameraMove = E2.app.canInitiateCameraMove // see above
+			WebVRConfig.getContainerMeta = E2.app.calculateCanvasArea
+		});
+
 
 		var ms = []
 		var switchSlides = function(e){

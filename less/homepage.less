@@ -297,29 +297,6 @@ body.bHome.layoutTablet #contentwrap #featuredVR {
   }
 }
 
-/*
-body.bHome.layoutTablet #contentwrap #featuredVR {
-  >div, h2 {
-	width: 99%;
-  }
-  h2 {
-	text-align: center;
-  }
-  div.side-by-side {
-	-webkit-justify-content: space-around;
-	justify-content: space-around;
-	article.graph.small {
-	  	width: 45%;
-	  	height: 175px;
-		max-height: 216px;
-	}
-	> article:last-of-type {
-	  display: none;
-	}
-  }
-}
-*/
-
 
 body.bHome #contentwrap {
 
@@ -361,13 +338,9 @@ body.bHome #contentwrap {
   header {
 	margin:0;
 	padding: 0;
-	position: absolute;
-	top:0;
-	left:0;
-	right:0;
 	height: 100px;
 	width: 100%;
-	z-index: 10;
+
 	nav {
 	  border-bottom: 1px solid #fff;
 	  padding: 20px 0px 10px 0px;
@@ -401,6 +374,10 @@ body.bHome #contentwrap {
 	  li:last-of-type {
 		text-align: right;
 	  }
+	  li:first-of-type {
+		flex-shrink: 1;
+		flex-grow: 0.7;
+	  }
 	}
 	button.sign-btn, a.btn.sign-btn {
 	  width: auto;
@@ -413,116 +390,6 @@ body.bHome #contentwrap {
   }
   font-weight: @font-weight-home;
 
-  /*
-  h1, h2 {
-	letter-spacing: @letter-spacing-home;
-  }
-  h1 {
-	font-size: 360%;
-	margin: 50px 0 100px 0;
-  }
-  h2 {
-	text-align: center;
-  }
-  h2 {
-	font-size: 280%;
-	margin-bottom: 30px;
-	line-height: 1.3em;
-	&:first-child {
-	  margin-top:0;
-	}
-  }
-
-  #webNativeDiv {
-	margin-bottom: 50px;
-  }
-
-
-  div.twocol {
-	padding: 40px 0;
-  }
-  div.twocol>div.col {
-	box-sizing: border-box;
-	&.left {padding-right: @x-pad-col/2;}
-	&.right {padding-left: @x-pad-col/2;}
-  }
-
-
-  ul.cta {
-	text-align: center;
-	font-size: 150%;
-	margin: 80px 0 50px 0;
-	padding:0;
-	li {
-	  margin:0;
-	  padding-left:0;
-	  display: inline;
-	  a {
-		font-size: 120%;
-		letter-spacing: @letter-spacing-home;
-	  }
-	}
-	li+li {
-	  margin-left: 2em;
-	}
-  }
-  section {
-	overflow-x: hidden;
-	padding: 100px 0 120px 0;
-  }
-
-  section div.col p {
-	max-width: 390px;
-  }
-  div.col.protrudeimg {
-	overflow: visible;
-	&.left img { float: right; margin-right: 20px; }
-	&.right img { float: left; margin-left: 20px; }
-  }
-
-
-  button, section.contentcontainer form button {
-	font-weight: @font-weight-home-button;
-	color: #fff;
-
-	width: 100%;
-	text-align: left;
-	padding: 15px 25px;
-	&.svg svg {
-	  stroke: #fff;
-	  position:absolute;
-	  right: 25px;
-	  top: 50%;
-	  margin-top: -11px;
-	  height: 24px;
-	  width: 24px;
-	}
-  }
-
-  section.contentcontainer form button {
-	background: @bgcolor-home-button;
-  }
-
-
-
-  section {
-	margin:0;
-  }
-
-  a, section a {
-	color: #fff;
-	&.launch-button {
-	  .launch-button-macro;
-	}
-	&:focus {	// firefox
-	  outline: 0 !important;
-	}
-  }
-
-  #contentcontainer form input {
-	color: #ccc;
-  }
-*/
   footer {
 	padding: 50px 0;
 	font-size: 120%;
@@ -565,74 +432,6 @@ body.bHome #contentwrap {
   section {
 	margin:0;
   }
-  /*
-  p, section a.launch-button {
-	letter-spacing: @letter-spacing-home-normal;
-  }
-
-  p {
-	font-size: 160%;
-	line-height: 1.6em;
-  }
-  .scrolldownContainer {
-	height:0;
-	position: relative;
-	z-index: 20;
-	.scrolldownPrompt {
-	  display: block;
-	  width: 50px;
-	  height: 50px;
-	  margin: -25px 0 0 -25px;
-	  position: absolute;
-	  top:0;
-	  left:50%;
-	  border-radius: 25px;
-	  &:hover {
-
-		img {
-		  stroke:black;
-		}
-	  }
-	}
-  }
-
-  section {
-	position: relative;
-	background: #333;
-
-	&#createandsharevr { background: @bgcolor-home-intro }
-	&#whyusevizor { background: @bgcolor-home-whyusevizor }
-	&#howitworks { background: @bgcolor-home-howitworks }
-	&#vizorteam { background: @bgcolor-home-meettheteam }
-	&#getstarted, &#getnewsletter { background: @bgcolor-home-getstarted }
-	&#createandsharevr+.scrolldownContainer .scrolldownPrompt { background:  @bgcolor-home-intro }
-
-	&#getstarted .col.left {
-	  padding-right: 15%;
-	}
-	&#getnewsletter p {
-	  text-align: center;
-	  padding: 0 50px;
-	  font-size: 130%;
-	}
-
-	&#getstarted, &#getnewsletter {
-	  form, div.modal-footer {
-		max-width: 320px;
-		margin: 0 auto;
-	  }
-	  div.col.right img {
-		margin-left: 50px;
-		margin-top: -50px;
-	  }
-	}
-
-
-	.collapsible+.collapsible {
-	  border-top: 1px solid rgba(0,0,0,0.2);
-	}
-  }
-*/
 
   footer { background: @bgcolor-home-footer }
 
@@ -663,7 +462,7 @@ body.bHome #contentwrap {
 	box-sizing: border-box;
 	cursor: pointer;
 	h4 {
-	  font-size: 170%;
+	  font-size: 20px;
 	  font-weight: 300;
 	  letter-spacing: @letter-spacing-home;
 	}
@@ -715,7 +514,7 @@ body.bHome #contentwrap {
 	  padding: 20px 0 5px;
   	}
 	.person-position {
-	  color: rgba(225,225,225,0.8);
+	  //color: rgba(225,225,225,0.8);
 	  display: block;
 	  width: 100%;
 	  height: 18px;
@@ -913,7 +712,7 @@ body.bHome #contentwrap {
 	header nav {
 	  padding: 20px 0;
 	  ul {
-		width: 43%;
+		width: 350px;
 		float: right;
 		font-size: 1.4rem;
 	  }
@@ -1348,7 +1147,8 @@ body.bHome #contentwrap {
 	}
 
 	header nav ul {
-	  width: 455px;
+	  width: 442px;
+	  padding-left: 0;
 	  float:right;
 	}
 
@@ -1438,12 +1238,12 @@ body.bHome #contentwrap {
 	}
 
 	.team-member {
-	  -webkit-flex-basis: 33%;
-	  flex-basis: 33%;
-	  min-height: 220px;
+	  -webkit-flex-basis: 25%;
+	  flex-basis: 25%;
+	  min-height: 240px;
 	  min-width: 200px;
-	  height: 260px;
-	  padding: 54px 0px 48px;
+	  height: 280px;
+	  padding: 34px 0px 28px;
 	}
 
 	footer {
@@ -1453,20 +1253,14 @@ body.bHome #contentwrap {
 
 } // body.bHome
 
-body.bHome1.layoutDesktop #contentwrap {
-  header nav ul {
-	display: block;
-	width: auto;
-	text-align: right;
-	 li {
-	  display: inline-block;
-	  padding: 0 28px;
-	}
-	li:last-of-type {
-	  padding-right: 0;
-	}
-  }
+body.bHome.bIndex #contentwrap header {
+  position: absolute;
+  top:0;
+  left:0;
+  right:0;
+  z-index: 10;
 }
+
 
 
 body.bHome.layoutTablet #contentwrap {
@@ -1517,3 +1311,152 @@ body.bHome.layoutTablet #contentwrap {
 }
 
 
+body.bAbout.layoutMobile #contentwrap {
+  #aboutIntro, #vizorteam {
+	padding-bottom: 40px;
+  }
+  #aboutIntro {
+	padding-top: 0px;
+  }
+  #vizorteam {
+	padding-top: 40px;
+  }
+  #aboutIntro div.in {
+	>img {
+	  float: none;
+	  display: block;
+	  margin: 20px;
+	}
+	>h1 {
+	  width: 100%;
+	  margin: 0 auto 20px auto;
+	  padding: 0 20px;
+	  max-width: none;
+	}
+	>div {
+	  width: 100%;
+	  margin: 20px auto;
+	  padding: 0 20px;
+	  text-align: left;
+	  max-width: none;
+	}
+  }
+  #vizorteam {
+	h2 {
+	  text-align: left;
+	  padding: 0 20px;
+	}
+	p.intro {
+	  width: 100%;
+	  margin: 30px auto;
+	  padding: 0 20px;
+	  text-align: left;
+	  max-width: none;
+	}
+  }
+}
+
+body.bAbout.layoutMobile #contentwrap {
+  section#aboutIntro {
+	a.launch-button.nomobile {
+	  display: none;
+	}
+	div.in > section#aboutEmbed {
+	  width: auto;
+	  margin: 0 20px;
+	  float:none;
+	}
+	div.in > h1 {
+	  display: none;
+	}
+  }
+}
+
+body.bAbout.layoutTablet #contentwrap {
+  section#aboutIntro {
+	div.in > section#aboutEmbed {
+	  width: 49%;
+	  margin: -10px 0 0 0;
+	}
+	padding-bottom: 50px;
+  }
+  section#vizorteam {
+	padding-top: 30px;
+  }
+}
+body.bAbout #contentwrap {
+  header, section#aboutIntro {
+	background: #0b132a;
+  }
+
+  header nav {
+	border-bottom: 0;
+  }
+  #aboutIntro h1, #vizorteam h2 {
+	font-size: 39px;
+	font-weight: 600;
+  }
+
+  #aboutIntro {
+	padding: 40px 0 100px 0;
+	div.in {
+	  >h1 {
+		margin: 0 0 20px auto;
+		width: 50%;
+		max-width: 420px;
+	  }
+	  >div {
+		margin: 0 0 20px auto;
+		width: 50%;
+		max-width: 420px;
+	  }
+	}
+	div.in>section#aboutEmbed {
+	  float:left;
+	  margin-top:-30px;
+	  width:400px;
+	}
+	p {
+	  font-size: 19px;
+	  line-height: 1.65;
+	  color: #c3c3c3;
+	  margin: 20px 0 40px 0;
+	  letter-spacing: 1px;
+	}
+	a.launch-button {
+	  .launch-button-macro;
+	  border-radius: 45px;
+	  background: none;
+	  border: 2px solid white;
+	  text-transform: uppercase;
+	  font-size: 16px;
+	  letter-spacing: 2px;
+	  padding: 14px 50px;
+	  width: auto;
+	  display: inline;
+	  margin: 1px;
+	}
+  }
+
+  background: #171717;
+  .team-member {
+	font-size: 14px;
+  }
+  section#vizorteam {
+	padding: 80px 0;
+	background: #250642;
+	h2 {
+	  text-align: center;
+	}
+	p.intro {
+	  text-align: center;
+	  max-width: 500px;
+	  margin: 38px auto 0 auto;
+	  font-size: 19px;
+	  line-height: 1.7;
+	  letter-spacing: 0.5px;
+	  color: #c3c3c3;
+	}
+  }
+
+}
