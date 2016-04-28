@@ -95,20 +95,6 @@ describe('Multiuser', function() {
 	var db
 
 	before(function(done) {
-		global.E2 = {
-			models: {
-				user: {
-					once: function(){}
-				}
-			},
-			app: {
-				growl: function() {}
-			},
-			core: {
-				active_graph: { uid: 'root' }
-			}
-		}
-
 		app.events.on('ready', function() {
 			db = new mongo.Db('mutest'+testId, 
 				new mongo.Server('localhost', 27017),
@@ -127,7 +113,21 @@ describe('Multiuser', function() {
 		done()
 	})
 
-	beforeEach(function() {})
+	beforeEach(function() {
+		global.E2 = {
+			models: {
+				user: {
+					once: function(){}
+				}
+			},
+			app: {
+				growl: function() {}
+			},
+			core: {
+				active_graph: { uid: 'root' }
+			}
+		}
+	})
 	afterEach(function() {
 		[s1, s2].map(function(s) {
 			if (s) {

@@ -1,0 +1,83 @@
+article.graph.small {
+	width: 310px;
+	height: 145px;
+	position: relative;
+
+  	a, a:active, a:hover, a:focus {
+	  text-decoration: none;
+	  border: 0;
+	  outline: 0;
+	}
+
+	>a {
+	  position: absolute;
+	  display: block;
+	  text-decoration: none;
+	  border: 0;
+	  top: 0;
+	  left: 0;
+	  right: 0;
+	  bottom: 0;
+	  overflow: hidden;
+	  z-index: 1;
+	}
+	img {
+	  display: block;
+	  position: absolute;
+	  left: 0;
+	  right: 0;
+	  top: 50%;
+	  margin-top: -120px;
+	  max-width: 100%;
+	}
+	div.text {
+	  pointer-events: none;
+	  -webkit-font-smoothing: subpixel-antialiased;
+	  z-index: 2;
+	  background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.65), rgba(0,0,0,0.55));
+	  position: absolute;
+	  top: 0;
+	  left: 0;
+	  right: 0;
+	  bottom: 0;
+	  padding: 15px 20px;
+	  h3 {
+		font-size: 16px;
+		font-weight: 400;
+		color: white;
+		margin: 0;
+	  }
+	  p.by {
+		font-size: 12px;
+		font-weight: 400;
+		color: #5199d2;
+		a {
+		  color: #5199d2;
+		  pointer-events: initial;
+		  body.deviceDesktop &:hover {
+			color: lighten(#5199d2,5%);
+			text-decoration: underline;
+		  }
+		}
+	  }
+	  body.deviceDesktop & {
+		opacity: 0;
+		transition: opacity 0.3s 0.1s;
+	  }
+	  body.deviceMobile &, body.deviceTablet & {
+		background: none;
+		opacity: 0.8;
+		h3>span, p.by>span {
+		  background: rgb(0,0,0);
+		  padding: 2px;
+		}
+	  }
+	}
+	body.deviceDesktop &:hover {
+	  div.text {
+		opacity: 1;
+		transition: opacity 0.2s 0.01s;
+	  }
+	}
+
+  }

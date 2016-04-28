@@ -242,6 +242,9 @@ body {
   border: 0;
   padding: 0;
 }
+:active {
+  box-shadow: none !important;
+}
 input:active,
 textarea:active,
 button:active,
@@ -1976,7 +1979,7 @@ div.bootbox.modal .modal-content button.bootbox-close-button {
   background: none;
   margin: 20px 0;
   border-radius: 6px;
-  font-weight: 200;
+  font-weight: 300;
   font-size: 150%;
   width: 11em;
 }
@@ -2000,8 +2003,6 @@ div.bootbox.modal .modal-content button.bootbox-close-button {
 #editorIntro.minislides {
   width: 588px;
   height: 440px;
-  position: relative;
-  overflow: hidden;
   border-radius: 5px 5px;
 }
 #editorIntro.minislides .launch-button {
@@ -2020,63 +2021,19 @@ div.bootbox.modal .modal-content button.bootbox-close-button {
   z-index: 5;
 }
 #editorIntro.minislides div.slideSwitcher {
-  position: absolute;
   width: 300px;
   right: 20px;
-  bottom: 20px;
-  z-index: 5;
-  height: 20px;
-  text-align: center;
-  line-height: 14px;
-}
-#editorIntro.minislides div.slideSwitcher button.slide-step {
-  vertical-align: middle;
-  background: none;
-  display: inline-block;
-  height: 14px;
-  width: 14px;
-  padding: 0;
-  border-radius: 14px 14px;
-  border: 2px solid white;
-  transition: background 0.4s;
-}
-#editorIntro.minislides div.slideSwitcher button.slide-step:hover {
-  background: rgba(255, 255, 255, 0.5);
-}
-#editorIntro.minislides div.slideSwitcher button.slide-step.selected {
-  background: white;
-}
-#editorIntro.minislides div.slideSwitcher button + button {
-  margin-left: 7px;
+  left: auto;
 }
 #editorIntro.minislides div.slides {
   margin: 0;
   padding: 0;
   border-radius: 5px 5px;
-  z-index: 1;
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
   height: 440px;
   transition: left 0.4s;
 }
-#editorIntro.minislides div.slides.horizontal {
-  width: 10000px;
-}
-#editorIntro.minislides div.slides.horizontal section {
-  position: relative;
-  float: left;
-}
 #editorIntro.minislides div.slides.crossfade {
   width: 588px;
-}
-#editorIntro.minislides div.slides.crossfade section {
-  display: none;
-  position: absolute;
-  top: 0;
-  left: 0;
-  float: none;
 }
 #editorIntro.minislides div.slides section {
   width: 588px;
@@ -2117,7 +2074,7 @@ div.bootbox.modal .modal-content button.bootbox-close-button {
   padding-left: 20px;
   color: #fff;
 }
-#editorIntro.minislides div.slides section aside ul li a:hover {
+body.deviceDesktop #editorIntro.minislides div.slides section aside ul li a:hover {
   text-decoration: underline;
 }
 #editorIntro.minislides div.slides section aside ul + p {
@@ -2208,7 +2165,7 @@ div.breadcrumb {
   background: none;
   margin: 20px 0;
   border-radius: 6px;
-  font-weight: 200;
+  font-weight: 300;
   font-size: 150%;
   width: 11em;
 }
@@ -2233,6 +2190,10 @@ body.bMain .brandTop {
   height: 30px;
   line-height: normal;
   padding: 0 !important;
+}
+body.bMain #brandTop > span:first-child,
+body.bMain .brandTop > span:first-child {
+  display: none;
 }
 body.bMain #brandTop *,
 body.bMain .brandTop * {
@@ -3054,14 +3015,484 @@ form.loading button.withWaitState.spinner .waitOn {
 .modal form button {
   font-weight: 400;
 }
+.minislides {
+  position: relative;
+  overflow: hidden;
+}
+.minislides div.slideSwitcher {
+  position: absolute;
+  z-index: 5;
+  bottom: 20px;
+  height: 20px;
+  text-align: center;
+  line-height: 14px;
+  left: 0;
+  right: 0;
+}
+.minislides div.slideSwitcher > button {
+  vertical-align: middle;
+  background: none !important;
+  display: inline-block;
+  height: 14px;
+  width: 14px;
+  padding: 0;
+  border-radius: 14px 14px !important;
+  border: 2px solid white;
+  transition: background 0.4s;
+}
+body.deviceDesktop .minislides div.slideSwitcher > button:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+.minislides div.slideSwitcher > button.selected {
+  background: white !important;
+}
+.minislides div.slideSwitcher > button + button {
+  margin-left: 7px;
+}
+.minislides div.slides {
+  z-index: 1;
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  transition: left 0.3s;
+}
+.minislides div.slides.horizontal > * {
+  position: relative;
+  float: left;
+}
+.minislides div.slides.horizontal.dragging {
+  transition: none;
+}
+.minislides div.slides.crossfade {
+  width: 100%;
+}
+.minislides div.slides.crossfade > * {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  float: none;
+}
 body.bHome {
   margin: 0 !important;
   padding: 0 !important;
 }
+body.bHome a {
+  color: white;
+}
+body.bHome header button,
+body.bHome header form button,
+body.bHome header a.btn {
+  border: 1px solid #fff;
+  background: none;
+  vertical-align: middle;
+  line-height: 1em;
+}
+body.bHome header button:hover,
+body.bHome header form button:hover,
+body.bHome header a.btn:hover {
+  border-color: #fff;
+}
+body.bHome.uaSafari[data-dpr="1"] #contentwrap header {
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+}
+body.bHome.uaSafari[data-dpr="1"] #contentwrap header button,
+body.bHome.uaSafari[data-dpr="1"] #contentwrap header a.btn {
+  font-weight: 400;
+}
+body.bHome.uaSafari[data-dpr="1"] #contentwrap #getstarted #herotext h1 {
+  font-weight: 700;
+}
+body.bHome.uaSafari[data-dpr="1"] #contentwrap #getstarted #herotext a {
+  font-weight: 600;
+}
+body.bHome #contentwrap a.cta:hover,
+body.bHome #contentwrap a.cta:active {
+  color: inherit;
+}
+body.bHome #contentwrap footer nav {
+  text-align: center;
+}
+body.bHome #contentwrap footer nav.links a {
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 16px;
+  color: #9e9e9e;
+}
+body.bHome #contentwrap footer nav.links a:hover {
+  color: #5199d2;
+}
+body.bHome #contentwrap footer nav.links a + a {
+  margin-left: 1em;
+}
+body.bHome #contentwrap footer nav a.btn {
+  width: 28px;
+  padding: 4px;
+  background: none;
+  border: 0;
+}
+body.bHome #contentwrap footer nav a.btn + a.btn {
+  margin-left: 30px;
+}
+body.bHome #contentwrap footer nav a.btn:hover {
+  border: 0;
+}
+body.bHome #contentwrap footer nav a.btn:active {
+  background: none;
+}
+body.bHome #contentwrap footer nav a.btn.email svg {
+  width: 20px;
+  height: 13px;
+}
+body.bHome #contentwrap footer nav a.btn.twitter svg {
+  width: 23px;
+  height: 18px;
+}
+body.bHome #contentwrap footer nav a.btn.facebook svg {
+  width: 13px;
+  height: 24px;
+}
+body.bHome #contentwrap footer nav a.btn.github svg {
+  width: 23px;
+  height: 20px;
+}
+body.bHome #contentwrap footer nav a.btn.angellist svg {
+  width: 14px;
+  height: 20px;
+}
+body.bHome.layoutMobile #contentwrap footer nav.links a {
+  letter-spacing: 1.75px;
+  font-size: 14px;
+}
+body.bHome.layoutMobile #contentwrap footer nav.links a + a {
+  margin-left: 1rem;
+}
+body.bHome.deviceDesktop.layoutDesktop #contentwrap #getstarted #herotext > div a:hover {
+  margin: 0 1px;
+  border: 3px solid white;
+}
+body.bHome.layoutTablet[data-dpr="1"] #contentwrap section#getstarted #herotext a.cta {
+  font-weight: 600;
+}
+body.bHome #contentwrap #getstarted {
+  height: 678px;
+}
+body.bHome #contentwrap #getstarted #herotext {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 310px;
+  z-index: 10;
+  text-align: center;
+}
+body.bHome #contentwrap #getstarted #herotext > div {
+  display: -webkit-inline-flex;
+  display: inline-flex;
+  -webkit-flex-flow: row wrap;
+  flex-flow: row wrap;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+  max-width: 50.5rem;
+  margin: 0 auto;
+}
+body.bHome #contentwrap #getstarted #herotext > div h1 {
+  font-size: 50px;
+  font-weight: 600;
+  flex: 0 0 100%;
+  margin: 0 0 25px 0;
+  padding: 0;
+  pointer-events: none;
+}
+body.bHome #contentwrap #getstarted #herotext > div a {
+  flex: 0 0 45%;
+  border-radius: 45px;
+  background: none;
+  border: 2px solid white;
+  text-transform: uppercase;
+  font-size: 16px;
+  letter-spacing: 2px;
+  padding: 13px 20px;
+  margin: 1px;
+}
+body.bHome #contentwrap #featuredVR {
+  background: #171717;
+  padding-bottom: 10px;
+  border-top: 1px solid #3b3b3b;
+}
+body.bHome #contentwrap #featuredVR > div {
+  margin: 10px auto;
+  width: 950px;
+}
+body.bHome #contentwrap #featuredVR div.side-by-side {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-flow: row nowrap;
+  flex-flow: row nowrap;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+}
+body.bHome #contentwrap #featuredVR h2 {
+  font-size: 16px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #9e9e9e;
+  text-align: left;
+  flex: 0 0 100%;
+  font-weight: 300;
+  margin: 30px auto;
+  width: 950px;
+}
+body.bHome.layoutTablet.deviceMobile.landscape #contentwrap section#getstarted {
+  height: 380px;
+}
+body.bHome.layoutTablet.deviceMobile.landscape #contentwrap section#getstarted #herotext {
+  top: 37%;
+}
+body.bHome.layoutTablet.deviceMobile.landscape #contentwrap section#getstarted #herotext > div {
+  max-width: 43.5rem;
+}
+body.bHome.layoutTablet.deviceMobile.landscape #contentwrap section#getstarted #herotext h1 {
+  font-size: 43px;
+}
+body.bHome.layoutMobile #contentwrap article.graph.small {
+  width: 375px;
+  max-width: 99%;
+  height: 216px;
+  max-height: none;
+}
+body.bHome.layoutMobile #contentwrap #featuredVR > div,
+body.bHome.layoutMobile #contentwrap #featuredVR h2 {
+  width: 99%;
+}
+body.bHome.layoutMobile #contentwrap #featuredVR h2 {
+  text-align: center;
+}
+@media screen and (-webkit-min-device-pixel-ratio: 3) {
+  body.bHome.layoutMobile.deviceMobile.uaChrome #contentwrap section#featuredVR article.graph.small {
+    width: 360px;
+    max-width: 99%;
+    height: 206px;
+    max-height: none;
+  }
+}
+body.bHome.layoutTablet #contentwrap header {
+  height: 60px;
+}
+body.bHome.layoutTablet #contentwrap header nav {
+  padding: 15px 0 5px 0;
+  border-bottom: 0;
+}
+body.bHome.layoutTablet #contentwrap #featuredVR div.side-by-side article.graph.small {
+  width: 229px;
+  height: 107px;
+}
+/*
+body.bHome.layoutTablet #contentwrap #featuredVR {
+  >div, h2 {
+	width: 99%;
+  }
+  h2 {
+	text-align: center;
+  }
+  div.side-by-side {
+	-webkit-justify-content: space-around;
+	justify-content: space-around;
+	article.graph.small {
+	  	width: 45%;
+	  	height: 175px;
+		max-height: 216px;
+	}
+	> article:last-of-type {
+	  display: none;
+	}
+  }
+}
+*/
 body.bHome #contentwrap {
   font-size: 11pt;
   color: #f7f7f7;
-  font-weight: 200;
+  font-weight: 300;
+  /*
+  h1, h2 {
+	letter-spacing: @letter-spacing-home;
+  }
+  h1 {
+	font-size: 360%;
+	margin: 50px 0 100px 0;
+  }
+  h2 {
+	text-align: center;
+  }
+  h2 {
+	font-size: 280%;
+	margin-bottom: 30px;
+	line-height: 1.3em;
+	&:first-child {
+	  margin-top:0;
+	}
+  }
+
+  #webNativeDiv {
+	margin-bottom: 50px;
+  }
+
+
+  div.twocol {
+	padding: 40px 0;
+  }
+  div.twocol>div.col {
+	box-sizing: border-box;
+	&.left {padding-right: @x-pad-col/2;}
+	&.right {padding-left: @x-pad-col/2;}
+  }
+
+
+  ul.cta {
+	text-align: center;
+	font-size: 150%;
+	margin: 80px 0 50px 0;
+	padding:0;
+	li {
+	  margin:0;
+	  padding-left:0;
+	  display: inline;
+	  a {
+		font-size: 120%;
+		letter-spacing: @letter-spacing-home;
+	  }
+	}
+	li+li {
+	  margin-left: 2em;
+	}
+  }
+  section {
+	overflow-x: hidden;
+	padding: 100px 0 120px 0;
+  }
+
+  section div.col p {
+	max-width: 390px;
+  }
+  div.col.protrudeimg {
+	overflow: visible;
+	&.left img { float: right; margin-right: 20px; }
+	&.right img { float: left; margin-left: 20px; }
+  }
+
+
+  button, section.contentcontainer form button {
+	font-weight: @font-weight-home-button;
+	color: #fff;
+
+	width: 100%;
+	text-align: left;
+	padding: 15px 25px;
+	&.svg svg {
+	  stroke: #fff;
+	  position:absolute;
+	  right: 25px;
+	  top: 50%;
+	  margin-top: -11px;
+	  height: 24px;
+	  width: 24px;
+	}
+  }
+
+  section.contentcontainer form button {
+	background: @bgcolor-home-button;
+  }
+
+
+
+  section {
+	margin:0;
+  }
+
+  a, section a {
+	color: #fff;
+	&.launch-button {
+	  .launch-button-macro;
+	}
+	&:focus {	// firefox
+	  outline: 0 !important;
+	}
+  }
+
+  #contentcontainer form input {
+	color: #ccc;
+  }
+*/
+  /*
+  p, section a.launch-button {
+	letter-spacing: @letter-spacing-home-normal;
+  }
+
+  p {
+	font-size: 160%;
+	line-height: 1.6em;
+  }
+  .scrolldownContainer {
+	height:0;
+	position: relative;
+	z-index: 20;
+	.scrolldownPrompt {
+	  display: block;
+	  width: 50px;
+	  height: 50px;
+	  margin: -25px 0 0 -25px;
+	  position: absolute;
+	  top:0;
+	  left:50%;
+	  border-radius: 25px;
+	  &:hover {
+
+		img {
+		  stroke:black;
+		}
+	  }
+	}
+  }
+
+  section {
+	position: relative;
+	background: #333;
+
+	&#createandsharevr { background: @bgcolor-home-intro }
+	&#whyusevizor { background: @bgcolor-home-whyusevizor }
+	&#howitworks { background: @bgcolor-home-howitworks }
+	&#vizorteam { background: @bgcolor-home-meettheteam }
+	&#getstarted, &#getnewsletter { background: @bgcolor-home-getstarted }
+	&#createandsharevr+.scrolldownContainer .scrolldownPrompt { background:  @bgcolor-home-intro }
+
+	&#getstarted .col.left {
+	  padding-right: 15%;
+	}
+	&#getnewsletter p {
+	  text-align: center;
+	  padding: 0 50px;
+	  font-size: 130%;
+	}
+
+	&#getstarted, &#getnewsletter {
+	  form, div.modal-footer {
+		max-width: 320px;
+		margin: 0 auto;
+	  }
+	  div.col.right img {
+		margin-left: 50px;
+		margin-top: -50px;
+	  }
+	}
+
+
+	.collapsible+.collapsible {
+	  border-top: 1px solid rgba(0,0,0,0.2);
+	}
+  }
+*/
 }
 body.bHome #contentwrap section div.in {
   padding: 5px 0;
@@ -3090,7 +3521,13 @@ body.bHome #contentwrap #getstarted .modal-footer a {
 body.bHome #contentwrap header {
   margin: 0;
   padding: 0;
-  background: #2f92ee;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100px;
+  width: 100%;
+  z-index: 10;
 }
 body.bHome #contentwrap header nav {
   border-bottom: 1px solid #fff;
@@ -3102,8 +3539,7 @@ body.bHome #contentwrap header nav > * {
   padding: 0;
 }
 body.bHome #contentwrap header ul {
-  font-size: 92%;
-  letter-spacing: 0.5pt;
+  font-size: 100%;
   display: -webkit-flex;
   -webkit-justify-content: space-between;
   -webkit-align-items: center;
@@ -3131,151 +3567,13 @@ body.bHome #contentwrap header ul li:last-of-type {
 body.bHome #contentwrap header button.sign-btn,
 body.bHome #contentwrap header a.btn.sign-btn {
   width: auto;
-  padding: 8px 22px;
-  border-radius: 4px;
-  font-weight: 200;
+  padding: 5px 15px;
+  border-radius: 6px;
+  font-weight: 300;
 }
 body.bHome #contentwrap header button + button,
 body.bHome #contentwrap header button + a.btn {
   margin-left: 1em;
-}
-body.bHome #contentwrap h1,
-body.bHome #contentwrap h2 {
-  letter-spacing: 0.5pt;
-}
-body.bHome #contentwrap h1 {
-  font-size: 360%;
-  margin: 50px 0 100px 0;
-}
-body.bHome #contentwrap h2 {
-  text-align: center;
-}
-body.bHome #contentwrap h2,
-body.bHome #contentwrap h3 {
-  font-size: 280%;
-  margin-bottom: 30px;
-  line-height: 1.3em;
-}
-body.bHome #contentwrap h2:first-child,
-body.bHome #contentwrap h3:first-child {
-  margin-top: 0;
-}
-body.bHome #contentwrap h3 {
-  font-size: 180%;
-  margin: 30px 0;
-}
-body.bHome #contentwrap #webNativeDiv {
-  margin-bottom: 50px;
-}
-body.bHome #contentwrap div.twocol {
-  padding: 40px 0;
-}
-body.bHome #contentwrap div.twocol > div.col {
-  box-sizing: border-box;
-}
-body.bHome #contentwrap div.twocol > div.col.left {
-  padding-right: 30px;
-}
-body.bHome #contentwrap div.twocol > div.col.right {
-  padding-left: 30px;
-}
-body.bHome #contentwrap ul.cta {
-  text-align: center;
-  font-size: 150%;
-  margin: 80px 0 50px 0;
-  padding: 0;
-}
-body.bHome #contentwrap ul.cta li {
-  margin: 0;
-  padding-left: 0;
-  display: inline;
-}
-body.bHome #contentwrap ul.cta li a {
-  font-size: 120%;
-  letter-spacing: 0.5pt;
-}
-body.bHome #contentwrap ul.cta li + li {
-  margin-left: 2em;
-}
-body.bHome #contentwrap section {
-  overflow-x: hidden;
-  padding: 100px 0 120px 0;
-}
-body.bHome #contentwrap section div.col p {
-  max-width: 390px;
-}
-body.bHome #contentwrap div.col.protrudeimg {
-  overflow: visible;
-}
-body.bHome #contentwrap div.col.protrudeimg.left img {
-  float: right;
-  margin-right: 20px;
-}
-body.bHome #contentwrap div.col.protrudeimg.right img {
-  float: left;
-  margin-left: 20px;
-}
-body.bHome #contentwrap button,
-body.bHome #contentwrap section.contentcontainer form button {
-  font-weight: 400;
-  color: #fff;
-  width: 100%;
-  text-align: left;
-  padding: 15px 25px;
-}
-body.bHome #contentwrap button.svg svg,
-body.bHome #contentwrap section.contentcontainer form button.svg svg {
-  stroke: #fff;
-  position: absolute;
-  right: 25px;
-  top: 50%;
-  margin-top: -11px;
-  height: 24px;
-  width: 24px;
-}
-body.bHome #contentwrap section.contentcontainer form button {
-  background: #0485b4;
-}
-body.bHome #contentwrap header button,
-body.bHome #contentwrap header form button,
-body.bHome #contentwrap header a.btn {
-  border: 1px solid #fff;
-  background: none;
-  vertical-align: middle;
-  line-height: 1em;
-}
-body.bHome #contentwrap section {
-  margin: 0;
-  border-top: 1px solid transparent;
-}
-body.bHome #contentwrap a,
-body.bHome #contentwrap section a {
-  color: #fff;
-}
-body.bHome #contentwrap a.launch-button,
-body.bHome #contentwrap section a.launch-button {
-  display: block;
-  border: 1px solid #fff;
-  padding: 15px 20px;
-  background: none;
-  margin: 20px 0;
-  border-radius: 6px;
-  font-weight: 200;
-  font-size: 150%;
-  width: 11em;
-}
-body.bHome #contentwrap a.launch-button:hover,
-body.bHome #contentwrap section a.launch-button:hover {
-  border: 2px solid #fff;
-  padding: 14px 20px;
-}
-body.bHome #contentwrap a:focus,
-body.bHome #contentwrap section a:focus {
-  border: 0 !important;
-  outline: 0 !important;
-}
-body.bHome #contentwrap #contentcontainer form input {
-  color: #ccc;
 }
 body.bHome #contentwrap footer {
   padding: 50px 0;
@@ -3310,92 +3608,11 @@ body.bHome #contentwrap section div.in form fieldset > div.form-input input {
 body.bHome #contentwrap section div.in form fieldset label {
   display: none;
 }
-body.bHome #contentwrap p,
-body.bHome #contentwrap section a.launch-button {
-  letter-spacing: 0.5px;
-}
-body.bHome #contentwrap h1,
-body.bHome #contentwrap h2,
-body.bHome #contentwrap h3,
-body.bHome #contentwrap h4,
-body.bHome #contentwrap h5,
-body.bHome #contentwrap h6 {
-  color: #fff;
-  font-weight: 200;
-}
-body.bHome #contentwrap p {
-  font-size: 160%;
-  line-height: 1.6em;
-}
-body.bHome #contentwrap .scrolldownContainer {
-  height: 0;
-  position: relative;
-  z-index: 20;
-}
-body.bHome #contentwrap .scrolldownContainer .scrolldownPrompt {
-  display: block;
-  width: 50px;
-  height: 50px;
-  margin: -25px 0 0 -25px;
-  position: absolute;
-  top: 0;
-  left: 50%;
-  border-radius: 25px;
-}
-body.bHome #contentwrap .scrolldownContainer .scrolldownPrompt:hover img {
-  stroke: black;
-}
 body.bHome #contentwrap section {
-  position: relative;
-  background: #333;
-}
-body.bHome #contentwrap section#createandsharevr {
-  background: #2f92ee;
-}
-body.bHome #contentwrap section#whyusevizor {
-  background: #1c80dd;
-}
-body.bHome #contentwrap section#howitworks {
-  background: #1472c9;
-}
-body.bHome #contentwrap section#vizorteam {
-  background: #0f61ad;
-}
-body.bHome #contentwrap section#getstarted,
-body.bHome #contentwrap section#getnewsletter {
-  background: #05498c;
-}
-body.bHome #contentwrap section#createandsharevr + .scrolldownContainer .scrolldownPrompt {
-  background: #2f92ee;
-}
-body.bHome #contentwrap section#getstarted .col.left {
-  padding-right: 15%;
-}
-body.bHome #contentwrap section#getnewsletter p {
-  text-align: center;
-  padding: 0 50px;
-  font-size: 130%;
-}
-body.bHome #contentwrap section#getstarted form,
-body.bHome #contentwrap section#getnewsletter form,
-body.bHome #contentwrap section#getstarted div.modal-footer,
-body.bHome #contentwrap section#getnewsletter div.modal-footer {
-  max-width: 320px;
-  margin: 0 auto;
-}
-body.bHome #contentwrap section#getstarted div.col.right img,
-body.bHome #contentwrap section#getnewsletter div.col.right img {
-  margin-left: 50px;
-  margin-top: -50px;
-}
-body.bHome #contentwrap section#getstarted h2 {
-  margin-bottom: 120px;
-}
-body.bHome #contentwrap section .collapsible + .collapsible {
-  border-top: 1px solid rgba(0, 0, 0, 0.2);
+  margin: 0;
 }
 body.bHome #contentwrap footer {
-  background: #262c3d;
+  background: #171717;
 }
 body.bHome #contentwrap .modal-footer {
   padding-left: 0;
@@ -3424,8 +3641,8 @@ body.bHome #contentwrap .team-member {
 }
 body.bHome #contentwrap .team-member h4 {
   font-size: 170%;
-  font-weight: 200;
-  letter-spacing: 0.5pt;
+  font-weight: 300;
+  letter-spacing: 0.1pt;
 }
 body.bHome #contentwrap .team-member .member-pic {
   width: 140px;
@@ -3482,7 +3699,7 @@ body.bHome #contentwrap .team-member .person-position {
   text-align: center;
   text-decoration: none;
   padding: 0;
-  font-weight: 200;
+  font-weight: 300;
   text-transform: uppercase;
   letter-spacing: 1px;
   font-size: 90%;
@@ -3506,11 +3723,27 @@ body.bHome #contentwrap .overlay {
   background: rgba(0, 0, 0, 0.9);
   z-index: 100;
 }
+body.bHome #contentwrap #brandTop svg {
+  width: 100%;
+  height: 100%;
+}
+body.bHome #contentwrap #brandBottom {
+  font-weight: 300;
+  color: #c3c3c3;
+  text-align: center;
+}
+body.bHome #contentwrap #brandBottom span {
+  display: block;
+  margin-bottom: 20px;
+}
+body.bHome #contentwrap footer {
+  padding: 90px 0;
+}
 body.bHome #contentwrap #mobilemenu {
-  background: #2f92ee;
+  background: #171717;
 }
 body.bHome #contentwrap #mobilemenu #brandTop {
-  margin: 20px auto 0 auto;
+  margin: 18px auto 0 auto;
 }
 body.bHome #contentwrap #mobilemenu section > h2:first-child {
   margin: 16px auto 0 auto;
@@ -3523,15 +3756,15 @@ body.bHome #contentwrap #mobilemenu div#menuContainer {
   left: 0;
   right: 0;
   width: 100%;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 body.bHome #contentwrap #mobilemenu ul:first-of-type {
   float: left;
 }
 body.bHome #contentwrap #mobilemenu ul:last-of-type {
   float: right;
-  border-left: 1px solid rgba(0, 0, 0, 0.1);
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
 }
 body.bHome #contentwrap #mobilemenu ul {
   width: 50%;
@@ -3542,26 +3775,29 @@ body.bHome #contentwrap #mobilemenu ul {
 body.bHome #contentwrap #mobilemenu ul li {
   height: 16.65%;
   display: -webkit-flex;
-  -webkit-justify-content: stretch;
+  -webkit-justify-content: space-between;
   -webkit-position: relative;
   display: flex;
   justify-content: stretch;
   position: relative;
 }
 body.bHome #contentwrap #mobilemenu ul li a {
+  letter-spacing: 1.75px;
+  font-size: 16px;
+  text-transform: uppercase;
+  color: #c3c3c3;
   margin: auto 0;
   width: 100%;
   min-height: 2.5em;
   line-height: 2.5em;
   padding: 0 25px;
-  font-size: 145%;
-  font-weight: 200;
+  font-weight: 300;
 }
 body.bHome #contentwrap #mobilemenu ul li a:hover {
   text-decoration: none;
 }
 body.bHome #contentwrap #mobilemenu ul li + li {
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 body.bHome #contentwrap footer .flexcolumns {
   max-width: 700px;
@@ -3574,7 +3810,7 @@ body.bHome #contentwrap footer li {
 body.bHome #contentwrap #brandTop {
   float: left;
   width: 70px;
-  height: 26px;
+  height: 28px;
   margin-left: 5px;
 }
 body.bHome #contentwrap h3.readmore a {
@@ -3612,22 +3848,10 @@ body.bHome #contentwrap .tabletonly {
 	  z-index: 1000;
 	}
 	*/
-    font-weight: 300;
     -webkit-font-smoothing: subpixel-antialiased;
-  }
-  body.bHome #contentwrap header {
-    font-weight: 300;
   }
   body.bHome #contentwrap header nav li {
     letter-spacing: 0.25px;
-  }
-  body.bHome #contentwrap header nav li button,
-  body.bHome #contentwrap header nav li a.btn.sign-btn {
-    font-weight: 300 ! important;
-  }
-  body.bHome #contentwrap a.btn,
-  body.bHome #contentwrap a.launch-button {
-    font-weight: 300 ! important;
   }
   body.bHome #contentwrap .notablet {
     display: none;
@@ -3636,12 +3860,11 @@ body.bHome #contentwrap .tabletonly {
     padding: 20px 0;
   }
   body.bHome #contentwrap header nav ul {
-    width: 83%;
+    width: 43%;
     float: right;
     font-size: 1.4rem;
   }
   body.bHome #contentwrap section {
-    padding: 60px 0;
     font-size: 1.25rem;
   }
   body.bHome #contentwrap section h2 {
@@ -3767,19 +3990,6 @@ body.bHome #contentwrap .tabletonly {
   body.bHome #contentwrap footer li {
     margin-bottom: 1em;
   }
-  body.bHome #contentwrap section#getstarted h2 {
-    margin-bottom: 50px;
-  }
-  body.bHome #contentwrap section#getstarted .col.left {
-    width: 100%;
-    padding-right: 0;
-  }
-  body.bHome #contentwrap section#getstarted .col.right {
-    width: 100%;
-  }
-  body.bHome #contentwrap section#getstarted input {
-    background: rgba(0, 0, 0, 0.5);
-  }
 }
 @media all and (max-width: 549px) {
   body.bHome #contentwrap {
@@ -3797,14 +4007,35 @@ body.bHome #contentwrap .tabletonly {
 	*/
   }
   body.bHome #contentwrap #brandTop {
-    margin: 0px auto 0 auto;
+    margin: -4px auto 0 auto;
+    width: 80px;
+    height: 30px;
   }
   body.bHome #contentwrap header nav {
     border-bottom: 0;
   }
+  body.bHome #contentwrap section#getstarted {
+    height: 420px;
+  }
+  body.bHome #contentwrap section#getstarted #herotext {
+    top: 120px;
+  }
+  body.bHome #contentwrap section#getstarted #herotext h1 {
+    font-weight: 700;
+    letter-spacing: -1px;
+    flex: 0 0 240px;
+    margin-bottom: 65px;
+  }
+  body.bHome #contentwrap section#getstarted #herotext > div {
+    -webkit-justify-content: center;
+    justify-content: center;
+  }
+  body.bHome #contentwrap section#getstarted #herotext a.cta {
+    flex: 0 0 60%;
+  }
   body.bHome #contentwrap section > div.in img.hero {
     padding: 0 20px;
-    max-width: auto;
+    max-width: none;
     width: 100%;
   }
   body.bHome #contentwrap section#getnewsletter p {
@@ -3851,8 +4082,7 @@ body.bHome #contentwrap .tabletonly {
     left: 10px;
   }
   body.bHome #contentwrap section {
-    padding-bottom: 0px;
-    padding-top: 50px;
+    padding-bottom: 0;
   }
   body.bHome #contentwrap section > div.in h2 {
     font-size: 3.1rem !important;
@@ -4020,14 +4250,14 @@ body.bHome #contentwrap .tabletonly {
     margin-left: 0;
   }
   body.bHome #contentwrap header nav ul {
-    width: 655px;
+    width: 455px;
     float: right;
   }
   body.bHome #contentwrap section#createandsharevr img {
     position: absolute;
     left: 55%;
     top: 2.5rem;
-    max-width: auto;
+    max-width: none;
   }
   body.bHome #contentwrap section#createandsharevr div.text {
     width: 400px;
@@ -4060,7 +4290,7 @@ body.bHome #contentwrap .tabletonly {
     position: absolute;
     right: 60%;
     margin-top: 70px;
-    max-width: auto;
+    max-width: none;
   }
   body.bHome #contentwrap section#whyusevizor #why1,
   body.bHome #contentwrap section#whyusevizor #why2,
@@ -4114,17 +4344,61 @@ body.bHome #contentwrap .tabletonly {
     padding: 70px 0;
   }
 }
-body.bHome.layoutDesktop #contentwrap header nav ul {
+body.bHome1.layoutDesktop #contentwrap header nav ul {
   display: block;
   width: auto;
   text-align: right;
 }
-body.bHome.layoutDesktop #contentwrap header nav ul li {
+body.bHome1.layoutDesktop #contentwrap header nav ul li {
   display: inline-block;
-  padding: 0 30px;
+  padding: 0 28px;
 }
-body.bHome.layoutDesktop #contentwrap header nav ul li:last-of-type {
+body.bHome1.layoutDesktop #contentwrap header nav ul li:last-of-type {
   padding-right: 0;
+}
+body.bHome.layoutTablet #contentwrap {
+  margin: 0 auto;
+}
+body.bHome.layoutTablet #contentwrap header > nav {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+body.bHome.layoutTablet #contentwrap section > div.in,
+body.bHome.layoutTablet #contentwrap #featuredVR > div,
+body.bHome.layoutTablet #contentwrap #featuredVR > h2,
+body.bHome.layoutTablet #contentwrap header > nav {
+  width: 705px;
+  max-width: 98%;
+}
+body.bHome.layoutTablet #contentwrap section#getstarted {
+  position: relative;
+  background: black;
+  height: 345px;
+}
+body.bHome.layoutTablet #contentwrap section#getstarted #herotext {
+  top: 155px;
+}
+body.bHome.layoutTablet #contentwrap section#getstarted #herotext > div {
+  max-width: 35.5rem;
+}
+body.bHome.layoutTablet #contentwrap section#getstarted #herotext h1 {
+  font-size: 35px;
+  text-align: center;
+}
+body.bHome.layoutTablet #contentwrap section#getstarted #herotext a.cta {
+  font-weight: 400;
+  font-size: 11px;
+  border: 1px solid white;
+  padding: 6px 20px;
+}
+body.bHome.layoutTablet #contentwrap section#featuredVR article.graph.small a img {
+  margin-top: -90px;
+}
+body.bHome.layoutTablet #contentwrap section#featuredVR article.graph.small div.text {
+  padding: 12px 10px;
+}
+body.bHome.layoutTablet #contentwrap section#featuredVR article.graph.small div.text h3 {
+  font-size: 14px;
 }
 .webvr-polyfill-viewer-selector {
   position: absolute;
