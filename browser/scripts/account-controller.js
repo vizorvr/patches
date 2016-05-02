@@ -80,12 +80,21 @@ AccountController.prototype.openLoginModal = function(dfd) {
 
 	var onSuccess = function(response) {
 		var user = response.data;
+
+		mixpanel.identify(user.username)
+		mixpanel.people.set({
+			"$name": user.name,
+			username: user.username,
+			"$email": user.email
+		})
+
 		dataLayer.push({
 			event: 'userSignedIn',
 			username: user.username
 		})
-		E2.models.user.set(user);
-		bootbox.hideAll();
+
+		E2.models.user.set(user)
+		bootbox.hideAll()
 		dfd.resolve()
 	};
 
@@ -118,6 +127,13 @@ AccountController.prototype.openSignupModal = function(dfd) {
 	var $usernameField = jQuery('input#username_id', $form);
 	var onSuccess = function(response) {
 		var user = response.data;
+
+		mixpanel.identify(user.username)
+		mixpanel.people.set({
+			"$name": user.name,
+			username: user.username,
+			"$email": user.email
+		})
 
 		dataLayer.push({
 			event: 'userSignedUp',

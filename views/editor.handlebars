@@ -284,6 +284,8 @@
 				gravatar: '{{{user.gravatar}}}',
 				email: '{{user.email}}'
 			})
+
+			mixpanel.identify('{{user._id}}')
 		}
 
 		if (typeof E2.controllers === 'undefined')
