@@ -130,9 +130,8 @@
 		if (this.dirty)
 			this.vrControlCamera.updateProjectionMatrix()
 
-		if (!this.locked) {
+		if (!this.locked)
 			this.controls.update(new THREE.Vector3(), new THREE.Quaternion())
-		}
 
 		this.object3d.updateMatrixWorld()
 
