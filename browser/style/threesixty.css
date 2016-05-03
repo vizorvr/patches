@@ -3951,12 +3951,6 @@ body.bHome #contentwrap .tabletonly {
   body.bHome #contentwrap .launch-button.mobileonly {
     display: block;
   }
-  body.bHome #contentwrap section > div.in {
-    max-width: 98%;
-  }
-  body.bHome #contentwrap footer > div.in {
-    max-width: 98%;
-  }
   body.bHome #contentwrap section#createandsharevr div.in img {
     margin-top: 3.2em !important;
   }
@@ -4173,7 +4167,7 @@ body.bHome.layoutTablet #contentwrap #featuredVR > div,
 body.bHome.layoutTablet #contentwrap #featuredVR > h2,
 body.bHome.layoutTablet #contentwrap header > nav {
   width: 705px;
-  max-width: 98%;
+  max-width: 99%;
 }
 body.bHome.layoutTablet #contentwrap section#getstarted {
   position: relative;
