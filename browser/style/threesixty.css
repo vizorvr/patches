@@ -3620,7 +3620,6 @@ body.bHome #contentwrap #brandTop {
   float: left;
   width: 70px;
   height: 28px;
-  margin-left: 5px;
 }
 body.bHome #contentwrap h3.readmore a {
   cursor: text;
@@ -4163,10 +4162,6 @@ body.bHome.bIndex #contentwrap header {
 }
 body.bHome.layoutTablet #contentwrap {
   margin: 0 auto;
-}
-body.bHome.layoutTablet #contentwrap header > nav {
-  padding-left: 20px;
-  padding-right: 20px;
 }
 body.bHome.layoutTablet #contentwrap section > div.in,
 body.bHome.layoutTablet #contentwrap #featuredVR > div,
