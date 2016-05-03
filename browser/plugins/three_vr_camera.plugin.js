@@ -24,17 +24,25 @@
 			{ name: 'fov', dt: core.datatypes.FLOAT, def: this.defaultFOV },
 			{ name: 'aspectRatio', dt: core.datatypes.FLOAT, def: 1.0},
 			{ name: 'near', dt: core.datatypes.FLOAT, def: 0.001 },
-			{ name: 'far', dt: core.datatypes.FLOAT, def: 1000.0 }
+			{ name: 'far', dt: core.datatypes.FLOAT, def: 1000.0 },
+			{
+				name:   'lock transform',
+				dt:     core.datatypes.BOOL,
+				def:    false,
+				label:  'Lock transform',
+				desc:   'If enabled, the transform coming from the HMD is ignored'
+			}
 		]
 
 		this.output_slots = [
-			{name: 'camera',	dt: core.datatypes.CAMERA},
-			{name: 'position',	dt: core.datatypes.VECTOR},
-			{name: 'rotation',	dt: core.datatypes.VECTOR}
+			{ name: 'camera',	dt: core.datatypes.CAMERA },
+			{ name: 'position',	dt: core.datatypes.VECTOR },
+			{ name: 'rotation',	dt: core.datatypes.VECTOR }
 		]
 
 		this.always_update = true
 		this.dirty = false
+		this.locked = false
 
 		this.state = {
 			position: {x: 0, y: 0, z:0},
@@ -122,7 +130,9 @@
 		if (this.dirty)
 			this.vrControlCamera.updateProjectionMatrix()
 
-		this.controls.update(new THREE.Vector3(), new THREE.Quaternion())
+		if (!this.locked) {
+			this.controls.update(new THREE.Vector3(), new THREE.Quaternion())
+		}
 
 		this.object3d.updateMatrixWorld()
 
@@ -158,6 +168,9 @@
 		case 5: // far
 			this.vrControlCamera.far = data
 			this.dirty = true
+			break
+		case 6: // locked transforms
+			this.locked = data
 			break
 		default:
 			break
