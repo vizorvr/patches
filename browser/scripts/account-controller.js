@@ -128,7 +128,7 @@ AccountController.prototype.openSignupModal = function(dfd) {
 	var onSuccess = function(response) {
 		var user = response.data;
 
-		mixpanel.identify(user.username)
+		mixpanel.alias(user.username)
 		mixpanel.people.set({
 			"$name": user.name,
 			username: user.username,
