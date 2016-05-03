@@ -3289,6 +3289,11 @@ body.bHome.layoutMobile #contentwrap #featuredVR h2 {
     max-height: none;
   }
 }
+@media screen and (device-width: 320px) {
+  body.bHome #contentwrap section#featuredVR article.graph.small {
+    width: 320px;
+  }
+}
 body.bHome.layoutTablet #contentwrap header {
   height: 60px;
 }
