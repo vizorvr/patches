@@ -3165,6 +3165,12 @@ body.bHome #contentwrap footer nav a.btn.angellist svg {
   width: 14px;
   height: 20px;
 }
+body.bHome #contentwrap footer nav a.btn.svg svg {
+  fill: #c3c3c3;
+}
+body.bHome #contentwrap footer nav a.btn.svg:hover svg {
+  fill: #5199d2;
+}
 body.bHome.layoutMobile #contentwrap footer nav.links a {
   letter-spacing: 1.75px;
   font-size: 14px;
