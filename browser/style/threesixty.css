@@ -3132,12 +3132,15 @@ body.bHome #contentwrap footer nav.links a + a {
 }
 body.bHome #contentwrap footer nav a.btn {
   width: 28px;
-  padding: 4px;
+  padding: 2px 4px 6px 4px;
   background: none;
   border: 0;
 }
 body.bHome #contentwrap footer nav a.btn + a.btn {
-  margin-left: 30px;
+  margin-left: 38px;
+}
+body.bHome #contentwrap footer nav a.btn > svg {
+  vertical-align: middle;
 }
 body.bHome #contentwrap footer nav a.btn:hover {
   border: 0;
@@ -3147,7 +3150,7 @@ body.bHome #contentwrap footer nav a.btn:active {
 }
 body.bHome #contentwrap footer nav a.btn.email svg {
   width: 20px;
-  height: 13px;
+  height: 16px;
 }
 body.bHome #contentwrap footer nav a.btn.twitter svg {
   width: 23px;
