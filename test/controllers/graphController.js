@@ -1,11 +1,13 @@
-var assert = require('assert');
-var GraphController = require('../../controllers/graphController');
-var when = require('when');
+process.env.GRAPHCONTROLLER_PAGE_SIZE = 2
+
+var assert = require('assert')
+var GraphController = require('../../controllers/graphController')
+var when = require('when')
 var fs = require('fs')
 
 describe('GraphController', function() {
 	var ctrl, svc, stream
-	var res = { json: function() {} }
+	var res = { json: function() {}, render: function() {} }
 
 	function resolved(data) {
 		return when.resolve(data)
@@ -65,6 +67,26 @@ describe('GraphController', function() {
 				done()
 			}
 		}, done)
+	});
+
+	it('pages through results 0-1', function(done) {
+		svc.publicRankedList = function(opts) {
+			assert.equal(opts.limit, 2)
+			assert.equal(opts.offset, 0)
+			done()
+			return when.resolve({ result: [] })
+		}
+		ctrl.publicRankedIndex({ params: { page: 0 }, }, res, done)
+	});
+
+	it('pages through results 2-3', function(done) {
+		svc.publicRankedList = function(opts) {
+			assert.equal(opts.limit, 2)
+			assert.equal(opts.offset, 2)
+			done()
+			return when.resolve({ result: [] })
+		}
+		ctrl.publicRankedIndex({ params: { page: 2 }, }, res, done)
 	});
 
 });

@@ -1,6 +1,6 @@
 var testId = rand()
-process.env.MONGODB = 'mongodb://localhost:27017/preset'+testId
-process.env.RETHINKDB_NAME = 'preset' + testId
+var DBNAME = 'presetsave'+testId
+process.env.MONGODB = 'mongodb://localhost:27017/'+DBNAME
 
 var Preset = require('../../models/preset')
 var request = require('supertest')
@@ -12,6 +12,8 @@ var expect = require('chai').expect
 
 var graphFile = __dirname+'/../../browser/data/graphs/default.json'
 var graphData = fs.readFileSync(graphFile)
+
+var mongo = require('mongodb')
 
 function rand() {
 	return Math.floor(Math.random() * 10000)
@@ -28,9 +30,9 @@ describe('Preset', function() {
 	}
 
 	var agent = request.agent(app)
+	var db
 
-	function sendPreset(name, cb)
-	{
+	function sendPreset(name, cb) {
 		return agent.post('/'+deets.username+'/presets').send({
 			name: name,
 			graph: graphData
@@ -41,12 +43,24 @@ describe('Preset', function() {
 
 	before(function(done) {
 		app.events.on('ready', function() {
-			agent
-			.post('/signup')
-			.send(deets)
-			.expect(302)
-			.end(done)
+			db = new mongo.Db(DBNAME,
+				new mongo.Server('localhost', 27017),
+				{ safe: true }
+			)
+
+			db.open(function() {
+				agent
+				.post('/signup')
+				.send(deets)
+				.expect(302)
+				.end(done)
+			})
 		})
+	})
+
+	after(function() {
+		db.dropDatabase()
+		db.close()
 	})
 
 	it('should use the expected name, owner, path, and url', function(done) {

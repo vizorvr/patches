@@ -1,6 +1,7 @@
 var testId = rand()
-process.env.MONGODB = 'mongodb://localhost:27017/graphsave'+testId
-process.env.RETHINKDB_NAME = 'graphsave' + testId
+
+var DBNAME = 'graphsave'+testId
+process.env.MONGODB = 'mongodb://localhost:27017/'+DBNAME
 
 var request = require('supertest')
 var app = require('../../app.js')
@@ -13,6 +14,8 @@ var graphData = fs.readFileSync(graphFile).toString('utf8')
 
 var packageJson = JSON.parse(fs.readFileSync(__dirname+'/../../package.json'))
 var currentVersion = packageJson.version.split('.').slice(0,2).join('.')
+
+var mongo = require('mongodb')
 
 function rand() {
 	return Math.floor(Math.random() * 10000)
@@ -28,6 +31,7 @@ describe('Graph', function() {
 		confirmPassword: 'abcd1234'
 	}
 
+	var db
 	var agent = request.agent(app)
 	var anonymousAgent = request.agent(app)
 
@@ -60,12 +64,24 @@ describe('Graph', function() {
 
 	before(function(done) {
 		app.events.on('ready', function() {
-			agent
-			.post('/signup')
-			.send(deets)
-			.expect(302)
-			.end(done)
+			db = new mongo.Db(DBNAME,
+				new mongo.Server('localhost', 27017),
+				{ safe: true }
+			)
+
+			db.open(function() {
+				agent
+				.post('/signup')
+				.send(deets)
+				.expect(302)
+				.end(done)
+			})
 		})
+	})
+
+	after(function() {
+		db.dropDatabase()
+		db.close()
 	})
 
 	it('should accept anonymous save', function(done) {
@@ -282,7 +298,7 @@ describe('Graph', function() {
 			path: path,
 			tags: [ '3948tehr' ],
 			graph: graphData,
-			private: true
+			isPublic: false
 		})
 		.expect(200)
 		.end(function(err, res) {
@@ -294,7 +310,7 @@ describe('Graph', function() {
 			.expect(200)
 			.end(function(err, res) {
 				if (err) return done(err)
-				expect(res.body.data.graphs.length).to.equal(0)
+				expect(res.body.data.result.length).to.equal(0)
 				done()
 			})
 		})

@@ -8,43 +8,29 @@ var packageJson = JSON.parse(fs.readFileSync(__dirname+'/../package.json'))
 var currentPlayerVersion = packageJson.version.split('.').slice(0,2).join('.')
 
 function GraphService(assetModel, gfs) {
-	AssetService.call(this);
-	this._model = assetModel;
-	this._fs = gfs;
-};
-util.inherits(GraphService, AssetService);
+	AssetService.call(this)
+	this._model = assetModel
+	this._fs = gfs
+}
+
+util.inherits(GraphService, AssetService)
+
+GraphService.prototype.publicList = function() {
+	return this.find({ private: false })
+}
 
 GraphService.prototype.findByPath = function(path) {
-	var parts = path.split('/');
-	return this.findOne({ owner: parts[1], name: parts[2] });
-};
+	var parts = path.split('/')
+	return this.findOne({ owner: parts[1], name: parts[2] })
+}
 
 GraphService.prototype.listWithPreviews = function() {
 	var dfd = when.defer();
 	this._model
-		.find()
-		.select('_creator owner name previewUrlSmall updatedAt stat')
-		.sort('-updatedAt')
-		.exec(function(err, list)
-	{
-		if (err)
-			return dfd.reject(err);
-		
-		dfd.resolve(list);
-	});
-
-	return dfd.promise;
-};
-
-GraphService.prototype.publicRankedList = function() {
-	var dfd = when.defer()
-
-	this._model
-		.find({ private: false })
-		.select('_creator private owner name previewUrlSmall updatedAt stat')
-		.sort('-rank')
-		.exec(function(err, list)
-	{
+	.find()
+	.select('_creator owner name previewUrlSmall updatedAt stat')
+	.sort('-updatedAt')
+	.exec(function(err, list) {
 		if (err)
 			return dfd.reject(err)
 		
@@ -54,22 +40,97 @@ GraphService.prototype.publicRankedList = function() {
 	return dfd.promise
 }
 
-GraphService.prototype.userGraphs = function(username) {
-	var dfd = when.defer();
-	this._model
-		.find({ owner: username })
+GraphService.prototype.publicRankedList = function(options) {
+	var that = this
+
+	var q = { private: false }
+
+	return this.count(q)
+	.then(function(totalCount) {
+		var dfd = when.defer()
+
+		that.buildQuery(q, options)
 		.select('_creator private owner name previewUrlSmall updatedAt stat')
+		.sort('-rank')
+		.exec(function(err, list) {
+			if (err)
+				return dfd.reject(err)
+			
+			return dfd.resolve({
+				meta: {
+					page: options.page,
+					pages: Math.ceil(totalCount / options.limit),
+					totalCount: totalCount,
+				},
+				result: list
+			})
+		})
+
+		return dfd.promise
+	})
+}
+
+GraphService.prototype.publicUserGraphs = function(username, options) {
+	var that = this
+	var dfd = when.defer()
+
+	var q = { owner: username, private: false }
+
+	return this.count(q)
+	.then(function(totalCount) {
+		var dfd = when.defer()
+
+		that.buildQuery(q, options)
+		.select('_creator owner name previewUrlSmall updatedAt stat')
 		.sort('-updatedAt')
-		.exec(function(err, list)
-	{
-		if (err)
-			return dfd.reject(err);
+		.exec(function(err, list) {
+			if (err)
+				return dfd.reject(err)
 
-		dfd.resolve(list);
-	});
+			return dfd.resolve({
+				meta: {
+					page: options.page,
+					pages: Math.ceil(totalCount / options.limit),
+					totalCount: totalCount
+				},
+				result: list
+			})
+		})
+	
+		return dfd.promise
+	})
+}
 
-	return dfd.promise;
-};
+GraphService.prototype.myGraphs = function(username, options) {
+	var that = this
+	var dfd = when.defer()
+
+	var q = { owner: username }
+
+	return this.count(q)
+	.then(function(totalCount) {
+		var dfd = when.defer()
+
+		that.buildQuery(q, options)
+		.select('_creator owner name previewUrlSmall updatedAt stat')
+		.sort('-updatedAt')
+		.exec(function(err, list) {
+			if (err)
+				return dfd.reject(err)
+
+			return dfd.resolve({
+				meta: {
+					page: options.page,
+					pages: Math.ceil(totalCount / options.limit),
+					totalCount: totalCount
+				},
+				result: list
+			})
+		})
+	
+		return dfd.promise
+	})
+}
 
 GraphService.prototype._save = function(data, user) {
 	var that = this

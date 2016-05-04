@@ -30,9 +30,12 @@ function render404(res) {
 }
 
 function isGraphOwner(user, graph) {
-	return user && 
-		((user.id === graph._creator.id) ||
-		(user.id === graph._creator.toString()))
+	return isSameUser(user, graph._creator)
+}
+
+function isSameUser(a, b) {
+	return a && 
+		(a.id === b.id || a.id === b.id.toString())
 }
 
 function makeHashid(serial) {
@@ -73,6 +76,7 @@ function prettyPrintGraphInfo(graph) {
 	// Use that if does, else use the username for display
 	var graphOwner
 	var creator = graph._creator
+
 	if (creator && creator.name && !isStringEmpty(creator.name)) {
 		graphOwner = creator.name
 		graph.username = creator.username
@@ -99,6 +103,7 @@ function prettyPrintGraphInfo(graph) {
 
 function makeGraphSummary(req,graph) {
 	graph = prettyPrintGraphInfo(graph)
+
 	return {
 		graphMinUrl: 	graph.url,
 		graphName: 		graph.prettyName,
@@ -107,6 +112,23 @@ function makeGraphSummary(req,graph) {
 		stat:			graph.stat
 	}
 }
+
+function parsePaging(req) {
+	req.params.page = parseInt(req.params.page, 10) || 1
+
+	var pageSize = parseInt(process.env.GRAPHCONTROLLER_PAGE_SIZE, 10) || 20
+
+	if (req.params.page < 1)
+		req.params.page = 1
+
+	return {
+		page: req.params.page,
+		offset: pageSize * (req.params.page - 1),
+		limit: pageSize
+	}
+}
+
+// ----------------------------
 
 function GraphController(s, gfs, mongoConnection) {
 	var args = Array.prototype.slice.apply(arguments);
@@ -126,25 +148,25 @@ function GraphController(s, gfs, mongoConnection) {
 GraphController.prototype = Object.create(AssetController.prototype)
 
 GraphController.prototype.publicRankedIndex = function(req, res, next) {
-	this._service.publicRankedList()
-	.then(function(list) {
-		list.map(function(graph) {
+	var paging = parsePaging(req)
+
+	this._service.publicRankedList(paging)
+	.then(function(data) {
+		data.result.map(function(graph) {
 			graph = prettyPrintGraphInfo(graph)
 			graph.prettyName = makeCardName(graph.prettyName)
 		})
 
-		if (req.xhr) {
-			return res.json(helper.responseStatusSuccess('OK', list))
-		}
+		if (req.xhr)
+			return res.json(helper.responseStatusSuccess('OK', data))
 
-		res.render('server/pages/browse', {
-			meta : {
+		res.render('server/pages/browse', _.extend({
+			meta: {
 				title: 'Vizor - Browse',
 				bodyclass: 'bBrowse',
-				scripts : ['site/userpages.js']
-			},
-			graphs: list
-		})
+				scripts: ['site/userpages.js']
+			}
+		}, data))
 	})
 	.catch(next)
 }
@@ -159,45 +181,45 @@ GraphController.prototype.userIndex = function(req, res, next) {
 		if (err)
 			return next(err)
 
-		that._service.userGraphs(username)
-		.then(function(list) {
+		var paging = parsePaging(req)
+
+		var queryPromise
+
+		if (isSameUser(req.user, user))
+			queryPromise = that._service.myGraphs(username, paging)
+		else
+			queryPromise = that._service.publicUserGraphs(username, paging)
+
+		queryPromise
+		.then(function(data) {
 			// no files found, but if there is a user
 			// then show empty userpage
-			if (!user && (!list || !list.length)) {
+			if (!user && (!data || !data.result.length)) {
 				return next()
 			}
 
-			list = list
-			.filter(function(graph) {
-				return !graph.private || isGraphOwner(req.user, graph)
-					
-			})
+			data.result = data.result
 			.map(function(graph) {
 				return prettyPrintGraphInfo(graph.toJSON())
 			})
 
-			var data = {
-				profile: {
-					username: username
-				},
-				graphs: list || []
+			data.profile = {
+				username: username
 			}
 
 			if (req.xhr) {
 				return res.status(200).json(
-					helper.responseStatusSuccess("OK", data))
+					helper.responseStatusSuccess('OK', data))
 			}
 
-			_.extend(data, {
-				meta : {
+			res.render('server/pages/userpage', _.extend(data, {
+				meta: {
 					title: username+'\'s Files',
 					bodyclass: 'bUserpage',
-					scripts : ['site/userpages.js']
+					scripts: ['site/userpages.js']
 				}
-			});
-
-			res.render('server/pages/userpage', data);
-		});
+			}))
+		})
 	})
 }
 
@@ -285,10 +307,10 @@ GraphController.prototype.edit = function(req, res, next) {
 
 // GET /latest-graph
 GraphController.prototype.latest = function(req, res) {
-	this._service.list()
+	this._service.publicList()
 	.then(function(list) {
 		res.redirect(list[0].path)
-	});
+	})
 }
 
 function renderPlayer(graph, req, res, options) {
@@ -379,15 +401,13 @@ GraphController.prototype.stream = function(req, res, next) {
 	.catch(next);
 };
 
-GraphController.prototype._makePath = function(req, path)
-{
+GraphController.prototype._makePath = function(req, path) {
 	return '/' + req.user.username
 		+ '/' + assetHelper.slugify(fsPath.basename(path, fsPath.extname(path)));
 }
 
-GraphController.prototype.canWriteUpload = function(req, res, next)
-{
-	var that = this;
+GraphController.prototype.canWriteUpload = function(req, res, next) {
+	var that = this
 
 	if (!req.files)
 		return next(new Error('No files uploaded'));
@@ -396,8 +416,7 @@ GraphController.prototype.canWriteUpload = function(req, res, next)
 	var dest = this._makePath(req, file.path);
 
 	that._service.canWrite(req.user, dest)
-	.then(function(can)
-	{
+	.then(function(can) {
 		if (!can)
 			return res.status(403)
 				.json({message: 'Sorry, permission denied'});
