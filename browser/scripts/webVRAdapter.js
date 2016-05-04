@@ -205,42 +205,57 @@ VizorWebVRAdapter.prototype.listenToBrowserEvents = function() {
 
 }
 
+VizorWebVRAdapter.prototype._scheduleResize = function(code, timeout) {
+	if (this._resizeTimeout)
+		clearTimeout(this._resizeTimeout)
+
+	this._resizeTimeout = setTimeout(code, timeout)
+	return this._resizeTimeout
+}
+
 VizorWebVRAdapter.prototype.onScroll = function() {
 	// e.g. iOS needs double-checking viewport after it stops scrolling
-	if (this._onScrollTimeout)
-		clearTimeout(this._onScrollTimeout)
+	if (this._scrollTimeout)
+		clearTimeout(this._scrollTimeout)
 
-	this._onScrollTimeout = setTimeout(function(){
-		if (!this._renderer)
-			return
-		var size = this.getTargetSize()
-		var rendererSize = this._renderer.getSize()
+	var that = this
+	// double timeout here so resize does not overwrite the scroll timeout (e.g. Chrome/iOS)
+	this._scrollTimeout = setTimeout(function(){
+		that._scheduleResize(
+			function(){
+				if (!this._renderer)
+					return
+				var size = this.getTargetSize()
+				var rendererSize = this._renderer.getSize()
 
-		if ((size.width !== rendererSize.width) || (size.height !== rendererSize.height)) {
-			console.info('correcting target dimensions')
-			this.resizeToTarget()
-		}
-		return true
-	}.bind(this), 300)
+				if ((size.width !== rendererSize.width) || (size.height !== rendererSize.height)) {
+					console.info('correcting target dimensions')
+					this.resizeToTarget()
+				}
+				return true
+			}.bind(that), 100)
+	}, 500)
 }
 
 
 VizorWebVRAdapter.prototype.onBrowserResize = function() {
-	var isFullscreen = E2.util.isFullscreen()
+	var timeout = (this.iOS) ? 200 : 10
+	this._scheduleResize(function() {
+		var isFullscreen = E2.util.isFullscreen()
 
-	if (document.body.classList && this.domElement) {
-		var elClasses = this.domElement.classList
-		var parentClasses = this.domElement.parentElement.classList
+		if (document.body.classList && this.domElement) {
+			var elClasses = this.domElement.classList
+			var parentClasses = this.domElement.parentElement.classList
 
-		elClasses.toggle('webgl-canvas-fs', isFullscreen)
-		elClasses.toggle('webgl-canvas-normal', !isFullscreen)
+			elClasses.toggle('webgl-canvas-fs', isFullscreen)
+			elClasses.toggle('webgl-canvas-normal', !isFullscreen)
 
-		parentClasses.toggle('webgl-container-fs', isFullscreen)
-		parentClasses.toggle('webgl-container-normal', !isFullscreen)
-	}
+			parentClasses.toggle('webgl-container-fs', isFullscreen)
+			parentClasses.toggle('webgl-container-normal', !isFullscreen)
+		}
 
-	this.resizeToTarget()
-
+		this.resizeToTarget()
+	}.bind(this), timeout)
 }
 
 VizorWebVRAdapter.prototype.isElementFullScreen = function() {
@@ -251,7 +266,7 @@ VizorWebVRAdapter.prototype.setDomElementDimensions = function(width, height, de
 	var that = this
 
 	if (this.iOS)
-		this.domElement.parentElement.style.zoom = 1.1	// see below
+		this.domElement.parentElement.style.zoom = 1.03	// see below
 
 	// the order here is important for iOS
 	this.domElement.style.width = width + 'px'
