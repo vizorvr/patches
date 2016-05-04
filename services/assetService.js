@@ -10,10 +10,37 @@ AssetService.prototype.list = function() {
 	return this.find()
 }
 
+AssetService.prototype.count = function(q) {
+	var dfd = when.defer()
+
+	this._model
+	.count(q)
+	.exec(function(err, count) {
+		if (err)
+			return dfd.reject(err)
+		
+		dfd.resolve(count)
+	})
+
+	return dfd.promise
+}
+
+AssetService.prototype.buildQuery = function(q, options) {
+	var query = this._model.find(q)
+
+	if (options && options.limit)
+		query = query.limit(options.limit)
+
+	if (options && options.offset)
+		query = query.skip(options.offset)
+
+	return query
+}
+
 AssetService.prototype.find = function(q) {
 	var dfd = when.defer()
-	this._model
-		.find(q)
+
+	this._model.find(q)
 		.sort('-updatedAt')
 		.exec(function(err, list)
 	{
@@ -40,6 +67,7 @@ AssetService.prototype.findByCreatorName = function(username) {
 
 		dfd.resolve(that.find({ '_creator': user._id }))
 	})
+
 	return dfd.promise
 }
 

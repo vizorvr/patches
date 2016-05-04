@@ -9,11 +9,16 @@ var packageJson = JSON.parse(fs.readFileSync(__dirname+'/../package.json'))
 var currentPlayerVersion = packageJson.version.split('.').slice(0,2).join('.')
 
 function GraphService(assetModel, gfs) {
-	AssetService.call(this);
-	this._model = assetModel;
-	this._fs = gfs;
-};
-util.inherits(GraphService, AssetService);
+	AssetService.call(this)
+	this._model = assetModel
+	this._fs = gfs
+}
+
+util.inherits(GraphService, AssetService)
+
+GraphService.prototype.publicList = function() {
+	return this.find({ private: false })
+}
 
 GraphService.prototype.findByPath = function(path) {
 	var parts = path.split('/')
@@ -44,6 +49,7 @@ GraphService.prototype.listWithPreviews = function() {
 GraphService.prototype.publicRankedList = function(offset, limit) {
 	var dfd = when.defer()
 
+	// @TODO GM COUNT & BUILD QUERY
 	var query = this._model
 		.find({ private: false, deleted: false })
 		.sort({'rank': -1, 'updatedAt': -1})
@@ -60,7 +66,16 @@ GraphService.prototype.publicRankedList = function(offset, limit) {
 	{
 		if (err)
 			return dfd.reject(err)
-		
+		// @TODO GM
+		/*
+		return dfd.resolve({
+				meta: {
+					page: options.page,
+					pages: Math.ceil(totalCount / options.limit),
+					totalCount: totalCount
+				},
+				result: list
+			} */
 		dfd.resolve(list)
 	})
 
@@ -82,6 +97,7 @@ GraphService.prototype._userGraphs = function(username, offset, limit, filter) {
 	filter = _.extend({deleted:false}, filter)
 	filter.owner = username
 
+	// @TODO GM BUILD QUERY, RETURN META
 	var query = this._model
 		.find(filter)
 		.sort('-updatedAt')

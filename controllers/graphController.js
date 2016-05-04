@@ -89,6 +89,7 @@ function prettyPrintGraphInfo(graph) {
 	// Use that if does, else use the username for display
 	var graphOwner
 	var creator = graph._creator
+
 	if (creator && creator.name && !isStringEmpty(creator.name)) {
 		graphOwner = creator.name
 		graph.username = creator.username
@@ -141,6 +142,23 @@ function makeGraphSummary(req,graph) {
 	}
 }
 
+function parsePaging(req) {
+	req.params.page = parseInt(req.params.page, 10) || 1
+
+	var pageSize = parseInt(process.env.GRAPHCONTROLLER_PAGE_SIZE, 10) || 20
+
+	if (req.params.page < 1)
+		req.params.page = 1
+
+	return {
+		page: req.params.page,
+		offset: pageSize * (req.params.page - 1),
+		limit: pageSize
+	}
+}
+
+// ----------------------------
+
 function GraphController(s, gfs, mongoConnection) {
 	var args = Array.prototype.slice.apply(arguments);
 	args.unshift(Graph);
@@ -158,26 +176,25 @@ function GraphController(s, gfs, mongoConnection) {
 
 GraphController.prototype = Object.create(AssetController.prototype)
 
+// @TODO FIX GM
 GraphController.prototype.publicRankedIndex = function(req, res, next) {
-	this._service.publicRankedList(0, 100)
-	.then(function(list) {
+	var paging = parsePaging(req)
+	this._service.publicRankedList(paging)
+	.then(function(data) {
 
-		list = prettyPrintList(list)
+		data.result = prettyPrintList(data.result)
 
 		if (req.xhr) {
-			return res.json(helper.responseStatusSuccess('OK', list))
+			return res.json(helper.responseStatusSuccess('OK', data))
 		}
 
-		res.render('server/pages/browse', {
+		res.render('server/pages/browse', _.extend({
 			meta : {
 				title: 'Vizor - Browse',
 				bodyclass: 'bBrowse',
-				scripts : [
-					helper.metaScript('site/userpages.js')
-				]
-			},
-			graphs: list
-		})
+				helper.metaScript('site/userpages.js')
+			}
+		}, data)
 	})
 	.catch(next)
 }
@@ -259,7 +276,9 @@ GraphController.prototype._userOwnIndex = function(user, req, res, next) {
 			})
 	} else {
 		// "Public" or "Private" lists
+		var paging = parsePaging(req)
 		data.isSummaryPage = false
+		// @TODO GM FIX paging 
 		that._service.userGraphsWithPrivacy(username, null, null, wantPrivate)
 			.then(function(list){
 				data.bodyclass = (wantPrivate) ? 'bGraphlistPrivate' : 'bGraphlistPublic'
@@ -302,7 +321,7 @@ GraphController.prototype._userPublicIndex = function(user, req, res, next) {
 
 			if (req.xhr) {
 				return res.status(200).json(
-					helper.responseStatusSuccess('OK', data))
+					helper.responseStatusSuccess("OK", data))
 			}
 
 			_.extend(data, {
@@ -424,10 +443,11 @@ GraphController.prototype.edit = function(req, res, next) {
 
 // GET /latest-graph
 GraphController.prototype.latest = function(req, res) {
-	this._service.list()
+	// @TODO FIX GM
+	this._service.publicList()
 	.then(function(list) {
 		res.redirect(list[0].path)
-	});
+	})
 }
 
 function renderPlayer(graph, req, res, options) {
@@ -596,8 +616,7 @@ GraphController.prototype.canWriteUpload = function(req, res, next) {
 	var dest = this._makePath(req, file.path);
 
 	that._service.canWrite(req.user, dest)
-	.then(function(can)
-	{
+	.then(function(can) {
 		if (!can)
 			return res.status(403)
 				.json({message: 'Sorry, permission denied'});
