@@ -22,6 +22,9 @@ THREE.js VR Camera
 ###far
 
 
+###lock transform
+If enabled, the transform coming from the HMD is ignored
+
 ##Outputs
 ###camera
 
