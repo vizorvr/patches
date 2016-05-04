@@ -475,7 +475,7 @@ WebVRManager.prototype.render = function(scene, camera, timestamp) {
 WebVRManager.prototype.setMode_ = function(mode) {
   var oldMode = this.mode;
   if (mode == this.mode) {
-    console.error('Not changing modes, already in %s', mode);
+    console.warn('Not changing modes, already in %s', mode);
     return;
   }
   console.log('Mode change: %s => %s', this.mode, mode);
