@@ -3110,6 +3110,9 @@ body.bHome.uaSafari[data-dpr="1"] #contentwrap #getstarted #herotext h1 {
 body.bHome.uaSafari[data-dpr="1"] #contentwrap #getstarted #herotext a {
   font-weight: 600;
 }
+body.bHome.bAbout #contentwrap a.navAbout {
+  color: #5199d2;
+}
 body.bHome #contentwrap a.cta:hover,
 body.bHome #contentwrap a.cta:active {
   color: inherit;
@@ -4227,11 +4230,11 @@ body.bAbout.layoutMobile #contentwrap #aboutIntro div.in > div {
   text-align: left;
   max-width: none;
 }
-body.bAbout.layoutMobile #contentwrap #vizorteam h2 {
+body.bAbout.layoutMobile #contentwrap section div.in h2:first-child {
   text-align: left;
   padding: 0 20px;
 }
-body.bAbout.layoutMobile #contentwrap #vizorteam p.intro {
+body.bAbout.layoutMobile #contentwrap section div.in p.intro {
   width: 100%;
   margin: 30px auto;
   padding: 0 20px;
@@ -4259,8 +4262,58 @@ body.bAbout.layoutTablet #contentwrap section#aboutIntro div.in > section#aboutE
 body.bAbout.layoutTablet #contentwrap section#vizorteam {
   padding-top: 30px;
 }
+body.bAbout.layoutMobile #contentwrap div.featured.downloads {
+  -webkit-flex-wrap: wrap;
+  flex-wrap: wrap;
+}
+body.bAbout.layoutMobile #contentwrap div.featured.downloads > div {
+  -webkit-flex: 1 1 40%;
+  flex: 1 1 40%;
+}
+body.bAbout.layoutMobile #contentwrap div.featured.downloads > div + div {
+  margin-left: 20px;
+}
 body.bAbout #contentwrap {
   background: #171717;
+}
+body.bAbout #contentwrap section#presskit {
+  background: #0b132a;
+  padding-bottom: 125px;
+}
+body.bAbout #contentwrap div.featured.downloads {
+  display: -webkit-flex;
+  display: flex;
+}
+body.bAbout #contentwrap div.featured.downloads > div {
+  -webkit-flex: 1;
+  flex: 1;
+  text-align: center;
+  margin-top: 50px;
+}
+body.bAbout #contentwrap div.featured.downloads > div a.svg {
+  display: block;
+  font-size: 19px;
+  letter-spacing: 0.75px;
+  margin-bottom: 10px;
+}
+body.bAbout #contentwrap div.featured.downloads > div a.svg:hover {
+  text-decoration: none;
+}
+body.bAbout #contentwrap div.featured.downloads > div a.svg svg {
+  width: 100%;
+  max-width: 140px;
+  display: block;
+  margin: 0 auto 20px auto;
+}
+body.bAbout #contentwrap div.featured.downloads > div a:not(.svg) {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 13px;
+  letter-spacing: 1.5px;
+  font-weight: 300;
+  padding: 0 3px;
+}
+body.bAbout #contentwrap div.featured.downloads > div + div {
+  margin-left: 60px;
 }
 body.bAbout #contentwrap header,
 body.bAbout #contentwrap section#aboutIntro {
@@ -4270,7 +4323,7 @@ body.bAbout #contentwrap header nav {
   border-bottom: 0;
 }
 body.bAbout #contentwrap #aboutIntro h1,
-body.bAbout #contentwrap #vizorteam h2 {
+body.bAbout #contentwrap section > div.in > h2:first-child {
   font-size: 39px;
   font-weight: 600;
 }
@@ -4328,17 +4381,19 @@ body.bAbout #contentwrap .team-member {
   font-size: 14px;
 }
 body.bAbout #contentwrap section#vizorteam {
-  padding: 80px 0;
   background: #250642;
 }
-body.bAbout #contentwrap section#vizorteam h2 {
+body.bAbout #contentwrap section {
+  padding: 60px 0;
+}
+body.bAbout #contentwrap section div.in h2:first-child {
   text-align: center;
 }
-body.bAbout #contentwrap section#vizorteam p.intro {
+body.bAbout #contentwrap section div.in p.intro {
   text-align: center;
   max-width: 500px;
   margin: 38px auto 0 auto;
-  font-size: 19px;
+  font-size: 19.5px;
   line-height: 1.7;
   letter-spacing: 0.5px;
   color: #c3c3c3;
