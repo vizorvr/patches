@@ -10,14 +10,14 @@ function AbstractWorldEditorHelperObject(referenceObj) {
 
 AbstractWorldEditorHelperObject.prototype = Object.create( THREE.Object3D.prototype )
 
-AbstractWorldEditorHelperObject.prototype.geometryLoaded = function(geometry, texture, scale) {
+AbstractWorldEditorHelperObject.prototype.geometryLoaded = function(geometry, texture, scale, opacity) {
 	var scale = scale || 0.01
 	var rotation = Math.PI
 
 	var material = new THREE.MeshBasicMaterial({
 		color: 0xffffff,
 		map: texture,
-		opacity: 0.9,
+		opacity: opacity || 0.9,
 		transparent: true,
 		fog: false})
 

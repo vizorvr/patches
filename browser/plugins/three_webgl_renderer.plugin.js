@@ -88,6 +88,9 @@
 			this.renderer.clear()
 			return
 		}
+		
+		// three.js needs a window.scene
+		window.scene = this.scene
 
 		this.renderer.shadowMap.enabled = this.inputValues.shadowsEnabled
 
@@ -100,7 +103,12 @@
 		if (E2.app.worldEditor.isActive())
 			E2.app.worldEditor.preRenderUpdate()
 
-		this.manager.render(this.scene, this.getActiveCamera())
+		var activeCamera = this.getActiveCamera()
+
+		THREE.glTFAnimator.update();
+		THREE.glTFShaders.update(this.scene, activeCamera);
+
+		this.manager.render(this.scene, activeCamera)
 
 	}
 
