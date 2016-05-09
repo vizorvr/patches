@@ -25,6 +25,16 @@
 		"Stereo Cubemap": {"name": "_add_stereo_cubemap", "isObject3d": true }
 	},
 
+	"OBJECTS: ISLAND": {
+		"Base Rock": { "name": "_add_object_preset_island-valley-baserock", "isObject3d": true },
+		"Leaf Tree": { "name": "_add_object_preset_island-leaftreea", "isObject3d": true },
+		"Palm Tree": { "name": "_add_object_preset_island-palmtree", "isObject3d": true },
+		"Low Stone A": { "name": "_add_object_preset_island-stone-a", "isObject3d": true },
+		"Low Stone B": { "name": "_add_object_preset_island-stone-c", "isObject3d": true },
+		"High Stone A": { "name": "_add_object_preset_island-stone-b", "isObject3d": true },
+		"High Stone B": { "name": "_add_object_preset_island-stone-d", "isObject3d": true }
+	},
+
 	"OBJECTS: MOUNTAIN": {
 		"Mountain": { "name": "_add_object_preset_Mountain_02", "isObject3d": true },
 		"Pine Tree": { "name": "_add_object_preset_Mountain_PineTree_02", "isObject3d": true },
