@@ -25,6 +25,42 @@
 		"Stereo Cubemap": {"name": "_add_stereo_cubemap", "isObject3d": true }
 	},
 
+	"MOUNTAIN": {
+		"Mountain": { "name": "_add_object_preset_Mountain_02", "isObject3d": true },
+		"Pine Tree": { "name": "_add_object_preset_Mountain_PineTree_02", "isObject3d": true },
+		"Bush": { "name": "_add_object_preset_Mountain_bush_01", "isObject3d": true },
+		"Crystal": { "name": "_add_object_preset_Mountain_crystal_01", "isObject3d": true },
+		"Green": { "name": "_add_object_preset_Mountain_green_01", "isObject3d": true },
+		"Plump Tree": { "name": "_add_object_preset_Mountain_plumptree_01", "isObject3d": true },
+		"Plump Tree 2": { "name": "_add_object_preset_Mountain_plumptree_02", "isObject3d": true },
+		"Rocks": { "name": "_add_object_preset_Mountain_rocks_01", "isObject3d": true },
+		"Telescope": { "name": "_add_object_preset_Mountain_scope_01", "isObject3d": true },
+		"Shroom": { "name": "_add_object_preset_Mountain_shroom_01", "isObject3d": true },
+		"Small Base": { "name": "_add_object_preset_Mountain_small_base_01", "isObject3d": true },
+		"Small Base 2": { "name": "_add_object_preset_Mountain_small_base_02", "isObject3d": true },
+		"Water": { "name": "_add_object_preset_Mountain_water_02", "isObject3d": true }
+	},
+
+	"LAB": {
+		"Lab": { "name": "_add_object_preset_Labv9", "isObject3d": true },
+		"Genius": { "name": "_add_object_preset_Labv4-Genius_02", "isObject3d": true },
+		"Happy Dude": { "name": "_add_object_preset_Labv4_Happy_02", "isObject3d": true },
+		"Light": { "name": "_add_object_preset_Labv8lights", "isObject3d": true },
+		"Television": { "name": "_add_object_preset_LabvTV", "isObject3d": true },
+		"Boom Box": { "name": "_add_object_preset_Labvboombox", "isObject3d": true },
+		"Box": { "name": "_add_object_preset_Labvbox", "isObject3d": true },
+		"Desk": { "name": "_add_object_preset_Labvdesk", "isObject3d": true },
+		"Glasses": { "name": "_add_object_preset_Labvglasses", "isObject3d": true },
+		"Globe": { "name": "_add_object_preset_Labvglobe", "isObject3d": true },
+		"Lights": { "name": "_add_object_preset_Labvlight2", "isObject3d": true },
+		"Mic": { "name": "_add_object_preset_Labvmic", "isObject3d": true },
+		"Rocket": { "name": "_add_object_preset_Labvrocket", "isObject3d": true },
+		"Stool": { "name": "_add_object_preset_Labvstool", "isObject3d": true },
+		"Trash": { "name": "_add_object_preset_Labvtrash", "isObject3d": true },
+		"Wrench": { "name": "_add_object_preset_Labvwrench", "isObject3d": true },
+		"Zapper": { "name": "_add_object_preset_Labvzapper", "isObject3d": true }
+	},
+
 	"ADD LIGHTS": {
 		"Point light": { "name": "_add-point-light", "isObject3d": true }
 	},
