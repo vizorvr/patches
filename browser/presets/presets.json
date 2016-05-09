@@ -8,7 +8,7 @@
 		"Spawn particles from mesh": { "name": "_example-particle-spawn-from-mesh" }
 	},
 
-	"ADD OBJECTS": {
+	"OBJECTS: BASIC": {
 		"3D model": { "name": "_add-3d-model", "isObject3d": true },
 		"Box": { "name": "_add-box", "isObject3d": true },
 		"360 photo": { "name": "_add-360-photo", "isObject3d": true },
@@ -25,7 +25,7 @@
 		"Stereo Cubemap": {"name": "_add_stereo_cubemap", "isObject3d": true }
 	},
 
-	"MOUNTAIN": {
+	"OBJECTS: MOUNTAIN": {
 		"Mountain": { "name": "_add_object_preset_Mountain_02", "isObject3d": true },
 		"Pine Tree": { "name": "_add_object_preset_Mountain_PineTree_02", "isObject3d": true },
 		"Bush": { "name": "_add_object_preset_Mountain_bush_01", "isObject3d": true },
@@ -41,18 +41,18 @@
 		"Water": { "name": "_add_object_preset_Mountain_water_02", "isObject3d": true }
 	},
 
-	"LAB": {
+	"OBJECTS: LAB": {
 		"Lab": { "name": "_add_object_preset_Labv9", "isObject3d": true },
 		"Genius": { "name": "_add_object_preset_Labv4-Genius_02", "isObject3d": true },
 		"Happy Dude": { "name": "_add_object_preset_Labv4_Happy_02", "isObject3d": true },
-		"Light": { "name": "_add_object_preset_Labv8lights", "isObject3d": true },
+		"Ceiling Lights": { "name": "_add_object_preset_Labv8lights", "isObject3d": true },
 		"Television": { "name": "_add_object_preset_LabvTV", "isObject3d": true },
 		"Boom Box": { "name": "_add_object_preset_Labvboombox", "isObject3d": true },
 		"Box": { "name": "_add_object_preset_Labvbox", "isObject3d": true },
 		"Desk": { "name": "_add_object_preset_Labvdesk", "isObject3d": true },
 		"Glasses": { "name": "_add_object_preset_Labvglasses", "isObject3d": true },
 		"Globe": { "name": "_add_object_preset_Labvglobe", "isObject3d": true },
-		"Lights": { "name": "_add_object_preset_Labvlight2", "isObject3d": true },
+		"Light": { "name": "_add_object_preset_Labvlight2", "isObject3d": true },
 		"Mic": { "name": "_add_object_preset_Labvmic", "isObject3d": true },
 		"Rocket": { "name": "_add_object_preset_Labvrocket", "isObject3d": true },
 		"Stool": { "name": "_add_object_preset_Labvstool", "isObject3d": true },
@@ -61,11 +61,11 @@
 		"Zapper": { "name": "_add_object_preset_Labvzapper", "isObject3d": true }
 	},
 
-	"ADD LIGHTS": {
+	"LIGHTS": {
 		"Point light": { "name": "_add-point-light", "isObject3d": true }
 	},
 
-	"ADD PARTICLES": {
+	"PARTICLES": {
 		"Particle emitter": { "name": "_add-particle-emitter", "isObject3d": true },
 		"Geometry as particles": { "name": "_add-particle-geometry", "isObject3d": true }
 	},
