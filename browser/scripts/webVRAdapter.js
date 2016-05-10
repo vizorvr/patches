@@ -33,7 +33,8 @@ VizorWebVRAdapter.prototype.initialise = function(domElement, renderer, effect, 
 	this.domElement = domElement	// typically a canvas
 
 	this.proxyOrientationChange = true
-	this.proxyDeviceMotion = (typeof VizorUI !== 'undefined') && VizorUI.isMobile.iOS()
+	this.proxyDeviceMotion = (typeof VizorUI !== 'undefined') 
+		&& VizorUI.isMobile.iOS()
 
 	this.options = options || {
 		hideButton: 	true,
@@ -50,7 +51,9 @@ VizorWebVRAdapter.prototype.initialise = function(domElement, renderer, effect, 
 		if (hardware.hmd)
 			this.haveVRDevices = true
 	}
+
 	this.options.isVRCompatible = this.haveVRDevices
+
 	if (document.body.classList)
 		document.body.classList.toggle('hasHMD', this.haveVRDevices)
 
@@ -66,6 +69,12 @@ VizorWebVRAdapter.prototype.initialise = function(domElement, renderer, effect, 
 	// initial sizing
 	this.resizeToTarget()
 
+	this._presentingKeyHandler = function(e) {
+		// explicitly make esc exit VR mode
+		// this seems not to be handled by the browser atm
+		if (e.keyCode === 27)
+			this.exitVROrFullscreen()
+	}.bind(this)
 }
 
 VizorWebVRAdapter.events = Object.freeze({
@@ -176,6 +185,7 @@ VizorWebVRAdapter.prototype.listenToBrowserEvents = function() {
 		this._onBrowserResize = this.onBrowserResize.bind(this)
 		resizeHandler = this._onBrowserResize
 	}
+
 	window.addEventListener('resize', resizeHandler, true)
 	window.addEventListener('orientationchange', resizeHandler, true)
 	document.addEventListener('webkitfullscreenchange', resizeHandler, true)
@@ -195,42 +205,64 @@ VizorWebVRAdapter.prototype.listenToBrowserEvents = function() {
 
 }
 
+VizorWebVRAdapter.prototype._scheduleResize = function(code, timeout) {
+	if (this._resizeTimeout)
+		clearTimeout(this._resizeTimeout)
+
+	this._resizeTimeout = setTimeout(code, timeout)
+	return this._resizeTimeout
+}
+
 VizorWebVRAdapter.prototype.onScroll = function() {
 	// e.g. iOS needs double-checking viewport after it stops scrolling
-	if (this._onScrollTimeout)
-		clearTimeout(this._onScrollTimeout)
+	if (this._scrollTimeout)
+		clearTimeout(this._scrollTimeout)
 
-	this._onScrollTimeout = setTimeout(function(){
-		if (!this._renderer)
-			return
-		var size = this.getTargetSize()
-		var rendererSize = this._renderer.getSize()
+	var that = this
+	// double timeout here so resize does not overwrite the scroll timeout (e.g. Chrome/iOS)
+	this._scrollTimeout = setTimeout(function(){
+		that._scheduleResize(
+			function(){
+				if (!this._renderer)
+					return
+				var size = this.getTargetSize()
+				var rendererSize = this._renderer.getSize()
 
-		if ((size.width !== rendererSize.width) || (size.height !== rendererSize.height)) {
-			console.info('correcting target dimensions')
-			this.resizeToTarget()
-		}
-		return true
-	}.bind(this), 300)
+				if ((size.width !== rendererSize.width) || (size.height !== rendererSize.height)) {
+					console.info('correcting target dimensions')
+					this.resizeToTarget()
+				}
+				return true
+			}.bind(that), 100)
+	}, 500)
 }
 
 
 VizorWebVRAdapter.prototype.onBrowserResize = function() {
-	var isFullscreen = E2.util.isFullscreen()
+	var that = this
+	var timeout = (this.iOS) ? 200 : 10
 
-	if (document.body.classList && this.domElement) {
-		var elClasses = this.domElement.classList
-		var parentClasses = this.domElement.parentElement.classList
+	function doResize() {
+		var isFullscreen = E2.util.isFullscreen()
 
-		elClasses.toggle('webgl-canvas-fs', isFullscreen)
-		elClasses.toggle('webgl-canvas-normal', !isFullscreen)
+		if (document.body.classList && that.domElement) {
+			var elClasses = that.domElement.classList
+			var parentClasses = that.domElement.parentElement.classList
 
-		parentClasses.toggle('webgl-container-fs', isFullscreen)
-		parentClasses.toggle('webgl-container-normal', !isFullscreen)
+			elClasses.toggle('webgl-canvas-fs', isFullscreen)
+			elClasses.toggle('webgl-canvas-normal', !isFullscreen)
+
+			parentClasses.toggle('webgl-container-fs', isFullscreen)
+			parentClasses.toggle('webgl-container-normal', !isFullscreen)
+		}
+
+		that.resizeToTarget()
 	}
 
-	this.resizeToTarget()
-
+	if (hardware.hmd instanceof VRDisplay)
+		doResize()
+	else
+		this._scheduleResize(doResize, timeout)
 }
 
 VizorWebVRAdapter.prototype.isElementFullScreen = function() {
@@ -241,7 +273,7 @@ VizorWebVRAdapter.prototype.setDomElementDimensions = function(width, height, de
 	var that = this
 
 	if (this.iOS)
-		this.domElement.parentElement.style.zoom = 1.1	// see below
+		this.domElement.parentElement.style.zoom = 1.03	// see below
 
 	// the order here is important for iOS
 	this.domElement.style.width = width + 'px'
@@ -361,12 +393,16 @@ VizorWebVRAdapter.prototype.onMessageReceived = function(e) {
 	var proxyEvent
 
 	if (this.proxyOrientationChange && e.data.orientation) {
-		proxyEvent = new CustomEvent('orientationchange', {detail: {orientation: e.data.orientation}})
+		proxyEvent = new CustomEvent('orientationchange', {
+			detail: {orientation: e.data.orientation}
+		})
 		window.dispatchEvent(proxyEvent)
 	}
 
 	if (this.proxyDeviceMotion && e.data.devicemotion) {
-		proxyEvent = new CustomEvent('devicemotion', {detail: {devicemotion: e.data.devicemotion}})
+		proxyEvent = new CustomEvent('devicemotion', {
+			detail: {devicemotion: e.data.devicemotion}
+		})
 		window.dispatchEvent(proxyEvent)
 	}
 }
@@ -407,7 +443,9 @@ VizorWebVRAdapter.prototype._onManagerModeChanged = function(mode, oldMode) {
 	// remove popovers
 	var tooltips = document.body.getElementsByClassName('popover')
 	if (tooltips.length > 0) {
-		Array.prototype.forEach.call(tooltips, function(n){n.parentElement.removeChild(n)})
+		Array.prototype.forEach.call(tooltips, function(n) {
+			n.parentElement.removeChild(n)
+		})
 	}
 
 	this.emit(this.events.modeChanged, mode, oldMode)
@@ -480,7 +518,8 @@ VizorWebVRAdapter.prototype.getCurrentManagerMode = function() {
 }
 
 VizorWebVRAdapter.prototype.isVRMode = function() {
-	var isPlayerPlaying = E2 && E2.app && E2.app.player && (E2.app.player.current_state === E2.app.player.state.PLAYING)
+	var isPlayerPlaying = E2 && E2.app && E2.app.player && 
+		(E2.app.player.current_state === E2.app.player.state.PLAYING)
 	var isVRMode = (this.getCurrentManagerMode() === WebVRManager.Modes.VR)
 	return isPlayerPlaying && isVRMode
 }
@@ -515,6 +554,7 @@ VizorWebVRAdapter.prototype.isVRCompatible = function() {
 
 VizorWebVRAdapter.prototype._addViewportMeta = function() {
 	var meta = document.getElementById('viewportmeta')
+
 	if (!meta) {
 		meta = document.createElement('meta')
 		meta.id = 'viewportmeta'
@@ -522,8 +562,10 @@ VizorWebVRAdapter.prototype._addViewportMeta = function() {
 		meta.setAttribute('data-auto', 'true')
 		document.head.appendChild(meta)
 	}
+
 	if (meta.getAttribute('data-auto') === 'true') {
-		meta.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, shrink-to-fit=no')
+		meta.setAttribute('content', 'width=device-width, initial-scale=1, '+
+			'maximum-scale=1, user-scalable=0, shrink-to-fit=no')
 	} else {
 		var p = meta.parentElement
 		p.removeChild(meta)
@@ -533,11 +575,17 @@ VizorWebVRAdapter.prototype._addViewportMeta = function() {
 
 VizorWebVRAdapter.prototype._removeViewportMeta = function() {
 	var meta = document.getElementById('viewportmeta')
-	if (!meta) return
+
+	if (!meta) 
+		return
+
 	if (meta.getAttribute('data-auto') === 'true') {
-		meta.setAttribute('content', 'width=auto, initial-scale=auto, minimum-scale=0.7, maximum-scale=2, user-scalable=1')
-		setTimeout(function(){
+		meta.setAttribute('content', 'width=auto, initial-scale=auto, '+
+			'minimum-scale=0.7, maximum-scale=2, user-scalable=1')
+
+		setTimeout(function() {
 			var meta = document.getElementById('viewportmeta')
+
 			if (meta)
 				meta.parentNode.removeChild(meta)
 		}, 10000)
@@ -586,6 +634,11 @@ VizorWebVRAdapter.prototype.setMode = function(mode) {
 	if (!this._instructionsChanged)
 		this.amendVRManagerInstructions()
 
+	if (mode === modes.VR)
+		document.addEventListener('keydown', this._presentingKeyHandler)
+	else
+		document.removeEventListener('keydown', this._presentingKeyHandler)
+
 	switch (mode) {
 		case modes.VR:
 			manager.onVRClick_()
@@ -598,9 +651,10 @@ VizorWebVRAdapter.prototype.setMode = function(mode) {
 			manager.exitFullscreen_()
 			break
 	}
-	this._onManagerModeChanged(mode, oldMode)
 
+	this._onManagerModeChanged(mode, oldMode)
 }
+
 VizorWebVRAdapter.prototype.getHmdRotateInstructions = function() {
 	if (!(this._manager && this._manager.hmd))
 		return
@@ -610,6 +664,7 @@ VizorWebVRAdapter.prototype.getHmdRotateInstructions = function() {
 VizorWebVRAdapter.isNativeWebVRAvailable = function() {
 	return _webVRPolyfill.nativeWebVRAvailable || _webVRPolyfill.nativeLegacyWebVRAvailable
 }
+
 VizorWebVRAdapter.prototype.isNativeWebVRAvailable = VizorWebVRAdapter.isNativeWebVRAvailable
 
 if (typeof module !== 'undefined')

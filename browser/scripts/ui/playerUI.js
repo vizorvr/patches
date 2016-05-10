@@ -73,6 +73,8 @@ var VizorPlayerUI = function() {
 	var enforceStartMode = this.autoplay && !siteUI.isInIframe()
 	this.onPlayerStateChanged = function(newState, old) {
 		var s = E2.app.player.state
+		var $wrap = that.$wrap
+
 		that.$body
 			.toggleClass('playing', newState === s.PLAYING)
 			.toggleClass('paused', 	newState === s.PAUSED)
@@ -80,14 +82,32 @@ var VizorPlayerUI = function() {
 			.toggleClass('loading', newState === s.LOADING)
 
 		if (newState === s.PLAYING) {
+			that.selectStage('stage')
+			E2.core.webVRAdapter.resizeToTarget()
 			that.queueHeaderFadeOut()
 			if (Vizor.startMode && enforceStartMode) {
 				enforceStartMode = false
 				E2.core.webVRAdapter.setMode(Vizor.startMode)
 			}
+			var bgImage = $wrap[0].style.backgroundImage
+			if (bgImage) {
+				$wrap.attr('data-bgimage', bgImage)
+				$wrap[0].style.backgroundImage = ''
+			}
 		}
-		else
+		else {
 			that.headerFadeIn()
+			if (newState !== s.PAUSED) {
+				var bgImage = $wrap[0].style.backgroundImage
+				var storedImage = $wrap.attr('data-bgimage')
+				if (storedImage && !bgImage) {
+					$wrap[0].style.backgroundImage = storedImage
+				}
+				that.selectStage('none')
+			}
+		}
+
+
 	}
 
 	this.onPlayerLoaded = function() {
@@ -265,7 +285,7 @@ var VizorPlayerUI = function() {
 			if (['INPUT','TEXTAREA','BUTTON', 'SVG', 'USE'].indexOf(e.target.tagName) > -1 ) return true
 			if (siteUI.isInVR() || siteUI.isDragging) return true
 			if (siteUI.isModalOpen()) return true
-			if (window.Vizor && window.Vizor.disableHeaderClick) return true
+			if (window.Vizor && (window.Vizor.disableHeaderClick || window.Vizor.noHeader )) return true
 
 			if (!that.headerIsVisible) {
 				if (e.touches) {
