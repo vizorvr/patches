@@ -1,0 +1,32 @@
+<header>
+	<nav class="clearfix in" style="position:relative">
+		<h1 id="brandTop" class="brandTop">
+            <a href="/" class="nofx"><span>Vizor</span>
+			<svg style="fill:#fff;">
+				<use xlink:href="#vizor-top-logo" />
+			</svg></a>
+		</h1>
+		<div class="nomobile">
+			<ul>
+				<li><a href="/about">About</a></li>
+				<li><a href="//blog.vizor.io">Tutorials</a></li>
+				{{#unless user.username}}
+
+				<li class="signin nomobile">
+					<a id="homeSignin" href="#/login" class="sign-btn">Sign in</a>
+				</li>
+				<li class="signup nomobile">
+					<a id="homeSignup" class="sign-btn btn" href="#/signup">Sign up</a>
+				</li>
+				{{else}}
+					<li class="nomobile wider"><a class="sign-btn btn openeditor" href="/edit">Open the Editor</a></li>
+				{{/unless}}
+			</ul>
+		</div>
+		<div class="mobileonly" style="position:absolute; top:16px; right: 10px; width: 30px; height: 30px;">
+			<button class="nofx" id="mobileMenuOpenButton">
+				<img src="/images/home/xmenu.png" width="22" height="32" alt="" />
+			</button>
+		</div>
+	</nav>
+</header>

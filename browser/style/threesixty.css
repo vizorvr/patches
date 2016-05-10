@@ -1985,7 +1985,8 @@ div.bootbox.modal .modal-content button.bootbox-close-button {
 }
 .modal .launch-button:hover {
   border: 2px solid #fff;
-  padding: 14px 20px;
+  padding-top: 14px;
+  padding-bottom: 14px;
 }
 .bootbox.modal.editorIntro .bootbox-close-button {
   z-index: 10;
@@ -2171,7 +2172,8 @@ div.breadcrumb {
 }
 .launch-button-macro:hover {
   border: 2px solid #fff;
-  padding: 14px 20px;
+  padding-top: 14px;
+  padding-bottom: 14px;
 }
 body.bMain.modal-open {
   overflow: auto;
@@ -2191,8 +2193,8 @@ body.bMain .brandTop {
   line-height: normal;
   padding: 0 !important;
 }
-body.bMain #brandTop > span:first-child,
-body.bMain .brandTop > span:first-child {
+body.bMain #brandTop span:first-of-type,
+body.bMain .brandTop span:first-of-type {
   display: none;
 }
 body.bMain #brandTop *,
@@ -3108,6 +3110,9 @@ body.bHome.uaSafari[data-dpr="1"] #contentwrap #getstarted #herotext h1 {
 body.bHome.uaSafari[data-dpr="1"] #contentwrap #getstarted #herotext a {
   font-weight: 600;
 }
+body.bHome.bAbout #contentwrap a.navAbout {
+  color: #5199d2;
+}
 body.bHome #contentwrap a.cta:hover,
 body.bHome #contentwrap a.cta:active {
   color: inherit;
@@ -3130,12 +3135,15 @@ body.bHome #contentwrap footer nav.links a + a {
 }
 body.bHome #contentwrap footer nav a.btn {
   width: 28px;
-  padding: 4px;
+  padding: 2px 4px 6px 4px;
   background: none;
   border: 0;
 }
 body.bHome #contentwrap footer nav a.btn + a.btn {
-  margin-left: 30px;
+  margin-left: 38px;
+}
+body.bHome #contentwrap footer nav a.btn > svg {
+  vertical-align: middle;
 }
 body.bHome #contentwrap footer nav a.btn:hover {
   border: 0;
@@ -3145,7 +3153,7 @@ body.bHome #contentwrap footer nav a.btn:active {
 }
 body.bHome #contentwrap footer nav a.btn.email svg {
   width: 20px;
-  height: 13px;
+  height: 16px;
 }
 body.bHome #contentwrap footer nav a.btn.twitter svg {
   width: 23px;
@@ -3162,6 +3170,12 @@ body.bHome #contentwrap footer nav a.btn.github svg {
 body.bHome #contentwrap footer nav a.btn.angellist svg {
   width: 14px;
   height: 20px;
+}
+body.bHome #contentwrap footer nav a.btn.svg svg {
+  fill: #c3c3c3;
+}
+body.bHome #contentwrap footer nav a.btn.svg:hover svg {
+  fill: #5199d2;
 }
 body.bHome.layoutMobile #contentwrap footer nav.links a {
   letter-spacing: 1.75px;
@@ -3278,6 +3292,11 @@ body.bHome.layoutMobile #contentwrap #featuredVR h2 {
     max-height: none;
   }
 }
+@media screen and (device-width: 320px) {
+  body.bHome #contentwrap section#featuredVR article.graph.small {
+    width: 320px;
+  }
+}
 body.bHome.layoutTablet #contentwrap header {
   height: 60px;
 }
@@ -3289,210 +3308,10 @@ body.bHome.layoutTablet #contentwrap #featuredVR div.side-by-side article.graph.
   width: 229px;
   height: 107px;
 }
-/*
-body.bHome.layoutTablet #contentwrap #featuredVR {
-  >div, h2 {
-	width: 99%;
-  }
-  h2 {
-	text-align: center;
-  }
-  div.side-by-side {
-	-webkit-justify-content: space-around;
-	justify-content: space-around;
-	article.graph.small {
-	  	width: 45%;
-	  	height: 175px;
-		max-height: 216px;
-	}
-	> article:last-of-type {
-	  display: none;
-	}
-  }
-}
-*/
 body.bHome #contentwrap {
   font-size: 11pt;
   color: #f7f7f7;
   font-weight: 300;
-  /*
-  h1, h2 {
-	letter-spacing: @letter-spacing-home;
-  }
-  h1 {
-	font-size: 360%;
-	margin: 50px 0 100px 0;
-  }
-  h2 {
-	text-align: center;
-  }
-  h2 {
-	font-size: 280%;
-	margin-bottom: 30px;
-	line-height: 1.3em;
-	&:first-child {
-	  margin-top:0;
-	}
-  }
-
-  #webNativeDiv {
-	margin-bottom: 50px;
-  }
-
-
-  div.twocol {
-	padding: 40px 0;
-  }
-  div.twocol>div.col {
-	box-sizing: border-box;
-	&.left {padding-right: @x-pad-col/2;}
-	&.right {padding-left: @x-pad-col/2;}
-  }
-
-
-  ul.cta {
-	text-align: center;
-	font-size: 150%;
-	margin: 80px 0 50px 0;
-	padding:0;
-	li {
-	  margin:0;
-	  padding-left:0;
-	  display: inline;
-	  a {
-		font-size: 120%;
-		letter-spacing: @letter-spacing-home;
-	  }
-	}
-	li+li {
-	  margin-left: 2em;
-	}
-  }
-  section {
-	overflow-x: hidden;
-	padding: 100px 0 120px 0;
-  }
-
-  section div.col p {
-	max-width: 390px;
-  }
-  div.col.protrudeimg {
-	overflow: visible;
-	&.left img { float: right; margin-right: 20px; }
-	&.right img { float: left; margin-left: 20px; }
-  }
-
-
-  button, section.contentcontainer form button {
-	font-weight: @font-weight-home-button;
-	color: #fff;
-
-	width: 100%;
-	text-align: left;
-	padding: 15px 25px;
-	&.svg svg {
-	  stroke: #fff;
-	  position:absolute;
-	  right: 25px;
-	  top: 50%;
-	  margin-top: -11px;
-	  height: 24px;
-	  width: 24px;
-	}
-  }
-
-  section.contentcontainer form button {
-	background: @bgcolor-home-button;
-  }
-
-
-
-  section {
-	margin:0;
-  }
-
-  a, section a {
-	color: #fff;
-	&.launch-button {
-	  .launch-button-macro;
-	}
-	&:focus {	// firefox
-	  outline: 0 !important;
-	}
-  }
-
-  #contentcontainer form input {
-	color: #ccc;
-  }
-*/
-  /*
-  p, section a.launch-button {
-	letter-spacing: @letter-spacing-home-normal;
-  }
-
-  p {
-	font-size: 160%;
-	line-height: 1.6em;
-  }
-  .scrolldownContainer {
-	height:0;
-	position: relative;
-	z-index: 20;
-	.scrolldownPrompt {
-	  display: block;
-	  width: 50px;
-	  height: 50px;
-	  margin: -25px 0 0 -25px;
-	  position: absolute;
-	  top:0;
-	  left:50%;
-	  border-radius: 25px;
-	  &:hover {
-
-		img {
-		  stroke:black;
-		}
-	  }
-	}
-  }
-
-  section {
-	position: relative;
-	background: #333;
-
-	&#createandsharevr { background: @bgcolor-home-intro }
-	&#whyusevizor { background: @bgcolor-home-whyusevizor }
-	&#howitworks { background: @bgcolor-home-howitworks }
-	&#vizorteam { background: @bgcolor-home-meettheteam }
-	&#getstarted, &#getnewsletter { background: @bgcolor-home-getstarted }
-	&#createandsharevr+.scrolldownContainer .scrolldownPrompt { background:  @bgcolor-home-intro }
-
-	&#getstarted .col.left {
-	  padding-right: 15%;
-	}
-	&#getnewsletter p {
-	  text-align: center;
-	  padding: 0 50px;
-	  font-size: 130%;
-	}
-
-	&#getstarted, &#getnewsletter {
-	  form, div.modal-footer {
-		max-width: 320px;
-		margin: 0 auto;
-	  }
-	  div.col.right img {
-		margin-left: 50px;
-		margin-top: -50px;
-	  }
-	}
-
-
-	.collapsible+.collapsible {
-	  border-top: 1px solid rgba(0,0,0,0.2);
-	}
-  }
-*/
 }
 body.bHome #contentwrap section div.in {
   padding: 5px 0;
@@ -3521,13 +3340,8 @@ body.bHome #contentwrap #getstarted .modal-footer a {
 body.bHome #contentwrap header {
   margin: 0;
   padding: 0;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
   height: 100px;
   width: 100%;
-  z-index: 10;
 }
 body.bHome #contentwrap header nav {
   border-bottom: 1px solid #fff;
@@ -3563,6 +3377,10 @@ body.bHome #contentwrap header ul li.wider {
 }
 body.bHome #contentwrap header ul li:last-of-type {
   text-align: right;
+}
+body.bHome #contentwrap header ul li:first-of-type {
+  flex-shrink: 1;
+  flex-grow: 0.7;
 }
 body.bHome #contentwrap header button.sign-btn,
 body.bHome #contentwrap header a.btn.sign-btn {
@@ -3640,7 +3458,7 @@ body.bHome #contentwrap .team-member {
   cursor: pointer;
 }
 body.bHome #contentwrap .team-member h4 {
-  font-size: 170%;
+  font-size: 20px;
   font-weight: 300;
   letter-spacing: 0.1pt;
 }
@@ -3692,7 +3510,6 @@ body.bHome #contentwrap .team-member .person-name {
   padding: 20px 0 5px;
 }
 body.bHome #contentwrap .team-member .person-position {
-  color: rgba(225, 225, 225, 0.8);
   display: block;
   width: 100%;
   height: 18px;
@@ -3811,7 +3628,6 @@ body.bHome #contentwrap #brandTop {
   float: left;
   width: 70px;
   height: 28px;
-  margin-left: 5px;
 }
 body.bHome #contentwrap h3.readmore a {
   cursor: text;
@@ -3860,7 +3676,7 @@ body.bHome #contentwrap .tabletonly {
     padding: 20px 0;
   }
   body.bHome #contentwrap header nav ul {
-    width: 43%;
+    width: 350px;
     float: right;
     font-size: 1.4rem;
   }
@@ -4138,12 +3954,6 @@ body.bHome #contentwrap .tabletonly {
   body.bHome #contentwrap .launch-button.mobileonly {
     display: block;
   }
-  body.bHome #contentwrap section > div.in {
-    max-width: 98%;
-  }
-  body.bHome #contentwrap footer > div.in {
-    max-width: 98%;
-  }
   body.bHome #contentwrap section#createandsharevr div.in img {
     margin-top: 3.2em !important;
   }
@@ -4250,7 +4060,8 @@ body.bHome #contentwrap .tabletonly {
     margin-left: 0;
   }
   body.bHome #contentwrap header nav ul {
-    width: 455px;
+    width: 442px;
+    padding-left: 0;
     float: right;
   }
   body.bHome #contentwrap section#createandsharevr img {
@@ -4333,42 +4144,33 @@ body.bHome #contentwrap .tabletonly {
     width: 400px;
   }
   body.bHome #contentwrap .team-member {
-    -webkit-flex-basis: 33%;
-    flex-basis: 33%;
-    min-height: 220px;
+    -webkit-flex-basis: 25%;
+    flex-basis: 25%;
+    min-height: 240px;
     min-width: 200px;
-    height: 260px;
-    padding: 54px 0px 48px;
+    height: 280px;
+    padding: 34px 0px 28px;
   }
   body.bHome #contentwrap footer {
     padding: 70px 0;
   }
 }
-body.bHome1.layoutDesktop #contentwrap header nav ul {
-  display: block;
-  width: auto;
-  text-align: right;
-}
-body.bHome1.layoutDesktop #contentwrap header nav ul li {
-  display: inline-block;
-  padding: 0 28px;
-}
-body.bHome1.layoutDesktop #contentwrap header nav ul li:last-of-type {
-  padding-right: 0;
+body.bHome.bIndex #contentwrap header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
 }
 body.bHome.layoutTablet #contentwrap {
   margin: 0 auto;
-}
-body.bHome.layoutTablet #contentwrap header > nav {
-  padding-left: 20px;
-  padding-right: 20px;
 }
 body.bHome.layoutTablet #contentwrap section > div.in,
 body.bHome.layoutTablet #contentwrap #featuredVR > div,
 body.bHome.layoutTablet #contentwrap #featuredVR > h2,
 body.bHome.layoutTablet #contentwrap header > nav {
   width: 705px;
-  max-width: 98%;
+  max-width: 99%;
 }
 body.bHome.layoutTablet #contentwrap section#getstarted {
   position: relative;
@@ -4399,6 +4201,202 @@ body.bHome.layoutTablet #contentwrap section#featuredVR article.graph.small div.
 }
 body.bHome.layoutTablet #contentwrap section#featuredVR article.graph.small div.text h3 {
   font-size: 14px;
+}
+body.bAbout.layoutMobile #contentwrap #aboutIntro,
+body.bAbout.layoutMobile #contentwrap #vizorteam {
+  padding-bottom: 40px;
+}
+body.bAbout.layoutMobile #contentwrap #aboutIntro {
+  padding-top: 0px;
+}
+body.bAbout.layoutMobile #contentwrap #vizorteam {
+  padding-top: 40px;
+}
+body.bAbout.layoutMobile #contentwrap #aboutIntro div.in > img {
+  float: none;
+  display: block;
+  margin: 20px;
+}
+body.bAbout.layoutMobile #contentwrap #aboutIntro div.in > h1 {
+  width: 100%;
+  margin: 0 auto 20px auto;
+  padding: 0 20px;
+  max-width: none;
+}
+body.bAbout.layoutMobile #contentwrap #aboutIntro div.in > div {
+  width: 100%;
+  margin: 20px auto;
+  padding: 0 20px;
+  text-align: left;
+  max-width: none;
+}
+body.bAbout.layoutMobile #contentwrap section div.in h2:first-child {
+  text-align: left;
+  padding: 0 20px;
+}
+body.bAbout.layoutMobile #contentwrap section div.in p.intro {
+  width: 100%;
+  margin: 30px auto;
+  padding: 0 20px;
+  text-align: left;
+  max-width: none;
+}
+body.bAbout.layoutMobile #contentwrap section#aboutIntro a.launch-button.nomobile {
+  display: none;
+}
+body.bAbout.layoutMobile #contentwrap section#aboutIntro div.in > section#aboutEmbed {
+  width: auto;
+  margin: 0 20px;
+  float: none;
+}
+body.bAbout.layoutMobile #contentwrap section#aboutIntro div.in > h1 {
+  display: none;
+}
+body.bAbout.layoutTablet #contentwrap section#aboutIntro {
+  padding-bottom: 50px;
+}
+body.bAbout.layoutTablet #contentwrap section#aboutIntro div.in > section#aboutEmbed {
+  width: 49%;
+  margin: -10px 0 0 0;
+}
+body.bAbout.layoutTablet #contentwrap section#vizorteam {
+  padding-top: 30px;
+}
+body.bAbout.layoutMobile #contentwrap div.featured.downloads {
+  -webkit-flex-wrap: wrap;
+  flex-wrap: wrap;
+}
+body.bAbout.layoutMobile #contentwrap div.featured.downloads > div {
+  -webkit-flex: 1 1 40%;
+  flex: 1 1 40%;
+}
+body.bAbout.layoutMobile #contentwrap div.featured.downloads > div + div {
+  margin-left: 20px;
+}
+body.bAbout #contentwrap {
+  background: #171717;
+}
+body.bAbout #contentwrap section#presskit {
+  background: #0b132a;
+  padding-bottom: 125px;
+}
+body.bAbout #contentwrap div.featured.downloads {
+  display: -webkit-flex;
+  display: flex;
+}
+body.bAbout #contentwrap div.featured.downloads > div {
+  -webkit-flex: 1;
+  flex: 1;
+  text-align: center;
+  margin-top: 50px;
+}
+body.bAbout #contentwrap div.featured.downloads > div a.svg {
+  display: block;
+  font-size: 19px;
+  letter-spacing: 0.75px;
+  margin-bottom: 10px;
+}
+body.bAbout #contentwrap div.featured.downloads > div a.svg:hover {
+  text-decoration: none;
+}
+body.bAbout #contentwrap div.featured.downloads > div a.svg svg {
+  width: 100%;
+  max-width: 140px;
+  display: block;
+  margin: 0 auto 20px auto;
+}
+body.bAbout #contentwrap div.featured.downloads > div a:not(.svg) {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 13px;
+  letter-spacing: 1.5px;
+  font-weight: 300;
+  padding: 0 3px;
+}
+body.bAbout #contentwrap div.featured.downloads > div + div {
+  margin-left: 60px;
+}
+body.bAbout #contentwrap header,
+body.bAbout #contentwrap section#aboutIntro {
+  background: #0b132a;
+}
+body.bAbout #contentwrap header nav {
+  border-bottom: 0;
+}
+body.bAbout #contentwrap #aboutIntro h1,
+body.bAbout #contentwrap section > div.in > h2:first-child {
+  font-size: 39px;
+  font-weight: 600;
+}
+body.bAbout #contentwrap #aboutIntro {
+  padding: 40px 0 100px 0;
+}
+body.bAbout #contentwrap #aboutIntro div.in > h1 {
+  margin: 0 0 20px auto;
+  width: 50%;
+  max-width: 420px;
+}
+body.bAbout #contentwrap #aboutIntro div.in > div {
+  margin: 0 0 20px auto;
+  width: 50%;
+  max-width: 420px;
+}
+body.bAbout #contentwrap #aboutIntro div.in > section#aboutEmbed {
+  float: left;
+  margin-top: -30px;
+  width: 400px;
+}
+body.bAbout #contentwrap #aboutIntro p {
+  font-size: 19px;
+  line-height: 1.65;
+  color: #c3c3c3;
+  margin: 20px 0 40px 0;
+  letter-spacing: 1px;
+}
+body.bAbout #contentwrap #aboutIntro a.launch-button {
+  display: block;
+  border: 1px solid #fff;
+  padding: 15px 20px;
+  margin: 20px 0;
+  border-radius: 6px;
+  font-weight: 300;
+  font-size: 150%;
+  width: 11em;
+  border-radius: 45px;
+  background: none;
+  border: 2px solid white;
+  text-transform: uppercase;
+  font-size: 16px;
+  letter-spacing: 2px;
+  padding: 14px 50px;
+  width: auto;
+  display: inline;
+  margin: 1px;
+}
+body.bAbout #contentwrap #aboutIntro a.launch-button:hover {
+  border: 2px solid #fff;
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+body.bAbout #contentwrap .team-member {
+  font-size: 14px;
+}
+body.bAbout #contentwrap section#vizorteam {
+  background: #250642;
+}
+body.bAbout #contentwrap section {
+  padding: 60px 0;
+}
+body.bAbout #contentwrap section div.in h2:first-child {
+  text-align: center;
+}
+body.bAbout #contentwrap section div.in p.intro {
+  text-align: center;
+  max-width: 500px;
+  margin: 38px auto 0 auto;
+  font-size: 19.5px;
+  line-height: 1.7;
+  letter-spacing: 0.5px;
+  color: #c3c3c3;
 }
 .webvr-polyfill-viewer-selector {
   position: absolute;

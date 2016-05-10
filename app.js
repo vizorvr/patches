@@ -276,6 +276,7 @@ switch (process.env.FQDN) {
 	default:
 		// default site
 		app.get('/', homeController.index);
+		app.get('/about', homeController.about);
 		app.get('/threesixty', threesixtyController.index);
 		app.get('/threesixty/featured', threesixtyController.featured);
 		break;
