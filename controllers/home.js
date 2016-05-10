@@ -22,7 +22,7 @@ exports.about = function(req, res)  {
 		layout: 'main',
 		meta : {
 			bodyclass : 'bHome bAbout',
-			title: "About Vizor - Create and Share VR on the Web",
+			title: "About Vizor - Explore, Create and Publish VR on the Web",
 			noheader: true
 		}
 	})

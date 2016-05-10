@@ -83,7 +83,7 @@ var VizorPlayerUI = function() {
 
 		if (newState === s.PLAYING) {
 			that.selectStage('stage')
-			E2.core.emit('resize')
+			E2.core.webVRAdapter.resizeToTarget()
 			that.queueHeaderFadeOut()
 			if (Vizor.startMode && enforceStartMode) {
 				enforceStartMode = false
