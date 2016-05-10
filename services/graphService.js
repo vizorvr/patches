@@ -15,32 +15,36 @@ function GraphService(assetModel, gfs) {
 util.inherits(GraphService, AssetService);
 
 GraphService.prototype.findByPath = function(path) {
-	var parts = path.split('/');
-	return this.findOne({ owner: parts[1], name: parts[2] });
-};
+	var parts = path.split('/')
+	return this.findOne({
+		owner: parts[1],
+		name: parts[2]
+	})
+}
 
 GraphService.prototype.listWithPreviews = function() {
-	var dfd = when.defer();
+	var dfd = when.defer()
+
 	this._model
-		.find()
+		.find({ deleted: false })
 		.select('_creator owner name previewUrlSmall updatedAt stat')
 		.sort('-updatedAt')
 		.exec(function(err, list)
 	{
 		if (err)
-			return dfd.reject(err);
+			return dfd.reject(err)
 		
-		dfd.resolve(list);
-	});
+		dfd.resolve(list)
+	})
 
-	return dfd.promise;
-};
+	return dfd.promise
+}
 
 GraphService.prototype.publicRankedList = function() {
 	var dfd = when.defer()
 
 	this._model
-		.find({ private: false })
+		.find({ private: false, deleted: false })
 		.select('_creator private owner name previewUrlSmall updatedAt stat')
 		.sort('-rank')
 		.exec(function(err, list)
@@ -55,21 +59,22 @@ GraphService.prototype.publicRankedList = function() {
 }
 
 GraphService.prototype.userGraphs = function(username) {
-	var dfd = when.defer();
+	var dfd = when.defer()
+
 	this._model
-		.find({ owner: username })
+		.find({ owner: username, deleted: false })
 		.select('_creator private owner name previewUrlSmall updatedAt stat')
 		.sort('-updatedAt')
 		.exec(function(err, list)
 	{
 		if (err)
-			return dfd.reject(err);
+			return dfd.reject(err)
 
-		dfd.resolve(list);
-	});
+		dfd.resolve(list)
+	})
 
-	return dfd.promise;
-};
+	return dfd.promise
+}
 
 GraphService.prototype._save = function(data, user) {
 	var that = this
@@ -98,8 +103,10 @@ GraphService.prototype._save = function(data, user) {
 			asset.hasAudio = data.hasAudio
 
 		asset.version = currentPlayerVersion
-		asset.editable = data.editable === false ? false : true
+
+		asset.deleted = data.deleted || false
 		asset.private = data.private || false
+		asset.editable = data.editable === false ? false : true
 
 		var dfd = when.defer()
 
@@ -122,6 +129,9 @@ GraphService.prototype.save = function(data, user) {
 
 	return this._save.apply(this, arguments)
 	.then(function(asset) {
+		if (asset.deleted)
+			return asset
+
 		// make an optimized copy
 		return that._fs.readString(gridFsPath)
 		.then(function(source) {

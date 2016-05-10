@@ -321,7 +321,7 @@ function renderPlayer(graph, req, res, options) {
 GraphController.prototype.embed = function(req, res, next) {
 	this._service.findByPath(req.params.path)
 	.then(function(graph) {
-		if (!graph)
+		if (!graph || graph.deleted)
 			return next()
 
 		var autoplay = false
@@ -346,19 +346,21 @@ GraphController.prototype.embed = function(req, res, next) {
 GraphController.prototype.graphLanding = function(req, res, next) {
 	var wantSummary = req.query.summary || false
 
+	req.params.path = req.params.path.toLowerCase()
+
+	function notFound() {
+		res.status(404).json(helper.responseStatusError('not found'))
+	}
+
 	this._service.findByPath(req.params.path)
 	.then(function(graph) {
+		if (!graph || graph.deleted)
+			return notFound()
 
 		if (wantSummary) {
-			if (!graph)
-					return res.status(404).json(helper.responseStatusError('not found'))
-
-			var data = makeGraphSummary(req,graph.toJSON())
-			return res.json(helper.responseStatusSuccess('found', data))
+			var data = makeGraphSummary(req, graph.toJSON())
+			return res.json(helper.responseStatusSuccess('OK', data))
 		}
-
-		if (!graph)
-			return next()
 		
 		return renderPlayer(graph, req, res, {
 			autoplay: true
@@ -374,19 +376,17 @@ GraphController.prototype.stream = function(req, res, next) {
 	.then(function(item) {
 		that._fs.createReadStream(item.url)
 		.pipe(res)
-		.on('error', next);
+		.on('error', next)
 	})
-	.catch(next);
-};
-
-GraphController.prototype._makePath = function(req, path)
-{
-	return '/' + req.user.username
-		+ '/' + assetHelper.slugify(fsPath.basename(path, fsPath.extname(path)));
+	.catch(next)
 }
 
-GraphController.prototype.canWriteUpload = function(req, res, next)
-{
+GraphController.prototype._makePath = function(req, path) {
+	return '/' + req.user.username
+		+ '/' + assetHelper.slugify(fsPath.basename(path, fsPath.extname(path)))
+}
+
+GraphController.prototype.canWriteUpload = function(req, res, next) {
 	var that = this;
 
 	if (!req.files)
@@ -491,11 +491,44 @@ GraphController.prototype.saveAnonymous = function(req, res, next) {
 	.catch(next)
 }
 
+// POST /graph/delete
+GraphController.prototype.delete = function(req, res, next) {
+	var that = this
+	var path = this._makePath(req, req.params.path)
+
+	this._service.canWrite(req.user, path)
+	.then(function(can) {
+		if (!can) {
+			return res.status(403).json({
+				message: 'Sorry, permission denied'
+			})
+		}
+
+		that._service.findByPath(path)
+		.then(function(graph) {
+			if (!graph || graph.deleted) {
+				return res.status(404).json(helper.responseStatusError('not found'))
+			}
+
+			graph.deleted = true
+
+			return that._service.save(graph, req.user)
+			.then(function(asset) {
+				res.json(asset)
+			})
+			.catch(function(err) {
+				next(err)
+			})
+		})
+	})
+	.catch(next)
+}
+
 // POST /graph
 GraphController.prototype.save = function(req, res, next) {
 	var that = this;
 	var path = this._makePath(req, req.body.path);
-	var wantsPrivate = !req.body.isPublic 	// !!req.body.private
+	var wantsPrivate = !req.body.isPublic
 	var gridFsGraphPath = '/graph'+path+'.json';
 
 	var gridFsOriginalImagePath = '/previews'+path+'-preview-original.png'
