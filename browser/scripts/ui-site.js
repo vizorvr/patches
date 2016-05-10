@@ -291,14 +291,12 @@ var siteUI = new function() {
 		});
 
 		VizorUI.replaceSVGButtons($('#contentwrap'))
-		
 	}
 
 	this.initAbout = function($body) {
 		E2.track({ event: 'aboutPage' })
 		this.initHome()
 	}
-
 
 	this.initHomepage = function($body) {
         E2.track({ event: 'frontPage' })

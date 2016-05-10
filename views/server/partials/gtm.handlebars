@@ -1,5 +1,16 @@
 <script>
 	dataLayer = []
+
+	if (typeof(E2) === 'undefined')
+		E2 = {}
+
+	E2.track = function(evt) {
+		if (evt.event)
+			mixpanel.track(evt.event, evt)
+
+		dataLayer.push(evt)
+	}
+
 </script>
 
 {{#if KEY_GTM}}
