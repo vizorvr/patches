@@ -88,7 +88,7 @@ AccountController.prototype.openLoginModal = function(dfd) {
 			"$email": user.email
 		})
 
-		dataLayer.push({
+		E2.track({
 			event: 'userSignedIn',
 			username: user.username
 		})
@@ -115,7 +115,7 @@ AccountController.prototype.openSignupModal = function(dfd) {
 	var dfd = dfd || when.defer();
 	var signupTemplate = E2.views.partials.account.signup();
 
-	dataLayer.push({
+	E2.track({
 		event: 'signInDialogOpened'
 	})
 
@@ -135,7 +135,7 @@ AccountController.prototype.openSignupModal = function(dfd) {
 			"$email": user.email
 		})
 
-		dataLayer.push({
+		E2.track({
 			event: 'userSignedUp',
 			username: user.username
 		})
@@ -156,7 +156,7 @@ AccountController.prototype.openForgotPasswordModal = function(dfd) {
 	dfd = dfd || when.defer();
 	var forgotTemplate = E2.views.partials.account.forgotpassword;
 	
-	dataLayer.push({
+	E2.track({
 		event: 'forgotDialogOpened'
 	})
 
@@ -166,7 +166,7 @@ AccountController.prototype.openForgotPasswordModal = function(dfd) {
 	VizorUI.setupXHRForm($form, function(response) {
 		VizorUI.modalClose();
 		if (response.success) {
-			dataLayer.push({ event: 'forgotPasswordReset' })
+			E2.track({ event: 'forgotPasswordReset' })
 			VizorUI.modalAlert(response.message, 'Done');
 		}
 		dfd.resolve();
@@ -178,7 +178,7 @@ AccountController.prototype.openChangePasswordModal = function(dfd) {
 	dfd = dfd || when.defer();
 	var resetTemplate = E2.views.partials.account.changepassword({modal:true});
 	
-	dataLayer.push({ event: 'changePasswordDialogOpened' })
+	E2.track({ event: 'changePasswordDialogOpened' })
 
 	var $modal = VizorUI.modalOpen(resetTemplate, 'Change Password', 'nopad mChangepassword');
 	this._bindModalLinks($modal, dfd);
@@ -187,7 +187,7 @@ AccountController.prototype.openChangePasswordModal = function(dfd) {
 	var onSuccess = function(response) {
 		var user = response.data;
 		VizorUI.modalClose();
-		dataLayer.push({ event: 'passwordChanged', username: user.username })
+		E2.track({ event: 'passwordChanged', username: user.username })
 		VizorUI.modalAlert('Password for ' + user.username + ' was changed.', 'Done');
 		dfd.resolve();
 	};
@@ -201,7 +201,7 @@ AccountController.prototype.openAccountModal = function(dfd) {
 	dfd = dfd || when.defer();
 	var accountTemplate = E2.views.partials.account.account({user: E2.models.user.toJSON(), modal:true});
 
-	dataLayer.push({ event: 'accountDialogOpened' })
+	E2.track({ event: 'accountDialogOpened' })
 
 	var $modal = VizorUI.modalOpen(accountTemplate, 'Account', 'nopad mAccountdetails', true)
 
@@ -222,7 +222,7 @@ AccountController.prototype.openAccountModal = function(dfd) {
 	var onSuccess = function(response) {
 		var user = response.data;
 		E2.models.user.set(user);
-		dataLayer.push({ event: 'accountUpdated', username: E2.models.user.get('username') })
+		E2.track({ event: 'accountUpdated', username: E2.models.user.get('username') })
 		VizorUI.modalClose();
 		VizorUI.modalAlert(response.message, 'Done');
 		dfd.resolve();

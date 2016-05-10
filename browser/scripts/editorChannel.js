@@ -254,7 +254,7 @@ EditorChannel.prototype.fork = function(payload) {
 EditorChannel.prototype.leave = function() {
 	this.wsChannel.leave(this.channelName)
 
-	dataLayer.push({
+	E2.track({
 		event: 'leftChannel',
 		channelName: this.channelName
 	})
@@ -304,7 +304,7 @@ EditorChannel.prototype.join = function(channelName, readableName, cb) {
 		if (pl.kind === 'youJoined' && pl.channel === channelName) {
 			that.wsChannel.removeListener(channelName, waitForOwnJoin)
 			
-			dataLayer.push({
+			E2.track({
 				event: 'joinedChannel',
 				channelName: this.channelName
 			})

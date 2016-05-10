@@ -36,7 +36,7 @@ function uploadFile(file) {
 			return xhr
 		},
 		success: function(uploadedFile) {
-			dataLayer.push({
+			E2.track({
 				event: 'uploaded', 
 				modelName: modelName,
 				path: uploadedFile.url
@@ -102,7 +102,7 @@ function instantiatePluginForUpload(uploaded, position) {
 	var node = E2.app.createPlugin(pluginId, position)
 	node.plugin.state.url = uploaded.url
 
-	dataLayer.push({
+	E2.track({
 		event: 'nodeAdded', 
 		id: pluginId,
 		fromUpload: true
@@ -156,7 +156,7 @@ function instantiateTemplateForUpload(uploaded, position) {
 			0,
 			0)
 
-		dataLayer.push({
+		E2.track({
 			event: 'presetAdded', 
 			name: templateName,
 			fromUpload: true

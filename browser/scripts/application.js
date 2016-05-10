@@ -134,7 +134,7 @@ Application.prototype.instantiatePlugin = function(id, position) {
 	var newY = Math.floor(position[1] + this.scrollOffset[1])
 	var node = this.createPlugin(id, [newX, newY])
 
-	dataLayer.push({
+	E2.track({
 		event: 'nodeAdded', 
 		id: id
 	})
@@ -1539,7 +1539,7 @@ Application.prototype.onPublishClicked = function() {
 	E2.ui.openPublishGraphModal()
 	.then(function(path) {
 		window.onbeforeunload = null;	// override "you might be leaving work" prompt (release mode)
-		dataLayer.push({ 
+		E2.track({ 
 			event: 'published',
 			path: path
 		})
@@ -1588,7 +1588,7 @@ Application.prototype.openSaveACopyDialog = function() {
 					dataType: 'json',
 					success: function(saved) {
 						E2.ui.updateProgressBar(100);
-						dataLayer.push({
+						E2.track({
 							event: 'savedACopy',
 							original: path,
 							copy: saved.path
@@ -2140,7 +2140,7 @@ Application.prototype.setupEditorChannel = function() {
 
 		var readableName = that.path 
 		that.channel.join(that.path, readableName, function() {
-			dataLayer.push({ event: 'editorOpened', path: that.path })
+			E2.track({ event: 'editorOpened', path: that.path })
 			dfd.resolve()
 		})
 	}

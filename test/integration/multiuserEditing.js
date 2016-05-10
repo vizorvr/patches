@@ -117,6 +117,7 @@ describe('Multiuser', function() {
 
 	beforeEach(function() {
 		global.E2 = {
+			track: function() {},
 			models: {
 				user: {
 					once: function(){}

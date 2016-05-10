@@ -61,7 +61,7 @@
 						if (newValue === oldValue)
 							return;
 
-						dataLayer.push({
+						E2.track({
 							event: 'assetChanged',
 							plugin: 'UrlTexture',
 							url: newValue

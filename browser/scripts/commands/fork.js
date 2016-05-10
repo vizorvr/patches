@@ -27,7 +27,7 @@ ForkCommand.prototype.fork = function() {
 
 	return E2.app.setupEditorChannel()
 		.then(function() {
-			dataLayer.push({
+			E2.track({
 				event: 'forked',
 				fromName: oldName,
 				forkName: forkName 

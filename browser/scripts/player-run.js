@@ -13,7 +13,7 @@ function onCoreReady() {
 
 	E2.app.player.on_update()
 
-	dataLayer.push({
+	E2.track({
 		event: 'playerOpened',
 		path: url
 	})

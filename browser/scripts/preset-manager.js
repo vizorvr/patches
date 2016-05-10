@@ -149,7 +149,7 @@ PresetManager.prototype.renderObjects = function() {
 PresetManager.prototype.openPreset = function(name) {
 	$.get(name)
 	.done(function(data) {
-		dataLayer.push({
+		E2.track({
 			event: 'Preset Added', 
 			name: name
 		})

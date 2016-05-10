@@ -37,7 +37,7 @@
 					that.state_changed(inp)
 					that.updated = true
 
-					dataLayer.push({
+					E2.track({
 						event: 'assetChanged',
 						plugin: 'ThreeLoaderModelPlugin',
 						url: v

@@ -89,7 +89,7 @@ var vizor360 = new function() {
 		playerUI.headerEnableAutoFadeout()
 		history.pushState({}, '', asset.path)
 
-		dataLayer.push({
+		E2.track({
 			event: 'ThreeSixty Loading Graph',
 			path: asset.path
 		})
@@ -108,7 +108,7 @@ var vizor360 = new function() {
 		clearBodyClass()
 		$body.addClass('uploading')
 
-		dataLayer.push({ event: 'ThreeSixty Uploading Graph' })
+		E2.track({ event: 'ThreeSixty Uploading Graph' })
 
 		$.ajax({
 			url: '/graph/v',
@@ -116,7 +116,7 @@ var vizor360 = new function() {
 			data: graphData,
 			dataType: 'json',
 			success: function(response) {
-				dataLayer.push({
+				E2.track({
 					event: 'ThreeSixty Uploaded Graph', 
 					path: response.path
 				})
@@ -128,7 +128,7 @@ var vizor360 = new function() {
 			error: function(err) {
 				var errMsg = err.responseJSON ? err.responseJSON.message : err.status
 
-				dataLayer.push({
+				E2.track({
 					event: 'ThreeSixty Error Uploading Graph',
 					type: 'error',
 					error: errMsg
@@ -286,13 +286,13 @@ var vizor360 = new function() {
 			error: function(err, text_status) {
 				if (text_status === "abort") {
 					// http://paulrademacher.com/blog/jquery-gotcha-error-callback-triggered-on-xhr-abort/
-					dataLayer.push({ event: 'ThreeSixty Cancelled Uploading' })
+					E2.track({ event: 'ThreeSixty Cancelled Uploading' })
 					return
 				}
 				var errMsg = err.responseJSON ? err.responseJSON.message : err.status
 				cancelledUploading();
 		
-				dataLayer.push({ 
+				E2.track({ 
 					event: 'ThreeSixty Error Uploading', 
 					type: 'error',
 					error: errMsg
@@ -314,7 +314,7 @@ var vizor360 = new function() {
 	}
 
 	this.fileUploadErrorWrongType = function(filePath) {
-		dataLayer.push({ 
+		E2.track({ 
 			event: 'ThreeSixty Error Wrong File Type', 
 			type: 'error',
 			filePath: filePath,
@@ -345,7 +345,7 @@ var vizor360 = new function() {
 			return that.fileUploadErrorWrongType(filePath)
 		}
 
-		dataLayer.push({ 
+		E2.track({ 
 			event: 'ThreeSixty Uploading', 
 			filePath: filePath,
 			fileType: filePath.type
@@ -354,7 +354,7 @@ var vizor360 = new function() {
 		that
 			.uploadFile(filePath, 'image')
 			.then(function(uploadedFile) {
-				dataLayer.push({ 
+				E2.track({ 
 					event: 'ThreeSixty Uploaded', 
 					filePath: filePath,
 					uploadedFile: uploadedFile
@@ -383,7 +383,7 @@ var vizor360 = new function() {
 
 		playerUI.headerFadeOut(100)
 
-		dataLayer.push({ event:  'ThreeSixty DragEnter' })
+		E2.track({ event:  'ThreeSixty DragEnter' })
 
 		e.stopPropagation();
 		e.preventDefault();
@@ -393,7 +393,7 @@ var vizor360 = new function() {
 	}
 
 	this.dragLeaveHandler = function(e) {
-		dataLayer.push({ event: 'ThreeSixty DragLeave' })
+		E2.track({ event: 'ThreeSixty DragLeave' })
 
 		e.stopPropagation();
 		e.preventDefault();
@@ -414,7 +414,7 @@ var vizor360 = new function() {
 
 		// Needs to be defined also for the 'drop' event handler to work
 		drop_zone.addEventListener("dragover", function(evt) {
-			dataLayer.push({ event: 'ThreeSixty DragOver' })
+			E2.track({ event: 'ThreeSixty DragOver' })
 			evt.stopPropagation();
 			evt.preventDefault();
 		});

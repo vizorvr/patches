@@ -13,7 +13,7 @@
 		this.updated = true
 		this.node.queued_update = 1
 
-		dataLayer.push({
+		E2.track({
 			event: 'gazeClicked',
 			item: this.targetNode.uid
 		})

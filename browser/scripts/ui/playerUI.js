@@ -138,7 +138,7 @@ var VizorPlayerUI = function() {
 
 		function completeLoading() {
             that.selectStage('stage')
-			dataLayer.push({
+			E2.track({
 				event: 'playerPlaying'
 			})
 
@@ -196,13 +196,13 @@ var VizorPlayerUI = function() {
 
 	this.bindButtons = function() {
 		function enterFullscreen(e) {
-			dataLayer.push({ event: 'enterFullscreen' })
+			E2.track({ event: 'enterFullscreen' })
 			E2.core.webVRAdapter.enterFullscreen()
             siteUI.tagBodyClass()
         }
 
         function enterVR(e) {
-			dataLayer.push({ event: 'enterVR' })
+			E2.track({ event: 'enterVR' })
 
             if (siteUI.isDeviceDesktop() && !E2.core.webVRAdapter.isVRCompatible()) {
                 // display "view in VR" sign
@@ -269,7 +269,7 @@ var VizorPlayerUI = function() {
 		that.$canvas.on('mousedown touchstart', function() {
 			if (firstMouseDown) {
 				firstMouseDown = false
-				dataLayer.push({ event: 'mouseDownInPlayer' })
+				E2.track({ event: 'mouseDownInPlayer' })
 			}
 		})
 	}

@@ -88,7 +88,7 @@
 
 					that.updated = true
 				    
-					dataLayer.push({
+					E2.track({
 						event: 'assetChanged',
 						plugin: 'ThreeLoaderScenePlugin',
 						url: newValue

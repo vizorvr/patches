@@ -27,8 +27,6 @@ exports.slot = function slot(index, type, dt) {
 }
 
 exports.mockE2Classes = function() {
-	global.dataLayer = []
-
 	global.AssetLoader = function AssetLoader() {
 		EventEmitter.call(this)
 		this.defaultTexture = {}
@@ -55,6 +53,8 @@ exports.mockE2Classes = function() {
 	global.E2.GraphAnalyser.prototype.analyseGraph = function(){
 		return when.resolve({ size: 0, numAssets: 0 })
 	}
+
+	global.E2.track = function() {}
 
 	global.E2.GridFsClient = function() {}
 

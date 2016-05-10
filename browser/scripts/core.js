@@ -72,6 +72,13 @@ E2.uid = function() {
 	return uid
 }
 
+E2.track = function(evt) {
+	if (evt.event)
+		mixpanel.track(evt.event, evt)
+
+	dataLayer.push(evt)
+}
+
 function Delegate(delegate, dt, count) {
 	this.delegate = delegate;
 	this.dt = dt;

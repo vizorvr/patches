@@ -53,7 +53,7 @@ UrlAudio.prototype.create_ui = function()
 			
 				that.undoableSetState('url', newValue, oldValue)
 
-				dataLayer.push({
+				E2.track({
 					event: 'assetChanged',
 					plugin: 'UrlAudio',
 					url: newValue

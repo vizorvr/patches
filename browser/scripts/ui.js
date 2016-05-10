@@ -441,7 +441,7 @@ VizorUI.prototype.openPresetSaveDialog = function(serializedGraph) {
 						dataType: 'json',
 						success: function() {
 							ui.updateProgressBar(100);
-							dataLayer.push({ event: 'presetSaved' })
+							E2.track({ event: 'presetSaved' })
 							that.presetManager.refresh()
 						},
 						error: function(x, t, err) {

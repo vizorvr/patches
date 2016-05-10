@@ -303,7 +303,7 @@ FileSelectControl.prototype._bindUploadForm = function() {
 			success: function(file) {
 				$progress.removeClass('active')
 		
-				dataLayer.push({ 
+				E2.track({ 
 					event: 'uploaded',
 					modelName: file.modelName,
 					path: file.url
