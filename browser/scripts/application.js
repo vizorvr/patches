@@ -134,7 +134,8 @@ Application.prototype.instantiatePlugin = function(id, position) {
 	var newY = Math.floor(position[1] + this.scrollOffset[1])
 	var node = this.createPlugin(id, [newX, newY])
 
-	mixpanel.track('Node Added', {
+	E2.track({
+		event: 'nodeAdded', 
 		id: id
 	})
 
@@ -1538,7 +1539,10 @@ Application.prototype.onPublishClicked = function() {
 	E2.ui.openPublishGraphModal()
 	.then(function(path) {
 		window.onbeforeunload = null;	// override "you might be leaving work" prompt (release mode)
-		mixpanel.track('Published')
+		E2.track({ 
+			event: 'published',
+			path: path
+		})
 		window.location.href = path
 	})
 }
@@ -1584,7 +1588,11 @@ Application.prototype.openSaveACopyDialog = function() {
 					dataType: 'json',
 					success: function(saved) {
 						E2.ui.updateProgressBar(100);
-						mixpanel.track('Saved a Copy');
+						E2.track({
+							event: 'savedACopy',
+							original: path,
+							copy: saved.path
+						})
 						dfd.resolve(saved.path)
 					},
 					error: function(x, t, err) {
@@ -2132,7 +2140,7 @@ Application.prototype.setupEditorChannel = function() {
 
 		var readableName = that.path 
 		that.channel.join(that.path, readableName, function() {
-			mixpanel.track('Editor Opened')
+			E2.track({ event: 'editorOpened', path: that.path })
 			dfd.resolve()
 		})
 	}

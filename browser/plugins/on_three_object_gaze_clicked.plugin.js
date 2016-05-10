@@ -13,7 +13,8 @@
 		this.updated = true
 		this.node.queued_update = 1
 
-		mixpanel.track('Gaze Clicked', {
+		E2.track({
+			event: 'gazeClicked',
 			item: this.targetNode.uid
 		})
 	}

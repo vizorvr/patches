@@ -95,6 +95,8 @@ describe('Multiuser', function() {
 	var db
 
 	before(function(done) {
+		global.dataLayer = []
+
 		app.events.on('ready', function() {
 			db = new mongo.Db('mutest'+testId, 
 				new mongo.Server('localhost', 27017),
@@ -115,6 +117,7 @@ describe('Multiuser', function() {
 
 	beforeEach(function() {
 		global.E2 = {
+			track: function() {},
 			models: {
 				user: {
 					once: function(){}

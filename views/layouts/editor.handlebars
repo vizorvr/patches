@@ -10,8 +10,6 @@
     <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Source+Code+Pro:300,400' rel='stylesheet' type='text/css'>
 
-    <script>{{> ga}}</script>
-
     <script type="text/javascript" src="/vendor/when.js"></script>
 
     <script type="text/javascript" src="/node_modules/jquery/dist/jquery.min.js"></script>
@@ -185,7 +183,9 @@
   </head>
 
 <body class="noselect bEditor {{extraClasses}}">
-  {{{body}}}
+    {{> srv/gtm}}
+
+    {{{body}}}
 
     <script>
         {{{templateCache}}}

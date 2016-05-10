@@ -54,14 +54,14 @@ exports.mockE2Classes = function() {
 		return when.resolve({ size: 0, numAssets: 0 })
 	}
 
+	global.E2.track = function() {}
+
 	global.E2.GridFsClient = function() {}
 
 	global.E2.EnvironmentSettings = function(){}
 
 	global.E2.EnvironmentSettings = function(){}
 	global.E2.Noise = function() {this.noise2D = function(){}}
-
-	global.mixpanel = { track: function() {}}
 }
 
 function Color() {}

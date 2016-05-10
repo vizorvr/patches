@@ -36,7 +36,12 @@
 					that.state_changed(null)
 					that.state_changed(inp)
 					that.updated = true
-					mixpanel.track('ThreeLoaderModelPlugin Model Changed')
+
+					E2.track({
+						event: 'assetChanged',
+						plugin: 'ThreeLoaderModelPlugin',
+						url: v
+					})
 				})
 				.on('closed', function() {
 					if (newValue === oldValue)
