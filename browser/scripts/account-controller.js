@@ -16,7 +16,7 @@ AccountController.prototype = Object.create(EventEmitter.prototype)
 AccountController.prototype.renderLoginView = function(user) {
 	var viewTemplate = E2.views.partials.userpulldown
 	var html = viewTemplate({
-		username: user.username
+		user: user.toJSON()
 	})
 
 	$('a, button', this.dom.container).off('.accountController');
