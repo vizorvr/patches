@@ -239,13 +239,15 @@ VizorWebVRAdapter.prototype.onScroll = function() {
 
 
 VizorWebVRAdapter.prototype.onBrowserResize = function() {
+	var that = this
 	var timeout = (this.iOS) ? 200 : 10
-	this._scheduleResize(function() {
+
+	function doResize() {
 		var isFullscreen = E2.util.isFullscreen()
 
-		if (document.body.classList && this.domElement) {
-			var elClasses = this.domElement.classList
-			var parentClasses = this.domElement.parentElement.classList
+		if (document.body.classList && that.domElement) {
+			var elClasses = that.domElement.classList
+			var parentClasses = that.domElement.parentElement.classList
 
 			elClasses.toggle('webgl-canvas-fs', isFullscreen)
 			elClasses.toggle('webgl-canvas-normal', !isFullscreen)
@@ -254,8 +256,13 @@ VizorWebVRAdapter.prototype.onBrowserResize = function() {
 			parentClasses.toggle('webgl-container-normal', !isFullscreen)
 		}
 
-		this.resizeToTarget()
-	}.bind(this), timeout)
+		that.resizeToTarget()
+	}
+
+	if (hardware.hmd instanceof VRDisplay)
+		doResize()
+	else
+		this._scheduleResize(doResize, timeout)
 }
 
 VizorWebVRAdapter.prototype.isElementFullScreen = function() {
