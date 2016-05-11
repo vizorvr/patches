@@ -697,7 +697,8 @@ VizorUI.prototype.viewSource = function() {
 	jQuery(b).addClass('wideauto').addClass('viewsource');
 };
 
-VizorUI.prototype.showStartDialog = function() {
+
+VizorUI.prototype.showStartDialog = function(forceShow) {
 	var dfd = when.defer()
 	var selectedTemplateUrl = null
 
@@ -713,23 +714,25 @@ VizorUI.prototype.showStartDialog = function() {
 
 	if (c && ('seen' in c)) {
 		times = parseInt(c.seen)
-		c.seen = (isNaN(times)) ?  0  : times++
+		c.seen = isNaN(times) ?  0  : times
 	} else {
-		times = 1
-		c = { seen: times }
+		times = 0
 	}
 
-	var doNotShowDialog =
-		(VizorUI.userIsLoggedIn() &&  times > 2) ||
-			(!VizorUI.userIsLoggedIn() &&  times > 5)
+	var isLogged = VizorUI.userIsLoggedIn()
 
-	var d = new Date()
-	d.setTime(d.getTime() + (3*86400*1000))	// 3 days
-	Cookies.set(cookieName, {seen: times}, {expires: d})
+	var showDialog = forceShow ||
+		((isLogged &&  times <= 2) || (!isLogged &&  times <= 5))
 
-	if (c && doNotShowDialog) {
+	if (!forceShow) {
+		var d = new Date()
+		d.setTime(d.getTime() + (3 * 86400 * 1000))	// 3 days
+		Cookies.set(cookieName, {seen: ++times}, {expires: d})
+	}
+
+	if (!showDialog) {
 		dfd.resolve(selectedTemplateUrl)
-		return dfd.promise;
+		return dfd.promise
 	}
 
 	var welcomeModal = VizorUI.modalOpen(
@@ -744,14 +747,14 @@ VizorUI.prototype.showStartDialog = function() {
 	})
 
 	var $slides = jQuery('.minislides', welcomeModal)
-	new Minislides($slides[0], {nextOn:'a.slide-next, img'})
+	new Minislides($slides[0], {nextOn:'a.slide-next, img', nextOnSelf:true})
 
 	jQuery('a.modal-close', $slides).on('click', function(e){
 		e.preventDefault();
 		e.stopPropagation();
 		VizorUI.modalClose(welcomeModal);
 		return false;
-	});
+	})
 
 	jQuery('a.view-create360', $slides).on('click', function(e) {
 		e.preventDefault();
@@ -759,7 +762,7 @@ VizorUI.prototype.showStartDialog = function() {
 		VizorUI.modalClose(welcomeModal);
 		selectedTemplateUrl = '/data/graphs/create-360.json'
 		return false;
-	});
+	})
 
 	jQuery('a.view-example', $slides).on('click', function(e) {
 		e.preventDefault();
@@ -767,24 +770,25 @@ VizorUI.prototype.showStartDialog = function() {
 		VizorUI.modalClose(welcomeModal);
 		selectedTemplateUrl = '/data/graphs/example.json'
 		return false;
-	});
+	})
 
 	jQuery('a.sign-in', $slides).on('click', function(e){
 		e.preventDefault();
 		e.stopPropagation();
 		E2.controllers.account.openLoginModal()
 		return false;
-	});
+	})
 
 	jQuery('a.sign-up', $slides).on('click', function(e){
 		e.preventDefault();
 		e.stopPropagation();
 		E2.controllers.account.openSignupModal()
 		return false;
-	});
+	})
 
-	return dfd.promise;
+	return dfd.promise
 }
+
 
 VizorUI.prototype.updateProgressBar = function(percent) {
 	var dom = this.dom;
@@ -885,8 +889,17 @@ VizorUI.openEditorHelp = function() {
 		keys: keyData
 	}
 	var html = E2.views.patch_editor.help_shortcuts(viewData);
-	return VizorUI.modalOpen(html, 'Keyboard Shortcuts', 'mHelp mShortcuts')
+	var m = VizorUI.modalOpen(html, 'Keyboard Shortcuts', 'mHelp mShortcuts')
 
+	jQuery('#showStartDialogAgain', m).on('click', function(e) {
+		VizorUI.modalClose(m)
+		E2.app.openStartDialog(true)
+		e.stopPropagation()
+		e.preventDefault()
+		return false
+	})
+
+	return m
 }
 
 VizorUI.checkCompatibleBrowser = function() {

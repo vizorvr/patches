@@ -123,7 +123,6 @@ VizorUI.prototype._init = function(e2) {	// called by .init() in ui.js
 	e2.core.on('progress', this.updateProgressBar.bind(this));
 }
 
-
 VizorUI.prototype.refreshBreadcrumb = function() {	// force state to emit an event
 	E2.ui.state.selectedObjects = E2.ui.state.selectedObjects
 }
