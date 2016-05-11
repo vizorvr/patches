@@ -821,6 +821,7 @@ header nav ul.dropdown-menu li {
 }
 .modal {
   position: absolute;
+  -webkit-font-smoothing: subpixel-antialiased;
 }
 .nav li a h4 {
   color: #aaa;
