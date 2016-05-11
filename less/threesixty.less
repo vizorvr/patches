@@ -43,6 +43,11 @@ body.b360 {
 	}
   }
 
+  #playerpage header div.controls {
+	-webkit-justify-content: flex-end;
+	justify-content: flex-end;;
+  }
+
   button#fullscreen svg {
 	stroke-width: 1px !important;
   }
@@ -388,7 +393,7 @@ body.b360 {
 	  position: absolute;
 	  top: 10px;
 	  right: @controls-right;
-	  width: 260px;
+	  width: 320px;
 	  bottom: auto;
 	  left: auto;
 	  margin-top: 0;
@@ -489,7 +494,7 @@ body.b360 {
 	}
 	&.withPlayerControls #playerpage header div.controls {
 	  button {
-		bottom: 0px;
+		bottom: 0;
 	  }
 	}
   }
