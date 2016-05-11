@@ -128,7 +128,7 @@ PresetManager.prototype.renderPresets = function() {
 	.onOpen(this.onOpen.bind(this))
 	
 	var presetSearch = $('#presets-lib .searchbox input');
-	presetSearch.focus(E2.ui.onLibSearchClicked.bind(E2.ui, E2.dom.presets_list));
+	presetSearch.focus(E2.ui.onLibSearchClicked.bind(E2.ui));
 }
 
 PresetManager.prototype.renderObjects = function() {
@@ -143,7 +143,7 @@ PresetManager.prototype.renderObjects = function() {
 	.onOpen(this.onOpen.bind(this))
 	
 	var objectSearch = $('.searchbox input', E2.dom.objectsList);
-	objectSearch.focus(E2.ui.onLibSearchClicked.bind(E2.ui, E2.dom.objectsList));
+	objectSearch.focus(E2.ui.onLibSearchClicked.bind(E2.ui));
 }
 
 PresetManager.prototype.openPreset = function(name) {
