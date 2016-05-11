@@ -28,23 +28,21 @@ EditConnection.prototype.hoverSlot = function(node, slot) {
 		this.dstSlot = slot
 	}
 
-	this.dstSlot.is_connected = true
-
 	return can
 }
 
 EditConnection.prototype.blurSlot = function(slot) {
 	if (this.rightToLeft) {
 		if (slot === this.dstSlot)
-			return;
+			return
+
 		this.srcNode = null
 		this.srcSlot = null
 	} else {
 		if (slot === this.srcSlot)
-			return;
+			return
+
 		this.dstNode = null
-		if (this.dstSlot)
-			this.dstSlot.is_connected = false
 		this.dstSlot = null
 	}
 }
@@ -79,7 +77,7 @@ EditConnection.prototype.canConnectTo = function(node, slot) {
 	var c = (rtl &&
 				(!this.srcSlot || this.srcSlot === slot) &&
 				this.dstNode !== node) ||
-			(!rtl && !slot.is_connected &&
+			(!rtl && 
 				(!this.dstSlot || this.dstSlot === slot) &&
 				this.srcNode !== node)
 
@@ -125,14 +123,25 @@ EditConnection.prototype.commit = function() {
 		return;
 	}
 
+	E2.app.undoManager.begin('Connection')
+
+	// replace existing connection
+	if (this.dstSlot.is_connected && this.dstNode.getSlotConnections(this.dstSlot).length) {
+		this.graphApi.disconnect(E2.core.active_graph, 
+			this.dstNode.getSlotConnections(this.dstSlot)[0])
+	}
+
 	this.connection.src_node = this.srcNode
 	this.connection.dst_node = this.dstNode
 	this.connection.src_slot = this.srcSlot
 	this.connection.dst_slot = this.dstSlot
 	this.connection.uid = E2.uid()
 
-	this.graphApi.connect(E2.core.active_graph,
+	this.graphApi.connect(
+		E2.core.active_graph,
 		Connection.hydrate(E2.core.active_graph, this.connection.serialise()))
+
+	E2.app.undoManager.end('Connection')
 
 	E2.app.onLocalConnectionChanged(this.connection)
 }

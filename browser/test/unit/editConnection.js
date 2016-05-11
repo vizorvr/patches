@@ -85,19 +85,5 @@ describe('EditConnection', function() {
 	})
 
 
-	it('does not allow connecting twice to same input, issue #1444', function() {
-		var n1 = makeNode()
-		var s1 = makeSlot(0, 1)
-		var n2 = makeNode()
-		var s2 = makeSlot(0, 0)
-		var c = new EditConnection({}, new Connection(n1, n2, s1, s2))
-		var c2 = new EditConnection({}, new Connection(n1, n2, s1, s2))
-		c.blurSlot(s2)
-		c.hoverSlot(n2, s2)
-		assert.ok(!c2.canConnectTo(n2, s2))
-	})
-
-
-
 });
 
