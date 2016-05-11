@@ -1,44 +1,40 @@
 function TagControl($input, $fileList) {
-	var that = this;
+	var that = this
 
 	function tagify(input) {
 		return input.split(' ')
-		.filter(function(val)
-		{
-			return val !== '#' && val.length > 0;
+		.filter(function(val) {
+			return val !== '#' && val.length > 0
 		})
-		.map(function(val)
-		{
+		.map(function(val) {
 			if (!val.length || val[0] === '#')
-				return val;
+				return val
 
-			return '#' + val;
-		});
+			return '#' + val
+		})
 	}
 
-	$input.on('keyup', function()
-	{
-		setTimeout(function()
-		{
-			var tags = tagify($input.val());
-			$fileList.filterByTags(tags);
-			$input.val(tags.join(' '));
-		}, 0);
+	$input.on('keyup', function() {
+		setTimeout(function() {
+			var tags = tagify($input.val())
+			$fileList.filterByTags(tags)
+			$input.val(tags.join(' '))
+		}, 0)
 
-		return true;
-	});
+		return true
+	})
 }
-_.extend(TagControl.prototype, Backbone.Events);
+_.extend(TagControl.prototype, Backbone.Events)
 
 function FileSelectControl(handlebars) {
 	EventEmitter.call(this)
 
-	var that = this;
+	var that = this
 
 	this._handlebars = handlebars || window.Handlebars
-	this._frame = null;
-	this._fileList = E2.models.fileList;
-	this._fileList.on('change:files', this._onFilesChange, this);
+	this._frame = null
+	this._fileList = E2.models.fileList
+	this._fileList.on('change:files', this._onFilesChange, this)
 
 	this._cb = function() {}
 	this._buttons = {
@@ -46,43 +42,38 @@ function FileSelectControl(handlebars) {
 		'Ok': this.close.bind(this)
 	}
 
-	this._template = E2.views.filebrowser.generic;
+	this._template = E2.views.filebrowser.generic
 	this._frameTemplate = E2.views.filebrowser.frame;
 
 	// setup partials
-	['upload', 'tags']
-	.forEach(function(pname)
-	{
-		that._handlebars.registerPartial('filebrowser/'+pname, E2.views.filebrowser[pname]);
-	});
+	['upload', 'tags'].forEach(function(pname) {
+		that._handlebars.registerPartial('filebrowser/'+pname, E2.views.filebrowser[pname])
+	})
 }
 
 FileSelectControl.prototype = Object.create(EventEmitter.prototype)
 
 FileSelectControl.prototype._onFilesChange = function(model) {
 	if (!this._frame)
-		return;
+		return
 
-	$('.file-selector', this._frame).html(this._renderFiles());
-	this._bindTable();
+	$('.file-selector', this._frame).html(this._renderFiles())
+	this._bindTable()
 }
 
-FileSelectControl.prototype.template = function(name)
-{
-	this._template = E2.views.filebrowser[name];
-	return this;
+FileSelectControl.prototype.template = function(name) {
+	this._template = E2.views.filebrowser[name]
+	return this
 }
 
-FileSelectControl.prototype.frame = function(name)
-{
-	this._frameTemplate = E2.views.filebrowser[name];
-	return this;
+FileSelectControl.prototype.frame = function(name) {
+	this._frameTemplate = E2.views.filebrowser[name]
+	return this
 }
 
-FileSelectControl.prototype.url = function(url)
-{
-	this._url = url;
-	return this;
+FileSelectControl.prototype.url = function(url) {
+	this._url = url
+	return this
 }
 
 FileSelectControl.prototype.files = function(files) {
@@ -105,57 +96,53 @@ FileSelectControl.prototype.selected = function(file) {
 }
 
 FileSelectControl.prototype.onChange = function(cb) {
-	this._cb = cb;
-	return this;
+	this._cb = cb
+	return this
 }
 
 FileSelectControl.prototype.buttons = function(buttons) {
-	this._buttons = buttons;
-	return this;
+	this._buttons = buttons
+	return this
 }
 
 FileSelectControl.prototype.header = function(header) {
-	this._header = header;
-	return this;
+	this._header = header
+	return this
 }
 
-FileSelectControl.prototype.modal = function()
-{
-	this._render();
-	return this;
+FileSelectControl.prototype.modal = function() {
+	this._render()
+	return this
 }
 
-FileSelectControl.prototype._renderFiles = function()
-{
-	var that = this;
-	var files = this._fileList.get('files');
-	var html = this._template(
-	{
+FileSelectControl.prototype._renderFiles = function() {
+	var that = this
+	var files = this._fileList.get('files')
+	var html = this._template({
 		original: this._original,
 		url: this._url,
 		user: E2.models.user.toJSON(),
 		files: files
-		.map(function(file)
-		{
+		.map(function(file) {
 			if (file._creator)
-				file._creator = file._creator.username;
+				file._creator = file._creator.username
 
 			if (!file.url)
-				file.url = file.path;
+				file.url = file.path
 
-			file.selected = (file.path === that._selected);
+			file.selected = (file.path === that._selected)
 			if (!file.name)
-				file.name = file.path.substring(file.path.lastIndexOf('/')+1);
-			file.updatedAt = moment(file.updatedAt).fromNow();
-			return file;
+				file.name = file.path.substring(file.path.lastIndexOf('/')+1)
+			file.updatedAt = moment(file.updatedAt).fromNow()
+			return file
 		})
-	});
+	})
 
-	return html;
+	return html
 }
 
 FileSelectControl.prototype._render = function() {
-	var self = this;
+	var that = this
 
 	var modelName = this._url ? this._url.split('/')[1] : null
 
@@ -164,104 +151,106 @@ FileSelectControl.prototype._render = function() {
 		url: this._url,
 		modelName: modelName,
 		user: E2.models.user.toJSON()
-	}));
+	}))
 
-	$('.file-selector', this._frame).html(this._renderFiles());
+	$('.file-selector', this._frame).html(this._renderFiles())
 
 	var el = bootbox.dialog({
 		title: this._header,
 		message: this._frame
-	});
-	$('.modal-dialog').addClass('file-select-dialog');
+	})
 
-	this._el = el;
-	this._inputEl = $('#file-url', el);
-	this._selectedEl = $('tr.success', el);
+	$('.modal-dialog').addClass('file-select-dialog')
+
+	this._el = el
+	this._inputEl = $('#file-url', el)
+	this._selectedEl = $('tr.success', el)
 
 	// add buttons
-	var buttonsRow = $('#buttons-row', el);
+	var buttonsRow = $('#buttons-row', el)
 
-	var keypressFn = this._onKeyPress.bind(this);
-	el[0].addEventListener('keydown', keypressFn);
+	var keypressFn = this._onKeyPress.bind(this)
+	el[0].addEventListener('keydown', keypressFn)
 
 	function clickHandler(buttonCb) {	// #732 return false from your handler to prevent the panel closing
 		return function(e) {
-			e.preventDefault();
-			e.stopPropagation();
-			var okToClose = buttonCb.call(self, self._inputEl.val());
+			e.preventDefault()
+			e.stopPropagation()
+			var okToClose = buttonCb.call(that, that._inputEl.val())
 			if (okToClose !== false) {
-				el[0].removeEventListener('keydown',keypressFn);
-				self.close();
+				el[0].removeEventListener('keydown',keypressFn)
+				that.close()
 			}
-			return false;
+			return false
 		}
 	}
 
-
-	Object.keys(this._buttons).map(function(name)
-	{
-		var btn = self._buttons[name];
+	Object.keys(this._buttons).map(function(name) {
+		var btn = that._buttons[name]
 		$('<td>').append(
 			$('<button class="btn btn-default" id="fbBtn'+name+'">'+name+'</button>')
 				.click(clickHandler(btn))
-		).appendTo(buttonsRow);
-	});
+		).appendTo(buttonsRow)
+	})
 	
 	$('button:last', el)
 		.removeClass('btn-default')
-		.addClass('btn-primary');
-
+		.addClass('btn-primary')
 
 	// bind file rows and click handlers
-	this._bindTable();
+	this._bindTable()
 
 	$('input', el).on('change', this._onChange.bind(this))
-//	$('button.close', el).click(this.close.bind(this))
+	$('button.close', el).click(function(e) {
+		e.preventDefault()
+		e.stopPropagation()
+		that.cancel()
+	})
 
 	// show selected file when modal is opened
 	$(el).on('shown.bs.modal', function (e) {
-		if (!self._selectedEl.length)
-			return;
+		if (!that._selectedEl.length)
+			return
 
 		$('table', el).scrollTop(0)
 			.scrollTop(
-				self._selectedEl.position().top
-				- self._selectedEl.height()
-				* 10);
-	});
+				that._selectedEl.position().top
+				- that._selectedEl.height()
+				* 10)
+	})
 
 	// bind upload form
-	this._bindUploadForm();
+	this._bindUploadForm()
 
-	return this;
+	return this
 }
 
 FileSelectControl.prototype._bindTable = function() {
-	var self = this;
+	var that = this
 
 	// bind file rows and click handlers
 	function _onClick(e) {
-		var tr = $(e.target).closest('tr');
-		$('tr.success', self._el).removeClass('success');
-		tr.addClass('success');
-		self._onSelect(tr);
+		var tr = $(e.target).closest('tr')
+		$('tr.success', that._el).removeClass('success')
+		tr.addClass('success')
+		that._onSelect(tr)
 	}
 
-	$('.file-row', self._el).click(_onClick);
-	$('.file-row', self._el).dblclick(function(e) {
-		_onClick(e);
-		self._onChange();
-		self.ok();
-	});
+	$('.file-row', that._el).click(_onClick)
+	$('.file-row', that._el).dblclick(function(e) {
+		_onClick(e)
+		that._onChange()
+		that.ok()
+	})
 }
 
 FileSelectControl.prototype._bindUploadForm = function() {
-	var that = this;
-	var container = $('#upload', this._el);
-	var $form = $('form.fileUploadForm', container);
-	var browsebutton = $('.browse-button');
-	var fileUploadName = $('#fileUploadName');
-	var fileUploadFile = $('#fileUploadFile');
+	var that = this
+	var container = $('#upload', this._el)
+	var $form = $('form.fileUploadForm', container)
+	var browsebutton = $('.browse-button')
+	var fileUploadName = $('#fileUploadName')
+	var fileUploadFile = $('#fileUploadFile')
 	
 	browsebutton.click(function(e) {
 		fileUploadFile.trigger('click')
@@ -292,10 +281,10 @@ FileSelectControl.prototype._bindUploadForm = function() {
 			url: $form[0].action,
 			type: 'POST',
 			xhr: function() {
-				var xhr = $.ajaxSettings.xhr();
+				var xhr = $.ajaxSettings.xhr()
 				xhr.upload.addEventListener('progress', function(evt) {
 					if (evt.lengthComputable)
-						$progress.css('width', Math.floor(evt.loaded/evt.total * 100) + '%');
+						$progress.css('width', Math.floor(evt.loaded/evt.total * 100) + '%')
 				}, false)
 
 				return xhr
@@ -342,68 +331,68 @@ FileSelectControl.prototype._bindUploadForm = function() {
 }
 
 FileSelectControl.prototype._onKeyPress = function(e) {
-	e.stopPropagation();
+	e.stopPropagation()
 	switch(e.keyCode) {
 		case 27:
-			this.cancel();
-			break;
+			this.cancel()
+			break
 		case 13:
-			e.preventDefault();
-			this.ok();
-			break;
+			e.preventDefault()
+			this.ok()
+			break
 		case 38:
-			e.preventDefault();
-			var prev = this._selectedEl.prev('tr');
+			e.preventDefault()
+			var prev = this._selectedEl.prev('tr')
 			if (prev.length)
-				this._onSelect(prev);
-			this._scroll(-1);
-			break;
+				this._onSelect(prev)
+			this._scroll(-1)
+			break
 		case 40:
-			e.preventDefault();
+			e.preventDefault()
 			var next = this._selectedEl.next('tr')
 			if (next.length)
-				this._onSelect(next);
-			this._scroll(1);
-			break;
+				this._onSelect(next)
+			this._scroll(1)
+			break
 	}
-	return true;
+	return true
 }
 
 FileSelectControl.prototype._scroll = function(amt) {
 	if (!this._selectedEl.length)
-		return;
+		return
 
-	var container = $('.fixed-table-container-inner');
-	var threshold = 4 * this._selectedEl.height();
-	container.scrollTop(this._selectedEl.offset().top - container.offset().top + container.scrollTop() - threshold);
+	var container = $('.fixed-table-container-inner')
+	var threshold = 4 * this._selectedEl.height()
+	container.scrollTop(this._selectedEl.offset().top - container.offset().top + container.scrollTop() - threshold)
 }
 
 FileSelectControl.prototype._onChange = function() {
-	this._cb(this._inputEl.val());
+	this._cb(this._inputEl.val())
 }
 
 FileSelectControl.prototype._onSelect = function(row) {
-	var path = row.data('url');
+	var path = row.data('url')
 
-	this._selectedEl.removeClass('success');
-	row.addClass('success');
+	this._selectedEl.removeClass('success')
+	row.addClass('success')
 
-	this._selectedEl = row;
-	this._inputEl.val(path);
-	this._onChange();
+	this._selectedEl = row
+	this._inputEl.val(path)
+	this._onChange()
 }
 
 FileSelectControl.prototype.ok = function() {
-	$('button.btn:last', this._el).click();
+	$('button.btn:last', this._el).click()
 }
 
 FileSelectControl.prototype.cancel = function() {
-	this._cb(this._original);
-	this.close();
+	this._cb(this._original)
+	this.close()
 }
 
 FileSelectControl.prototype.close = function() {
-	this._el.modal('hide');
+	this._el.modal('hide')
 	this.emit('closed')
 }
 
@@ -461,35 +450,34 @@ function createSelector(path, selected, okButton, okFn, cb) {
 
 FileSelectControl.createGraphSelector = function(selected, okButton, okFn)
 {
-	if (E2.ui.isModalOpen()) return null;
-	var ctl = new FileSelectControl();
+	if (E2.ui.isModalOpen()) return null
+	var ctl = new FileSelectControl()
 
-	okButton = okButton || 'Ok';
+	okButton = okButton || 'Ok'
 	okFn = okFn || function() {}
 
 	if (selected && selected.indexOf('://') === -1)
-		selected = selected.substring(selected.lastIndexOf('/') + 1);
+		selected = selected.substring(selected.lastIndexOf('/') + 1)
 
-	E2.ui.updateProgressBar(65);
+	E2.ui.updateProgressBar(65)
 
-	$.get('/graph', function(files)
-	{
-		E2.ui.updateProgressBar(100);
+	$.get('/graph', function(files) {
+		E2.ui.updateProgressBar(100)
 
 		var buttons = {
 			// 'Copy to clipboard': function(file)
 			// {
 			// 	$.get('/data/graph'+file+'.json', function(d)
 			// 	{
-			// 		E2.app.fillCopyBuffer(d.root.nodes, d.root.conns, 0, 0);
-			// 	});
+			// 		E2.app.fillCopyBuffer(d.root.nodes, d.root.conns, 0, 0)
+			// 	})
 			// }
 			'Cancel': function() {}
 		}
 
-		buttons[okButton] = okFn;
+		buttons[okButton] = okFn
 
-		var selectedPath;
+		var selectedPath
 
 		ctl
 			.url('/graph')
@@ -499,96 +487,71 @@ FileSelectControl.createGraphSelector = function(selected, okButton, okFn)
 			.files(files)
 			.selected(selected)
 			.onChange(function(path) {
-				$('.links').show();
-				selectedPath = path;
+				$('.links').show()
+				selectedPath = path
 			})
-			.modal();
+			.modal()
 
 		$('.links .download').click(function(e) {
-			e.preventDefault();
-			e.stopPropagation();
-			window.open('/dl/data/graph'+selectedPath+'.json');
-		});
+			e.preventDefault()
+			e.stopPropagation()
+			window.open('/dl/data/graph'+selectedPath+'.json')
+		})
 
 		$('.links .clipboard').click(function(e) {
-			e.preventDefault();
-			e.stopPropagation();
+			e.preventDefault()
+			e.stopPropagation()
 			$.get('/data/graph'+selectedPath+'.json', function(d)
 			{
-				E2.app.fillCopyBuffer(d.root.nodes, d.root.conns, 0, 0);
-				ctl.close();
-			});
-			return false;
-		});
+				E2.app.fillCopyBuffer(d.root.nodes, d.root.conns, 0, 0)
+				ctl.close()
+			})
+			return false
+		})
 
-		$('.links').hide();
-	});
+		$('.links').hide()
+	})
 
-	return ctl;
+	return ctl
 }
 
-FileSelectControl.createVideoSelector = function(selected, okButton, okFn)
-{
-	return createSelector('/video', selected, okButton, okFn, function(ctl)
-	{
-		ctl
-		.modal();
-	});
+FileSelectControl.createVideoSelector = function(selected, okButton, okFn) {
+	return FileSelectControl.createForUrl('/video', selected, okButton, okFn)
 }
 
-FileSelectControl.createJsonSelector = function(selected, okButton, okFn)
-{
-	return createSelector('/json', selected, okButton, okFn, function(ctl)
-	{
-		ctl
-		.modal();
-	});
+FileSelectControl.createJsonSelector = function(selected, okButton, okFn) {
+	return FileSelectControl.createForUrl('/json', selected, okButton, okFn)
 }
 
-FileSelectControl.createAudioSelector = function(selected, okButton, okFn)
-{
-	return createSelector('/audio', selected, okButton, okFn, function(ctl)
-	{
-		ctl
-		.modal();
-	});
+FileSelectControl.createAudioSelector = function(selected, okButton, okFn) {
+	return FileSelectControl.createForUrl('/audio', selected, okButton, okFn)
 }
 
 FileSelectControl.createPresetSelector = function(selected, okButton, okFn) {
-	return createSelector('/preset', selected, okButton, okFn, function(ctl) {
-		ctl
-		.modal()
-	})
+	return FileSelectControl.createForUrl('/preset', selected, okButton, okFn)
 }
 
-FileSelectControl.createSceneSelector = function(selected, okButton, okFn)
-{
-	return createSelector('/scene', selected, okButton, okFn, function(ctl)
-	{
-		ctl
-		.modal();
-	});
+FileSelectControl.createSceneSelector = function(selected, okButton, okFn) {
+	return FileSelectControl.createForUrl('/scene', selected, okButton, okFn)
 }
 
-FileSelectControl.createTextureSelector = function(selected, cb){
-	return createSelector('/image/tag/texture', selected, 'Select', function(){}, cb)
+FileSelectControl.createTextureSelector = function(selected, cb) {
+	return createSelector('/image/tag/texture', selected, 'Select', function() {}, cb)
 }
 
-FileSelectControl.createStereoCubeMapSelector = function(selected, cb){
-	return createSelector('/image/tag/stereocubemap', selected, 'Select', function(){}, cb)
+FileSelectControl.createStereoCubeMapSelector = function(selected, cb) {
+	return createSelector('/image/tag/stereocubemap', selected, 'Select', function() {}, cb)
 }
 
-FileSelectControl.createModelSelector = function(model, selected, cb){
-	return createSelector('/'+model, selected, 'Select', function(){}, cb)
+FileSelectControl.createModelSelector = function(model, selected, cb) {
+	return createSelector('/'+model, selected, 'Select', function() {}, cb)
 }
 
 FileSelectControl.createForUrl = function(path, selected, okButton, okFn) {
-	return createSelector(path, selected, okButton, okFn, function(ctl)
-	{
-		ctl
-		.modal();
-	});
+	return createSelector(path, selected, okButton, okFn, function(ctl) {
+		ctl.modal()
+	})
 }
 
 if (typeof(exports) !== 'undefined')
-	exports.FileSelectControl = FileSelectControl;
+	exports.FileSelectControl = FileSelectControl
