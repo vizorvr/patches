@@ -1,4 +1,4 @@
-var AbstractTextareaPlugin = function AbstractTextareaPlugin(core, node) {
+function AbstractTextAreaPlugin(core, node) {
 	Plugin.apply(this, arguments)
 	this.desc = 'Enter a constant text string.'
 
@@ -20,14 +20,14 @@ var AbstractTextareaPlugin = function AbstractTextareaPlugin(core, node) {
 	this.state = { text: '', width: this.uiMinWidth, height: this.uiMinHeight }
 }
 
-AbstractTextareaPlugin.prototype = Object.create(Plugin.prototype)
-AbstractTextareaPlugin.prototype.constructor = AbstractTextareaPlugin
+AbstractTextAreaPlugin.prototype = Object.create(Plugin.prototype)
+AbstractTextAreaPlugin.prototype.constructor = AbstractTextAreaPlugin
 
-AbstractTextareaPlugin.prototype.reset = function() {
+AbstractTextAreaPlugin.prototype.reset = function() {
 	this.updated = true
 }
 
-AbstractTextareaPlugin.prototype.create_ui = function() {
+AbstractTextAreaPlugin.prototype.create_ui = function() {
 	var that = this
 	var clamp = THREE.Math.clamp
 
@@ -83,7 +83,7 @@ AbstractTextareaPlugin.prototype.create_ui = function() {
 	return this.ui.dom
 }
 
-AbstractTextareaPlugin.prototype.destroy_ui = function() {
+AbstractTextAreaPlugin.prototype.destroy_ui = function() {
 	var q = this._uiDetachQueue
 	if (q && q.length) {
 		var removeHandler
@@ -97,15 +97,15 @@ AbstractTextareaPlugin.prototype.destroy_ui = function() {
 	this.ui = null
 }
 
-AbstractTextareaPlugin.prototype.update_output = function() {
+AbstractTextAreaPlugin.prototype.update_output = function() {
 	return this.state.text
 }
 
-AbstractTextareaPlugin.prototype.state_changed = function() {
+AbstractTextAreaPlugin.prototype.state_changed = function() {
 	this.updateUi()
 }
 
-AbstractTextareaPlugin.prototype.updateUi = function() {
+AbstractTextAreaPlugin.prototype.updateUi = function() {
 	if (!this.ui)
 		return
 
@@ -113,5 +113,4 @@ AbstractTextareaPlugin.prototype.updateUi = function() {
 }
 
 if (typeof(module) !== 'undefined')
-	module.exports = AbstractTextareaPlugin
-
+	module.exports = AbstractTextAreaPlugin
