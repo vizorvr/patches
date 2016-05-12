@@ -17,7 +17,18 @@ THREE.FontLoader.prototype = {
 		var loader = new THREE.XHRLoader( this.manager );
 		loader.load( url, function ( text ) {
 
-			onLoad( new THREE.Font( JSON.parse( text.substring( 65, text.length - 2 ) ) ) );
+			var fontDataMarker = 'loadFace('
+			var fontDataStart = text.indexOf(fontDataMarker)
+
+			var fontData = text
+			if (fontDataStart === -1) {
+				fontData = text
+			}
+			else {
+				fontData = text.substring( fontDataStart + fontDataMarker.length, text.length - 2 )
+			}
+
+			onLoad( new THREE.Font( JSON.parse( fontData ) ) );
 
 		}, onProgress, onError );
 

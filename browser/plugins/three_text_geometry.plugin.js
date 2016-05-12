@@ -36,6 +36,7 @@
 	ThreeTextGeometry.prototype.constructor = Plugin.prototype
 
 	ThreeTextGeometry.prototype.reset = function() {
+		this.geometry = new THREE.Geometry()
 		this.dirty = true
 	}
 
