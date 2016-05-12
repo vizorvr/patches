@@ -263,6 +263,26 @@ Node.prototype.remove_slot = function(slot_type, suid) {
 	this.emit('slotRemoved', slot)
 }
 
+Node.prototype.getSlotConnections = function(slot) {
+	var that = this
+	var isInput = slot.type === E2.slot_type.input
+	var arr = isInput ? this.inputs : this.outputs
+	
+	return arr.filter(function(c) {
+		var s = isInput ? c.dst_slot : c.src_slot
+		return s === slot
+	})
+}
+
+Node.prototype.slotHasConnections = function(slot) {
+	var isInput = slot.type === E2.slot_type.input
+	var arr = isInput ? this.inputs : this.outputs
+	return arr.some(function(c) {
+		var s = isInput ? c.dst_slot : c.src_slot
+		return s === slot
+	})
+}
+
 Node.prototype.setInputSlotValue = function(name, value) {
 	var slot = this.findInputSlotByName(name)
 
@@ -440,6 +460,13 @@ Node.prototype.addOutput = function(conn) {
 Node.prototype.removeOutput = function(conn) {
 	conn.dst_slot.is_connected = false
 	this.outputs.splice(this.outputs.indexOf(conn), 1)
+	
+	if (!this.slotHasConnections(conn.src_slot)) {
+		conn.src_slot.is_connected = false
+
+		if (this.ui)
+			this.ui.redrawSlots()
+	}
 }
 
 Node.prototype.removeInput = function(conn) {
