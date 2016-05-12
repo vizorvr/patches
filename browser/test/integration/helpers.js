@@ -259,6 +259,7 @@ exports.reset = function() {
 		setPixelRatio: function() {},
 		domElement: {parentElement:{style:{}}},
 		setSize: function(){},
+		setSizeNoResize: function(){},
 		setClearColor: function() {},
 		getSize: function() {return {width: 1, height: 1}}
 	}
