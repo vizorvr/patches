@@ -97,6 +97,7 @@ var vizor360 = new function() {
 		E2.app.player.loadAndPlay(asset.url, true)
 			.then(function(){
 				$('#sharebutton').show()
+				$('#edit').show()
 			})
 	}
 
@@ -506,6 +507,7 @@ var vizor360 = new function() {
 		if (window.Vizor && (Vizor.graphName === '')) {
 			playerUI.headerDisableAutoFadeout()
 			$('#sharebutton').hide()
+			$('#edit').hide()
 		}
 	}
 }
