@@ -120,8 +120,7 @@ AssetController.prototype.findByTagAndUsername = function(req, res, next) {
 // GET /:model/:slug
 AssetController.prototype.load = function(req, res, next) {
 	this._service.findByPath(req.params.path)
-	.then(function(item)
-	{
+	.then(function(item) {
 		res.json(item)
 	})
 	.catch(next)
@@ -133,9 +132,11 @@ AssetController.prototype.save = function(req, res, next) {
 
 	this._service.canWrite(req.user, req.body.path)
 	.then(function(can) {
-		if (!can)
-			return res.status(403)
-				.json({message: 'Sorry, permission denied'})
+		if (!can) {
+			return res.status(403).json({
+				message: 'Sorry, permission denied'
+			})
+		}
 
 		return that._service.save(req.body, req.user)
 		.then(function(asset) {

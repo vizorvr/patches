@@ -85,7 +85,6 @@ describe('Graph', function() {
 		})
 	})
 
-
 	it('doesn\'t display privates', function(done) {
 		var path = 'graph-rank-'+rand()
 
@@ -113,6 +112,41 @@ describe('Graph', function() {
 				})
 
 				done()
+			})
+		})
+	})
+
+	it('doesn\'t display deleted', function(done) {
+		var path = 'graph-rank-'+rand()
+
+		agent.post('/graph').send({
+			path: path,
+			graph: graphData
+		})
+		.expect(200)
+		.end(function(err, res) {
+			if (err) return done(err)
+
+			agent.delete('/'+username+'/'+path)
+			.expect(200)
+			.end(function(err, res) {
+				if (err)
+					return done(err)
+
+				request(app)
+				.get('/browse')
+				.set('X-Requested-With', 'XMLHttpRequest')
+				.expect(200)
+				.end(function(err, res) {
+					if (err)
+						return done(err)
+
+					res.body.data.map(function(graph) {
+						assert.notEqual(graph.name, path)
+					})
+
+					done()
+				})
 			})
 		})
 	})

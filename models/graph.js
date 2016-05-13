@@ -33,12 +33,11 @@ var graphSchema = new mongoose.Schema({
 	previewUrlSmall: { type: String },
 	previewUrlLarge: { type: String },
 
+	deleted: { type: Boolean, default: false },
 	editable: { type: Boolean, default: true },
-
 	private: { type: Boolean, default: false },
 
 	views: { type: Number, default: 0 },
-
 	rank: { type: Number, default: 0 },
 
 	hasAudio: { type: Boolean, default: false },
@@ -57,8 +56,17 @@ var graphSchema = new mongoose.Schema({
 // unique index on owner+name
 graphSchema.index({ owner: 1, name: 1, unique: true })
 
-// index rank+private for discovery
-graphSchema.index({ rank: 1, private: 1 })
+// index on private + deleted
+graphSchema.index({ private: 1, deleted: 1 })
+
+// index rank+private+deleted for discovery
+graphSchema.index({ rank: 1, private: 1, deleted: 1 })
+
+// index owner+private+deleted for public userpage
+graphSchema.index({ owner: 1, private: 1, deleted: 1 })
+
+// index owner+deleted for own userpage
+graphSchema.index({ owner: 1, deleted: 1 })
 
 graphSchema.virtual('path').get(function() {
 	return '/'+this.owner+'/'+this.name
