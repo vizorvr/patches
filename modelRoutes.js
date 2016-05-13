@@ -185,6 +185,15 @@ function modelRoutes(
 	);
 
 	// -----
+	// Admin
+	app.get('/admin/list', 
+		requireAdminUser,
+		function(req, res, next) {
+			graphController.adminIndex(req, res, next)
+		}
+	)
+
+	// -----
 	// Edit Log routes
 	app.get('/editlog', function(req, res, next) {
 		return editLogController.userIndex(req, res, next)
@@ -287,14 +296,6 @@ function modelRoutes(
 	app.get(['/browse', '/graphs', '/browse.json'], function(req, res, next) {
 		graphController.publicRankedIndex(req, res, next)
 	})
-
-	// list all
-	app.get('/admin/list', 
-		requireAdminUser,
-		function(req, res, next) {
-			graphController.adminIndex(req, res, next)
-		}
-	)
 
 	// list own assets
 	app.get('/:model', getController, function(req, res, next) {
