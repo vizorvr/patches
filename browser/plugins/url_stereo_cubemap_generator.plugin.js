@@ -81,7 +81,12 @@
 						if (newValue === oldValue)
 							return;
 
-						mixpanel.track('UrlStereoCubeMap Texture Changed')
+						E2.track({
+							event: 'assetChanged',
+							plugin: 'UrlStereoCubeMap',
+							url: newValue
+						})
+						
 						that.undoableSetState('url', newValue, oldValue)
 					})
 					.modal()

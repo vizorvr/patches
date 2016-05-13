@@ -38,8 +38,8 @@ describe('ForkCommand', function() {
 
 	beforeEach(function() {
 		global.history = { pushState: function() {} }
-		global.mixpanel = { track: function() {} }
 		global.E2 = {
+			track: function() {},
 			core: {
 				root_graph: {
 					uid: 'root',

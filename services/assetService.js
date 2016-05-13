@@ -108,10 +108,9 @@ AssetService.prototype.findByTagAndUserId = function(tag, userId) {
 	})
 }
 
-AssetService.prototype.findByPath = function(path)
-{
-	return this.findOne({path: path});
-};
+AssetService.prototype.findByPath = function(path) {
+	return this.findOne({path: path})
+}
 
 AssetService.prototype.save = function(data, user) {
 	var that = this;

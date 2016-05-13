@@ -35,11 +35,10 @@
         </script>
 
         <script src="/scripts/ui/playerUI.js"></script>
-
         <script>{{> mixpanel}}</script>
-	    <script>{{> ga}}</script>
 	</head>
 	<body class="bPlayer noselect_all dark">
+        {{> srv/gtm}}
         {{> srv/siteSvgSprite }}
         <div class="wrap clearfix" id="playerpage">
 		    {{{body}}}

@@ -419,6 +419,7 @@ CollapsibleSelectControl.prototype.render = function(el, templateOptions) {
 	// Drag and drop an element from the list
 	$('li', el).bind('mousedown', {
 		dropSuccessCb: function(e) {
+			$input.blur()
 			that._cb($(e.currentTarget).data('path'))
 		}
 	}, dragAndDropMouseDownHandler)

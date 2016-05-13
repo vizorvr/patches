@@ -73,7 +73,12 @@
 					if (newValue === oldValue)
 						return;
 
-					mixpanel.track('UrlStereoLatLongMap Texture Changed')
+					E2.track({
+						event: 'assetChanged',
+						plugin: 'UrlStereoLatLongMap',
+						url: newValue
+					})
+
 					that.undoableSetState('url', newValue, oldValue)
 				})
 				.modal()

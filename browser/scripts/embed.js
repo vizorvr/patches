@@ -59,6 +59,8 @@
     }, false)
 
 	var resizeIframe = function() {
+		var d = iframeElement.style.display
+		iframeElement.style.display = 'none'
 		var currentWidth = iframeElement.parentNode.getBoundingClientRect().width * 0.995
 		if (currentWidth !== iframeWidth) {
 			iframeWidth = currentWidth
@@ -66,6 +68,7 @@
 			iframeElement.width = iframeWidth
 			iframeElement.height = iframeHeight
 		}
+		iframeElement.style.display = d
 		return true
 	}
 
@@ -77,8 +80,12 @@
 	iframeWindow = document.getElementById(iframeId).contentWindow
 
 	resizeIframe()
-
-	window.addEventListener('orientationchange', resizeIframe)
+	
+	// fix resizing issues with android
+	// android issues orientationchange->resize, ios issues resize->orientationchange
+	window.addEventListener('orientationchange', function(){
+		setTimeout(resizeIframe, 500)
+	}, true)
 	window.addEventListener('resize', resizeIframe)
 	window.addEventListener('devicemotion', function(deviceMotion) {
 		iframeWindow.postMessage({

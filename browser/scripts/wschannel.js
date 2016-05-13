@@ -29,6 +29,10 @@ WebSocketChannel.prototype.connect = function(wsUrl, options) {
 
 	this.ws.onclose = function() {
 		console.warn('WsChannel disconnected')
+		dataLayer.push({
+			event: 'webSocketDisconnected',
+			url: wsUrl
+		})
 		that._state = 'disconnected'
 		that.emit('disconnected')
 	}

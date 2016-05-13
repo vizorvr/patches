@@ -138,7 +138,9 @@ var VizorPlayerUI = function() {
 
 		function completeLoading() {
             that.selectStage('stage')
-            mixpanel.track('Player playing')
+			E2.track({
+				event: 'playerPlaying'
+			})
 
             if (!that.controlsBound) {
                 that.bindHeaderBehaviour()
@@ -194,13 +196,13 @@ var VizorPlayerUI = function() {
 
 	this.bindButtons = function() {
 		function enterFullscreen(e) {
-			mixpanel.track('Enter Fullscreen')
+			E2.track({ event: 'enterFullscreen' })
 			E2.core.webVRAdapter.enterFullscreen()
             siteUI.tagBodyClass()
         }
 
         function enterVR(e) {
-			mixpanel.track('Enter VR')
+			E2.track({ event: 'enterVR' })
 
             if (siteUI.isDeviceDesktop() && !E2.core.webVRAdapter.isVRCompatible()) {
                 // display "view in VR" sign
@@ -212,8 +214,6 @@ var VizorPlayerUI = function() {
         }
 
 		function share(e) {
-			mixpanel.track('Share Clicked')
-
 			e.preventDefault()
 			var data = {
 				origin	: Vizor.origin,
@@ -243,8 +243,6 @@ var VizorPlayerUI = function() {
 		}
 
 		function edit(e) {
-			mixpanel.track('Edit Clicked')
-
 			var editUrl = '/' +
 				window.location.href
 				.split('?')[0]
@@ -271,7 +269,7 @@ var VizorPlayerUI = function() {
 		that.$canvas.on('mousedown touchstart', function() {
 			if (firstMouseDown) {
 				firstMouseDown = false
-				mixpanel.track('Mouse down')
+				E2.track({ event: 'mouseDownInPlayer' })
 			}
 		})
 	}

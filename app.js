@@ -137,8 +137,8 @@ app.use(function(req, res, next) {
 	}
 
 	res.locals.user = req.user;
-	res.locals.KEY_GA = process.env.KEY_GA;
 	res.locals.KEY_MIXPANEL = process.env.KEY_MIXPANEL;
+	res.locals.KEY_GTM = process.env.KEY_GTM;
 	next();
 });
 

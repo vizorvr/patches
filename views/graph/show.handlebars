@@ -41,6 +41,12 @@
                     {{else}}
                     {{/eq}}
                 </button>
+            {{else}}
+                {{!-- always display this button in 360vr.io, the UI will manage it --}}
+                {{#eq layout "threesixty"}}
+                    <button id="edit" class="svg nopaused noDeviceMobile" data-svgref="player-icon-edit"><svg></svg>
+                        <span>Edit</span></button>
+                {{/eq}}
             {{/if}}
 
             {{#unless hideShareButton}}

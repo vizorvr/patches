@@ -33,8 +33,8 @@ GraphApi.prototype.connect = function(graph, connection) {
 	return this.undoManager.execute(cmd)
 }
 
-GraphApi.prototype.disconnect = function(graph, connectionUid) {
-	var cmd = new E2.commands.graph.Disconnect(graph, connectionUid)
+GraphApi.prototype.disconnect = function(graph, connection) {
+	var cmd = new E2.commands.graph.Disconnect(graph, connection)
 	return this.undoManager.execute(cmd)
 }
 

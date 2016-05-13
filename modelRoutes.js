@@ -243,17 +243,25 @@ function modelRoutes(
 		graphController.edit(req, res, next);
 	});
 
+	// GET /fthr/dunes-world.json
+	app.get('/:username/:graph.json', function(req, res, next) {
+		req.params.path = '/'+req.params.username+'/'+req.params.graph.replace(/\.json$/g, '');
+		graphController.load(req, res, next);
+	});
+
 	// GET /fthr/dunes-world -- PLAYER
 	app.get('/:username/:graph', function(req, res, next) {
 		req.params.path = '/'+req.params.username+'/'+req.params.graph;
 		graphController.graphLanding(req, res, next);
 	});
 
-	// GET /fthr/dunes-world.json
-	app.get('/:username/:graph.json', function(req, res, next) {
-		req.params.path = '/'+req.params.username+'/'+req.params.graph.replace(/\.json$/g, '');
-		graphController.load(req, res, next);
-	});
+	// DELETE /fthr/dunes-world
+	app.delete('/:username/:graph', 
+		passportConf.isAuthenticated,
+		function(req, res, next) {
+			req.params.path = '/'+req.params.username+'/'+req.params.graph
+			graphController.delete(req, res, next)
+		})
 
 	// GET /fthr/dunes-world/graph.json
 	app.get('/:username/:graph/graph.json', function(req, res, next) {

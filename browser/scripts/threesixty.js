@@ -89,13 +89,15 @@ var vizor360 = new function() {
 		playerUI.headerEnableAutoFadeout()
 		history.pushState({}, '', asset.path)
 
-		mixpanel.track('ThreeSixty Loading Graph', {
+		E2.track({
+			event: 'ThreeSixty Loading Graph',
 			path: asset.path
 		})
 
 		E2.app.player.loadAndPlay(asset.url, true)
 			.then(function(){
 				$('#sharebutton').show()
+				$('#edit').show()
 			})
 	}
 
@@ -107,7 +109,7 @@ var vizor360 = new function() {
 		clearBodyClass()
 		$body.addClass('uploading')
 
-		mixpanel.track('ThreeSixty Uploading Graph')
+		E2.track({ event: 'ThreeSixty Uploading Graph' })
 
 		$.ajax({
 			url: '/graph/v',
@@ -115,7 +117,8 @@ var vizor360 = new function() {
 			data: graphData,
 			dataType: 'json',
 			success: function(response) {
-				mixpanel.track('ThreeSixty Uploaded Graph', {
+				E2.track({
+					event: 'ThreeSixty Uploaded Graph', 
 					path: response.path
 				})
 
@@ -126,7 +129,8 @@ var vizor360 = new function() {
 			error: function(err) {
 				var errMsg = err.responseJSON ? err.responseJSON.message : err.status
 
-				mixpanel.track('ThreeSixty Error Uploading Graph', {
+				E2.track({
+					event: 'ThreeSixty Error Uploading Graph',
 					type: 'error',
 					error: errMsg
 				})
@@ -283,13 +287,14 @@ var vizor360 = new function() {
 			error: function(err, text_status) {
 				if (text_status === "abort") {
 					// http://paulrademacher.com/blog/jquery-gotcha-error-callback-triggered-on-xhr-abort/
-					mixpanel.track('ThreeSixty Cancelled Uploading')
+					E2.track({ event: 'ThreeSixty Cancelled Uploading' })
 					return
 				}
 				var errMsg = err.responseJSON ? err.responseJSON.message : err.status
 				cancelledUploading();
 		
-				mixpanel.track('ThreeSixty Error Uploading', {
+				E2.track({ 
+					event: 'ThreeSixty Error Uploading', 
 					type: 'error',
 					error: errMsg
 				})
@@ -310,7 +315,8 @@ var vizor360 = new function() {
 	}
 
 	this.fileUploadErrorWrongType = function(filePath) {
-		mixpanel.track('ThreeSixty Error Wrong File Type', {
+		E2.track({ 
+			event: 'ThreeSixty Error Wrong File Type', 
 			type: 'error',
 			filePath: filePath,
 			fileType: filePath.type
@@ -340,7 +346,8 @@ var vizor360 = new function() {
 			return that.fileUploadErrorWrongType(filePath)
 		}
 
-		mixpanel.track('ThreeSixty Uploading', {
+		E2.track({ 
+			event: 'ThreeSixty Uploading', 
 			filePath: filePath,
 			fileType: filePath.type
 		})
@@ -348,7 +355,8 @@ var vizor360 = new function() {
 		that
 			.uploadFile(filePath, 'image')
 			.then(function(uploadedFile) {
-				mixpanel.track('ThreeSixty Uploaded', {
+				E2.track({ 
+					event: 'ThreeSixty Uploaded', 
 					filePath: filePath,
 					uploadedFile: uploadedFile
 				})
@@ -376,7 +384,7 @@ var vizor360 = new function() {
 
 		playerUI.headerFadeOut(100)
 
-		mixpanel.track('ThreeSixty DragEnter')
+		E2.track({ event:  'ThreeSixty DragEnter' })
 
 		e.stopPropagation();
 		e.preventDefault();
@@ -386,7 +394,7 @@ var vizor360 = new function() {
 	}
 
 	this.dragLeaveHandler = function(e) {
-		mixpanel.track('ThreeSixty DragLeave')
+		E2.track({ event: 'ThreeSixty DragLeave' })
 
 		e.stopPropagation();
 		e.preventDefault();
@@ -407,7 +415,7 @@ var vizor360 = new function() {
 
 		// Needs to be defined also for the 'drop' event handler to work
 		drop_zone.addEventListener("dragover", function(evt) {
-			mixpanel.track('ThreeSixty DragOver')
+			E2.track({ event: 'ThreeSixty DragOver' })
 			evt.stopPropagation();
 			evt.preventDefault();
 		});
@@ -499,6 +507,7 @@ var vizor360 = new function() {
 		if (window.Vizor && (Vizor.graphName === '')) {
 			playerUI.headerDisableAutoFadeout()
 			$('#sharebutton').hide()
+			$('#edit').hide()
 		}
 	}
 }

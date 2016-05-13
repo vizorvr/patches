@@ -90,13 +90,12 @@
     </script>
 
 	<script src="/scripts/player.min.js"></script>
-
-    <script>{{> ga}}</script>
     <script>{{> mixpanel}}</script>
 </head>
 
 <body class="bMain {{meta.bodyclass}} {{extraClasses}}">
-{{> srv/siteSvgSprite }}
+	{{> srv/gtm}}
+	{{> srv/siteSvgSprite }}
 
 	{{#unless meta.noheader}}
     <header>

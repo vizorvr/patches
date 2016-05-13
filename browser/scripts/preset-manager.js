@@ -1,6 +1,5 @@
 
-function PresetManager(base_url)
-{
+function PresetManager(base_url) {
 	EventEmitter.call(this)
 
 	this._base_url = base_url
@@ -128,7 +127,7 @@ PresetManager.prototype.renderPresets = function() {
 	.onOpen(this.onOpen.bind(this))
 	
 	var presetSearch = $('#presets-lib .searchbox input');
-	presetSearch.focus(E2.ui.onLibSearchClicked.bind(E2.ui, E2.dom.presets_list));
+	presetSearch.focus(E2.ui.onLibSearchClicked.bind(E2.ui));
 }
 
 PresetManager.prototype.renderObjects = function() {
@@ -143,17 +142,20 @@ PresetManager.prototype.renderObjects = function() {
 	.onOpen(this.onOpen.bind(this))
 	
 	var objectSearch = $('.searchbox input', E2.dom.objectsList);
-	objectSearch.focus(E2.ui.onLibSearchClicked.bind(E2.ui, E2.dom.objectsList));
+	objectSearch.focus(E2.ui.onLibSearchClicked.bind(E2.ui));
 }
 
 PresetManager.prototype.openPreset = function(name) {
 	$.get(name)
 	.done(function(data) {
-		mixpanel.track('Preset Added', {
+		E2.track({
+			event: 'Preset Added', 
 			name: name
 		})
 
-		var doc = E2.app.fillCopyBuffer(data.root.nodes, data.root.conns, 0, 0)
+		var preset = data.root ? data.root : data
+
+		var doc = E2.app.fillCopyBuffer(preset.nodes, preset.conns, 0, 0)
 		E2.app.onPaste(doc)
 	})
 	.fail(function(_j, _textStatus, _errorThrown) {
