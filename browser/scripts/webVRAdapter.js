@@ -259,7 +259,7 @@ VizorWebVRAdapter.prototype.onBrowserResize = function() {
 		that.resizeToTarget()
 	}
 
-	if (hardware.hmd instanceof VRDisplay)
+	if (!this.iOS && hardware.hmd instanceof VRDisplay)
 		doResize()
 	else
 		this._scheduleResize(doResize, timeout)
