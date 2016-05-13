@@ -1513,7 +1513,7 @@ Application.prototype.loadGraph = function(graphPath, cb) {
 			E2.app.player.play() // autoplay
 			E2.app.changeControlState()
 			
-			E2.ui.setPageTitle();
+			E2.ui.setPageTitle()
 
 			if (cb)
 				cb()
@@ -2061,6 +2061,12 @@ Application.prototype.start = function() {
 			animation: false
 	});
 	
+	if (window.location.hash[1] === '/') {
+		// path in graph
+		// only root supported
+		that.onGraphSelected(E2.core.root_graph)
+		E2.ui.state.mode = 'program'
+	}
 
 }
 
