@@ -78,11 +78,14 @@ GraphService.prototype.userGraphs = function(username) {
 
 GraphService.prototype._save = function(data, user) {
 	var that = this
+	var wasNew = false
 
 	return this.findByPath(data.path)
 	.then(function(asset) {
-		if (!asset)
+		if (!asset) {
+			wasNew = true
 			asset = new that._model(data)
+		}
 
 		asset._creator = user.id
 		asset.updatedAt = Date.now()
@@ -113,6 +116,9 @@ GraphService.prototype._save = function(data, user) {
 		asset.save(function(err) {
 			if (err)
 				return dfd.reject(err)
+
+			if (wasNew && !user.isAnonymous)
+				user.increaseProjectsCount()
 
 			dfd.resolve(asset)
 		})

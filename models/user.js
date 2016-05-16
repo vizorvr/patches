@@ -1,6 +1,7 @@
 var mongoose = require('mongoose')
 var bcrypt = require('bcrypt-nodejs')
 var crypto = require('crypto')
+var when = require('when')
 
 var userSchema = new mongoose.Schema({
 	name: { type: String, required: false, unique: false },
@@ -12,17 +13,14 @@ var userSchema = new mongoose.Schema({
 	
 	isAdmin: { type: Boolean, default: false },
 
-	facebook: String,
-	twitter: String,
-	google: String,
-	github: String,
-	instagram: String,
-	linkedin: String,
-	tokens: Array,
-
 	profile: {
 		avatarOriginal: { type: String, default: '' },
 		avatarScaled: { type: String, default: '' }
+	},
+
+	stats: {
+		views: { type: Number, default: 0 },
+		projects: { type: Number, default: 0 },
 	},
 
 	resetPasswordToken: String,
@@ -58,7 +56,24 @@ userSchema.methods.toJSON = function() {
 		email: this.email,
 		avatar: this.profile.avatarScaled,
 		gravatar: this.gravatar,
-		name: this.name
+		name: this.name,
+		stats: {
+			views: this.stats.views || 0,
+			projects: this.stats.projects || 0
+		}
+	}
+}
+
+userSchema.methods.toPublicJSON = function() {
+	return {
+		username: this.username,
+		avatar: this.profile.avatarScaled,
+		gravatar: this.gravatar,
+		name: this.name,
+		stats: {
+			views: this.stats.views || 0,
+			projects: this.stats.projects || 0
+		}
 	}
 }
 
@@ -69,6 +84,62 @@ userSchema.methods.comparePassword = function(candidatePassword, cb) {
 
  		cb(null, isMatch)
 	})
+}
+
+userSchema.methods.setStats = function(stats) {
+	var dfd = when.defer()
+
+	// update graph views
+	this.update({ $set: { stats: stats } }, { w: 1 }, function(err) {
+		if (err)
+			return dfd.reject(err)
+
+		dfd.resolve() 
+	})
+	
+	return dfd.promise
+}
+
+userSchema.methods.increaseViewCount = function() {
+	var dfd = when.defer()
+
+	// update view count
+	this.update({ $inc: { 'stats.views': 1 } }, { w: 1 }, function(err) {
+		if (err)
+			return dfd.reject(err)
+
+		dfd.resolve() 
+	})
+	
+	return dfd.promise
+}
+
+userSchema.methods.increaseProjectsCount = function() {
+	var dfd = when.defer()
+
+	// update projects count
+	this.update({ $inc: { 'stats.projects': 1 } }, { w: 1 }, function(err) {
+		if (err)
+			return dfd.reject(err)
+
+		dfd.resolve() 
+	})
+	
+	return dfd.promise
+}
+
+userSchema.methods.decreaseProjectsCount = function() {
+	var dfd = when.defer()
+
+	// update projects count
+	this.update({ $dec: { 'stats.projects': 1 } }, { w: 1 }, function(err) {
+		if (err)
+			return dfd.reject(err)
+
+		dfd.resolve() 
+	})
+	
+	return dfd.promise
 }
 
 userSchema.virtual('gravatar').get(function(size) {
