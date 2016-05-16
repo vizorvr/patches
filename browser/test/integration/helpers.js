@@ -143,7 +143,10 @@ exports.reset = function() {
 	}
 
 	global.navigator = {
-		userAgent: 'node'
+		userAgent: 'node',
+		getGamepads: function() {
+			return []
+		}
 	}
 
 	global.WebVRConfig = {
