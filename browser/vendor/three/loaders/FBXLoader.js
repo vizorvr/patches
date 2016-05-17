@@ -247,7 +247,7 @@
 				this.textureLoader = new THREE.TextureLoader();
 
 			}
-			texture = this.textureLoader.load( this.textureBasePath + '/' + texs[ 0 ].fileName );
+			texture = this.textureLoader.load( this.textureBasePath + texs[ 0 ].fileName );
 
 		}
 
