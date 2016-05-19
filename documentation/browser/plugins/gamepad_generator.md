@@ -71,5 +71,11 @@ right stick X
 ###right stick Y
 right stick Y
 
+###position
+
+
+###rotation
+
+
 ##Detail
 
