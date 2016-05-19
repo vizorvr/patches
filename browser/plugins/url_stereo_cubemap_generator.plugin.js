@@ -143,12 +143,17 @@
 		var imageWidth = img.width
 		var imageHeight = img.height
 
-		var tiles = 12
+		var tiles = imageWidth / imageHeight
 
 		var tileWidth = imageWidth / tiles
 		var tileHeight = imageHeight
 
 		var textures = []
+
+		var intermediateCanvas = document.createElement('canvas')
+		intermediateCanvas.width = img.width
+		intermediateCanvas.height = img.height
+		intermediateCanvas.getContext('2d').drawImage(img, 0, 0, imageWidth, imageHeight, 0, 0, imageWidth, imageHeight)
 
 		for (var i = 0; i < tiles; ++i) {
 			var tileCanvas = document.createElement('canvas')
@@ -156,18 +161,21 @@
 			tileCanvas.height = tileHeight
 
 			var ctx = tileCanvas.getContext('2d')
-			ctx.drawImage(img, i * tileWidth, 0,
+			ctx.drawImage(intermediateCanvas, i * tileWidth, 0,
 				tileWidth, tileHeight, 0, 0, tileWidth, tileHeight)
 
 			textures.push(tileCanvas)
 		}
 
+		var leftTextures = textures.splice(0, 6)
+		var rightTextures = textures.length === 6 ? textures.splice(0, 6) : leftTextures
+
 		// left eye
-		var leftTexture = new THREE.CubeTexture(textures.splice(0, 6))
+		var leftTexture = new THREE.CubeTexture(leftTextures)
 		leftTexture.needsUpdate = true
 
 		// right eye
-		var rightTexture = new THREE.CubeTexture(textures.splice(0, 6))
+		var rightTexture = new THREE.CubeTexture(rightTextures)
 		rightTexture.needsUpdate = true
 
 		this.leftTexture = leftTexture
