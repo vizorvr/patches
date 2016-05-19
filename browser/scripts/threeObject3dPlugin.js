@@ -71,8 +71,8 @@ ThreeObject3DPlugin.prototype.setObject3D = function(newObject3d) {
 
 	var that = this
 	this.object3d.traverse(function(n) {
-		n.castShadow = that.inputValues.castShadow
-		n.receiveShadow = that.inputValues.receiveShadow
+		if (n.castShadow !== undefined) n.castShadow = that.inputValues.castShadow
+		if (n.receiveShadow !== undefined) n.receiveShadow = that.inputValues.receiveShadow
 	})
 
 	function hierarchyChanged(event) {
@@ -80,10 +80,22 @@ ThreeObject3DPlugin.prototype.setObject3D = function(newObject3d) {
 		var castShadow = obj.castShadow
 		var receiveShadow = obj.receiveShadow
 
-		obj.traverse(function (n) {
-			n.castShadow = castShadow
-			n.receiveShadow = receiveShadow
-		})
+		if (castShadow !== undefined && receiveShadow !== undefined) {
+			obj.traverse(function (n) {
+				n.castShadow = castShadow
+				n.receiveShadow = receiveShadow
+			})
+		}
+		else if (castShadow !== undefined) {
+			obj.traverse(function (n) {
+				n.castShadow = castShadow
+			})
+		}
+		else if (receiveShadow !== undefined) {
+			obj.traverse(function (n) {
+				n.receiveShadow = receiveShadow
+			})
+		}
 	}
 
 	this.object3d.addEventListener('added', hierarchyChanged)
