@@ -30,9 +30,9 @@ function render404(res) {
 }
 
 function isGraphOwner(user, graph) {
-	return user && 
+	return user && (user.isAdmin ||
 		((user.id === graph._creator.id) ||
-		(user.id === graph._creator.toString()))
+		(user.id === graph._creator.toString())))
 }
 
 function makeHashid(serial) {
