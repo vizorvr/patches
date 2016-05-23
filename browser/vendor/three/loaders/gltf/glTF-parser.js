@@ -61,7 +61,7 @@ var global = window;
 		});
 	} else {
 		// Browser globals
-		factory(window);
+		factory(root);
 	}
 }(this, function (root) {
 	"use strict";
