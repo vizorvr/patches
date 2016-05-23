@@ -42,14 +42,14 @@ THREE.GLTFLoaderUtils = Object.create(Object, {
     _storeResource: {
         enumerable: false,
         value: function(resourceID, resource) {
-            console.log('storing resource', resourceID)
+            // console.log('storing resource', resourceID)
             if (!resourceID) {
                 console.log("ERROR: entry does not contain id, cannot store");
                 return;
             }
 
             if (this._containsResource(resourceID)) {
-                console.log("WARNING: resource:"+resourceID+" is already stored, overriding");
+                // console.log("WARNING: resource:"+resourceID+" is already stored, overriding");
             }
 
            this._resources[resourceID] = resource;
@@ -116,7 +116,7 @@ THREE.GLTFLoaderUtils = Object.create(Object, {
             }
 
             var dataUriRegexResult = dataUriRegex.exec(path);
-            console.log('resource available', path, dataUriRegexResult !== null)
+            // console.log('resource available', path, dataUriRegexResult !== null)
             if (dataUriRegexResult !== null) {
                 delegate.streamAvailable(path, decodeDataUri(dataUriRegexResult, type));
                 return;
@@ -158,7 +158,7 @@ THREE.GLTFLoaderUtils = Object.create(Object, {
 
     _handleRequest: {
         value: function(request) {
-            console.log('requesting', request.id)
+            // console.log('requesting', request.id)
             var resourceStatus = this._resourcesStatus[request.id];
             if (resourceStatus)
             {
@@ -177,7 +177,7 @@ THREE.GLTFLoaderUtils = Object.create(Object, {
             }
 
             if (this._streamsStatus[request.uri]) {
-                console.log('already loading', request.uri)
+                // console.log('already loading', request.uri)
                 debugger;
             }
 
@@ -196,7 +196,7 @@ THREE.GLTFLoaderUtils = Object.create(Object, {
 
                 var requests = streamStatus.requests;
                 requests.forEach( function(req_) {
-                    console.log('\t', req_.uri)
+                    // console.log('\t', req_.uri)
                     var subArray = res_.slice(req_.range[0], req_.range[1]);
                     var convertedResource = req_.delegate.convert(subArray, req_.ctx);
                     self._storeResource(req_.id, convertedResource);
