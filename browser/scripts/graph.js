@@ -1,22 +1,79 @@
 function Graph(core, parent_graph, uid) {
 	EventEmitter.call(this)
 
-	this.nodes = [];
-	this.connections = [];
-	this.core = core;
-	this.variables = new E2.Variables(core);
+	this.nodes = []
+	this.connections = []
+	this.core = core
+	this.variables = new E2.Variables(core)
 
-	this.parent_graph = parent_graph;
-	this.roots = [];
-	this.children = [];
+	this.parent_graph = parent_graph
+	this.roots = []
+	this.children = []
 
-	this.uid = (uid !== undefined) ? uid : E2.uid();
+	this.uid = (uid !== undefined) ? uid : E2.uid()
+
+	// eg. array_function; has multiple copies
+	this.hasCopies = false 
+	this.isCopy = false
+	this.copies = []
 }
 
 Graph.prototype = Object.create(EventEmitter.prototype)
 
 Graph.prototype.get_node_uid = function() {
 	return E2.core.get_uid()
+}
+
+Graph.prototype.makeCopy = function(i) {
+	i = i || this.copies.length
+
+	var graphSer = JSON.stringify(this.serialise())
+
+	var graph = new Graph()
+	graph.deserialise(JSON.parse(graphSer))
+	graph.patch_up([graph, E2.core.root_graph])
+	graph.initialise([graph, E2.core.root_graph])
+
+	graph.isCopy = true
+
+	this.setCopy(i, graph)
+
+	return graph
+}
+
+Graph.prototype.setCopy = function(i, graph) {
+	this.copies[i] = graph
+	this.hasCopies = true
+}
+
+Graph.prototype.clearCopies = function(i) {
+	this.copies.length = 0
+	this.hasCopies = false
+}
+
+Graph.prototype.removeCopy = function(i) {
+	this.copies[i].destroy()
+
+	this.copies.splice(i, 1)
+	this.hasCopies = this.copies.length > 0
+}
+
+Graph.prototype.destroy = function() {
+	var that = this
+
+	this.destroy_ui()
+
+	this.connections.map(function(c) {
+		that.disconnect(c)
+	})
+
+	this.nodes.map(function(node) {
+		node.destroy()
+	})
+	
+	this.nodes = []
+
+	this.connections = []
 }
 
 Graph.prototype.update = function(updateContext) {
@@ -64,43 +121,41 @@ Graph.prototype.enum_all = function(nodeCb, connCb) {
 }
 
 Graph.prototype.reset = function() {
-	var nodes = this.nodes, conns = this.connections;
+	var nodes = this.nodes, conns = this.connections
 	var i, len
 
 	for(i = 0, len = nodes.length; i < len; i++)
-		nodes[i].reset();
+		nodes[i].reset()
     
 	for(i = 0, len = conns.length; i < len; i++)
-		conns[i].reset();
+		conns[i].reset()
 }
 
 Graph.prototype.play = function() {
 	this.enum_all(function(n) {
 		if (n.plugin.play) {
-			n.plugin.play();
+			n.plugin.play()
 		}
-	}, null);
+	}, null)
 }
 
 Graph.prototype.pause = function() {
 	this.enum_all(function(n) {
-		if(n.plugin.pause)
-			n.plugin.pause();
-	}, null);
+		if (n.plugin.pause)
+			n.plugin.pause()
+	}, null)
 }
 
 Graph.prototype.stop = function() {
 	this.enum_all(function(n) {
 		if(n.plugin.stop)
-			n.plugin.stop();
-	}, null);
+			n.plugin.stop()
+	}, null)
 }
 
 Graph.prototype.addNode = function(n, info) {
 	this.registerNode(n, info ? info.order : null)
-
 	this.emit('nodeAdded', n, info)
-
 	return n
 }
 
@@ -254,8 +309,15 @@ Graph.prototype.serialise = function() {
 	d.nodes = [];
 	d.conns = [];
 	
-	this.enum_all(function(n) { d.nodes.push(n.serialise()); }, function(c) { d.conns.push(c.serialise()); });
-	this.variables.serialise(d);
+	this.enum_all(function(n) {
+			d.nodes.push(n.serialise())
+		},
+		function(c) {
+			d.conns.push(c.serialise())
+		}
+	)
+
+	this.variables.serialise(d)
 	
 	return d;
 }
@@ -366,12 +428,18 @@ Graph.prototype.findConnectionByUid = function(cuid) {
 
 Graph.prototype.findNodeByUid = function(nuid) {
 	var node
-	this.nodes.some(function(n) {
-		if (n.uid === nuid) {
-			node = n
-			return true
-		}
-	})
+
+	if (this.nuid_lut) {
+		node = this.nuid_lut[nuid]
+	}
+	else {
+		this.nodes.some(function(n) {
+			if (n.uid === nuid) {
+				node = n
+				return true
+			}
+		})
+	}
 
 	if (!node) {
 		msg('ERROR: Failed to resolve node('+nuid+') in graph(' + this.uid + ')')
