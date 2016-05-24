@@ -687,8 +687,7 @@ Application.prototype.onCanvasMouseDown = function(e) {
 	this.updateCanvas(false)
 }
 
-Application.prototype.releaseSelection = function()
-{
+Application.prototype.releaseSelection = function() {
 	this.selection_start = null;
 	this.selection_end = null;
 	this.selection_last = null;
@@ -700,45 +699,37 @@ Application.prototype.releaseSelection = function()
 	this.selection_dom = null;
 }
 
-Application.prototype.onCanvasMouseUp = function(e)
-{
-	if(e.which === 2)
-	{
+Application.prototype.onCanvasMouseUp = function(e) {
+	if (e.which === 2) {
 		this.is_panning = false;
 		this.canvas[0].style.cursor = '';
 		e.preventDefault();
 		return;
 	}
 
-	if(!this.selection_start)
+	if (!this.selection_start)
 		return;
 
 	this.releaseSelection();
 
 	var nodes = this.selectedNodes;
 
-	if(nodes.length)
-	{
+	if (nodes.length) {
 		var sconns = this.selectedConnections;
 
-		var insert_all = function(clist)
-		{
-			for(var i = 0, len = clist.length; i < len; i++)
-			{
+		var insert_all = function(clist) {
+			for(var i = 0, len = clist.length; i < len; i++) {
 				var c = clist[i];
 				var found = false;
 
-				for(var ci = 0, cl = sconns.length; ci < cl; ci++)
-				{
-					if(c === sconns[ci])
-					{
+				for(var ci = 0, cl = sconns.length; ci < cl; ci++) {
+					if (c === sconns[ci]) {
 						found = true;
 						break;
 					}
 				}
 
-				if(!found)
-				{
+				if (!found) {
 					c.ui.selected = true;
 					sconns.push(c);
 				}
@@ -746,8 +737,7 @@ Application.prototype.onCanvasMouseUp = function(e)
 		}
 
 		// Select all pertinent connections
-		for(var i = 0, len = nodes.length; i < len; i++)
-		{
+		for(var i = 0, len = nodes.length; i < len; i++) {
 			var n = nodes[i];
 
 			insert_all(n.inputs);
@@ -1417,16 +1407,7 @@ Application.prototype.toggleHelperObjects = function() {
 	}
 }
 
-Application.prototype.onKeyDown = function(e) {
-	return true;
-}
-
-
-Application.prototype.onKeyUp = function(e) {
-}
-
-Application.prototype.changeControlState = function()
-{
+Application.prototype.changeControlState = function() {
 	var s = this.player.state;
 	var cs = this.player.current_state;
 
@@ -1476,10 +1457,9 @@ Application.prototype.onOpenClicked = function() {
 			}, '', path + '/edit')
 
 			that.path = getChannelFromPath(window.location.pathname)
+			that.midPane.closeAll()
 
-			E2.app.midPane.closeAll()
-
-			E2.app.loadGraph('/data/graph'+path+'.json')
+			that.loadGraph('/data/graph'+path+'.json')
 		})
 }
 
@@ -1494,31 +1474,26 @@ Application.prototype.navigateToPublishedGraph = function(graphPath, cb) {
 	}
 
 	history.pushState({}, '', graphPath + '/edit')
-	return this.loadGraph(graphUrl, cb)
+	
+	this.loadGraph(graphUrl).then(cb)
 }
 
-Application.prototype.loadGraph = function(graphPath, cb) {
+Application.prototype.loadGraph = function(graphPath) {
 	var that = this
+	var dfd = when.defer()
 
-	E2.app.onStopClicked()
-	E2.app.player.on_update()
+	this.onStopClicked()
+	this.player.on_update()
 
-	E2.app.player.load_from_url(graphPath, function() {
-		that.setupEditorChannel().then(function() {
-			E2.core.rebuild_structure_tree()
-			E2.app.onGraphSelected(E2.core.active_graph)
-
-			E2.core.emit('vizorFileLoaded')
-
-			E2.app.player.play() // autoplay
-			E2.app.changeControlState()
-			
-			E2.ui.setPageTitle()
-
-			if (cb)
-				cb()
+	this.player.load_from_url(graphPath, function() {
+		that.setupEditorChannel()
+		.then(function() {
+			that.startPlaying()
+			dfd.resolve()
 		})
 	})
+	
+	return dfd.promise
 }
 
 Application.prototype.onSaveAsPresetClicked = function() {
@@ -1924,15 +1899,19 @@ Application.prototype.getScreenshot = function(width, height) {
 	return ssr.capture(width, height)
 }
 
-Application.prototype.start = function() {
+Application.prototype.setupEditorBindings = function() {
 	var that = this
+
+	if (Vizor.releaseMode) {
+		window.onbeforeunload = function() {
+			return "You might be leaving behind unsaved work. Are you sure you want to close the editor?";
+		}
+	}
 
 	E2.core.pluginManager.on('created', this.instantiatePlugin.bind(this))
 
 	document.addEventListener('mouseup', this.onMouseReleased.bind(this))
 	document.addEventListener('mousemove', this.onMouseMoved.bind(this))
-	document.body.addEventListener('keydown', this.onKeyDown.bind(this))
-	document.body.addEventListener('keyup', this.onKeyUp.bind(this))
 
 	E2.dom.canvas_parent[0].addEventListener('scroll', function() {
 		that.scrollOffset = [ E2.dom.canvas_parent.scrollLeft(), E2.dom.canvas_parent.scrollTop() ]
@@ -1998,7 +1977,6 @@ Application.prototype.start = function() {
 			bootbox.hideAll()
 	})
 
-
 	$('button#fullscreen').click(function() {
 		E2.app.toggleFullscreen()
 	});
@@ -2042,34 +2020,18 @@ Application.prototype.start = function() {
 	E2.dom.btnNew.click(E2.app.onNewClicked.bind(E2.app))
 	E2.dom.forkButton.click(E2.app.onForkClicked.bind(E2.app))
 
-
 	E2.dom.play.click(E2.app.onPlayClicked.bind(E2.app))
 	E2.dom.pause.click(E2.app.onPauseClicked.bind(E2.app))
 	E2.dom.stop.click(E2.app.onStopClicked.bind(E2.app))
 
 	this.midPane = new E2.MidPane()
 
-	E2.ui.updateProgressBar(100);
-
-	E2.app.player.play() // autoplay
-	E2.app.changeControlState()
-
-
 	$('[data-toggle="popover"]').popover({
 			container: 'body',
 			trigger: 'hover',
 			animation: false
 	});
-	
-	if (window.location.hash[1] === '/') {
-		// path in graph
-		// only root supported
-		that.onGraphSelected(E2.core.root_graph)
-		E2.ui.state.mode = 'program'
-	}
-
 }
-
 
 /**
  * Called when Core has been initialized
@@ -2079,47 +2041,80 @@ Application.prototype.start = function() {
 Application.prototype.onCoreReady = function(loadGraphUrl) {
 	var that = this
 
-	E2.ui.init(E2);
+	E2.ui.init(E2)
 
 	this.presetManager = new PresetManager('/presets')
+	this.midPane = new E2.MidPane()
 
 	that.setupPeopleEvents()
 	that.setupStoreListeners()
+	this.setupEditorBindings()
 
 	if (!loadGraphUrl && !boot.hasEdits) {
 		loadGraphUrl = '/data/graphs/default.json'
 		E2.app.snapshotPending = true
 	}
 
+	this.openStartDialog(false, loadGraphUrl)
+}
+
+Application.prototype.openStartDialog = function(forceShow, loadGraphUrl) {
+	var that = this
+
+	E2.ui.showStartDialog(forceShow)
+	.then(function(selectedGraphUrl) {
+		if (!selectedGraphUrl)
+			selectedGraphUrl = loadGraphUrl
+
+		that.startWithGraph(selectedGraphUrl)
+	})
+}
+
+Application.prototype.startWithGraph = function(selectedGraphUrl) {
+	var that = this
+
 	function start() {
 		E2.dom.canvas_parent.toggle(that.noodlesVisible)
-		
-		E2.app.start()
-
-		E2.app.onWindowResize()
-
-		if (Vizor.releaseMode) {
-			window.onbeforeunload = function() {
-				return "You might be leaving behind unsaved work. Are you sure you want to close the editor?";
-			}
-		}
+		that.startPlaying()
 	}
 
-	E2.ui.showStartDialog()
-	.then(function(selectedTemplateUrl) {
-		if (selectedTemplateUrl && boot.hasEdits) {
-			var path = that.path = E2.uid()
-			history.pushState({}, '', path)
-		}
+	if (!selectedGraphUrl)
+		return that.setupEditorChannel().then(start)
 
-		if (selectedTemplateUrl) {
-			E2.app.loadGraph(selectedTemplateUrl, start)
-		} else if (loadGraphUrl) {
-			E2.app.loadGraph(loadGraphUrl, start)
-		} else {
-			E2.app.setupEditorChannel().then(start)
-		}
-	})
+	// if we have edits coming in at boot,
+	// or we're already on a channel, 
+	// and switching to a new template, 
+	// create new url and snapshot it
+	if (boot.hasEdits || (this.channel && this.channel.isOnChannel)) {
+		var path = this.path = E2.uid()
+		boot = {}
+		history.pushState({}, '', path)
+		E2.app.snapshotPending = true
+	}
+
+	this.loadGraph(selectedGraphUrl).then(start)
+}
+
+Application.prototype.startPlaying = function() {
+	E2.core.rebuild_structure_tree()
+
+	this.onGraphSelected(E2.core.active_graph)
+
+	E2.core.emit('vizorFileLoaded')
+
+	this.player.play()
+
+	this.changeControlState()
+	this.onWindowResize()
+
+	E2.ui.setPageTitle()
+
+	if (window.location.hash[1] === '/') {
+		// path in graph
+		// only root supported
+		this.onGraphSelected(E2.core.root_graph)
+		E2.ui.state.mode = 'program'
+	}
 }
 
 Application.prototype.setupChat = function() {
@@ -2164,7 +2159,7 @@ Application.prototype.setupEditorChannel = function() {
 	} else 
 		joinChannel()
 
-	E2.ui.setPageTitle();
+	E2.ui.setPageTitle()
 	
 	return dfd.promise
 }

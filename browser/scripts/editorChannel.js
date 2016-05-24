@@ -310,7 +310,7 @@ EditorChannel.prototype.join = function(channelName, readableName, cb) {
 			})
 
 			that.isOnChannel = true
-			
+
 			if (cb)
 				cb()
 		}
