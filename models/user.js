@@ -132,7 +132,7 @@ userSchema.methods.decreaseProjectsCount = function() {
 	var dfd = when.defer()
 
 	// update projects count
-	this.update({ $dec: { 'stats.projects': 1 } }, { w: 1 }, function(err) {
+	this.update({ $inc: { 'stats.projects': -1 } }, { w: 1 }, function(err) {
 		if (err)
 			return dfd.reject(err)
 
