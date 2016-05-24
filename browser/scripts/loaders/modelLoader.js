@@ -6,14 +6,17 @@ if (typeof(module) !== 'undefined')
 function ModelLoader(url) {
 	E2.Loader.apply(this, arguments)
 
-	var extname = url.substring(url.lastIndexOf('.'))
+	var extname = url.substring(url.lastIndexOf('.')).toLowerCase()
 	switch(extname) {
 		case '.obj':
 			this.loadObj(url)
 			break;
 		case '.js':
 		case '.json':
-			this.loadJson(url)
+		case '.dae':
+		case '.fbx':
+		case '.gltf':
+			this.loadObject3D(url)
 			break;
 		default:
 			msg('ERROR: Don`t know how to load', url, extname)
@@ -23,7 +26,7 @@ function ModelLoader(url) {
 
 ModelLoader.prototype = Object.create(E2.Loader.prototype)
 
-ModelLoader.prototype.loadJson = function(url) {
+ModelLoader.prototype.loadObject3D = function(url) {
 	var loader = new THREE.JSONLoader()
 	loader.crossOrigin = 'Anonymous'
 	loader.load(url,

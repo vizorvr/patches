@@ -244,8 +244,6 @@ GraphStore.prototype.assetsMayHaveChanged = function(node) {
 GraphStore.prototype._calculateGraphSize = function() {
 	var that = this
 
-	console.time('_calculateGraphSize')
-
 	if (this._statDfd) {
 		return this._statDfd
 		.then(function() {
@@ -256,7 +254,6 @@ GraphStore.prototype._calculateGraphSize = function() {
 	this._statDfd = new E2.GraphAnalyser(new E2.GridFsClient())
 		.analyseGraph(E2.core.root_graph)
 		.then(function(stat) {
-			console.timeEnd('_calculateGraphSize')
 			that.stat = stat
 			that.emit('changed:size', that.stat.size)
 		})

@@ -109,6 +109,9 @@ WorldEditor.prototype.updateHelperHandles = function(scene, camera) {
 
 	var that = this
 
+	var displayBoundingSphereHandles = false
+	var displaySkeletons = false
+
 	// 1. collect objects requiring handles
 	var nodeCollector = function ( node ) {
 		if (node instanceof THREE.PointLight
@@ -116,7 +119,9 @@ WorldEditor.prototype.updateHelperHandles = function(scene, camera) {
 		||  node instanceof THREE.SpotLight
 		// legacy lights:
 		||  node instanceof THREE.DirectionalLight
-		||  node instanceof THREE.HemisphereLight) {
+		||  node instanceof THREE.HemisphereLight
+		||  (displayBoundingSphereHandles && node instanceof THREE.Mesh)
+		||  (displaySkeletons && node instanceof THREE.SkinnedMesh)) {
 			needsHandles.push(node)
 		}
 	}
@@ -173,6 +178,16 @@ WorldEditor.prototype.updateHelperHandles = function(scene, camera) {
 		else if (node instanceof THREE.Camera) {
 			this.cameraHelper.attach(node)
 			this.handleTree.add(this.cameraHelper)
+		}
+		else if (displayBoundingSphereHandles && node instanceof THREE.Mesh) {
+			var helper = new BoundingSphereHelper(node)
+			helper.attach(node)
+			this.handleTree.add(helper)
+		}
+		else if (displaySkeletons && node instanceof THREE.SkinnedMesh) {
+			var helper = new SkeletonHelper(node)
+			helper.attach(node)
+			this.handleTree.add(helper)
 		}
 
 		// Directional & Hemisphere lights are legacy but we don't want to break old graphs:

@@ -4,6 +4,8 @@ var SceneProcessor = require('../lib/sceneProcessor')
 var fs = require('fs')
 var fsPath = require('path')
 
+var allowedExtensions = ['.zip', '.obj', '.js', '.json', '.gltf', '.fbx', '.dae']
+
 function SceneController() {
 	var args = Array.prototype.slice.apply(arguments)
 	args.unshift(Scene)
@@ -34,7 +36,7 @@ SceneController.prototype.canWriteUpload = function(req, res, next) {
 		return res.status(403)
 			.json({message: 'Sorry, permission denied'})
 	})
-} 
+}
 
 SceneController.prototype.upload = function(req, res, next) {
 	var that = this
@@ -43,12 +45,11 @@ SceneController.prototype.upload = function(req, res, next) {
 	var folder = '/' + req.user.username + '/assets/scene'
 	var dest = folder + '/'+ fsPath.basename(file.name, fsPath.extname(file.name))
 
-	var allowedExtensions = ['.zip', '.obj', '.js', '.json']
-	var ext = fsPath.extname(file.name)
+	var ext = fsPath.extname(file.name.toLowerCase())
 
 	if (allowedExtensions.indexOf(ext) === -1) {
 		return res.status(400)
-			.json({ message: 'Please upload only zip, obj or json files' })
+			.json({ message: 'Please upload only ' + allowedExtensions.join(', ') })
 	}
 
 	new SceneProcessor(this._fs)

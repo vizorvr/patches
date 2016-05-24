@@ -43,7 +43,7 @@
 
 		this.loadedUrl = url
 
-		this.object3d = this.defaultObject
+		this.setObject3D(this.defaultObject)
 		this.updated = true
 
 		this.loader = E2.core.assetLoader.loadAsset('scene', url)
@@ -51,6 +51,9 @@
 		this.loader
 		.then(function(asset) {
 			that.setObject3D(asset.clone())
+			
+			deepCopyglTFObject(asset, that.object3d)
+
 			that.postLoadFixUp()
 		})
 		.finally(function() {
@@ -149,7 +152,7 @@
 		this.object3d.traverse(function(n) {
 			// filter lights and cameras out of the scene
 
-			if (n instanceof THREE.Light || n instanceof THREE.Camera) {
+			if (n instanceof THREE.Light || n instanceof THREE.Camera /*|| (n instanceof THREE.Object3D && (!n instanceof THREE.Bone) && n.children.length === 0 && !n.geometry)*/) {
 				removeObjects.push({parent: n.parent, object: n})
 			}
 
