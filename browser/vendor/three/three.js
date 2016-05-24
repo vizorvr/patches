@@ -9182,7 +9182,7 @@ THREE.Face3.prototype = {
  */
 
 THREE.BufferAttribute = function ( array, itemSize ) {
-
+	
 	this.uuid = THREE.Math.generateUUID();
 
 	this.array = array;
@@ -21480,7 +21480,7 @@ THREE.ShaderMaterial = function ( parameters ) {
 		'uv': [ 0, 0 ],
 		'uv2': [ 0, 0 ]
 	};
-
+	
 	this.index0AttributeName = undefined;
 
 	if ( parameters !== undefined ) {
@@ -22938,10 +22938,16 @@ THREE.Skeleton.prototype.update = ( function () {
 
 THREE.Skeleton.prototype.clone = function () {
 
-	return new THREE.Skeleton( this.bones, this.boneInverses, this.useVertexTexture );
+	var newBones = []
+
+	for (var i = 0; i < this.bones.length; ++i) {
+		newBones.push(this.bones[i].clone(/*recursive = */true))
+	}
+
+	return new THREE.Skeleton( newBones, undefined, this.useVertexTexture );
 
 };
-
+	
 // File:src/objects/SkinnedMesh.js
 
 /**
@@ -22950,7 +22956,7 @@ THREE.Skeleton.prototype.clone = function () {
  * @author ikerr / http://verold.com
  */
 
-THREE.SkinnedMesh = function ( geometry, material, useVertexTexture ) {
+THREE.SkinnedMesh = function ( geometry, material, useVertexTexture, bindMatrix ) {
 
 	THREE.Mesh.call( this, geometry, material );
 
@@ -22977,7 +22983,7 @@ THREE.SkinnedMesh = function ( geometry, material, useVertexTexture ) {
 
 			bone = new THREE.Bone( this );
 			bones.push( bone );
-
+			
 			bone.name = gbone.name;
 			bone.position.fromArray( gbone.pos );
 			bone.quaternion.fromArray( gbone.rotq );
@@ -23006,7 +23012,7 @@ THREE.SkinnedMesh = function ( geometry, material, useVertexTexture ) {
 	this.normalizeSkinWeights();
 
 	this.updateMatrixWorld( true );
-	this.bind( new THREE.Skeleton( bones, undefined, useVertexTexture ), this.matrixWorld );
+	this.bind( new THREE.Skeleton( bones, undefined, useVertexTexture ), bindMatrix || this.matrixWorld );
 
 };
 
@@ -23067,26 +23073,30 @@ THREE.SkinnedMesh.prototype.normalizeSkinWeights = function () {
 
 		var skinWeight = this.geometry.attributes.skinWeight;
 
-		for ( var i = 0; i < skinWeight.count; i ++ ) {
+		if ( skinWeight ) {
 
-			vec.x = skinWeight.getX( i );
-			vec.y = skinWeight.getY( i );
-			vec.z = skinWeight.getZ( i );
-			vec.w = skinWeight.getW( i );
+			for ( var i = 0; i < skinWeight.count; i ++ ) {
 
-			var scale = 1.0 / vec.lengthManhattan();
+				vec.x = skinWeight.getX( i );
+				vec.y = skinWeight.getY( i );
+				vec.z = skinWeight.getZ( i );
+				vec.w = skinWeight.getW( i );
 
-			if ( scale !== Infinity ) {
+				var scale = 1.0 / vec.lengthManhattan();
 
-				vec.multiplyScalar( scale );
+				if ( scale !== Infinity ) {
 
-			} else {
+					vec.multiplyScalar( scale );
 
-				vec.set( 1, 0, 0, 0 ); // do something reasonable
+				} else {
+
+					vec.set( 1, 0, 0, 0 ); // do something reasonable
+
+				}
+
+				skinWeight.setXYZW( i, vec.x, vec.y, vec.z, vec.w );
 
 			}
-
-			skinWeight.setXYZW( i, vec.x, vec.y, vec.z, vec.w );
 
 		}
 
@@ -23116,7 +23126,15 @@ THREE.SkinnedMesh.prototype.updateMatrixWorld = function( force ) {
 
 THREE.SkinnedMesh.prototype.clone = function() {
 
-	return new this.constructor( this.geometry, this.material, this.useVertexTexture ).copy( this );
+	var boneInverses = this.skeleton.boneInverses.slice()
+	var newSkinnedMesh = new this.constructor( this.geometry, this.material, this.useVertexTexture ).copy( this, false );
+
+	newSkinnedMesh.skeleton.boneInverses = []
+	for (var i = 0; i < boneInverses.length; ++i) {
+		newSkinnedMesh.skeleton.boneInverses.push(boneInverses[i])
+	}
+
+	return newSkinnedMesh
 
 };
 
@@ -23915,7 +23933,7 @@ THREE.UniformsUtils = {
 					 parameter_src instanceof THREE.Texture ) {
 
 					uniforms_dst[ u ][ p ] = parameter_src.clone();
-
+					
 				} else if ( Array.isArray( parameter_src ) ) {
 
 					uniforms_dst[ u ][ p ] = parameter_src.slice();

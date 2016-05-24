@@ -7,6 +7,7 @@ var Minislides = function(containerEl, opts) {
 
 	opts = _.extend({
 		nextOn : 'a.slide-next',
+		nextOnSelf : false,
 		slideQuery: ':scope>section',
 		slideContainerQuery: '.slides',
 		transitionMethod: 'crossfade'		// crossfade|horizontal
@@ -140,7 +141,18 @@ Minislides.prototype.init = function(opts) {
 
 	this.initDrag()
 
-	jQuery(opts.nextOn, this.slides)
+	var clickToNext
+
+	if (opts.nextOnSelf) {
+		clickToNext = jQuery(this.slides).add(opts.nextOn, this.slides)
+		jQuery('a, button', this.slides)
+		 	.on('click', function(e){e.stopPropagation()})
+	} else {
+		clickToNext = jQuery(opts.nextOn, this.slides)
+	}
+
+
+	clickToNext
 		.off('.minislides')
 		.on('click.minislides touchend.minislides', function(e){
 			if (siteUI && siteUI.isDragging)

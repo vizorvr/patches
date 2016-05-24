@@ -30,9 +30,9 @@ function render404(res) {
 }
 
 function isGraphOwner(user, graph) {
-	return user && 
+	return user && (user.isAdmin ||
 		((user.id === graph._creator.id) ||
-		(user.id === graph._creator.toString()))
+		(user.id === graph._creator.toString())))
 }
 
 function makeHashid(serial) {
@@ -177,15 +177,13 @@ GraphController.prototype.userIndex = function(req, res, next) {
 			})
 
 			var data = {
-				profile: {
-					username: username
-				},
+				profile: user.toPublicJSON(),
 				graphs: list || []
 			}
 
 			if (req.xhr) {
 				return res.status(200).json(
-					helper.responseStatusSuccess("OK", data))
+					helper.responseStatusSuccess('OK', data))
 			}
 
 			_.extend(data, {
@@ -227,7 +225,7 @@ GraphController.prototype.adminIndex = function(req, res) {
 		});
 
 		res.render('graph/index', data);
-	});
+	})
 }
 
 function renderEditor(res, graph, hasEdits) {
@@ -244,7 +242,7 @@ function renderEditor(res, graph, hasEdits) {
 			releaseMode: releaseMode,
 			webSocketHost: process.env.WSS_HOST || '',
 			useSecureWebSocket: releaseMode || !!process.env.WSS_SECURE || false
-		});
+		})
 	}
 
 	if (!releaseMode) {
@@ -294,6 +292,8 @@ GraphController.prototype.latest = function(req, res) {
 function renderPlayer(graph, req, res, options) {
 	graph.increaseViewCount()
 
+	graph._creator.increaseViewCount()
+
 	var graphJson = prettyPrintGraphInfo(graph.toJSON())
 
 	// which version of player to use?
@@ -339,7 +339,6 @@ GraphController.prototype.embed = function(req, res, next) {
 		})
 	}).catch(next)
 }
-
 
 // GET /fthr/dunes-world
 // GET /fthr/dunes-world?summmary=1
@@ -450,7 +449,7 @@ GraphController.prototype.upload = function(req, res, next) {
 // POST /graph
 GraphController.prototype.saveAnonymous = function(req, res, next) {
 	var that = this
-	var anonReq = { user: { username: 'v' } }
+	var anonReq = { user: { username: 'v', isAnonymous: true } }
 
 	return this.graphAnalyser.analyseJson(req.body.graph)
 	.then(function(analysis) {
@@ -514,6 +513,7 @@ GraphController.prototype.delete = function(req, res, next) {
 
 			return that._service.save(graph, req.user)
 			.then(function(asset) {
+				req.user.decreaseProjectsCount()
 				res.json(asset)
 			})
 			.catch(function(err) {

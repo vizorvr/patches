@@ -1,6 +1,6 @@
 {
   "name": "Vizor",
-  "version": "0.10.4",
+  "version": "0.11.0",
   "description": "",
   "main": "server.js",
   "dependencies": {
@@ -23,7 +23,7 @@
     "errorhandler": "^1.1.1",
     "express": "^4.8.4",
     "express-flash": "^0.0.2",
-    "express-handlebars": "^1.0.1",
+    "express-handlebars": "3.0.0",
     "express-validator": "^2.3.0",
     "formidable": "^1.0.15",
     "fs-extra": "~0.12.0",

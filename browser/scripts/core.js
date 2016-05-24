@@ -300,7 +300,7 @@ Core.prototype.deserialiseObject = function(d) {
 	this.delta_t = 0.0;
 	this.graph_uid = '' + d.graph_uid;
 
-	this.active_graph.destroy_ui();
+	this.active_graph.destroy_ui()
 	
 	this.graphs = [];
 	

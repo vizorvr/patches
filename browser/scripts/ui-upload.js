@@ -8,6 +8,8 @@ var modelsByExtension = {
 	'.js': 'scene',
 	'.json': 'scene',
 	'.obj': 'scene',
+	'.fbx': 'scene',
+	'.dae': 'scene',
 	'.zip': 'scene'
 }
 

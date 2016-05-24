@@ -19,14 +19,8 @@ function rand() {
 }
 
 describe('Graph', function() {
-	var username = 'user'+rand()
-	var deets = {
-		name: 'Foo bar',
-		username: username,
-		email: username+'@test.foo',
-		password: 'abcd1234',
-		confirmPassword: 'abcd1234'
-	}
+	var username
+	var deets
 
 	var agent = request.agent(app)
 	var anonymousAgent = request.agent(app)
@@ -59,13 +53,23 @@ describe('Graph', function() {
 	}
 
 	before(function(done) {
-		app.events.on('ready', function() {
-			agent
-			.post('/signup')
-			.send(deets)
-			.expect(302)
-			.end(done)
-		})
+		app.events.on('ready', done)
+	})
+
+	beforeEach(function(done) {
+		username = 'user' + rand()
+		deets = {
+			name: 'Foo bar',
+			username: username,
+			email: username+'@test.foo',
+			password: 'abcd1234',
+			confirmPassword: 'abcd1234'
+		}
+		agent
+		.post('/signup')
+		.send(deets)
+		.expect(302)
+		.end(done)
 	})
 
 	it('should accept anonymous save', function(done) {
@@ -550,8 +554,7 @@ describe('Graph', function() {
 	})
 
 
-
-	it('increases view count on view', function(done) {
+	it('increases graph view count on view', function(done) {
 		var path = 'graph-views-'+rand()
 		var viewPath = '/'+username+'/'+path+''
 		var jsonPath = '/'+username+'/'+path+'.json'
@@ -583,6 +586,52 @@ describe('Graph', function() {
 		})
 	})
 
+	it('increases user view count on view', function(done) {
+		var path = 'graph-views-'+rand()
+		var viewPath = '/'+username+'/'+path+''
+		var userPath = '/'+username
+
+		agent.post('/graph').send({
+			path: path,
+			graph: graphData
+		})
+		.expect(200)
+		.end(function(err, res) {
+			if (err) return done(err)
+
+			request(app).get(viewPath).expect(200).end(function(err) {
+				request(app).get(viewPath).expect(200).end(function(err) {
+					if (err) return done(err)
+
+					request(app).get(userPath)
+					.set('X-Requested-With', 'XMLHttpRequest')
+					.expect(200).end(function(err, res) {
+						if (err)
+							return done(err)
+
+						assert.equal(2, res.body.data.profile.stats.views)
+						done()
+					})
+				})
+			})
+		})
+	})
+
+	it('increases user projects count', function(done) {
+		var name = 'button-'+rand()
+		var userPath = '/'+username
+
+		sendGraph(name, function(err, res) {
+			if (err) return done(err)
+			request(app).get(userPath)
+			.set('X-Requested-With', 'XMLHttpRequest')
+			.expect(200).end(function(err, res) {
+				if (err) return done(err)
+				expect(res.body.data.profile.stats.projects).to.equal(1)
+				done()
+			})
+		})
+	})
 
 
 })
