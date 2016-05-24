@@ -269,24 +269,28 @@
 	}
 
 	$(document).ready(function() {
-
 		E2.models = {
 			user: new User({}),
 			graph: new Graph({}),
 			fileList: new FileList({})
 		}
 
-		if ('{{user.username}}' !== '') {
-			E2.models.user.set( {
+		{{#if user.username}}
+			E2.models.user.set({
 				id: '{{user._id}}',
 				name: '{{user.name}}',
 				username: '{{user.username}}',
+				email: '{{user.email}}',
+				avatar: '{{user.avatar}}',
 				gravatar: '{{{user.gravatar}}}',
-				email: '{{user.email}}'
+				stats: {
+					views: {{user.stats.views}},
+					projects: {{user.stats.projects}}
+				}
 			})
 
 			mixpanel.identify('{{user._id}}')
-		}
+		{{/if}}
 
 		if (typeof E2.controllers === 'undefined')
 			E2.controllers = {}
