@@ -276,18 +276,19 @@
     },
 
     "VECTOR MATH": {
-        "Add Vector": "vector_add",
+        "Add Vectors": "vector_add",
+        "Subtract Vectors": "vector_subtract",
+        "Multiply Vectors": "vector_multiply",
+        "Magnitude/Length": "vector_magnitude",
+        "Distance of Vectors": "vector_distance",
         "Cross": "vector_cross",
         "Dot": "vector_dot",
-        "Magnitude": "vector_magnitude",
-        "Multiply vector": "vector_multiply",
         "Normalize": "vector_normalize",
         "Scale": "vector_scale",
         "Transform": "vector_transform",
         "Add Vectors Conditionally": "add_on_trigger_vector3",
         "Rotation from Direction": "rotation_from_direction"
     },
-
 
     "OSCILLATORS": {
         "Cosine": "cosine_modulator",
