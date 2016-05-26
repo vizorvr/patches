@@ -75,7 +75,7 @@ var paths = {
 			'./browser/vendor/three/FontLoader.js',
 			'./browser/vendor/three/loaders/FBXLoader.js',
 			'./browser/vendor/three/loaders/ColladaLoader2.js',
-			'./browser/vendor/three/loaders/gltf/glTF-Parser.js',
+			'./browser/vendor/three/loaders/gltf/glTF-parser.js',
 			'./browser/vendor/three/loaders/gltf/glTFAnimation.js',
 			'./browser/vendor/three/loaders/gltf/glTFLoader.js',
 			'./browser/vendor/three/loaders/gltf/glTFLoaderUtils.js',
