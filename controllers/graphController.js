@@ -292,7 +292,8 @@ GraphController.prototype.latest = function(req, res) {
 function renderPlayer(graph, req, res, options) {
 	graph.increaseViewCount()
 
-	graph._creator.increaseViewCount()
+	if (graph._creator)
+		graph._creator.increaseViewCount()
 
 	var graphJson = prettyPrintGraphInfo(graph.toJSON())
 
