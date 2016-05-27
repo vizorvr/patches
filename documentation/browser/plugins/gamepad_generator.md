@@ -1,11 +1,14 @@
 #Game pad
 
 ##Description
-Buttons and axes from HTML5 standard gamepad (supports only Chrome and XBOX 360 controller atm).
+Buttons and axes from HTML5 standard gamepad, and pose from VR Gamepad.
 
 ##Inputs
 ###pad number
 Gamepad number
+
+###vibrate
+Vibrates the gamepad while this is true
 
 ##Outputs
 ###button 0
@@ -72,10 +75,10 @@ right stick X
 right stick Y
 
 ###position
-
+The position of a VR Gamepad
 
 ###rotation
-
+The rotation of a VR Gamepad
 
 ##Detail
 

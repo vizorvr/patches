@@ -208,7 +208,8 @@
         "Mouse buttons": "mouse_button_generator",
         "Mouse position": "mouse_position_generator",
         "Mouse wheel": "mouse_wheel_generator",
-        "Game pad": "gamepad_generator"
+        "XBOX 360 Gamepad": "gamepad_generator",
+        "HTC Vive Controller": "vive_controller"
     },
 
 
