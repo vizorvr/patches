@@ -1,17 +1,17 @@
 (function(){
 var VariableLocalWriteConditional = E2.plugins.variable_local_write_conditional = function(core, node) {
-	this.desc = 'Write to a local variable using name of the node, if the input condition is true.'
+	this.desc = 'Write to a local variable using name of the node, if the trigger is true.'
 	
 	this.input_slots = [{
-		name: 'condition',
+		name: 'trigger',
 		dt: E2.dt.BOOL,
-		desc: 'If the condition is true, will write to the variable. Defaults to true.',
+		desc: 'If the trigger is true, will write to the variable. Defaults to false.',
 		def: false
 	}]
 
 	this.output_slots = []
 
-	this.condition = false
+	this.trigger = false
 	
 	this.core = core
 	this.node = node
@@ -25,7 +25,7 @@ var VariableLocalWriteConditional = E2.plugins.variable_local_write_conditional 
 
 VariableLocalWriteConditional.prototype.reset = function() {
 	this.updated = true
-	this.condition = false
+	this.trigger = false
 	this.value = null
 }
 
@@ -43,7 +43,7 @@ VariableLocalWriteConditional.prototype.renamed = function() {
 }
 
 VariableLocalWriteConditional.prototype.connection_changed = function(on, conn) {
-	if (conn.dst_slot.name === 'condition') {
+	if (conn.dst_slot.name === 'trigger') {
 		return;
 	}
 
@@ -54,12 +54,12 @@ VariableLocalWriteConditional.prototype.connection_changed = function(on, conn) 
 }
 
 VariableLocalWriteConditional.prototype.update_input = function(slot, data) {
-	if (slot.name === 'condition')
-		this.condition = data
+	if (slot.name === 'trigger')
+		this.trigger = data
 	else
 		this.value = data
 
-	if (this.condition && this.value !== null)
+	if (this.trigger && this.value !== null)
 		this.variables.write(this.node.title, this.value)
 }
 

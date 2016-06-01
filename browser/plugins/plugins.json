@@ -148,7 +148,7 @@
     "STATE AND STRUCTURE": {
         "Read Variable": "variable_local_read",
         "Write Variable": "variable_local_write",
-        "Conditionally Write Variable": "variable_local_write_conditional",
+        "Write Variable on Trigger": "variable_local_write_conditional",
         "Input proxy": "input_proxy",
         "Output proxy": "output_proxy",
         "Nested Patch": "graph",
