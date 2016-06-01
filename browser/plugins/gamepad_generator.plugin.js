@@ -69,32 +69,25 @@ var GamePadGenerator = E2.plugins.gamepad_generator = function(core, node) {
 	this.always_update = true
 }
 
-GamePadGenerator.prototype.getPad = function() {
-	this.gamepads = navigator.getGamepads()
-	this.gamepad = this.gamepads[this._gamepadIndex]
-	return this.gamepad
-}
-
 GamePadGenerator.prototype.reset = function() {
 	this.updated = true
-	this.getPad()
 }
 
 GamePadGenerator.prototype.update_input = function(slot, data) {
 	this._gamepadIndex = data
-	this.getPad()
 }
 
 GamePadGenerator.prototype.update_state = function() {
-	var pad = this.getPad()
+	this.gamepads = navigator.getGamepads()
+	var pad = this.gamepad = this.gamepads[this._gamepadIndex]
 	if (!pad) {
 		return;
 	}
 
+	this.updated = true
+
 	if (!pad.pose)
 		return;
-
-	this.updated = true
 
 	this.position.set(
 		pad.pose.position[0],
