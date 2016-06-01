@@ -53,6 +53,7 @@ var uiNodeCategoryMap = {};
 		'input_proxy': 			c.io,
 		'variable_local_read':	c.io,
 		'variable_local_write':	c.io,
+		// 'variable_local_write_conditional':	c.io,
 
 		'three_mesh'	: c.geometry,
 		'three_geometry_box'	: c.geometry,
