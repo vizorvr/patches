@@ -523,7 +523,11 @@ Node.prototype._update_input = function(updateContext, inp, pl, conns, needs_upd
 	// be moved into the clause below to save on function calls.
 	var value = sn.plugin.update_output(inp.src_slot)
 
-	if (sn.plugin.updated && (!sn.plugin.query_output || sn.plugin.query_output(inp.src_slot))) {
+	if (value === null) {
+		result.dirty = false
+	} else if (sn.plugin.updated &&
+		(!sn.plugin.query_output || sn.plugin.query_output(inp.src_slot))
+	) {
 		if (inp.dst_slot.array && !inp.src_slot.array) {
 			value = [value]
 		} else if (!inp.dst_slot.array && inp.src_slot.array) {
