@@ -377,8 +377,12 @@ NodeUI.prototype.canDisplayOutputInHeader = function() {
 NodeUI.prototype.canDisplayInline = function() {
 	var p = this.getPluginUIFlags();	// variables used to make a decision.
 	var category = this.getNodeCategory();
+	if (uiPluginsThatNeverDisplayInline.indexOf(this.parent_node.plugin.id) !== -1)
+		return false
+
 	var is_io = (category === uiNodeCategory.io);
-	var alwaysInline = (uiPluginsThatAlwaysDisplayInline.indexOf(this.parent_node.plugin.id) > -1);
+	var alwaysInline = (uiPluginsThatAlwaysDisplayInline.indexOf(this.parent_node.plugin.id) > -1)
+
 	var can = !p.has_plugin_ui;
 	can = can && !p.has_subgraph;
 	can = can && (is_io || alwaysInline);
