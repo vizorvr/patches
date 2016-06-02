@@ -33,7 +33,8 @@
 			{   name: 'displacementScale', dt: core.datatypes.FLOAT, def: 1 },
 			{   name: 'displacementBias', dt: core.datatypes.FLOAT, def: 1 },
 			{   name: 'reflectivity', dt: core.datatypes.FLOAT, def: 1 },
-			{   name: 'refractionRatio', dt: core.datatypes.FLOAT, def: 0.98 }
+			{   name: 'refractionRatio', dt: core.datatypes.FLOAT, def: 0.98 },
+			{   name: 'envMap', dt: core.datatypes.CUBETEXTURE, def: undefined}
 		])
 	}
 

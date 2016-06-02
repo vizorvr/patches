@@ -36,7 +36,7 @@
 
 			{   name: 'alphaMap', dt: core.datatypes.TEXTURE, def: undefined },
 
-			{   name: 'envMap', dt: core.datatypes.TEXTURE, def: undefined },
+			{   name: 'envMap', dt: core.datatypes.CUBETEXTURE, def: undefined },
 			{   name: 'envMapIntensity', dt: core.datatypes.FLOAT, def: 1 },
 
 			{   name: 'refractionRatio', dt: core.datatypes.FLOAT, def: 0.98 },
