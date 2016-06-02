@@ -68,6 +68,7 @@
 
     "LOAD CONTENT": {
         "Texture": "url_texture_generator",
+        "Cubemap": "url_cubemap_generator",
         "Stereo Cubemap": "url_stereo_cubemap_generator",
         "Stereo Lat Long Map": "url_stereo_latlongmap_generator",
         "3D model": "three_loader_model",
@@ -324,6 +325,7 @@
 
     "EXPERIMENTAL": {
         "Radial Point Geometry": "radial_point_geometry",
+        "Cubemap Assembler": "cubemap_assembler",
         "Stereo Cube Map (old)": "stereo_cube_map"
     }
 
