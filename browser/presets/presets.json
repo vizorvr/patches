@@ -82,8 +82,8 @@
 
 	"INTERACTION": {
 		"Increment / Decrement Value on Trigger": { "name": "_increment_or_decrement_on_trigger" },
-		"WASD+ZC Keyboard Movement": { "name": "wasdzc-keyboard-movement.json" },
-		"HTC Vive Controllers": { "name": "vive-hands.json" }
+		"WASD+ZC Keyboard Movement": { "name": "wasdzc-keyboard-movement" },
+		"HTC Vive Controllers": { "name": "vive-hands" }
 	},
 
 	"MUSIC AND SOUND": {
