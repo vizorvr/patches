@@ -1515,7 +1515,7 @@ Application.prototype.onPublishClicked = function() {
 	.then(function(path) {
 		window.onbeforeunload = null;	// override "you might be leaving work" prompt (release mode)
 		E2.track({ 
-			event: 'published',
+			event: 'Published',
 			path: path
 		})
 		window.location.href = path
