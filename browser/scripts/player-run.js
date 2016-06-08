@@ -14,7 +14,7 @@ function onCoreReady() {
 	E2.app.player.on_update()
 
 	E2.track({
-		event: 'Player Opened',
+		event: 'playerOpened',
 		path: url
 	})
 
