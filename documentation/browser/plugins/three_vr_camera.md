@@ -29,8 +29,11 @@ If enabled, the transform coming from the HMD is ignored
 ###camera
 
 
-###position
+###offset
+The position offset of the camera.
 
+###position
+The current position of the headset.
 
 ###rotation
 
