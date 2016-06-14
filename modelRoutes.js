@@ -110,6 +110,18 @@ function modelRoutes(
 		next();
 	}
 
+	function expectUploadedFile(req, res, next) {
+		var file = req.files.file
+
+		if (!file) {
+			var e = new Error('Please upload an image')
+			e.status = 400
+			return next(e)
+		}
+
+		next()
+	}
+
 	// upload user profile avatar picture
 	app.post('/account/profile/avatar',
 		passportConf.isAuthenticated,
@@ -122,6 +134,7 @@ function modelRoutes(
 				return filename.replace(/\W+/g, '-');
 			}
 		}),
+		expectUploadedFile,
 		imageController.setUserAvatar.bind(imageController))
 
 	// upload
@@ -137,6 +150,7 @@ function modelRoutes(
 				return filename.replace(/\W+/g, '-');
 			}
 		}),
+		expectUploadedFile,
 		function(req, res, next) {
 			// imageProcessor will checksum the file
 			if (req.params.model === 'image')
@@ -169,6 +183,7 @@ function modelRoutes(
 				return newName;
 			}
 		}),
+		expectUploadedFile,
 		function(req, res, next) {
 			// imageProcessor will checksum the file
 			if (req.params.model === 'image')
