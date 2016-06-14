@@ -5,7 +5,7 @@
 function VizorWebVRAdapter() {
 	EventEmitter.apply(this, arguments)
 	this.events = VizorWebVRAdapter.events
-
+	var that = this
 	Object.defineProperty(this, 'mode', {
 		get: function() {
 			return that._manager.mode
