@@ -61,7 +61,8 @@
         "Or": "or_modulator",
         "Xor": "xor_modulator",
         "Switch": "switch_modulator",
-        "Array Revolver Switch": "array_switch_modulator",
+        "Index Revolver Switch": "array_switch_modulator",
+        "Trigger Revolver Switch": "trigger_revolver",
         "Boolean toggle Modulator": "toggle_modulator",
         "Trigger On Change": "change_trigger"
     },

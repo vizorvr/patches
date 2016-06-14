@@ -28,14 +28,14 @@ var ViveController = E2.plugins.vive_controller = function(core, node) {
 	}]
 
 	this.output_slots = [
-		createOutput('touchpad clicked', E2.dt.BOOL),
-		createOutput('trigger clicked', E2.dt.BOOL),
-		createOutput('grip clicked', E2.dt.BOOL),
-		createOutput('menu clicked', E2.dt.BOOL),
+		createOutput('touchpad down', E2.dt.BOOL),
+		createOutput('trigger down', E2.dt.BOOL),
+		createOutput('grip down', E2.dt.BOOL),
+		createOutput('menu down', E2.dt.BOOL),
 
-		createOutput('touchpad x value', E2.dt.VECTOR),
-		createOutput('touchpad y value', E2.dt.VECTOR),
-		createOutput('trigger value', E2.dt.FLOAT),
+		createOutput('touchpad x value', E2.dt.FLOAT),
+		createOutput('touchpad y value', E2.dt.FLOAT),
+		createOutput('trigger value',    E2.dt.FLOAT), 
 
 		{
 			name: 'position',
@@ -109,16 +109,16 @@ ViveController.prototype.update_output = function(slot) {
 	if (slot.name === 'rotation')
 		return this.rotation
 
-	if (slot.name === 'touchpad clicked')
+	if (slot.name === 'touchpad down')
 		return this.gamepad.buttons[0].pressed
 
-	if (slot.name === 'trigger clicked')
+	if (slot.name === 'trigger down')
 		return this.gamepad.buttons[1].pressed
 
-	if (slot.name === 'grip clicked')
+	if (slot.name === 'grip down')
 		return this.gamepad.buttons[2].pressed
 
-	if (slot.name === 'menu clicked')
+	if (slot.name === 'menu down')
 		return this.gamepad.buttons[3].pressed
 
 	if (slot.name === 'touchpad x value')
