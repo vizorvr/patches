@@ -11,17 +11,17 @@ Gamepad number
 Vibrates the gamepad while this is true
 
 ##Outputs
-###touchpad clicked
-touchpad clicked
+###touchpad down
+touchpad down
 
-###trigger clicked
-trigger clicked
+###trigger down
+trigger down
 
-###grip clicked
-grip clicked
+###grip down
+grip down
 
-###menu clicked
-menu clicked
+###menu down
+menu down
 
 ###touchpad x value
 touchpad x value
