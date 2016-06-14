@@ -11,7 +11,9 @@ var GamePadGenerator = E2.plugins.gamepad_generator = function(core, node) {
 
 	this._core = core
 
-	this.desc = 'Buttons and axes from HTML5 standard gamepad, and pose from VR Gamepad.'
+	this.desc = 'Buttons and axes from HTML5 standard gamepad'
+
+	this.vibrate = false
 
 	this.input_slots = [{
 		name: 'pad number',
@@ -47,23 +49,8 @@ var GamePadGenerator = E2.plugins.gamepad_generator = function(core, node) {
 		createButton('left stick X', true),
 		createButton('left stick Y', true),
 		createButton('right stick X', true),
-		createButton('right stick Y', true),
-
-		{
-			name: 'position',
-			dt: core.datatypes.VECTOR,
-			desc: 'The position of a VR Gamepad'
-		},
-
-		{
-			name: 'rotation',
-			dt: core.datatypes.VECTOR,
-			desc: 'The rotation of a VR Gamepad'
-		},
+		createButton('right stick Y', true)
 	]
-
-	this.position = new THREE.Vector3(0, 0, 0)
-	this.rotation = new THREE.Vector4(0, 0, 0, 0)
 
 	this._gamepadIndex = 0
 	this.always_update = true
@@ -74,30 +61,21 @@ GamePadGenerator.prototype.reset = function() {
 }
 
 GamePadGenerator.prototype.update_input = function(slot, data) {
-	this._gamepadIndex = data
+	if (slot.name === 'pad number') {
+		this._gamepadIndex = data
+		return;
+	}
 }
 
 GamePadGenerator.prototype.update_state = function() {
 	this.gamepads = navigator.getGamepads()
 	var pad = this.gamepad = this.gamepads[this._gamepadIndex]
+
 	if (!pad) {
 		return;
 	}
 
 	this.updated = true
-
-	if (!pad.pose)
-		return;
-
-	this.position.set(
-		pad.pose.position[0],
-		pad.pose.position[1],
-		pad.pose.position[2])
-
-	this.rotation.set(
-		pad.pose.orientation[0],
-		pad.pose.orientation[1],
-		pad.pose.orientation[2])
 }
 
 GamePadGenerator.prototype.update_output = function(slot) {
@@ -111,24 +89,15 @@ GamePadGenerator.prototype.update_output = function(slot) {
 	if (!this.gamepad)
 		return 0.0
 
-	if (slot.name === 'position') {
-		return this.position
-	}
+	if (!this.gamepad.buttons[slot.index])
+		return null;
 
-	if (slot.name === 'rotation') {
-		return this.rotation
-	}
+	// float
+	if (this.output_slots[slot.index].dt.id === this._core.datatypes.FLOAT.id)
+		return this.gamepad.buttons[slot.index].value
 
-	if (slot.index < 23) {
-		// float
-		if (this.output_slots[slot.index].dt.id === this._core.datatypes.FLOAT.id)
-			return this.gamepad.buttons[slot.index].value
-
-		// bool
-		return buttonPressed(this.gamepad.buttons[slot.index])
-	}
-
-	return this.gamepad.axes[slot.index - 23]
+	// bool
+	return buttonPressed(this.gamepad.buttons[slot.index])
 }
 
 })()

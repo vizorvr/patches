@@ -169,6 +169,7 @@ var uiNodeCategoryMap = {};
         'mouse_position_generator': c.interaction,
         'mouse_wheel_generator'	: c.interaction,
         'gamepad_generator'		: c.interaction,
+        'vive_controller'		: c.interaction,
 
         'parse_json_modulator'	: c.data,
 
