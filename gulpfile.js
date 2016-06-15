@@ -43,6 +43,7 @@ var paths = {
 			'./browser/scripts/abstractPlugins/abstractAnimateValueOnTriggerPlugin.js',
 	
 			'./browser/scripts/blendFunctions.js',
+			'./browser/scripts/fontSelector.js',
 
 			'./browser/scripts/worldEditor/worldEditor.js',
 			'./browser/scripts/worldEditor/worldEditorPerspectiveCamera.js',

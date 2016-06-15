@@ -29,17 +29,36 @@
 			name: 'geometry', dt: core.datatypes.GEOMETRY
 		}]
 
+		this.fontSelector = new FontSelector()
+
+		this.state = {
+			fontId: this.fontSelector.getByIndex(0).id
+		}
+
 		this.desc = 'Generate text'
 	}
 
 	ThreeTextGeometry.prototype = Object.create(Plugin.prototype)
 	ThreeTextGeometry.prototype.constructor = Plugin.prototype
 
+	ThreeTextGeometry.prototype.create_ui = function() {
+		var $ui = make('div')
+
+		var that = this
+
+		this.fontSelector.createUi($ui, function(newFont, newSelection) {
+			that.undoableSetState('fontId', newSelection, that.state.fontId)
+			that.font = newFont
+			console.log('selector: load font', that.state.fontId)
+		})
+
+		return $ui
+	}
+
 	ThreeTextGeometry.prototype.reset = function() {
 		this.geometry = new THREE.Geometry()
 		this.dirty = true
 	}
-
 
 	ThreeTextGeometry.prototype.update_input = function(slot, data) {
 		this.dirty = true
@@ -49,15 +68,7 @@
 		return this.geometry
 	}
 
-	ThreeTextGeometry.prototype.update_state = function() {
-		if (!this.dirty) {
-			return
-		}
-
-		if (!this.font) {
-			return
-		}
-
+	ThreeTextGeometry.prototype.reconstructGeometry = function() {
 		var parameters = {
 			curveSegments: this.inputValues.segments,
 			size: this.inputValues.size,
@@ -91,7 +102,7 @@
 				}
 			}
 
-			var lineShapes = this.font.generateShapes(lines[i], parameters.size, parameters.curveSegments)
+			var lineShapes = this.font.font.generateShapes(lines[i], parameters.size, parameters.curveSegments)
 
 			if (this.geometry) {
 				var mtx = new THREE.Matrix4().makeTranslation(0, lineHeight, 0)
@@ -107,20 +118,61 @@
 		this.geometry.computeFaceNormals()
 
 		this.dirty = false
+
+		this.updated = true
+	}
+
+	ThreeTextGeometry.prototype.update_state = function() {
+		if (!this.font || !this.font.font || (this.state.fontId !== this.font.font.id)) {
+			if (!this.loadPromise) {
+				this.font = this.fontSelector.getById(this.state.fontId)
+
+				if (!this.font.font) {
+					var that = this
+
+					var dfd = when.defer()
+
+					var doLoad = function() {
+						that.fontSelector.fontLoader.load(that.font.url, function(font) {
+							that.font.font = font
+							that.reconstructGeometry()
+
+							dfd.resolve()
+						})
+					}
+
+					if (this.loadPromise) {
+						this.loadPromise.then(doLoad)
+					}
+					else {
+						this.loadPromise = dfd.promise
+
+						doLoad()
+					}
+
+					this.loadPromise.then(function() {
+						that.loadPromise = undefined
+					})
+				}
+				else {
+					this.reconstructGeometry()
+				}
+			}
+
+			return
+		}
+
+		if (!this.dirty) {
+			return
+		}
+
+		this.reconstructGeometry()
 	}
 
 	ThreeTextGeometry.prototype.state_changed = function(ui) {
 		if (ui) {
+			this.fontSelector.initialise(ui, this.state.fontId)
 			return
-		}
-
-		var that = this
-
-		if (!this.font) {
-			var fontLoader = new THREE.FontLoader()
-			fontLoader.load("/data/fonts/helvetiker_regular.typeface.js", function(font) {
-				that.font = font
-			})
 		}
 	}
 })()
