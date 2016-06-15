@@ -21,7 +21,7 @@ E2.p.prototype.update_state = function()
 {
 	var x = this.vector.x,
 		y = this.vector.y,
-		z = this.vectorz;
+		z = this.vector.z;
 
 	this.mag = Math.sqrt(x*x + y*y + z*z); 
 };

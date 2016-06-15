@@ -570,6 +570,10 @@ WorldEditor.prototype.selectCamera = function(cameraId) {
 	})
 }
 
+WorldEditor.prototype.isVRCamera = function() {
+	return this.cameraSelector.selectedCamera === 'vr'
+}
+
 WorldEditor.prototype.matchEditorToVRCamera = function() {
 	// match the selected vr camera to world editor camera
 	var vrCameraPlugin = this.vrCamera.parent.backReference
