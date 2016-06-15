@@ -3,8 +3,6 @@
  * @emits VizorWebVRAdapter.events
  */
 function VizorWebVRAdapter() {
-	var that = this
-
 	EventEmitter.apply(this, arguments)
 	this.events = VizorWebVRAdapter.events
 
@@ -19,13 +17,7 @@ function VizorWebVRAdapter() {
 			return that._manager.hmd
 		}
 	})
-
-	this.iOS = navigator.userAgent.match(/iPhone|iPad|iPod/i)
-
-	hardware.hasVRDisplays()
-	.then(function(has) {
-		that.haveVRDevices = has
-	})
+	this.iOS = navigator.userAgent.match(/iPhone|iPad|iPod/i);
 }
 
 VizorWebVRAdapter.prototype = Object.create(EventEmitter.prototype)
@@ -49,15 +41,33 @@ VizorWebVRAdapter.prototype.initialise = function(domElement, renderer, effect, 
 		isVRCompatible: true
 	}
 
+	this.configure()
+	
+	this.haveVRDevices = false
+	if (hardware) {
+		if (!hardware.enumerated)
+			hardware.ifVR(hardware.enumerateVRDevices.bind(hardware))
+
+		if (hardware.hmd)
+			this.haveVRDevices = true
+	}
+
 	this.options.isVRCompatible = this.haveVRDevices
 
 	if (document.body.classList)
 		document.body.classList.toggle('hasHMD', this.haveVRDevices)
-	
+
+	this._manager = new WebVRManager(renderer, effect, this.options)
+
+	this.patchWebVRManager()
+
 	this._instructionsChanged = false
 	this._lastTarget = null
 
-	this.configure()
+	this.attach()
+
+	// initial sizing
+	this.resizeToTarget()
 
 	this._presentingKeyHandler = function(e) {
 		// explicitly make esc exit VR mode
@@ -65,15 +75,6 @@ VizorWebVRAdapter.prototype.initialise = function(domElement, renderer, effect, 
 		if (e.keyCode === 27)
 			this.exitVROrFullscreen()
 	}.bind(this)
-	
-	this._manager = new WebVRManager(renderer, effect, this.options)
-
-	this.patchWebVRManager()
-
-	this.attach()
-
-	// initial sizing
-	this.resizeToTarget()
 }
 
 VizorWebVRAdapter.events = Object.freeze({
@@ -349,8 +350,7 @@ VizorWebVRAdapter.prototype.setTargetSize = function(width, height, devicePixelR
 }
 
 VizorWebVRAdapter.prototype.getTargetSize = function() {
-	var manager = this._manager
-	var hmd = hardware.hmd
+	var manager = this._manager, hmd = manager.hmd
 	var isPresenting = hmd && hmd.isPresenting
 
 	var size = {

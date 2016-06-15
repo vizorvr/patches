@@ -47,8 +47,6 @@ var paths = {
 			'./browser/scripts/worldEditor/worldEditorOriginGrid.js',
 			'./browser/scripts/worldEditor/worldEditorRadialHelper.js',
 
-			'./browser/scripts/worldEditor/objectPlacementHelper.js',
-
 			'./browser/scripts/screenshot/ScreenshotRenderer.js',
 
 			'./browser/scripts/loaders/loader.js',

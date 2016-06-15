@@ -61,15 +61,13 @@
         "Or": "or_modulator",
         "Xor": "xor_modulator",
         "Switch": "switch_modulator",
-        "Index Revolver Switch": "array_switch_modulator",
-        "Trigger Revolver Switch": "trigger_revolver",
+        "Array Revolver Switch": "array_switch_modulator",
         "Boolean toggle Modulator": "toggle_modulator",
         "Trigger On Change": "change_trigger"
     },
 
     "LOAD CONTENT": {
         "Texture": "url_texture_generator",
-        "Cubemap": "url_cubemap_generator",
         "Stereo Cubemap": "url_stereo_cubemap_generator",
         "Stereo Lat Long Map": "url_stereo_latlongmap_generator",
         "3D model": "three_loader_model",
@@ -150,7 +148,6 @@
     "STATE AND STRUCTURE": {
         "Read Variable": "variable_local_read",
         "Write Variable": "variable_local_write",
-        "Write Variable on Trigger": "variable_local_write_conditional",
         "Input proxy": "input_proxy",
         "Output proxy": "output_proxy",
         "Nested Patch": "graph",
@@ -210,8 +207,7 @@
         "Mouse buttons": "mouse_button_generator",
         "Mouse position": "mouse_position_generator",
         "Mouse wheel": "mouse_wheel_generator",
-        "XBOX 360 Gamepad": "gamepad_generator",
-        "HTC Vive Controller": "vive_controller"
+        "Game pad": "gamepad_generator"
     },
 
 
@@ -280,19 +276,18 @@
     },
 
     "VECTOR MATH": {
-        "Add Vectors": "vector_add",
-        "Subtract Vectors": "vector_subtract",
-        "Multiply Vectors": "vector_multiply",
-        "Magnitude/Length": "vector_magnitude",
-        "Distance of Vectors": "vector_distance",
+        "Add Vector": "vector_add",
         "Cross": "vector_cross",
         "Dot": "vector_dot",
+        "Magnitude": "vector_magnitude",
+        "Multiply vector": "vector_multiply",
         "Normalize": "vector_normalize",
         "Scale": "vector_scale",
         "Transform": "vector_transform",
         "Add Vectors Conditionally": "add_on_trigger_vector3",
         "Rotation from Direction": "rotation_from_direction"
     },
+
 
     "OSCILLATORS": {
         "Cosine": "cosine_modulator",
@@ -327,7 +322,6 @@
 
     "EXPERIMENTAL": {
         "Radial Point Geometry": "radial_point_geometry",
-        "Cubemap Assembler": "cubemap_assembler",
         "Stereo Cube Map (old)": "stereo_cube_map"
     }
 

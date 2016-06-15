@@ -26,10 +26,8 @@ function onCoreReady() {
 }
 
 $(document).ready(function()  {
-	hardware.getVRDisplays()
-	.then(function(hmd) {
-		CreatePlayer([hmd], onCoreReady)
-	})
+	hardware.detect()
+	CreatePlayer([hardware.hmd, hardware.sensor], onCoreReady)
 })
 
 // postMessage API for setting variables in embedded files
@@ -41,8 +39,8 @@ window.addEventListener('message', function(e) {
 	switch(e.data.command) {
 		case 'getVariable':
 			send({
-				name: e.data.name, 
-				value: E2.app.player.getVariableValue(e.data.name)
+			name: e.data.name, 
+			value: E2.app.player.getVariableValue(e.data.name)
 			})
 			break;
 

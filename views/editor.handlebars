@@ -259,8 +259,13 @@
 		boot.graphUrl = boot.graph.url
 	{{/if}}
 
-	function startEditor(hmd) {
-		E2.InitialiseEngi([hmd], boot.graphUrl)
+	function startEditor(vr_devices) {
+		E2.InitialiseEngi(vr_devices, boot.graphUrl)
+	}
+
+	function EnumerateVRDevices(devices) {
+		var d = hardware.enumerateVRDevices(devices);
+		startEditor([d.hmd, d.sensor]);
 	}
 
 	$(document).ready(function() {
@@ -284,7 +289,7 @@
 				}
 			})
 
-			mixpanel.identify('{{user.username}}')
+			mixpanel.identify('{{user._id}}')
 		{{/if}}
 
 		if (typeof E2.controllers === 'undefined')
@@ -292,10 +297,9 @@
 
 		E2.controllers.account = new AccountController()
 
-		hardware.getVRDisplays()
-		.then(function(hmd) {
-			startEditor(hmd)
-		})
+		if (!hardware.ifVR(EnumerateVRDevices)) {
+			startEditor([null, null])
+		}
 
 	});
 </script>

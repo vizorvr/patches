@@ -57,7 +57,7 @@ Variables.prototype.connection_changed = function(name, added) {
 Variables.prototype.set_datatype = function(name, dt, arrayness) {
 	var r = this.variables[name]
 	var u = r.users
-
+	
 	for(var i = 0, len = u.length; i < len; i++)
 		u[i].variable_dt_changed(dt, arrayness)
 	
@@ -77,18 +77,9 @@ Variables.prototype.write = function(name, value) {
 
 	if (r.value === value)
 		return;
-
-	switch(r.dt) {
-		case E2.dt.VECTOR:
-			if (r.value)
-				r.value.copy(value)
-			else
-				r.value = value.clone()
-			break;
-		default:
-			r.value = value
-	}
-
+	
+	r.value = value
+	
 	for(var i = 0, len = u.length; i < len; i++) {
 		var plg = u[i]
 		

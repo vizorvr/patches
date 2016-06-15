@@ -536,7 +536,8 @@ div.graph-node.p_cat_compound {
   }
 }
 
-// regular inline cat_io nodes
+
+
 div.graph-node.p_cat_io .p_header
 {
   .p_ins .p_slot, .p_outs .p_slot, span {
@@ -545,20 +546,10 @@ div.graph-node.p_cat_io .p_header
   svg {
 	background: #EE5400;
   }
+
 }
 
-// two inputs on this node (not inline)
-div.graph-node.p_cat_io.p_id_variable_local_write_conditional {
-  background: #24A219;
-  .p_ins .p_slot, .p_outs .p_slot, span {
-	background: none;
-  }
-  svg {
-	background: none;
-  }
-}
 
-// specific inline nodes
 div.graph-node.p_cat_io.p_id_variable_local_read .p_header,
 div.graph-node.p_cat_io.p_id_variable_local_write .p_header
 {

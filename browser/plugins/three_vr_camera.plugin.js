@@ -1,7 +1,5 @@
 (function() {
 	var ThreeVRCameraPlugin = E2.plugins.three_vr_camera = function(core) {
-		var that = this
-
 		Plugin.apply(this, arguments)
 
 		this.desc = 'THREE.js VR Camera'
@@ -9,11 +7,15 @@
 		this.defaultFOV = 90
 
 		// try to find out default fov from the device
-		if (hardware.hmd && hardware.hmd.getEyeParameters) {
-			var eyeParams = hardware.hmd.getEyeParameters('left')
+		if (window.HMDVRDevice && window.HMDVRDevice.getEyeParameters) {
+			var eyeParams = window.HMDVRDevice.getEyeParameters()
 
-			this.defaultFOV = eyeParams.fieldOfView.leftDegrees + 
-				eyeParams.fieldOfView.rightDegrees;
+			if (eyeParams.recommendedFieldOfView) {
+				this.defaultFOV = eyeParams.recommendedFieldOfView
+			}
+			else if (eyeParams.leftDegrees && eyeParams.rightDegrees) {
+				this.defaultFOV = eyeParams.leftDegrees + eyeParams.rightDegrees
+			}
 		}
 
 		this.input_slots = [
@@ -34,10 +36,7 @@
 
 		this.output_slots = [
 			{ name: 'camera',	dt: core.datatypes.CAMERA },
-			{ name: 'offset',	dt: core.datatypes.VECTOR,
-			  desc: 'The position offset of the camera.' },
-			{ name: 'position',	dt: core.datatypes.VECTOR,
-			  desc: 'The current position of the headset.' },
+			{ name: 'position',	dt: core.datatypes.VECTOR },
 			{ name: 'rotation',	dt: core.datatypes.VECTOR }
 		]
 
@@ -58,12 +57,6 @@
 
 		this.outputRotationEuler = new THREE.Euler()
 		this.outputPosition = new THREE.Vector3()
-
-		this.node.on('pluginStateChanged', function() {
-			that.offset.set(that.state.position.x, that.state.position.y, that.state.position.z)
-		})
-
-		E2.app.player.camera = this
 	}
 
 	ThreeVRCameraPlugin.prototype = Object.create(Plugin.prototype)
@@ -73,8 +66,11 @@
 
 		this.domElement = E2.dom.webgl_canvas[0]
 
-		if (!this.dolly)
+		if (!this.dolly) {
+
 			this.dolly = new THREE.PerspectiveCamera()
+
+		}
 
 		if (!this.vrControlCamera) {
 			this.vrControlCamera = new THREE.PerspectiveCamera(
@@ -100,8 +96,6 @@
 
 		this.object3d.position.set(this.state.position.x, this.state.position.y, this.state.position.z)
 		this.object3d.quaternion.set(this.state.quaternion._x, this.state.quaternion._y, this.state.quaternion._z, this.state.quaternion._w)
-
-		this.offset = new THREE.Vector3(this.state.position.x, this.state.position.y, this.state.position.z)
 	}
 
 	ThreeVRCameraPlugin.prototype.play = function() {
@@ -185,14 +179,13 @@
 	ThreeVRCameraPlugin.prototype.update_output = function(slot) {
 		if (slot.index === 0) { // camera
 			return this.vrControlCamera
-		} else if (slot.index === 1) { // offset
-			return this.offset
-		} else if (slot.index === 2) { // position
+		}
+		else if (slot.index === 1) { // position
 			this.outputPosition.copy(this.vrControlCamera.position)
 			this.outputPosition.applyMatrix4(this.vrControlCamera.matrixWorld)
 			return this.outputPosition
 		}
-		else if (slot.index === 3) { // rotation
+		else if (slot.index === 2) { // rotation
 			var tempQuaternion = this.vrControlCamera.quaternion.clone()
 			tempQuaternion.multiply(this.object3d.quaternion)
 			this.outputRotationEuler.setFromQuaternion(tempQuaternion, "YZX")

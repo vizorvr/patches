@@ -1,36 +1,38 @@
-(function() {
-
-var FloatDisplay = E2.plugins.float_display = function(core, node) {
-	this.desc = 'Display the supplied float value on the plugin surface.'
+E2.p = E2.plugins.float_display = function(core, node)
+{
+	this.desc = 'Display the supplied float value on the plugin surface.';
 	
 	this.input_slots = [ 
 		{ name: 'float', dt: core.datatypes.FLOAT, desc: 'Input value to be displayed.', def: null }
-	]
+	];
 	
-	this.output_slots = []
+	this.output_slots = [];
+};
+
+E2.p.prototype.reset = function()
+{
+	this.update_value(null);
 }
 
-FloatDisplay.prototype.reset = function() {
-	this.update_value(null)
-}
-
-FloatDisplay.prototype.create_ui = function() {
-	this.label = make('div')
-	this.label.css('text-align', 'right') 
-	this.update_value(this.inputValues ? this.inputValues['float'] : null)
+E2.p.prototype.create_ui = function()
+{
+	this.label = make('div');
+	this.label.css('text-align', 'right'); 
+	this.update_value(this.inputValues ? this.inputValues['float'] : null);
 	
-	return this.label
-}
+	return this.label;
+};
 
-FloatDisplay.prototype.update_input = function(slot, data) {
-	this.update_value(data)
-}
+E2.p.prototype.update_input = function(slot, data)
+{
+	this.update_value(data);
+};
 
-FloatDisplay.prototype.update_value = function(value) {
+E2.p.prototype.update_value = function(value)
+{
+
 	if(this.label)
-		this.label[0].innerHTML = value === null ? '-' : value.toFixed(2)
+		this.label[0].innerHTML = value === null ? '-' : value.toFixed(2);
 	else
 		this.value = value
-}
-
-})()
+};

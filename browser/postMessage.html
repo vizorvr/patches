@@ -3,11 +3,12 @@
     	<script type="text/javascript" src="/node_modules/jquery/dist/jquery.min.js"></script>
     </head>
 
-	<body style="width:800px;margin: 0 auto">
+	<body>
 	<h1>postMessage</h1>
 
+	<iframe id="vizor" src="/embed/kschzt/postmessage" width="800" height="450" frameborder="0" allowfullscreen></iframe>
 
-	<script src="http://vizor.io/scripts/embed.js" data-vizorurl="http://vizor.io/embed/kschzt/postmessage?autoplay=1" ></script>
+	<br>
 
 	scale <input id="scale" type="range" min="0" max="77" step="0.1"/>
 
@@ -18,20 +19,13 @@
 	<script>
 		var $log = $('#log')
 		var $scale = $('#scale')
-
-		// the embed script will create an iframe but right now one isn't available
-		// so we defer setting this until send()
-		var $vizor = null
+		var $vizor = $('#vizor')
 
 		function log(message) {
 			$log.append(message + '<br>')
 		}
 
 		function send(message) {
-			if (!$vizor) {
-				$vizor = $('iframe').first()
-			}
-
 			log('OUT: '+ JSON.stringify(message))
 			$vizor[0].contentWindow
 				.postMessage(message, '*')
