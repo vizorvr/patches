@@ -259,13 +259,8 @@
 		boot.graphUrl = boot.graph.url
 	{{/if}}
 
-	function startEditor(vr_devices) {
-		E2.InitialiseEngi(vr_devices, boot.graphUrl)
-	}
-
-	function EnumerateVRDevices(devices) {
-		var d = hardware.enumerateVRDevices(devices);
-		startEditor([d.hmd, d.sensor]);
+	function startEditor(hmd) {
+		E2.InitialiseEngi([hmd], boot.graphUrl)
 	}
 
 	$(document).ready(function() {
@@ -297,9 +292,10 @@
 
 		E2.controllers.account = new AccountController()
 
-		if (!hardware.ifVR(EnumerateVRDevices)) {
-			startEditor([null, null])
-		}
+		hardware.getVRDisplays()
+		.then(function(hmd) {
+			startEditor(hmd)
+		})
 
 	});
 </script>
