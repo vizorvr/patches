@@ -234,7 +234,7 @@ function CreatePlayer(vr_devices, cb) {
 	E2.dom.webgl_canvas = $('#webgl-canvas')
 
 	E2.app = {}
-	E2.app.player = new Player()
+	E2.app.player = new Player(vr_devices, E2.dom.webgl_canvas, null)
 	E2.app.worldEditor = {
 		update: function() {},
 		isActive: function() {

@@ -25,11 +25,11 @@
 
 		this.hasAnimation = false
 
-		// a callback to be executed after object has loaded
-		// e.g. we want to scale every object to unit size on initial load
+		// a flag to indicate that the model should be scaled to unit size
+		// i.e. we want to scale every object to unit size on initial load
 		// but not when subsequently (re-)loaded, to not override user defiend
 		// scaling
-		this.postLoadCallback = undefined
+		this.requiresScaling = false
 	}
 
 	ThreeLoaderScenePlugin.prototype = Object.create(ThreeObject3DPlugin.prototype)
@@ -135,12 +135,10 @@
 			scaleFactor /= zLen
 		}
 		// if none of the above match, there is no valid bounding volume (empty / corrupt model?)
-		
-		console.log('scale object to', scaleFactor)
 
 		this.undoableSetState('scale', new THREE.Vector3(scaleFactor, scaleFactor, scaleFactor), new THREE.Vector3(this.state.scale.x, this.state.scale.y, this.state.scale.z))
 
-		delete this.postLoadCallback
+		this.requiresScaling = false
 	}
 
 	ThreeLoaderScenePlugin.prototype.postLoadFixUp = function() {
@@ -199,8 +197,8 @@
 
 			var doLoad = function() {
 				that.loadObject(that.state.url).then(function () {
-					if (that.postLoadCallback) {
-						that.postLoadCallback.execute(that)
+					if (that.requiresScaling) {
+						that.scaleToUnitSize()
 					}
 					// apply state to object3d
 					ThreeObject3DPlugin.prototype.update_state.apply(that, arguments)

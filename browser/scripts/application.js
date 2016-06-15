@@ -2303,7 +2303,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.app = new Application()
 	E2.ui = new VizorUI();
 
-	var player = new Player()
+	var player = new Player(vr_devices, E2.dom.webgl_canvas)
 
 	E2.treeView = E2.dom.structure.tree = new TreeView(
 		E2.dom.structure,
@@ -2329,6 +2329,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	}
 
 	E2.app.worldEditor = new WorldEditor(E2.dom.webgl_canvas[0])
+
 
 	E2.core.glContext = E2.dom.webgl_canvas[0].getContext('webgl', gl_attributes) || E2.dom.webgl_canvas[0].getContext('experimental-webgl', gl_attributes)
 	E2.core.renderer = new THREE.WebGLRenderer({context: E2.core.glContext, canvas: E2.dom.webgl_canvas[0]})

@@ -172,12 +172,10 @@
 
 		// left eye
 		var leftTexture = new THREE.CubeTexture(leftTextures)
-		leftTexture.format = THREE.RGBFormat
 		leftTexture.needsUpdate = true
 
 		// right eye
 		var rightTexture = new THREE.CubeTexture(rightTextures)
-		rightTexture.format = THREE.RGBFormat
 		rightTexture.needsUpdate = true
 
 		this.leftTexture = leftTexture

@@ -1,29 +1,74 @@
-var hardware = {}
+var hardware = new function() {
+	var that = this;
+	this.hmd = null;
+	this.sensor = null;
+	this.enumerated = false;
 
-hardware.hmd = null
+	this.enumerateVRDevices = function(devices) {
+		var hmd = null, sensor = null;
 
-hardware.getVRDisplays = function() {
-	if (navigator.getVRDisplays) {
-		return navigator.getVRDisplays()
-		.then(function(vrDisplays) {
-			var displays = vrDisplays.filter(function(display) {
-				return display instanceof VRDisplay &&
-					display.capabilities.canPresent
-			})
+		var haveHMDVR = typeof HMDVRDevice !== 'undefined'
+		var havePositionSensors = typeof PositionSensorVRDevice !== 'undefined'
 
-			if (displays.length)
-				hardware.hmd = displays[0]
+		var d, isHmd, isSensor
+		for(var i = 0; i < devices.length; i++) {
+			d = devices[i]
+			isHmd = haveHMDVR && (d instanceof HMDVRDevice)
+			if (!isHmd) {
+				if (d instanceof VRDisplay) {
+					isHmd = d.capabilities.canPresent
+				}
+			}
 
-			return hardware.hmd
-		})
-	} else {
-		return when.resolve()
+			if (isHmd) {
+				// Just use the first device we find for now.
+				hmd = devices[i];
+				break;
+			}
+		}
+
+		if(hmd) {
+			for(var i = 0; i < devices.length; i++) {
+				d = devices[i];
+				isSensor = (havePositionSensors && d instanceof PositionSensorVRDevice)
+				if (!isSensor) {
+					if (d instanceof VRDisplay){
+						isSensor = d.capabilities.hasOrientation
+					}
+				}
+
+				if (isSensor && d.hardwareUnitId === hmd.hardwareUnitId) {
+					sensor = devices[i];
+					break;
+				}
+			}
+		}
+
+		this.hmd = hmd;
+		this.sensor = sensor;
+		this.enumerated = true;
+
+		return this;
+	};
+
+	// executes callback if VR present and returns true, or returns false if no VR
+	this.ifVR = function(thenCallback) {
+		if (navigator.getVRDisplays) {
+			navigator.getVRDisplays()
+				.then(thenCallback, function(err) {
+					console.error(err)
+				})
+		} else if(navigator.mozGetVRDevices) {
+			navigator.mozGetVRDevices(thenCallback)
+		} else {
+			thenCallback(false)
+			return false;
+		}
+
+		return true;
+	};
+
+	this.detect = function() {
+		return this.ifVR(this.enumerateVRDevices.bind(this))
 	}
-}
-
-hardware.hasVRDisplays = function() {
-	return hardware.getVRDisplays()
-	.then(function(display) {
-		return !!display
-	})
 }
