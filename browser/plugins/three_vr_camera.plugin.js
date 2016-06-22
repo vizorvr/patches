@@ -6,15 +6,7 @@
 
 		this.desc = 'THREE.js VR Camera'
 		
-		this.defaultFOV = 90
-
-		// try to find out default fov from the device
-		if (hardware.hmd && hardware.hmd.getEyeParameters) {
-			var eyeParams = hardware.hmd.getEyeParameters('left')
-
-			this.defaultFOV = eyeParams.fieldOfView.leftDegrees + 
-				eyeParams.fieldOfView.rightDegrees;
-		}
+		this.findDefaultFov()
 
 		this.input_slots = [
 			{ name: 'position', dt: core.datatypes.VECTOR },
@@ -68,6 +60,30 @@
 
 	ThreeVRCameraPlugin.prototype = Object.create(Plugin.prototype)
 
+	ThreeVRCameraPlugin.prototype.findDefaultFov = function() {
+		var that = this
+
+		this.defaultFOV = 90
+
+		if (!navigator.getVRDisplays)
+			return;
+
+		navigator.getVRDisplays()
+		.then(function(vrDisplays) {
+			var displays = vrDisplays.filter(function(display) {
+				return display instanceof VRDisplay &&
+					display.capabilities.canPresent
+			})
+
+			if (displays.length) {
+				var eyeParams = displays[0].getEyeParameters('left')
+				if (eyeParams)
+					that.defaultFOV = eyeParams.fieldOfView.leftDegrees + eyeParams.fieldOfView.rightDegrees;
+			}
+		})
+
+	}
+
 	ThreeVRCameraPlugin.prototype.reset = function() {
 		Plugin.prototype.reset.apply(this, arguments)
 
@@ -77,6 +93,11 @@
 			this.dolly = new THREE.PerspectiveCamera()
 
 		if (!this.vrControlCamera) {
+			// try to find out default fov from the device
+			// use hardware here for early detection
+			if (hardware.hmd) {
+			}
+
 			this.vrControlCamera = new THREE.PerspectiveCamera(
 				this.defaultFOV,
 				this.domElement.clientWidth / this.domElement.clientHeight,

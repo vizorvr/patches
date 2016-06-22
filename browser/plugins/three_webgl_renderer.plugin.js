@@ -162,10 +162,8 @@
 			this.domElement = E2.dom.webgl_canvas[0]
 			this.renderer = E2.core.renderer
 
-			var gl = this.domElement.getContext("webgl");
+			var gl = this.domElement.getContext('webgl')
 			this.stats = new WGLUStats(gl)
-
-			var nativeWebVRAvailable = VizorWebVRAdapter.isNativeWebVRAvailable()
 
 			this.effect = new THREE.VREffect(this.renderer)
 
