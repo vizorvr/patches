@@ -314,6 +314,13 @@ function modelRoutes(
 		documentationController.getPluginDocumentation(req, res, next);
 	});
 
+	// ----
+	// Metadata on images
+	app.get(/^\/meta\/data\/.*/, function(req, res, next) {
+		imageController.getMetadata(req, res, next);
+	})
+
+
 	// -----
 	// Generic model routes
 
