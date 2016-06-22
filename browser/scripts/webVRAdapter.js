@@ -28,8 +28,6 @@ VizorWebVRAdapter.prototype = Object.create(EventEmitter.prototype)
 VizorWebVRAdapter.prototype.initialise = function(domElement, renderer, effect, options) {
 	var that = this
 
-	console.trace('initialise')
-
 	// only stored here for convenience/debugging
 	this._renderer = renderer
 	this._effect = effect
@@ -119,8 +117,9 @@ VizorWebVRAdapter.prototype.configure = function() {
 						return that.canInitiateCameraMove(e)
 					}
 				} else {
-					console.error('no display.getManualPannerRef found', display)
+					console.warn('no display.getManualPannerRef found', display)
 				}
+
 				display._vizorPatched = true
 				// note, if display.wrapForFullscreen (removeFullscreenWrapper) is taken out
 				// then the cardboard selector won't show on Android because it would fullscreen the canvas, not its parent element
@@ -224,7 +223,6 @@ VizorWebVRAdapter.prototype.onScroll = function() {
 				var rendererSize = this._renderer.getSize()
 
 				if ((size.width !== rendererSize.width) || (size.height !== rendererSize.height)) {
-					console.info('correcting target dimensions')
 					this.resizeToTarget()
 				}
 				return true
