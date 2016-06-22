@@ -42,7 +42,7 @@ VizorWebVRAdapter.prototype.initialise = function(domElement, renderer, effect, 
 
 	this.proxyOrientationChange = true
 	this.proxyDeviceMotion = (typeof VizorUI !== 'undefined') 
-		&& VizorUI.isMobile.iOS()
+		&& E2.util.isMobile.iOS()
 
 	this.options = options || {
 		hideButton: 	true,
