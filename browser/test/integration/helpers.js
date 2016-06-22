@@ -228,7 +228,23 @@ exports.reset = function() {
 		'0': {
 			clientWidth:1,
 			clientHeight:1,
-			addEventListener: function() {}
+			addEventListener: function() {},
+			getContext: function() {
+				return {
+					createShader: function() {},
+					deleteShader: function() {},
+					compileShader: function() {},
+					shaderSource: function() {},
+					attachShader: function() {},
+					bindAttribLocation: function() {},
+					bindBuffer: function() {},
+					bufferData: function() {},
+					getProgramParameter: function() {},
+					createBuffer: function() {},
+					linkProgram: function() {},
+					createProgram: function() {}
+				}
+			}
 		}
 	}
 

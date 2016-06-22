@@ -110,6 +110,14 @@
 
 		this.manager.render(this.scene, activeCamera)
 
+		if (E2.app.debugFpsDisplayVisible) {
+			this.stats.begin()
+
+			this.stats.renderOrtho()
+
+			this.stats.end()
+		}
+
 	}
 
 	ThreeWebGLRendererPlugin.prototype.getActiveCamera = function() {
@@ -153,6 +161,9 @@
 		if (!ui) {
 			this.domElement = E2.dom.webgl_canvas[0]
 			this.renderer = E2.core.renderer
+
+			var gl = this.domElement.getContext("webgl");
+			this.stats = new WGLUStats(gl)
 
 			var nativeWebVRAvailable = VizorWebVRAdapter.isNativeWebVRAvailable()
 

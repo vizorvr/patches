@@ -16,6 +16,8 @@ var uiKeys = {
 	toggleUILayer		: 11085,	// meta+Shift+U
 	toggleFloatingPanels : 10066, // meta+B
 
+	toggleDebugFPSDisplay : 101070, // ctrl+meta+shift+F
+
 	// single characters handled on keypress
 	openInspector		: 'I',
 	toggleEditorCamera	: 'V',
@@ -761,6 +763,11 @@ VizorUI.prototype.onKeyDown = function(e) {
 			e.stopPropagation();
 			E2.app.undoManager.redo();
 			this.emit('redo')
+			break;
+		case uiKeys.toggleDebugFPSDisplay:
+			e.preventDefault();
+			e.stopPropagation();
+			E2.app.debugFpsDisplayVisible = !E2.app.debugFpsDisplayVisible
 			break;
 	}
 	return true;
