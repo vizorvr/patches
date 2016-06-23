@@ -85,6 +85,9 @@ Defines which of the face sides will be rendered - front, back or both. 0 = Fron
 ###refractionRatio
 
 
+###envMap
+
+
 ##Outputs
 ###material
 
