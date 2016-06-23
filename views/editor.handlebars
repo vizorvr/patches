@@ -259,8 +259,8 @@
 		boot.graphUrl = boot.graph.url
 	{{/if}}
 
-	function startEditor(hmd) {
-		E2.InitialiseEngi([hmd], boot.graphUrl)
+	function startEditor() {
+		E2.InitialiseEngi(boot.graphUrl)
 	}
 
 	$(document).ready(function() {
@@ -292,10 +292,6 @@
 
 		E2.controllers.account = new AccountController()
 
-		hardware.getVRDisplays()
-		.then(function(hmd) {
-			startEditor(hmd)
-		})
-
+		startEditor()
 	});
 </script>

@@ -27,3 +27,16 @@ hardware.hasVRDisplays = function() {
 		return !!display
 	})
 }
+
+// the functions below are required by eg. 0.8
+hardware.sensor = null
+
+// @deprecated
+hardware.ifVR = function(cb) {
+	return hardware.hmd || hardware.hasVRDisplays(cb)
+}
+
+// @deprecated
+hardware.detect = function() {
+	return hardware.ifVR()
+}

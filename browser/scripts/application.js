@@ -2181,7 +2181,7 @@ Application.prototype.determineWebSocketEndpoint = function(path) {
 	return wsUrl
 }
 
-E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
+E2.InitialiseEngi = function(loadGraphUrl) {
 	E2.dom.editorHeader = $('.editor-header');
 
 	E2.dom.progressBar = $('#progressbar');
@@ -2299,7 +2299,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 		}
 	})
 
-	E2.core = new Core(vr_devices)
+	E2.core = new Core()
 	E2.app = new Application()
 	E2.ui = new VizorUI();
 
@@ -2328,6 +2328,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 		preserveDrawingBuffer: true
 	}
 
+	E2.app.debugFpsDisplayVisible = false 
 	E2.app.worldEditor = new WorldEditor(E2.dom.webgl_canvas[0])
 
 	E2.core.glContext = E2.dom.webgl_canvas[0].getContext('webgl', gl_attributes) || E2.dom.webgl_canvas[0].getContext('experimental-webgl', gl_attributes)

@@ -75,6 +75,7 @@ var paths = {
 			'./browser/vendor/three/MorphAnimMesh.js',
 			'./browser/vendor/three/Font.js',
 			'./browser/vendor/three/FontLoader.js',
+
 			'./browser/vendor/three/loaders/FBXLoader.js',
 			'./browser/vendor/three/loaders/ColladaLoader2.js',
 			'./browser/vendor/three/loaders/gltf/glTF-parser.js',
@@ -86,11 +87,7 @@ var paths = {
 
 			'./browser/vendor/spite/THREE.MeshLine.js',
 
-			'./browser/vendor/borismus/webvr-polyfill.js',
-			'./browser/vendor/borismus/webvr-manager.js',
 			'./browser/scripts/glTFUtils.js',
-			'./browser/scripts/hardware.js',
-			'./browser/scripts/webVRAdapter.js',
 
 			'./browser/scripts/noise.js',
 			'./browser/vendor/random.min.js',
@@ -99,7 +96,9 @@ var paths = {
 
 			'./browser/scripts/textureCache.js',
 
-			'./browser/scripts/plugin-manager-bundled.js'
+			'./browser/scripts/plugin-manager-bundled.js',
+		
+			'./browser/vendor/toji/webgl-utils/src/wglu-stats.js'
 		],
 
 		player: [

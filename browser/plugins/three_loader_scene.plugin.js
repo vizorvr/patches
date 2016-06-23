@@ -136,8 +136,6 @@
 		}
 		// if none of the above match, there is no valid bounding volume (empty / corrupt model?)
 		
-		console.log('scale object to', scaleFactor)
-
 		this.undoableSetState('scale', new THREE.Vector3(scaleFactor, scaleFactor, scaleFactor), new THREE.Vector3(this.state.scale.x, this.state.scale.y, this.state.scale.z))
 
 		delete this.postLoadCallback

@@ -26,10 +26,7 @@ function onCoreReady() {
 }
 
 $(document).ready(function()  {
-	hardware.getVRDisplays()
-	.then(function(hmd) {
-		CreatePlayer([hmd], onCoreReady)
-	})
+	CreatePlayer(onCoreReady)
 })
 
 // postMessage API for setting variables in embedded files
