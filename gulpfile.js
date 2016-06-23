@@ -99,7 +99,9 @@ var paths = {
 
 			'./browser/scripts/textureCache.js',
 
-			'./browser/scripts/plugin-manager-bundled.js'
+			'./browser/scripts/plugin-manager-bundled.js',
+		
+			'./browser/vendor/toji/webgl-utils/src/wglu-stats.js'
 		],
 
 		player: [
