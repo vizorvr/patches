@@ -35,6 +35,8 @@ VizorWebVRAdapter.prototype.initialise = function(domElement, renderer, effect, 
 
 	this.domElement = domElement	// typically a canvas
 
+	this.configure()
+
 	this.proxyOrientationChange = true
 	this.proxyDeviceMotion = (typeof VizorUI !== 'undefined') 
 		&& E2.util.isMobile.iOS()
@@ -52,8 +54,6 @@ VizorWebVRAdapter.prototype.initialise = function(domElement, renderer, effect, 
 	this._instructionsChanged = false
 	this._lastTarget = null
 
-	this.configure()
-
 	this._presentingKeyHandler = function(e) {
 		// explicitly make esc exit VR mode
 		// this seems not to be handled by the browser atm
@@ -62,13 +62,14 @@ VizorWebVRAdapter.prototype.initialise = function(domElement, renderer, effect, 
 	}.bind(this)
 	
 	this._manager = new WebVRManager(renderer, effect, this.options)
+	this._manager.on('initialized', function() {
+		that.patchWebVRManager()
 
-	this.patchWebVRManager()
+		that.attach()
 
-	this.attach()
-
-	// initial sizing
-	this.resizeToTarget()
+		// initial sizing
+		that.resizeToTarget()
+	})
 }
 
 VizorWebVRAdapter.events = Object.freeze({
@@ -102,7 +103,7 @@ VizorWebVRAdapter.prototype.configure = function() {
 
 	navigator.getVRDisplays()
 		.then(function(displays){
-			displays.forEach(function(display){
+			displays.forEach(function(display) {
 				if (display.capabilities.canPresent)
 					that.haveVRDevices = true
 
@@ -251,7 +252,7 @@ VizorWebVRAdapter.prototype.onBrowserResize = function() {
 		that.resizeToTarget()
 	}
 
-	if (!this.iOS && !this.hmd.isPolyfilled)
+	if (!this.iOS && this.hmd && !this.hmd.isPolyfilled)
 		doResize()
 	else
 		this._scheduleResize(doResize, timeout)
