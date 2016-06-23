@@ -63,7 +63,8 @@ function uploadFile(file) {
 	return dfd.promise
 }
 
-function postPasteFixup(nodes) {
+// Traverse the pasted nodes and perform any fixup (fix
+function postPasteFixup(nodes, fixupCallback) {
 	function fixupNode(node) {
 		if (node.plugin.id === "graph") {
 			for (var i = 0, len = node.plugin.graph.nodes.length; i < len; ++i) {
@@ -71,9 +72,7 @@ function postPasteFixup(nodes) {
 			}
 		}
 
-		if (node.plugin.id === 'three_loader_scene') {
-			node.plugin.requiresScaling = true
-		}
+		fixupCallback(node)
 	}
 
 	for (var i = 0, len = nodes.length; i < len; ++i) {
@@ -123,13 +122,25 @@ function instantiateTemplateForUpload(uploaded, position) {
 	var templateName
 	var dfd = when.defer()
 
+	var fixupCallback = function() {}
+
 	// add to scene if graph not visible
 	switch(uploaded.modelName) {
 		case 'image':
 			templateName = 'texture-plane.hbs'
+			fixupCallback = function(node) {
+				if (node.plugin.id === 'three_mesh') {
+					node.plugin.postLoadCallback = new TexturePlacementHelper()
+				}
+			}
 			break;
 		case 'scene':
 			templateName = 'scene.hbs'
+			fixupCallback = function(node) {
+				if (node.plugin.id === 'three_loader_scene') {
+					node.plugin.postLoadCallback = new ObjectPlacementHelper()
+				}
+			}
 			break;
 		case 'audio':
 			return instantiatePluginForUpload(uploaded, position)
@@ -167,7 +178,7 @@ function instantiateTemplateForUpload(uploaded, position) {
 		// paste. auto-connecting to the scene will be handled inside paste
 		// by the world editor
 		var pasted = E2.app.onPaste(copyBuffer)
-		postPasteFixup(pasted.nodes)
+		postPasteFixup(pasted.nodes, fixupCallback)
 
 		E2.app.undoManager.end()
 

@@ -29,8 +29,8 @@ exports.slot = function slot(index, type, dt) {
 exports.mockE2Classes = function() {
 	global.AssetLoader = function AssetLoader() {
 		EventEmitter.call(this)
-		this.defaultTexture = {}
-		this.loadingTexture = {}
+		this.defaultTexture = { clone: function() {} }
+		this.loadingTexture = { clone: function() {} }
 	}
 
 	global.AssetLoader.prototype = Object.create(EventEmitter.prototype)
@@ -252,18 +252,24 @@ exports.reset = function() {
 		}
 	}
 
-	global.E2.app.player = { core: E2.core }
+	global.E2.app.player = {
+		core: E2.core,
+		state: {}
+	}
 
 	E2.core.active_graph = new Graph(E2.core, null, {})
 	E2.core.root_graph = E2.core.active_graph
 	E2.core.graphs = [ E2.core.active_graph ]
 	
 	E2.core.renderer = {
+		render: function() {},
+		clear: function() {},
 		setPixelRatio: function() {},
 		domElement: {parentElement:{style:{}}},
 		setSize: function(){},
 		setSizeNoResize: function(){},
 		setClearColor: function() {},
+		shadowMap: {},
 		getSize: function() {return {width: 1, height: 1}}
 	}
 

@@ -53,6 +53,7 @@ var uiNodeCategoryMap = {};
 		'input_proxy': 			c.io,
 		'variable_local_read':	c.io,
 		'variable_local_write':	c.io,
+		'variable_local_write_conditional':	c.io,
 
 		'three_mesh'	: c.geometry,
 		'three_geometry_box'	: c.geometry,
@@ -168,6 +169,7 @@ var uiNodeCategoryMap = {};
         'mouse_position_generator': c.interaction,
         'mouse_wheel_generator'	: c.interaction,
         'gamepad_generator'		: c.interaction,
+        'vive_controller'		: c.interaction,
 
         'parse_json_modulator'	: c.data,
 
@@ -214,13 +216,19 @@ uiNodeCategoryMap.getCategory = function(plugin_id) {
 var uiPluginCategoriesThatMustNotDisplayOutputInHeader = []
 var uiPluginsThatMustNotDisplayOutputInHeader = [
 	'envelope_modulator'
-];
+]
+
 var uiPluginsThatForceDisplayOutputInHeader = [	// override the logic (e.g. when dynamic slots)
 	'three_scene'
-];
+]
+
 var uiPluginCategoriesAutoRenamed = [
 	uiNodeCategory.value
-];
+]
+
+var uiPluginsThatNeverDisplayInline = [
+	'variable_local_write_conditional'
+]
 
 var uiPluginsThatAlwaysDisplayInline = [
 	'pi_generator',
@@ -231,5 +239,5 @@ var uiPluginsThatAlwaysDisplayInline = [
 	'assets_failed_generator',
 	'assets_started_generator',
 	'mouse_wheel_generator'
-];
+]
 
