@@ -161,7 +161,7 @@ var VizorPlayerUI = function() {
 			})
 
 		if (siteUI.hasOrientationChange
-			&& E2.util.isMobile.any()
+			&& VizorUI.isMobile.any()
 		) {
 			var allowExtraHeightOnLandscape = function () {
 				if (siteUI.isInIframe())
@@ -358,7 +358,7 @@ var VizorPlayerUI = function() {
 		w.on(w.events.modeChanged, onVRModeChanged)
 
 		setTimeout(function () {
-			if (E2.util.isMobile.any() && !siteUI.isPortraitLike())
+			if (VizorUI.isMobile.any() && !siteUI.isPortraitLike())
 				that.headerFadeOut()
 			else
 				that.queueHeaderFadeOut()
@@ -406,7 +406,7 @@ var VizorPlayerUI = function() {
             $playButton.on('click', that.play.bind(that))
         }
 
-		if (Vizor.hasAudio && E2.util.isMobile.iOS()) {
+		if (Vizor.hasAudio && VizorUI.isMobile.iOS()) {
 			Vizor.noHeader = false
 			Vizor.autoplay = this.autoplay = false
 		}
