@@ -21,11 +21,6 @@ function VizorWebVRAdapter() {
 	})
 
 	this.iOS = navigator.userAgent.match(/iPhone|iPad|iPod/i)
-
-	hardware.hasVRDisplays()
-	.then(function(has) {
-		that.haveVRDevices = has
-	})
 }
 
 VizorWebVRAdapter.prototype = Object.create(EventEmitter.prototype)
@@ -39,6 +34,8 @@ VizorWebVRAdapter.prototype.initialise = function(domElement, renderer, effect, 
 	this.modes = WebVRManager.Modes
 
 	this.domElement = domElement	// typically a canvas
+
+	this.configure()
 
 	this.proxyOrientationChange = true
 	this.proxyDeviceMotion = (typeof VizorUI !== 'undefined') 
@@ -57,8 +54,6 @@ VizorWebVRAdapter.prototype.initialise = function(domElement, renderer, effect, 
 	this._instructionsChanged = false
 	this._lastTarget = null
 
-	this.configure()
-
 	this._presentingKeyHandler = function(e) {
 		// explicitly make esc exit VR mode
 		// this seems not to be handled by the browser atm
@@ -67,13 +62,14 @@ VizorWebVRAdapter.prototype.initialise = function(domElement, renderer, effect, 
 	}.bind(this)
 	
 	this._manager = new WebVRManager(renderer, effect, this.options)
+	this._manager.on('initialized', function() {
+		that.patchWebVRManager()
 
-	this.patchWebVRManager()
+		that.attach()
 
-	this.attach()
-
-	// initial sizing
-	this.resizeToTarget()
+		// initial sizing
+		that.resizeToTarget()
+	})
 }
 
 VizorWebVRAdapter.events = Object.freeze({
@@ -105,16 +101,15 @@ VizorWebVRAdapter.prototype.configure = function() {
 	w.TOUCH_PANNER_DISABLED	= false
 	w.MOUSE_KEYBOARD_CONTROLS_DISABLED	= false
 
-	var polyfill = window._webVRPolyfill
-	if (!polyfill) {
-		return console.error('could not find polyfill, functionality may be incomplete')
-	}
-
-	polyfill.getVRDisplays()		// navigator.getVRDisplays()
+	navigator.getVRDisplays()
 		.then(function(displays){
-			displays.forEach(function(display){
+			displays.forEach(function(display) {
+				if (display.capabilities.canPresent)
+					that.haveVRDevices = true
+
 				if (display._vizorPatched)
 					return
+
 				if (typeof display.getManualPannerRef === 'function') {
 					var panner = display.getManualPannerRef()
 					if (!(panner && panner.canInitiateRotation))
@@ -123,8 +118,9 @@ VizorWebVRAdapter.prototype.configure = function() {
 						return that.canInitiateCameraMove(e)
 					}
 				} else {
-					console.error('no display.getManualPannerRef found', display)
+					console.warn('no display.getManualPannerRef found', display)
 				}
+
 				display._vizorPatched = true
 				// note, if display.wrapForFullscreen (removeFullscreenWrapper) is taken out
 				// then the cardboard selector won't show on Android because it would fullscreen the canvas, not its parent element
@@ -228,14 +224,12 @@ VizorWebVRAdapter.prototype.onScroll = function() {
 				var rendererSize = this._renderer.getSize()
 
 				if ((size.width !== rendererSize.width) || (size.height !== rendererSize.height)) {
-					console.info('correcting target dimensions')
 					this.resizeToTarget()
 				}
 				return true
 			}.bind(that), 100)
 	}, 500)
 }
-
 
 VizorWebVRAdapter.prototype.onBrowserResize = function() {
 	var that = this
@@ -258,7 +252,7 @@ VizorWebVRAdapter.prototype.onBrowserResize = function() {
 		that.resizeToTarget()
 	}
 
-	if (!this.iOS && hardware.hmd instanceof VRDisplay)
+	if (!this.iOS && this.hmd && !this.hmd.isPolyfilled)
 		doResize()
 	else
 		this._scheduleResize(doResize, timeout)
@@ -350,7 +344,7 @@ VizorWebVRAdapter.prototype.setTargetSize = function(width, height, devicePixelR
 
 VizorWebVRAdapter.prototype.getTargetSize = function() {
 	var manager = this._manager
-	var hmd = hardware.hmd
+	var hmd = this.hmd
 	var isPresenting = hmd && hmd.isPresenting
 
 	var size = {
@@ -383,7 +377,6 @@ VizorWebVRAdapter.prototype.getTargetSize = function() {
 
 	return size
 }
-
 
 // event handling
 VizorWebVRAdapter.prototype.onMessageReceived = function(e) {
@@ -667,5 +660,10 @@ VizorWebVRAdapter.isNativeWebVRAvailable = function() {
 
 VizorWebVRAdapter.prototype.isNativeWebVRAvailable = VizorWebVRAdapter.isNativeWebVRAvailable
 
+VizorWebVRAdapter.prototype.getEyeParameters = function(eye) {
+	return this.hmd.getEyeParameters(eye)
+}
+
 if (typeof module !== 'undefined')
-	module.exports.VizorWebVRAdapter = VizorWebVRAdapter
+	module.exports = VizorWebVRAdapter
+

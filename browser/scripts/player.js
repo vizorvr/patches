@@ -208,7 +208,7 @@ Player.prototype.loadAndPlay = function(url, forcePlay) {
 	return dfd.promise
 }
 
-function CreatePlayer(vr_devices, cb) {
+function CreatePlayer(cb) {
 	$(document).ajaxError(function(e, jqxhr, settings, ex) {
 		if(typeof(ex) === 'string') {
 			console.log(ex)
@@ -229,7 +229,7 @@ function CreatePlayer(vr_devices, cb) {
 		console.log(m)
 	})
 	
-	E2.core = new Core(vr_devices)
+	E2.core = new Core()
 	
 	E2.dom.webgl_canvas = $('#webgl-canvas')
 

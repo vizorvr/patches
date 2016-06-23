@@ -99,8 +99,8 @@ var setupWebVRAdapter = exports.setupWebVRAdapter = function() {
 		this.emit(this.events.modeChanged, mode, oldMode)
 	}
 	vw.setDomElementDimensions = mock
-
 }
+
 exports.reset = function() {
 	global.window = global
 
@@ -160,8 +160,20 @@ exports.reset = function() {
 		this.send = function() {}
 	}
 
+	exports.runScript(browserPath+'vendor/borismus/webvr-polyfill.js')
+	exports.runScript(browserPath+'vendor/borismus/webvr-manager.js')
+
 	exports.runScript(browserPath+'dist/engine.js')
 	exports.mockE2Classes()
+
+	global._webVRPolyfill = {
+		getVRDisplays: function() { return when.resolve([]) },
+	}
+	global.hardware = {
+		hasVRDisplays: function() { return when.resolve(true) },
+	}
+
+	global.VizorWebVRAdapter = require(browserPath+'scripts/webVRAdapter.js')
 
 	var Application = require(browserPath+'scripts/application.js')
 	
