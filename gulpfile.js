@@ -87,11 +87,6 @@ var paths = {
 
 			'./browser/vendor/spite/THREE.MeshLine.js',
 
-			// './browser/scripts/hardware.js',
-			// './browser/vendor/borismus/webvr-polyfill.js',
-			// './browser/vendor/borismus/webvr-manager.js',
-			// './browser/scripts/webVRAdapter.js',
-			
 			'./browser/scripts/glTFUtils.js',
 
 			'./browser/scripts/noise.js',
