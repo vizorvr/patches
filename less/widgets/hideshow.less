@@ -1,0 +1,23 @@
+.hideshow_hide() {
+  display: none;
+}
+
+.hideshow_show(@display) {
+  display: @display;
+}
+
+*[data-hideshow='hide']:not([data-hideshow-target]) {
+  .hideshow_hide;
+}
+
+*[data-hideshow='show']:not([data-hideshow-target]) {
+  .hideshow_show('block');
+}
+
+*.hideshow-inline[data-hideshow='show']:not([data-hideshow-target]) {
+  .hideshow_show('inline');
+}
+
+*.hideshow-inline-block[data-hideshow='show']:not([data-hideshow-target]) {
+  .hideshow_show('inline-block');
+}

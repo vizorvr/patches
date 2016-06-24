@@ -529,12 +529,14 @@ VizorUI.prototype.openPublishGraphModal = function() {
 	var assetdata = _.clone(E2.app.graphStore.getGraphSize())	// {size, numAssets, numNodes, hasAudio}
 
 
+	var prefs = E2.models.user.get('preferences')
+	var defaultPublic = prefs ? !!prefs.publishDefaultPublic : true
 	var data = {
 		path:	        graphname,
 		graph:	        graphdata,
 		previewImage:   graphpreview,
 		assetdata:		assetdata,
-		isPublic:		true,
+		isPublic:		defaultPublic,
 		sizeFormatted: 	siteUI.formatFileSize(assetdata.size)
 	}
 

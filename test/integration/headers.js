@@ -32,13 +32,13 @@ describe('Headers', function() {
 		.attach('file', jpeg, 'my.jpeg')
 		.expect(200)
 		.end(function(err, res) {
-			agent.get('/account')
+			agent.get('/account/profile')
 			.set('X-Requested-With', 'XMLHttpRequest')
 			.expect(200)
 			.end(function(err, res) {
 				if (err) return done(err)
 				assert.equal('/data/'+username+'/profile/header/te-2rb-scaled.jpg',
-					res.body.data.header)
+					res.body.data.profile.header)
 				done()
 			})
 		})

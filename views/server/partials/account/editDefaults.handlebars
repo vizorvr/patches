@@ -1,0 +1,25 @@
+<form id="editDefaultsForm" action="/account/profile" class="xhr panel" method="POST">
+    {{#with profile}}<dl class="fieldset">
+        <dt>
+           Set the default publish type to Public or Private. You can also change this for each project published.
+        </dt>
+        <dd class="form-input" id="f_defaults_public">
+            <label id="publishPublicPrivateLabel" for="publishDefaultPublic">
+                {{#if isPublic}}
+                    Public
+                {{else}}
+                    Private
+                {{/if}}
+            </label>
+
+            {{> controls/toggle id='publishDefaultPublicToggle'
+                name='publishDefaultPublicToggle' checked=preferences.publishDefaultPublic
+                value='1' markup=(unescape 'onchange="document.getElementById(\'publishDefaultPublicHidden\').value=(this.checked)?1:0;document.getElementById(\'defaultsSubmitButton\').click()"')}}
+
+            <input type="hidden" id="publishDefaultPublicHidden" name="preferences[publishDefaultPublic]" value="" />
+        </dd>
+    </dl>{{/with}}
+    <span class="message"></span>
+    <input type="hidden" name="_csrf" value={{_csrf}}>
+    <button style="display: none" id="defaultsSubmitButton" class="" type="submit">Update</button>
+</form>

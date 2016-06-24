@@ -17,16 +17,9 @@
     <div class="flexed">
         <ul class="inline-rounded">
             <li>
-                <label id="publishPublicPrivateLabel" for="publishPublic">
-                    {{#if isPublic}}
-                        Public
-                    {{else}}
-                        Private
-                    {{/if}}
-                </label>
-                <label><input type="checkbox"
-                              {{#if isPublic}}checked{{/if}}
-                              id="publishPublic" class="toggle-rounded" name="isPublic" value="1" /><span><!-- firefox --></span></label>
+
+                {{> controls/toggle checked=isPublic name='isPublic' id='publishPublic' value='1'
+                    withLabel=true labelOn='Public' labelId='publishPublicPrivateLabel' labelOff='Private'}}
             </li>
             <li>
                 {{sizeFormatted}}

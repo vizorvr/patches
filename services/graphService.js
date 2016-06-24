@@ -1,7 +1,8 @@
-var when = require('when');
-var util = require('util');
-var AssetService = require('./assetService');
-var GraphOptimizer = require('../lib/graphOptimizer');
+var when = require('when')
+var util = require('util')
+var _ = require('lodash')
+var AssetService = require('./assetService')
+var GraphOptimizer = require('../lib/graphOptimizer')
 
 var fs = require('fs')
 var packageJson = JSON.parse(fs.readFileSync(__dirname+'/../package.json'))
@@ -27,7 +28,7 @@ GraphService.prototype.listWithPreviews = function() {
 
 	this._model
 		.find({ deleted: false })
-		.select('_creator owner name previewUrlSmall updatedAt stat')
+		.select('_creator owner name previewUrlSmall previewUrlLarge updatedAt stat')
 		.sort('-updatedAt')
 		.exec(function(err, list)
 	{
@@ -58,27 +59,45 @@ GraphService.prototype.publicRankedList = function() {
 	return dfd.promise
 }
 
-GraphService.prototype.userGraphs = function(username) {
+GraphService.prototype.userGraphs = function(username, filter, offset, limit) {
 	var dfd = when.defer()
 
-	this._model
-		.find({ owner: username, deleted: false })
-		.select('_creator private owner name previewUrlSmall updatedAt stat')
-		.sort('-updatedAt')
-		.exec(function(err, list)
-	{
-		if (err)
-			return dfd.reject(err)
+	filter = filter || {}
+	filter = _.extend({deleted:false}, filter)
+	filter.owner = username
 
-		dfd.resolve(list)
-	})
+	var query = this._model
+		.find(filter)
+		.sort('-updatedAt')
+
+	if (offset)
+		query.skip(offset)
+
+	if (limit)
+	 	query.limit(limit)
+
+	query
+		.select('_creator private owner name previewUrlSmall previewUrlLarge updatedAt stat views')
+		.exec(function(err, list) {
+			if (err)
+				return dfd.reject(err)
+
+			dfd.resolve(list)
+		})
 
 	return dfd.promise
 }
 
-GraphService.prototype._save = function(data, user) {
+// e.g. when toggling public/private or renaming, but not touching anything else
+// opts {updatedAt, version}
+GraphService.prototype._save = function(data, user, opts) {
 	var that = this
 	var wasNew = false
+
+	opts = _.extend({
+		version : currentPlayerVersion,
+		updatedAt: Date.now()
+	}, opts)
 
 	return this.findByPath(data.path)
 	.then(function(asset) {
@@ -88,7 +107,7 @@ GraphService.prototype._save = function(data, user) {
 		}
 
 		asset._creator = user.id
-		asset.updatedAt = Date.now()
+		asset.updatedAt = opts.updatedAt
 
 		if (data.tags)
 			asset.tags = data.tags
@@ -105,7 +124,10 @@ GraphService.prototype._save = function(data, user) {
 		if (data.hasAudio)
 			asset.hasAudio = data.hasAudio
 
-		asset.version = currentPlayerVersion
+		,
+
+		// by default bumps to latest player version
+		asset.version = opts.version
 
 		asset.deleted = data.deleted || false
 		asset.private = data.private || false
@@ -128,7 +150,7 @@ GraphService.prototype._save = function(data, user) {
 }
 
 
-GraphService.prototype.save = function(data, user) {
+GraphService.prototype.save = function(data, user, playerVersion) {
 	var that = this;
 	var gridFsPath = '/graph'+data.path+'.json';
 	var optimisedGfsPath = '/graph'+data.path+'.min.json';

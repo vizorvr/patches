@@ -31,6 +31,18 @@ function renderError(status, res, message) {
 	})
 }
 
+function visitorIsUser(req, user) {
+	if (!(req && req.user && user))
+		return false
+	var myUid = user._id
+	var theirUid = req.user._id
+	return myUid && theirUid && (myUid.toString() === theirUid.toString())
+}
+
+function ownsGraph(user, graph) {
+	return user && graph && user.username && graph.owner && (user.username === graph.owner)
+}
+
 function isGraphOwner(user, graph) {
 	return user && (user.isAdmin ||
 		((user.id === graph._creator.id) ||
@@ -102,11 +114,18 @@ function prettyPrintGraphInfo(graph) {
 function makeGraphSummary(req,graph) {
 	graph = prettyPrintGraphInfo(graph)
 	return {
+		id:				graph.id,
 		graphMinUrl: 	graph.url,
 		graphName: 		graph.prettyName,
 		previewImage: 	'http://' + req.headers.host + graph.previewUrlLarge,
 		playerVersion: 	graph.version,
-		stat:			graph.stat
+		stat:			graph.stat,
+		hasAudio:		graph.hasAudio,
+		views: 			graph.views,
+		createdAt:		graph.createdAt,
+		updatedAt:		graph.updatedAt,
+		createdTS:		graph.createdTS,
+		updatedTS:		graph.updatedTS
 	}
 }
 
@@ -153,18 +172,113 @@ GraphController.prototype.publicRankedIndex = function(req, res, next) {
 	.catch(next)
 }
 
-// GET /fthr
-GraphController.prototype.userIndex = function(req, res, next) {
-	var username = req.params.model
-
+// GET /fthr?public=1|0
+GraphController.prototype._userOwnIndex = function(user, req, res, next) {
 	var that = this
+	var username = user.username
+	// the user wants to see only their private graphs
+	var wantPrivate = undefined
+	if (typeof req.query.public !== 'undefined') {
+		wantPrivate = (req.query.public === '0')
+	}
 
-	User.findOne({ username: username }, function(err, user) {
-		if (err)
-			return next(err)
+	var makeList = function(list) {
+		if (!list || !list.length)
+			return
+		return list.map(function(graph) {
+			return prettyPrintGraphInfo(graph.toJSON())
+		})
+	}
 
-		that._service.userGraphs(username)
+	function render(publicList, privateList, profile, data) {
+		data = _.extend({
+			bodyclass: '',
+			publicHasMoreLink: false,
+			privateHasMoreLink: false,
+			isSummaryPage: false,
+			withProjectListFilter : true,
+			meta : {
+				header: 'srv/userpage/userpageHeader',
+				title: 'Your Files',
+				scripts : ['site/userpages.js']
+			}
+		}, data)
+
+		// format
+		data.publicGraphs = publicList || []
+		data.privateGraphs = privateList || []
+		data.profile = profile
+
+		// :/ _.extend
+		data.meta.bodyclass = ('bUserpage ' + (data.bodyclass)).trim()
+		delete data.bodyclass
+
+		if (req.xhr) {
+			return res.status(200).json(
+				helper.responseStatusSuccess('OK', data))
+		}
+
+		res.render('server/pages/userpage', data)
+	}
+
+	var profile = user.toJSON()
+
+	var maxNOnFront = 8
+	var data = {
+		publicHasMoreLink : false,
+		privateHasMoreLink : false
+	}
+	// front page, two lists
+	if (wantPrivate === undefined) {
+		data.isSummaryPage = true
+		data.bodyclass = 'bGraphlistSummary'
+		var publicList, privateList
+		that._service.userGraphs(username, {private:false}, 0, maxNOnFront+1)
+			.then(function(list){
+				if (list && (list.length >= maxNOnFront)) {
+					data.publicHasMoreLink = true
+					list.pop()
+				}
+				publicList = makeList(list)
+				return that._service.userGraphs(username, {private:true}, 0, maxNOnFront+1)
+			})
+			.then(function(list) {
+				if (list && (list.length >= maxNOnFront)) {
+					data.privateHasMoreLink = true
+					list.pop()
+				}
+				privateList = makeList(list)
+
+				render(publicList, privateList, profile, data)
+			})
+	} else {
+		// "Public" or "Private" lists
+		data.isSummaryPage = false
+		that._service.userGraphs(username, {private: wantPrivate})
+			.then(function(list){
+				data.bodyclass = (wantPrivate) ? 'bGraphlistPrivate' : 'bGraphlistPublic'
+				list = list.map(function(graph) {
+					return prettyPrintGraphInfo(graph.toJSON())
+				})
+
+				if (wantPrivate)
+					render(null, list, profile, data)
+				else
+					render(list, null, profile, data)
+			})
+	}
+
+}
+
+GraphController.prototype._userPublicIndex = function(user, req, res, next) {
+	var that = this
+	var username = (user) ? user.username : null
+
+	var filter = (req.user && req.user.isAdmin) ? null : {'private':false}
+
+	that._service.userGraphs(username, filter)
 		.then(function(list) {
+
 			// no files found, but if there is a user
 			// then show empty userpage
 			if (!user && (!list || !list.length)) {
@@ -172,10 +286,6 @@ GraphController.prototype.userIndex = function(req, res, next) {
 			}
 
 			list = list
-			.filter(function(graph) {
-				return !graph.private || isGraphOwner(req.user, graph)
-					
-			})
 			.map(function(graph) {
 				return prettyPrintGraphInfo(graph.toJSON())
 			})
@@ -191,17 +301,36 @@ GraphController.prototype.userIndex = function(req, res, next) {
 			}
 
 			_.extend(data, {
+				isSummaryPage: false,
+				withProjectListFilter : false,
 				meta : {
+					header: 'srv/userpage/userpageHeader',
 					title: username+'\'s Files',
 					bodyclass: 'bUserpage',
 					scripts : [
 						helper.metaScript('site/userpages.js')
 					]
 				}
-			});
+			})
 
 			res.render('server/pages/userpage', data);
 		});
+}
+
+
+// GET /fthr
+GraphController.prototype.userIndex = function(req, res, next) {
+	var username = req.params.model
+
+	var that = this
+	User.findOne({ username: username }, function(err, user) {
+		if (err)
+			return next(err)
+
+		if (visitorIsUser(req, user))
+			return that._userOwnIndex(user, req, res, next)
+		else
+			return that._userPublicIndex(user, req, res, next)
 	})
 }
 
@@ -378,6 +507,65 @@ GraphController.prototype.graphLanding = function(req, res, next) {
 		})
 	}).catch(next)
 }
+
+// POST /fthr/dunes-world
+GraphController.prototype.graphModify = function(req, res, next) {
+
+	var that = this
+	// if want XHR return json
+	// else redirect to GET URL
+
+	req.params.path = req.params.path.toLowerCase()
+	var wantXhr = req.xhr
+
+	function notFound() {
+		res.status(404).json(helper.responseStatusError('not found'))
+	}
+
+	this._service.findByPath(req.params.path)
+	.then(function(graph) {
+		if (!graph || graph.deleted)
+			return notFound()
+
+		if (!(req.user && ownsGraph(req.user, graph)))
+			return notFound()
+
+		switch (req.body.private) {
+			case 'true':
+				graph.private = true
+				break
+			case 'false':
+				graph.private = false
+				break
+		}
+
+		var opts = {
+			version: graph.playerVersion,
+			updatedAt: graph.updatedAt
+		}
+		
+		that._service.save(graph, req.user, opts)
+			.then(function(savedGraph, err){
+				if (err) {
+					res.status(500).json(helper.responseStatusError('could not save graph', err))
+				}
+
+				var data = makeGraphSummary(req, savedGraph.toJSON())
+				// add these two to response
+				data.private = savedGraph.private
+				data.editable = savedGraph.editable
+				if (wantXhr)
+					return res.json(helper.responseStatusSuccess('OK', data))
+				// else
+				return res.redirect(req.params.path)
+			})
+
+
+
+	}).catch(next)
+}
+
+
 
 // GET /fthr/dunes-world/graph.json
 GraphController.prototype.stream = function(req, res, next) {

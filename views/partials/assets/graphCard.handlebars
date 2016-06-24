@@ -1,28 +1,66 @@
-<article class="graph asset card noselect" data-objectid="{{_id}}" data-url="/{{owner}}/{{name}}" data-asset-type="graph">
+{{!-- test for owner with #eq visitor.username this.owner --}}
+{{!-- also this.private (true|false) --}}
+
+{{#*inline 'action'}}
+    {{!-- context graph --}}
+    <a class="btn action {{#if main}}mainaction{{/if}} {{act}} svg {{class}}" data-action="{{act}}" href="{{path}}" data-svgref="{{svg}}">
+        <svg />
+        <span>{{#if text}}{{text}}{{else}}{{act}}{{/if}}</span>
+    </a>
+{{/inline}}
+
+{{> assets/graphCardJS . }}
+
+<article class="graph asset card noselect" data-objectid="{{_id}}" data-sortid="{{updatedTS}}" data-url="/{{owner}}/{{name}}" data-asset-type="graph">
+
 	<div class="meta scrollbar">
-		<h4 class="editable" data-svgref="icon-ca-rename">{{prettyName}}</h4>
-		<p class="description user size">
-            {{#not-eq this.username profile.username}}
-                <a style="margin-right:0.5em;color:#666;" href="/{{owner}}">@{{owner}}</a>
-            {{/not-eq}}
-            {{size}}</p>
-		<p class="description updatedAt">{{updatedAt}}</p>
+		<h4 class="editable" data-svgref="icon-ca-rename">
+            <a href="{{path}}">{{prettyName}}</a>
+        </h4>
+        {{#not-eq visitor.username this.owner}}
+		<p class="description user">
+            <a style="margin-right:0.5em;color:#666;" href="/{{owner}}">@{{owner}}</a>
+        </p>
+        {{/not-eq}}
+		<p class="description updatedAt">{{formatDate updatedAt}}</p>
 	</div>
-	<div class="image"
-		{{#if previewUrlSmall}}
-		 style="background-image: url('{{previewUrlSmall}}');"
+
+		{{#if previewUrlLarge}}
+		 <div class="image" style="background-image: url('{{previewUrlLarge}}');">
+        {{else}}
+         <div class="image noimage">
 		{{/if}}
-	>
-		<div class="overlay flexcenter">
-			{{!-- > assets/commonActions id=_id context="graph" --}}
-			<a class="btn action mainaction open svg" data-action="open" href="{{path}}" data-svgref="card-icon-view">
-				<svg /> View
-			</a>
-            {{#eq this.username profile.username }}
-            <a class="btn action mainaction edit svg" data-action="edit" href="{{path}}/edit" data-svgref="player-icon-edit">
-                <svg /> Edit
-            </a>
+
+		<div class="overlay flexcenter noselect_all">
+            {{#if withActions}}
+                {{#eq visitor.username this.owner}}
+                    {{> assets/commonActions . id=_id context="graph" }}
+                {{/eq}}
+            {{/if}}
+
+            <div class="mainActionsWrap">
+
+
+            {{#eq visitor.username this.owner}}
+                {{> action main=true act='view' text='View' svg='eye-21x13' }}
+                {{> action main=true text='Edit' act='edit' svg='player-icon-edit' path=(concat path '/edit') }}
+            {{else}}
+                {{> action main=true act='view' text='View' svg='eye-21x13' class='expand' }}
+                {{!-- in case this ever gets listed --}}
+                {{!--
+                {{#not-eq this.private true}}
+                    {{> action main=true text='Edit' act='edit' svg='player-icon-edit' path=(concat path '/edit') }}
+                {{/not-eq}}
+                --}}
             {{/eq}}
+            </div>
+
+            <p class="meta">
+                <span class="stat size">{{size}}</span>
+                <span class="stat views">
+                    <svg style="fill:#afbfdf; width:16px; height:10px; "><use xlink:href="#eye-16x10"></use></svg>
+                    {{views}} <span>views</span></span>
+            </p>
 		</div>
 	</div>
 </article>

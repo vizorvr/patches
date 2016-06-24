@@ -247,6 +247,10 @@ function CreatePlayer(cb) {
 	E2.core = new Core()
 	
 	E2.dom.webgl_canvas = $('#webgl-canvas')
+	if (E2.dom.webgl_canvas.length < 1)
+		return
+
+	E2.core = new Core(vr_devices)
 
 	E2.app = {}
 	E2.app.player = new Player()

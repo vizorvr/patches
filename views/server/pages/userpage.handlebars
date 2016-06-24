@@ -1,16 +1,39 @@
-{{!--
-<div class="secondarynav">
-	<div class="in">
-		{{> srv/userpage/nav }}
-	</div>
-</div>
---}}
 <div id="contentcontainer" class="in">
-<h2 class="decorative"><span>{{profile.username}}'s Files</span></h2>
+    {{#not-eq profile.username user.username}}
+        <h2><span>{{profile.username}}'s Files</span></h2>
+    {{/not-eq}}
 
-<section class="list assets clearfix noselect">
-	{{#each graphs}}
-		{{> assets/graphCard profile=../profile}}
-	{{/each}}
-</section>
+    {{#if graphs}}
+        {{>browse/graphList . list=graphs class='public'}}
+    {{else}}
+
+        {{#if isSummaryPage}}
+            {{!-- front page (summary) --}}
+            {{>browse/graphList . list=publicGraphs
+                heading='Public projects' class='public'
+                withNew=(equals profile.username user.username)
+                withMoreLink=publicHasMoreLink moreLinkText='All public projects' moreLinkHref='?public=1'
+            }}
+            {{>browse/graphList . list=privateGraphs
+                heading='Private projects' class='private'
+                withNew=(equals profile.username user.username)
+                withMoreLink=privateHasMoreLink moreLinkText='All private projects' moreLinkHref='?public=0'
+            }}
+        {{else}}
+            {{!-- filtered public/private lists --}}
+            {{#if publicGraphs}}
+                {{>browse/graphList . list=publicGraphs
+                    heading='Public projects' class='public'
+                    withNew=(equals profile.username user.username)
+                }}
+            {{/if}}
+
+            {{#if privateGraphs}}
+                {{>browse/graphList . list=privateGraphs
+                    heading='Private projects' class='private'
+                    withNew=(equals profile.username user.username)
+                }}
+            {{/if}}
+        {{/if}}
+    {{/if}}
 </div>

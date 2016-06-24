@@ -1,93 +1,34 @@
-
-  {{!-- > srv/userpage/nav --}}
-
-  <div id="contentcontainer" class="in">
-  <h2 class='decorative'><span><i class="fa fa-user page-header-icon"></i> Account management</span></h2>
-  {{!-- <ul class="breadcrumb breadcrumb-page">
-    <div class="breadcrumb-label text-light-gray">You are here: </div>
-    <li><a href="/">Home</a></li>
-    <li class="active"><a href="#">Account</a></li>
-  </ul>
-
-  <div class="page-header">
-    <div class="row">
-      <!-- Page header, center on small screens -->
-      <h1 class="text-center form-header"><i class="fa fa-user page-header-icon"></i>&nbsp;&nbsp;Account</h1>
-    </div>
-  </div> <!-- / .page-header -->
-
-      --}}
-
-  <div class="twocol center clearfix" style="width: 80%; margin: 0 auto;">
-	  <section class="col left"><!-- Profile Info Form -->
-		  <h3 class='hsec'><span>Your details</span></h3>
-			{{> account/account }}
-	  </section><!-- / Profile Info form -->
-
-	  <section class="col right" style="border-left: 1px dotted #999;">
-		  <h3>Change password</h3>
-		  <!-- Change Password Form -->
-			  {{> account/changepassword }}
-		  <!-- / Change Password form -->
-	  </section>
-
-	</div>
-
-  {{!--
-    <!--
-  <div class="panel">
-    <div class="panel-heading">
-      <span class="panel-title">Linked Accounts</span>
-    </div>
-
-    <ul class="list-group">
-      <li class="list-group-item">
-        <span class="badge badge-danger"><i class="fa fa-google-plus"></i></span>
-        {{#if user.google}}
-        <a class="text-danger" href="/account/unlink/google">Unlink your Google account</a>
-        {{else}}
-        <a href="/auth/google">Link your Google account</a>
-        {{/if}}
-      </li>
-      <li class="list-group-item">
-        <span class="badge badge-info"><i class="fa fa-twitter"></i></span>
-        {{#if user.twitter}}
-        <a class="text-danger" href="/account/unlink/twitter">Unlink your Twitter account</a>
-        {{else}}
-        <a href="/auth/google">Link your Twitter account</a>
-        {{/if}}
-      </li>
-      <li class="list-group-item">
-        <span class="badge btn-facebook"><i class="fa fa-facebook"></i></span>
-        {{#if user.facebook}}
-        <a class="text-danger" href="/account/unlink/facebook">Unlink your Facebook account</a>
-        {{else}}
-        <a href="/auth/facebook">Link your Facebook account</a>
-        {{/if}}
-      </li>
-    </ul>
-  </div>
-  -->
-  --}}
-
-  <section class='center'>
-	  <h3 class='decorative'><span>Logout</span></h3>
-	  <p style='text-align:center'>
-	  	<a class='btn action logout' data-action='logout' href='/logout'>Click here to logout</a>
-	  </p>
+{{#*inline 'section'}}
+    <section id="{{id}}"
+        {{#if collapsed}} class="collapsible collapsed" {{else}} class="collapsible" {{/if}}>
+    <h3><a href="#{{id}}" class="toggle">{{name}}</a></h3>
+      <div>
+        {{> (lookup . 'view') }}
+      </div>
   </section>
+{{/inline}}
 
-  <section class='center'>
-      <h3 class='decorative'><span>Delete account</span></h3>
-      <!-- Delete Account Form -->
-      <form action="/account/delete" method="POST">
-        <input type="hidden" name="_csrf" value={{_csrf}}>
-          <p>Please bear in mind that this action is irreversible.</p>
-          <button class="btn warn action delete svg" type="submit" onclick="return confirm('Are you sure you wish to delete your account? This is IRREVERSIBLE!');">
-            Delete My Account
-            <svg><use xlink:href="#icon-go"></use></svg>
-          </button>
-      </form>
-      <!-- / Delete Account form -->
-  </section>
+ <div id="contentcontainer" class="in">
+  {{!-- context is profile --}}
+
+    {{>section id='editName' name="Name" view='srv/account/editName' collapsed=false }}
+    {{>section id='editPassword' name="Password" view='srv/account/editPassword' collapsed=true }}
+    {{>section id='editEmail' name="Email address" view='srv/account/editEmail' collapsed=true }}
+    {{>section id='editBio' name="Bio" view='srv/account/editBio' collapsed=true }}
+    {{>section id='editWebsite' name="Website" view='srv/account/editWebsite' collapsed=true }}
+    {{>section id='editImages' name="Avatar & Header" view='srv/account/editPics' collapsed=true }}
+
+      <section id="editDefaults">
+         <h3>Publish Defaults</h3>
+        {{> srv/account/editDefaults }}
+     </section>
+
+      <section>
+          <h3>Sign out</h3>
+          <a class='btn action logout svg' data-svgref="icon-go" data-action='logout' href='/logout'>Click here to sign out</a>
+      </section>
+
+
+    {{>section id='profileDelete' name="Delete account" view='srv/account/deleteAccount' collapsed=true }}
+
 </div>

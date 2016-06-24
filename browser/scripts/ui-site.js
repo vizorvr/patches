@@ -1,10 +1,14 @@
-
 // requires bootbox
 if (typeof msg === 'undefined')
 	var msg = function(msg) {console.error(msg)};
 
 if (typeof VizorUI === 'undefined')
 	var VizorUI = {}
+
+if (typeof uiEvent === 'undefined')
+	uiEvent = {}
+
+uiEvent.xhrFormSuccess	= 'xhrFormSuccess'		//	dispatched on document
 
 // takes care of common site shell and elements found on "web" pages.
 var siteUI = new function() {
@@ -69,6 +73,10 @@ var siteUI = new function() {
 			})
 			$body.addClass('orientationInitial');
 		}
+
+		Array.prototype.forEach.call(
+			document.body.querySelectorAll('[data-hideshow-target]'),
+			VizorUI.hideshow)
 
 		// common account forms
 		VizorUI.setupXHRForm(jQuery('#accountDetailsForm'));
@@ -172,6 +180,8 @@ var siteUI = new function() {
 		else if (jQuery('body.bHome.bAbout').length > 0) {
 			that.initAbout()
 		}
+		// auto popovers
+		$('[data-toggle="popover"]').popover()
 
 	}
 
@@ -355,7 +365,6 @@ var siteUI = new function() {
 
 	}
 
-
 	// check if device resembles touch-capable.
 	this.isTouchCapable = function() {
 	  return !!('ontouchstart' in window);
@@ -393,7 +402,7 @@ var siteUI = new function() {
 
 		var devicePixelRatio = window.devicePixelRatio || 1
 
-		var isBrowser = VizorUI.isBrowser
+		var isBrowser = E2.util.isBrowser
 		$body
 			.toggleClass('uaSafari', isBrowser.Safari())
 			.toggleClass('uaFirefox', isBrowser.Firefox())
@@ -430,7 +439,7 @@ var siteUI = new function() {
 			}
 		}
 
-		if (VizorUI.isMobile.Android())
+		if (E2.util.isMobile.Android())
 			setTimeout(tagLandscapeOrPortrait, 300)
 		else
 			tagLandscapeOrPortrait()
@@ -440,7 +449,7 @@ var siteUI = new function() {
 
 	// check if orientation resembles portrait
 	this.isPortraitLike = function() {
-		if (VizorUI.isMobile.Android()) {
+		if (E2.util.isMobile.Android()) {
 			// http://stackoverflow.com/questions/30753522/chrome-43-window-size-bug-after-full-screen
 			// https://www.sencha.com/forum/showthread.php?303224-Wrong-orientation-for-Galaxy-Tab-devices
 			return window.innerWidth <= window.innerHeight
@@ -575,24 +584,30 @@ VizorUI.userIsLoggedIn = function() {
 	return (typeof user.username !== 'undefined') && (user.username !== '');
 };
 
-/***** INTERIM MODAL LAYER *****/
+/***** MODAL LAYER *****/
 VizorUI.modalOpen = function(html, heading, className, onEscape, opts) {
-	onEscape = (typeof onEscape !== 'undefined') ? onEscape : true;
-	opts = opts || {}
-	opts.message = html;
-	opts.onEscape = onEscape;
-	if (typeof opts.backdrop === 'undefined') opts.backdrop = onEscape;	// bb 4.4+
-	if ((typeof heading !== 'undefined') && heading) opts.title = heading;
-	if ((typeof className !== 'undefined') && className) opts.className = className;
-	var b = bootbox.dialog(opts);
+	opts = _.extend({
+		title: heading,
+		className : className,
+		onEscape: (typeof onEscape !== 'undefined') ? onEscape : true
+	}, opts)
 
-	var trackModalStatus = function(){siteUI.isModalOpen(); return true}
-	b
+	opts.message = html	// always overwrite
+	if (typeof opts.backdrop === 'undefined') opts.backdrop = opts.onEscape	// bb 4.4+
+
+	var modal = bootbox.dialog(opts)
+
+	var trackModalStatus = function() {
+		siteUI.isModalOpen()
+		return true
+	}
+
+	modal
 		.on('hidden.bs.modal', trackModalStatus)
 		.on('shown.bs.modal', trackModalStatus)
 
-	return b
-};
+	return modal
+}
 
 VizorUI.modalClose = function(bb) {
 	if (typeof bb !== 'undefined') bb.modal('hide');
@@ -761,6 +776,8 @@ VizorUI.setupXHRForm = function($form, onSuccess) {	// see views/account/signup 
 		return false;
 	}
 
+	var hasFiles = $form.length && $form[0].querySelectorAll('input[type="file"]').length > 0
+
 	if (typeof onSuccess !== 'function') {
 		onSuccess = function(response) {
 			if (response && (typeof response.redirect !== 'undefined') && (response.redirect)) {
@@ -817,19 +834,59 @@ VizorUI.setupXHRForm = function($form, onSuccess) {	// see views/account/signup 
 
 	var inProgress = false;
 	var $body = jQuery(document.body);
+	$form
+			.removeClass('hasMessage')
+			.addClass('noMessage')
+
+	$form
+		.data('xhrEnabled', true)
+		.attr('data-xhrEnabled', 'true')
+
+	if (hasFiles) {
+		var iframe
+		var action = $form.attr('action')
+		if (action && (action.indexOf('ajax=1') === -1)) {
+			action += (action.indexOf('?') > -1) ? '&ajax=1' : '?ajax=1'
+			$form.attr('action', action)
+		}
+
+		// http://stackoverflow.com/a/36976807
+		if (!$form.attr('target')) {
+			//create a unique iframe for the form
+			var d = new Date()
+			while (new Date().getTime() === d.getTime()) {}	// block till next millisecond
+			var iframeName = 'xhrf_' + d.getTime()
+			iframe = $("<iframe></iframe>").attr('name', iframeName).hide().insertAfter($form)
+			$form.attr('target', iframeName)
+		}
+
+		if (onSuccess) {
+			iframe = iframe || $('iframe[name=" ' + $form.attr('target') + ' "]')
+			iframe.load(function () {
+				//get the server response
+				inProgress = false
+				$body.removeClass('loading');
+				$form.removeClass('loading');
+				var response = iframe.contents().find('body').text()
+				try {
+					var json = JSON.parse(response)
+					response = json
+				}
+				catch (e) {
+					console.error('got no json', response, e)
+				}
+				onSuccess(response)
+			})
+		}
+	}
 
 	$form.submit(function(event) {
 
 		if (inProgress) return false;
 
-		// if (!can_submit) return false;
-
 		// future decision on forms without this set
 		var actionURL = $form.attr('action');
 		if (!actionURL) return true;
-
-		event.preventDefault();
-		var formData = $form.serialize();
 
 		$form.not('.keepMessage')
 			.removeClass('hasMessage')
@@ -849,11 +906,18 @@ VizorUI.setupXHRForm = function($form, onSuccess) {	// see views/account/signup 
 		$body.addClass('loading');
 		$form.addClass('loading');
 
+		if (hasFiles)
+			return true
+
+		event.preventDefault();
+		var formData = $form.serialize();
+
 		jQuery.ajax({
 			type:	'POST',
 			url:	actionURL,
 			data:	formData,
 			dataType: 'json',
+			cache: false,
 			error: function(err) {
 				inProgress = false;
 				var detail = {}
@@ -939,13 +1003,7 @@ VizorUI.setupXHRForm = function($form, onSuccess) {	// see views/account/signup 
 		return false;
 	});
 
-	$form
-		.data('xhrEnabled', true)
-		.attr('data-xhrEnabled', 'true')
 
-	$form
-			.removeClass('hasMessage')
-			.addClass('noMessage')
 };
 
 /**
@@ -973,12 +1031,16 @@ VizorUI.replaceSVGButtons = function($selector) {
 				$button.popover({
 					content: $button.text(),
 					delay: {
-						show: 1000,
+						show: 750,
 						hide: 100
 					},
 					placement: 'auto top',
 					trigger: 'hover'
-				});
+				})
+
+				$button.click(function(){
+					$button.popover('hide')
+				})
 			} else {
 				if (!$button.attr('title'))
 					$button.attr('title', $button.text())
@@ -997,57 +1059,146 @@ VizorUI.replaceSVGButtons = function($selector) {
 };
 
 /**
+ * makes an element hide or show on trigger click
+ * @example <button data-hideshow="hide" data-target="hstarget">click</button><div id="hstarget">...</div>
+ * @param triggerEl
+ * @emits hideshow:changed on triggerEl when its visibility changes
+ */
+VizorUI.hideshow = function(triggerEl) {
+	if (triggerEl.hideshow)
+		triggerEl.removeEventListener('click', triggerEl.hideshow._listener)
+
+	var initialState = triggerEl.dataset['hideshow']
+	triggerEl.hideshow = {
+		set : function(state) {
+			this.visible = (state === 'show')
+		},
+		toggle : function() {
+			this.visible = !this.visible
+		},
+		get default() {
+			return initialState
+		},
+		get target() {
+			return document.getElementById(triggerEl.dataset['hideshowTarget'])
+		},
+		get visible() {
+			return this.target.dataset['hideshow'] === 'show'
+		},
+		set visible(v) {
+			var target = this.target
+			target.dataset['hideshow'] = triggerEl.dataset['hideshow'] = v ? 'show' : 'hide'
+			target.dispatchEvent(new CustomEvent('hideshow:changed', {detail:{visible: this.visible, trigger: triggerEl}}))
+			return !!v
+		},
+		_listener : function(e) {
+			e.preventDefault()
+			e.currentTarget.hideshow.toggle()
+		}
+	}
+
+	triggerEl.hideshow.set(initialState)
+	triggerEl.addEventListener('click', triggerEl.hideshow._listener)
+}
+
+/**
  * wires up svg buttons on asset card to fire events as per assetUIEvent
  * @param $card
  */
 VizorUI.setupAssetCard = function($card) {
 
-	VizorUI.replaceSVGButtons($card);
-
-	jQuery('button', $card).off('.assetUI');	// remove just us from all buttons
-
-	jQuery('button.action', $card).on('click.assetUI', function(e){
-		var $this = jQuery(e.currentTarget);
-		$card = $this.parents('article.asset.card').first();
-		if (!$card) return true;
+	var dispatchAction = function(e){
+		var $this = jQuery(e.currentTarget)
+		$card = $this.parents('article.asset.card').first()
+		if (!$card) return true
 		var detail = {
 			id: 	$card.data('objectid'),
 			url: 	$card.data('url'),
 			type: 	$card.data('asset-type'),
-			action:	$this.data('action')
-		};
-		var eventName = detail.type + '.' + detail.action;	// e.g. graph.open, project.delete
-		var cardEvent = new CustomEvent(eventName, {detail: detail});
-		document.dispatchEvent(cardEvent);
-		return true;
-	})
-
-	function formatDate(date) {
-		var mdate = moment(date)
-		var now = moment(Date.now())
-		
-		if (mdate.isSame(now, 'd'))
-			return moment(date).calendar()
-
-		if (mdate.isSame(now, 'y'))
-			return moment(date).format('MMM Do h:mm A')
-
-		return moment(date).format('ll h:mm A')
+			action:	$this.data('action'),
+			triggeredByEl: e.currentTarget
+		}
+		var eventName = detail.type + '.' + detail.action	// e.g. graph.open, project.delete
+		var cardEvent = new CustomEvent(eventName, {detail: detail})
+		console.log(eventName, cardEvent)
+		document.dispatchEvent(cardEvent)
+		return true
 	}
 
-	var $updatedAt = $('.updatedAt', $card)
-	var date = $updatedAt.text()
-	$updatedAt.text(formatDate(date))
+	VizorUI.replaceSVGButtons($card);
 
-	return true;
+	jQuery('button', $card).off('.assetUI');	// remove just us from all buttons
+
+	jQuery('button.action', $card).on('click.assetUI', dispatchAction)
+	jQuery('input[type=checkbox]', $card).on('change.assetUI', dispatchAction)
+
+	return true
+}
+
+// returns a promise for a confirmation dialog
+VizorUI.requireConfirm = function(message) {
+	return new Promise(function(resolve, reject){
+		if (confirm(message || 'please confirm?'))
+			resolve()
+		else
+			reject()
+	})
 }
 
 VizorUI.toggleAccountDropdown = function() {
 	if (VizorUI.userIsLoggedIn()) {
-		jQuery('#userPullDown').toggle();
+		jQuery('#userPullDown').toggle()
 	}
-	return false;
+	return false
+}
+
+/**
+ * data : {	origin:		Vizor.origin,		e.g. http://localhost:8000
+ * 			shareURL : 	Vizor.shareURL,		e.g. http://localhost:8000/eesn/flamingofront
+ * 			embedSrc : 	Vizor.embedSrc		e.g. http://localhost:8000/embed/eesn/flamingofront
+ * 		   }
+ */
+VizorUI.graphShareDialog = function(data, opts) {
+	data.autoplay = true
+	data.noHeader = false
+	opts = _.extend({
+		title: "Share this"
+	}, opts)
+
+	var html = E2.views.partials.playerShareDialog(data)
+	var modal = VizorUI.modalOpen(html, opts.title, 'player_share doselect_all', undefined, opts)
+	modal
+		.find('textarea, input')
+		.on('mouseup touchup', function (e) {
+			e.currentTarget.select()
+			e.currentTarget.setSelectionRange(0, 9999)
+			e.preventDefault()
+			return true
+		})
+		.on('focus', function (e) {
+			e.preventDefault()
+			e.stopPropagation()
+			return false
+		})
+
+	siteUI.initCollapsible(modal)
+	return modal
 }
 
 
-jQuery('document').ready(siteUI.init.bind(siteUI));
+VizorUI.renderGraphTile = function(tileData, withActions, withAllActions) {
+	var data = _.extend(_.cloneDeep(tileData), {
+			withActions:withActions,
+			allowAllActions: withAllActions
+		})
+	return E2.views.partials.assets.graphCard(data)
+}
+
+
+jQuery('document').ready(function(){
+	if (!window)
+		return
+	siteUI.init()
+	window.VizorUI.isMobile = E2.util.isMobile
+	window.VizorUI.isBrowser = E2.util.isBrowser
+});

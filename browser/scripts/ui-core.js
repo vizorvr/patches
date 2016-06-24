@@ -83,8 +83,7 @@ var uiEvent = { // emitted by ui (E2.ui) unless comments state otherwise
 	initialised		: 'uiInitialised',
 	moved			: 'uiMoved',			// panels via movable.js
 	resized			: 'uiResized',			// panels via draggable.js
-	stateChanged	: 'uiStateChanged',
-	xhrFormSuccess	: 'xhrFormSuccess'		//	dispatched on document in ui-site js
+	stateChanged	: 'uiStateChanged'
 }
 
 

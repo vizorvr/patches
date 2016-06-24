@@ -1,0 +1,11 @@
+{{!-- context is user(profile) --}}
+<form id="editNameForm" action="/account/profile" class="xhr panel" method="POST">
+    <input type="hidden" name="_csrf" value={{_csrf}}>
+    {{#with profile}}<fieldset>
+        <div class="form-input" id="f_website">
+            <input type="url" id="websiteinput" name="name" placeholder="" value="{{name}}" />
+            <button class="" type="submit" data-svgref="icon-go">Update</button>
+            <span class="message"></span>
+        </div>
+    </fieldset>{{/with}}
+</form>

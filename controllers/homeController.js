@@ -74,7 +74,7 @@ exports.index = function(req, res)  {
 		featured: getHomeFeaturedScenes(),
 		meta : {
 			bodyclass : 'bHome bIndex',
-			noheader: true
+			header: false
 		}
 	})
 }
@@ -90,7 +90,7 @@ exports.about = function(req, res)  {
 		meta : {
 			bodyclass : 'bHome bAbout',
 			title: "About Vizor - Explore, Create and Publish VR on the Web",
-			noheader: true
+			header: false
 		}
 	})
 }

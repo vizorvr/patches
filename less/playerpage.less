@@ -47,9 +47,6 @@ body.bPlayer, body.b360 {
   }
 }
 body.bPlayer {
-  @share-color-text: #eee;
-  @share-bgcolor-text: #ddd;
-  @share-border-radius: 4px;
 
   height:100%; width:100%;
 
@@ -68,58 +65,7 @@ body.bPlayer {
   &.autoplay .noautoplay
   {display: none}
 
-  .modal-dialog {
-	max-width: 100%;
-	padding: 0 10px;
-	section+section {
-	  margin-top:20px;
-	}
-	.modal-header {
-	  border-top-left-radius: @share-border-radius;
-	  border-top-right-radius: @share-border-radius;
-	}
-	.modal-body {
-	  border-bottom-left-radius: @share-border-radius;
-	  border-bottom-right-radius: @share-border-radius;
-	}
-  }
-  .modal-dialog, header, button, a.btn {
-	-webkit-font-smoothing: subpixel-antialiased;
-	font-smoothing: subpixel-antialiased;
-  }
 
-  #shareDialog {
-	text-align: left;
-	margin-bottom: 0;
-	.collapsible .trigger {
-	  .readmore(16px, -5px);
-	}
-	label, input, textarea, a {
-	  color: @share-color-text !important;
-	  &::-moz-selection, &::selection {
-		color: #000;
-		background: @share-bgcolor-text;
-	  }
-	}
-	label {
-	  font-weight: 500;
-	}
-	input, textarea {
-	  background: rgba(0,0,0,0.2) !important;
-	  border: 0;
-	  border-radius: 3px;
-	  width: 98%;
-	  max-width: 98%;
-	  margin: 5px 0;
-	  line-height: 1.5em;
-	  padding: 10px;
-	}
-	textarea {
-	  height: 6.5em;
-	  font-size: 91.5%;
-	  resize: none;
-	}
-  }
 
   #playerWrap {
 	#loadingStage {

@@ -14,10 +14,16 @@ var userSchema = new mongoose.Schema({
 	isAdmin: { type: Boolean, default: false },
 
 	profile: {
+		website: {type: String, default: ''},	// minlength/maxlength in mongoose 4+
+		bio: {type: String, default: ''},
 		avatarOriginal: { type: String, default: '' },
 		avatarScaled: { type: String, default: '' },
 		headerOriginal: { type: String, default: '' },
 		headerScaled: { type: String, default: '' }
+	},
+
+	preferences : {
+		publishDefaultPublic : {type: Boolean, default: false}
 	},
 
 	stats: {
@@ -54,12 +60,21 @@ userSchema.pre('save', function(next) {
 
 userSchema.methods.toJSON = function() {
 	return {
+		id : this._id,
 		username: this.username,
 		email: this.email,
-		avatar: this.profile.avatarScaled,
-		header: this.profile.headerScaled,
+		createdAt: this.createdAt,
 		gravatar: this.gravatar,
 		name: this.name,
+		profile: {
+			website: this.profile.website,
+			bio: this.profile.bio,
+			avatar: this.profile.avatarScaled,
+			header: this.profile.headerScaled
+		},
+		preferences: {
+			publishDefaultPublic: this.preferences.publishDefaultPublic
+		},
 		stats: {
 			views: this.stats.views || 0,
 			projects: this.stats.projects || 0
@@ -68,12 +83,18 @@ userSchema.methods.toJSON = function() {
 }
 
 userSchema.methods.toPublicJSON = function() {
+	var avatar = this.profile.avatarScaled
+	if (!avatar)
+		avatar = this.gravatar
+
 	return {
+		id : this._id,
 		username: this.username,
-		avatar: this.profile.avatarScaled,
+		avatar: avatar,
 		header: this.profile.headerScaled,
-		gravatar: this.gravatar,
 		name: this.name,
+		website: this.profile.website,
+		bio: this.profile.bio,
 		stats: {
 			views: this.stats.views || 0,
 			projects: this.stats.projects || 0

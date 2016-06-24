@@ -220,25 +220,10 @@ var VizorPlayerUI = function() {
 				shareURL : Vizor.shareURL,
 				embedSrc : Vizor.embedSrc
 			}
-			var html = E2.views.partials.playerShareDialog(data)
 			that.suspendVRcamera()
 			that.headerFadeOut(200)
-			var modal = VizorUI.modalOpen(html, "Share this", 'player_share doselect_all', that.enableVRcamera)
-			modal
-				.find('textarea, input')
-				.on('mouseup touchup', function (e) {
-					e.currentTarget.select()
-					e.currentTarget.setSelectionRange(0, 9999)
-					e.preventDefault()
-					return true
-				})
-				.on('focus', function (e) {
-					e.preventDefault()
-					e.stopPropagation()
-					return false
-				})
-
-			siteUI.initCollapsible(modal)
+			VizorUI.graphShareDialog(data, {onEscape: that.enableVRcamera})
+			
 			return false
 		}
 

@@ -1,0 +1,23 @@
+{{!--
+    // adds this graph card's data to Vizor.page.graphs{}
+    // also places graph._creator data in Vizor.page.profiles{}
+--}}
+<script>
+    (function() {
+        var j = {{{json this}}}
+        delete j.withActions
+        delete j.allowAllActions
+        delete j.profile
+
+        {{#if _id}}
+            window.Vizor.page.graphs['{{_id}}'] = j
+        {{else}}
+            window.Vizor.page.graphs['{{{path}}}'] = j
+        {{/if}}
+
+        {{#if _creator}}
+            window.Vizor.page.profiles['{{_creator}}'] = {{{json profile}}}
+            window.Vizor.page.profiles['{{_creator}}']['_id'] = j._creator
+        {{/if}}
+    })();
+</scr{{undefined}}ipt>
