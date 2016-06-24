@@ -29,10 +29,10 @@ var passport = require('passport');
 var expressValidator = require('express-validator');
 var exphbs  = require('express-handlebars');
 
+
 var diyHbsHelpers = require('diy-handlebars-helpers');
-var hbsHelpers = require('./utils/hbs-helpers');
+var hbsHelpers = require('./lib/hbs-helpers');
 var TemplateCache = require('./lib/templateCache');
-var templateCache = new TemplateCache().compile();
 
 // Framework controllers (see below for asset controllers)
 var homeController = require('./controllers/home');
@@ -70,6 +70,8 @@ app.events = new EventEmitter()
 
 // view engine setup
 app.set('views', fsPath.join(__dirname, 'views'));
+
+var templateCache = new TemplateCache()
 var hbs = exphbs.create({
 	defaultLayout: 'main',
 	partialsDir: [
@@ -77,11 +79,14 @@ var hbs = exphbs.create({
 		{dir:'views/server/partials', namespace: 'srv'}
 	],
 	helpers: _.extend(
-		hbsHelpers,
 		diyHbsHelpers,
+		hbsHelpers,
 		templateCache.helper()
 	)
 })
+templateCache.setHbs(hbs.handlebars)	// work around derp gulp-handlebars
+templateCache.compile()
+
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 
