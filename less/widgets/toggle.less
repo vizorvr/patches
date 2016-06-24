@@ -1,0 +1,186 @@
+@toggle-rounded-width: 38px;
+@toggle-rounded-height: 18px;
+@toggle-rounded-small-width: 24px;
+@toggle-rounded-small-height: 14px;
+@toggle-rounded-colorChecked: @alt;
+@toggle-rounded-colorUnchecked: rgba(96,160,255,0.9);
+@toggle-rounded-colorCircle: #afbfdf;
+@toggle-rounded-monochrome-colorChecked: #afbfdf;
+@toggle-rounded-monochrome-colorUnchecked: #afbfdf;
+@toggle-rounded-monochrome-colorCircle: #000;
+
+label.toggleWrap{
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+// checkbox-rounded-toggle
+// {{>toggle ...}}
+// <label><input id="publishPublic" type="checkbox" class="cb-rounded" /><span><!-- firefox --></span></label>
+.toggle-rounded:focus, .toggle-rounded:active {
+	outline: 0;
+}
+
+body.uaFirefox input[type=checkbox].toggle-rounded {
+	visibility: hidden;
+}
+
+body .toggle-rounded+span {
+  display: none;
+}
+body.uaFirefox .toggle-rounded+span {
+  display: inline-block;
+  pointer-events: none;
+
+}
+.toggle-rounded, body.uaFirefox .toggle-rounded+span {
+	outline: 0;
+	vertical-align: -0.35em;
+	-webkit-touch-callout: none;
+	-webkit-appearance: none;
+	appearance: none;
+	border: 0px solid #666;
+	position: relative;
+	transition: background-color 0.05s 0.05s ease-in;
+}
+
+.toggle-rounded::before, body.uaFirefox .toggle-rounded+span:before {
+	content: "";
+	border-radius: 50%;
+	display: inline-block;
+	position: absolute;
+	top: 50%;
+	transition: left 0.12s linear;
+}
+
+.toggle-rounded:checked, .toggle-rounded.on,
+body.uaFirefox .toggle-rounded:checked+span, body.uaFirefox .toggle-rounded.on+span {
+	transition: background-color 0.1s 0.03s ease-in;
+}
+
+
+/* COLORS */
+
+
+.toggle-rounded::before, body.uaFirefox .toggle-rounded+span:before {
+  background: @toggle-rounded-colorCircle;
+}
+.toggle-rounded, body.uaFirefox .toggle-rounded+span {
+  background: @toggle-rounded-colorUnchecked;
+}
+
+.toggle-rounded:checked, .toggle-rounded.on,
+body.uaFirefox .toggle-rounded:checked+span, body.uaFirefox .toggle-rounded.on+span {
+  background: @toggle-rounded-colorChecked;
+}
+
+
+.toggle-rounded.monochrome::before, body.uaFirefox .toggle-rounded.monochrome+span:before {
+  background: @toggle-rounded-monochrome-colorCircle;
+}
+.toggle-rounded.monochrome, body.uaFirefox .toggle-rounded.monochrome+span {
+  background: @toggle-rounded-monochrome-colorUnchecked;
+}
+
+.toggle-rounded.monochrome:checked, .toggle-rounded.monochrome.on,
+body.uaFirefox .toggle-rounded.monochrome:checked+span, body.uaFirefox .toggle-rounded.monochrome.on+span {
+  background: @toggle-rounded-monochrome-colorChecked;
+}
+
+// hover
+.toggle-rounded.monochrome:hover, body.uaFirefox .toggle-rounded.monochrome+span:hover {
+  background: white;
+}
+
+.toggle-rounded.monochrome:checked:hover, .toggle-rounded.monochrome.on:hover,
+body.uaFirefox .toggle-rounded.monochrome:checked+span:hover, body.uaFirefox .toggle-rounded.monochrome.on+span:hover {
+  background: white;
+}
+
+
+
+/* DIMENSIONS */
+
+.toggle-rounded::before,
+.toggle-rounded.off:before,
+body.uaFirefox .toggle-rounded+span:before,
+body.uaFirefox .toggle-rounded.off+span:before {
+  left: @toggle-rounded-height / 2;
+}
+
+.toggle-rounded:checked::before,
+.toggle-rounded.on::before,
+body.uaFirefox .toggle-rounded:checked+span:before,
+body.uaFirefox .toggle-rounded.on+span:before {
+  left: @toggle-rounded-width - @toggle-rounded-height/2;
+}
+
+body.uaFirefox .toggle-rounded+span {
+  margin-left: -@toggle-rounded-width;
+}
+.toggle-rounded,
+body.uaFirefox .toggle-rounded+span {
+  width: @toggle-rounded-width;
+  height: @toggle-rounded-height;
+  border-radius: @toggle-rounded-height/2;
+}
+.toggle-rounded::before,
+body.uaFirefox .toggle-rounded+span:before {
+  width: @toggle-rounded-height;
+  height: @toggle-rounded-height;
+  margin-left: -@toggle-rounded-height / 2;
+  margin-top: -@toggle-rounded-height / 2;
+}
+
+
+
+.toggle-rounded.small::before,
+.toggle-rounded.small.off:before,
+body.uaFirefox .toggle-rounded.small+span:before,
+body.uaFirefox .toggle-rounded.small.off+span:before {
+  left: @toggle-rounded-small-height / 2;
+}
+
+.toggle-rounded.small:checked::before,
+.toggle-rounded.small.on::before,
+body.uaFirefox .toggle-rounded.small:checked+span:before,
+body.uaFirefox .toggle-rounded.small.on+span:before {
+  left: @toggle-rounded-small-width - @toggle-rounded-small-height/2;
+}
+
+body.uaFirefox .toggle-rounded.small+span {
+  margin-left: -@toggle-rounded-small-width;
+}
+.toggle-rounded.small,
+body.uaFirefox .toggle-rounded.small+span {
+  width: @toggle-rounded-small-width;
+  height: @toggle-rounded-small-height;
+  border-radius: @toggle-rounded-small-height/2;
+}
+.toggle-rounded.small::before,
+body.uaFirefox .toggle-rounded.small+span:before {
+  width: @toggle-rounded-small-height;
+  height: @toggle-rounded-small-height;
+  margin-left: -@toggle-rounded-small-height / 2;
+  margin-top: -@toggle-rounded-small-height / 2;
+}
+
+
+
+
+/* specifics */
+
+article.card .toggle-rounded.monochrome, body.uaFirefox article.card .toggle-rounded+span {
+  transition: none;
+}
+
+
+article.asset.card .toggle-rounded.monochrome::before,
+body.uaFirefox article.asset.card .toggle-rounded.monochrome+span:before {
+  border: 4px solid @toggle-rounded-monochrome-colorChecked;
+}
+article.asset.card .toggle-rounded.monochrome:hover::before,
+body.uaFirefox article.asset.card .toggle-rounded.monochrome+span:hover::before {
+  border: 4px solid white;
+}
