@@ -9,7 +9,8 @@ views/layouts/editor-prod.handlebars
 engistart.bat
 engistart.bat - Shortcut.lnk
 node_modules
-browser/style/less.css
 npm-debug.log
-browser/style/threesixty.css
+browser/style/site.css
+browser/style/site360.css
+browser/style/editor.css
 dummy.txt
