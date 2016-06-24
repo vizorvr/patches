@@ -15,7 +15,9 @@ var userSchema = new mongoose.Schema({
 
 	profile: {
 		avatarOriginal: { type: String, default: '' },
-		avatarScaled: { type: String, default: '' }
+		avatarScaled: { type: String, default: '' },
+		headerOriginal: { type: String, default: '' },
+		headerScaled: { type: String, default: '' }
 	},
 
 	stats: {
