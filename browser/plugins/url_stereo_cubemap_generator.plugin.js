@@ -150,7 +150,7 @@
 
 		var textures = []
 
-		if (E2.util.isMobile.Android()) {
+		if (VizorUI.isMobile.Android()) {
 			// work around a problem on android (only) where drawing directly from an
 			// img would create corrupted images
 			var intermediateCanvas = document.createElement('canvas')

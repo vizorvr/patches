@@ -906,7 +906,7 @@ VizorUI.checkCompatibleBrowser = function() {
 	var agent = navigator.userAgent;
 	var heading=false, message=false;
 
-	var isMobile = E2.util.isMobile.any();
+	var isMobile = VizorUI.isMobile.any();
 
 	if ((/Safari/i.test(agent)) || (/Chrome/i.test(agent)) || (/Firefox/i.test(agent))) {
 
