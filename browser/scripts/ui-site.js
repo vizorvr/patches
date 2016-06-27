@@ -1,7 +1,10 @@
 
 // requires bootbox
+if (typeof msg === 'undefined')
+	var msg = function(msg) {console.error(msg)};
 
-if (typeof msg === 'undefined') var msg = function(msg) {console.error(msg)};
+if (typeof VizorUI === 'undefined')
+	var VizorUI = {}
 
 // takes care of common site shell and elements found on "web" pages.
 var siteUI = new function() {
@@ -518,11 +521,6 @@ siteUI.formatFileSize = function(size) {	// bytes
 	return size.toFixed(2) + ' GB'
 }
 
-jQuery('document').ready(siteUI.init);
-
-if (typeof VizorUI === 'undefined')
-	var VizorUI = {};
-
 // youtube only for the time being
 VizorUI.enablePopupEmbedLinks = function($container) {
 	var $links = jQuery('a.popup.embed', $container);
@@ -613,6 +611,62 @@ VizorUI.modalAlert = function(message, heading, className, okLabel) {
 	}
 	return VizorUI.modalOpen('<p>'+message+'</p>', heading, className, true, opts);
 }
+
+
+
+VizorUI.growl = function(message, type, duration, user) {
+	type = type || 'info'
+	duration = 500 + (duration || 2000)			// account for reveal animations
+
+	var fromUser = _.extend({
+		username: '',
+		color: 'transparent',
+		firstLetter: '',
+		gravatar: ''
+	}, user)
+
+	if (fromUser.username) {
+		fromUser.firstLetter = fromUser.username.charAt(0)
+	}
+
+	var data = {
+		type: type,
+		fromUser: fromUser,
+		message: message
+	}
+
+	var $notificationArea = jQuery('#notifications-area')
+	if (!$notificationArea.length) {
+		$notificationArea = jQuery('<div id="notifications-area"></div>')
+		jQuery('body').append($notificationArea)
+	}
+
+	var $notification = jQuery(E2.views.partials.notification(data))
+
+	var remove = function () {
+		$notification.remove()
+		if (jQuery('>div', $notificationArea).length === 0) {
+			$notificationArea.remove()
+		}
+	}
+
+	var close = function() {
+		$notification.removeClass('notification-show').addClass('notification-hide')
+		setTimeout(remove, 1000)
+	}
+
+	$notificationArea.append($notification)
+	$notification.addClass('notification-show')
+
+	setTimeout(close, duration * $('.notification', $notificationArea).length)
+
+	return $notification
+}
+
+VizorUI.notifyBySite = function(text, timeout) {
+	return VizorUI.growl(text, 'notify-site', timeout || 2000)
+}
+
 
 VizorUI.isBrowser = {
 	WebKit: function () {
@@ -995,3 +1049,5 @@ VizorUI.toggleAccountDropdown = function() {
 	return false;
 }
 
+
+jQuery('document').ready(siteUI.init.bind(siteUI));
