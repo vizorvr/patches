@@ -37,7 +37,7 @@ describe('Avatars', function() {
 			.expect(200)
 			.end(function(err, res) {
 				if (err) return done(err)
-				assert.equal('/data/'+username+'/profile/te-2rb-scaled.jpg',
+				assert.equal('/data/'+username+'/profile/avatar/te-2rb-scaled.jpg',
 					res.body.data.avatar)
 				done()
 			})

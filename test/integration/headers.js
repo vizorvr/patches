@@ -37,14 +37,14 @@ describe('Headers', function() {
 			.expect(200)
 			.end(function(err, res) {
 				if (err) return done(err)
-				assert.equal('/data/'+username+'/header/te-2rb-scaled.jpg',
+				assert.equal('/data/'+username+'/profile/header/te-2rb-scaled.jpg',
 					res.body.data.header)
 				done()
 			})
 		})
 	})
 
-	it('scales avatar correctly', function(done) {
+	it('scales header correctly', function(done) {
 		agent.post('/account/profile/header')
 		.attach('file', jpeg, 'my.jpeg')
 		.expect(200)

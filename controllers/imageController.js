@@ -75,7 +75,7 @@ ImageController.prototype.setUserAvatar = function(req, res, next) {
 	var processor = new ImageProcessor(this._fs)
 	return this._setUserProfileImage(req, res, next,
 		processor.handleUserAvatarUpload.bind(processor),
-		'/' + req.user.username + '/profile',
+		'/' + req.user.username + '/profile/avatar',
 		{original: 'avatarOriginal', scaled: 'avatarScaled'}
 	)
 }
@@ -84,7 +84,7 @@ ImageController.prototype.setUserHeader = function(req, res, next) {
 	var processor = new ImageProcessor(this._fs)
 	return this._setUserProfileImage(req, res, next,
 		processor.handleUserHeaderUpload.bind(processor),
-		'/' + req.user.username + '/header',
+		'/' + req.user.username + '/profile/header',
 		{original: 'headerOriginal', scaled: 'headerScaled'}
 	)
 }
