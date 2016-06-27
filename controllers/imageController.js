@@ -39,18 +39,12 @@ ImageController.prototype.upload = function(req, res, next) {
 ImageController.prototype._setUserProfileImage = function(req, res, next, imageProcessor, folder, profileFields) {
 	var that = this
 
-	if (!imageProcessor || !profileFields || !folder)
-		return console.error("insufficient parameters for _setUserImage")
-
 	User.findById(req.user.id, function(err, user) {
-		if (err || !user)
-			return next(err)
-
 		var file = req.files.file
-
-		if (!(file && file.path))
+		
+		if (err || !user || !(file && file.path))
 			return next(err)
-
+		
 		imageProcessor(file, folder)
 			.then(function(info) {
 				fs.unlink(file.path, function() {})
