@@ -126,15 +126,15 @@ gulp.task('clean:js:engine', function(cb) {
 	del('./browser/dist/engine.js', cb)
 })
 
-gulp.task('clean:less_site360', function(cb)  {
+gulp.task('clean:less:site360', function(cb)  {
 	del('./browser/style/site360.css', cb);
 });
 
-gulp.task('clean:less_site', function(cb) {
+gulp.task('clean:less:site', function(cb) {
 	del('./browser/style/site.css', cb)
 })
 
-gulp.task('clean:less_editor', function(cb) {
+gulp.task('clean:less:editor', function(cb) {
 	del('./browser/style/editor.css', cb)
 })
 
@@ -175,7 +175,7 @@ gulp.task('push', ['js:player'], function(done) {
 
 gulp.task('js', ['js:player'])
 
-gulp.task('less_site', ['clean:less_site'], function() {
+gulp.task('less:site', ['clean:less:site'], function() {
 	gulp.src(paths.less.site)
     .pipe(less({
 		paths: [ path.join(__dirname, 'less') ]
@@ -185,7 +185,7 @@ gulp.task('less_site', ['clean:less_site'], function() {
 	.on('error', errorHandler)
 })
 
-gulp.task('less_editor', ['clean:less_editor'], function() {
+gulp.task('less:editor', ['clean:less:editor'], function() {
 	gulp.src(paths.less.editor)
     .pipe(less({
 		paths: [ path.join(__dirname, 'less') ]
@@ -195,7 +195,7 @@ gulp.task('less_editor', ['clean:less_editor'], function() {
 	.on('error', errorHandler)
 })
 
-gulp.task('less_site360', ['clean:less_site360'], function() {
+gulp.task('less:site360', ['clean:less:site360'], function() {
 	gulp.src(paths.less.site360)
     .pipe(less({
 		paths: [ path.join(__dirname, 'less') ]
@@ -206,20 +206,20 @@ gulp.task('less_site360', ['clean:less_site360'], function() {
 });
 
 gulp.task('watch', ['default'], function() {
-	gulp.watch('less/**/*', ['less_site', 'less_editor', 'less_site360']);
+	gulp.watch('less/**/*', ['less:site', 'less:editor', 'less:site360']);
 	gulp.watch(paths.js.player.concat(paths.js.engine), ['js:player', 'push'])
 })
 
 
 gulp.task('watch:less', function() {
-	gulp.watch('less/**/*', ['less_site', 'less_editor', 'less_site360']);
+	gulp.watch('less/**/*', ['less:site', 'less:editor', 'less:site360']);
 })
 
 gulp.task('watch:player', function() {
 	gulp.watch(paths.js.player.concat(paths.js.engine), ['js:player', 'push'])
 })
 
-gulp.task('golive', ['less_site', 'less_editor', 'less_site360', 'js'])
+gulp.task('golive', ['less:site', 'less:editor', 'less:site360', 'js'])
 
-gulp.task('default', ['less_site', 'less_editor', 'less_site360', 'js', 'push'])
+gulp.task('default', ['less:site', 'less:editor', 'less:site360', 'js', 'push'])
 
