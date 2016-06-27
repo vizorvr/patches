@@ -1049,3 +1049,5 @@ VizorUI.toggleAccountDropdown = function() {
 	return false;
 }
 
+
+jQuery('document').ready(siteUI.init.bind(siteUI));
