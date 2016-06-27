@@ -23,7 +23,6 @@
 @color-formcontrol-error: #c00;
 @bordercolor-formcontrol: #999;
 
-@bordercolor-launch-button: #fff;
 
 @bgcolor-asset-card: #fff;
 @bgcolor-asset-card-overlay: rgba(38,44,61,0.7);
@@ -38,41 +37,7 @@
 
 // BOX-SIZING IS BORDER BOX!
 
-.readmore(@vsize, @offsetLeft) {
-  @voffset: @vsize/2 + @offsetLeft;
-  &:before {
-	  content: " ";
-	  position: absolute;
-	  left: 0;
-	  top: 50%;
-	  margin-top: -@vsize/2;
-	  width: @vsize;
-	  height: @vsize;
-	  background: url('/images/v2/chevron.svg') @voffset center no-repeat;
-	  background-size: @vsize - 1;
-	  -webkit-transform: rotate(0deg) translate3d(-@voffset, 0, 0);
-	  -webkit-transition: -webkit-transform 0.1s linear;
-	  transform: rotate(0deg) translate3d(-@voffset, 0, 0);
-	  transition: transform 0.1s linear;
-	}
-	&.open:before {
-	  -webkit-transform: rotate(90deg) translate3d(-@voffset, 0, 0);
-	  transform: rotate(90deg) translate3d(-@voffset, 0, 0);
-	}
 
-	position: relative;
-	display: block;
-
-	padding: 5px 0 5px @vsize;
-
-	&:hover {
-	  text-decoration: none;
-	  cursor: pointer;
-	}
-	&.btn:before {
-	  content:none;
-	}
-}
 
 .modal-body {
   .clearfix()
@@ -111,22 +76,6 @@ div.breadcrumb {
 	stroke: @editor-text-inactive;
 }
 
-.launch-button-macro {
-  display: block;
-  border:1px solid @bordercolor-launch-button;
-  padding: 15px 20px;
-  background: none;
-  margin: 20px 0;
-  border-radius: 6px;
-  font-weight: @font-weight-home;
-  font-size: 150%;
-  width: 11em;
-  &:hover {
-	border:2px solid #fff;
-	padding-top: 14px;
-	padding-bottom: 14px;
-  }
-}
 
 
 body.bMain.modal-open {

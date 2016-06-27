@@ -1601,52 +1601,7 @@ Application.prototype.openSaveACopyDialog = function() {
 }
 
 Application.prototype.growl = function(message, type, duration, user) {
-	type = type || 'info'
-	duration = 500 + (duration || 2000)			// account for reveal animations
-
-	var fromUser = _.extend({
-		username: '',
-		color: 'transparent',
-		firstLetter: '',
-		gravatar: ''
-	}, user)
-
-	if (fromUser.username) {
-		fromUser.firstLetter = fromUser.username.charAt(0)
-	}
-
-	var data = {
-		type: type,
-		fromUser: fromUser,
-		message: message
-	}
-
-	var $notificationArea = jQuery('#notifications-area')
-	if (!$notificationArea.length) {
-		$notificationArea = jQuery('<div id="notifications-area"></div>')
-		jQuery('body').append($notificationArea)
-	}
-
-	var $notification = jQuery(E2.views.partials.notification(data))
-
-	var remove = function () {
-		$notification.remove()
-		if (jQuery('>div', $notificationArea).length === 0) {
-			$notificationArea.remove()
-		}
-	}
-
-	var close = function() {
-		$notification.removeClass('notification-show').addClass('notification-hide')
-		setTimeout(remove, 1000)
-	}
-
-	$notificationArea.append($notification)
-	$notification.addClass('notification-show')
-
-	setTimeout(close, duration * $('.notification', $notificationArea).length)
-
-	return $notification
+	return VizorUI.growl(message, type, duration, user)
 }
 
 Application.prototype.setupStoreListeners = function() {
