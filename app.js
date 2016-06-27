@@ -84,7 +84,7 @@ var hbs = exphbs.create({
 		templateCache.helper()
 	)
 })
-templateCache.setHbs(hbs.handlebars)	// work around derp gulp-handlebars
+templateCache.setHbs(hbs.handlebars)
 templateCache.compile()
 
 app.engine('handlebars', hbs.engine);
