@@ -17,6 +17,7 @@ describe('array_function', function() {
 			update: function() {},
 			clearCopies: function() {},
 			makeCopy: function(i) {
+				i = i || this.copies.length
 				this.copies[i] = this
 				return this
 			},
@@ -49,7 +50,7 @@ describe('array_function', function() {
 	it('sets loop index', function(done) {
 		plugin.graph.variables.write = function(k, v) {
 			assert.equal('index', k)
-			assert.equal(0, v)
+			assert.equal(1, v)
 			done()
 		}
 		plugin.update_input({ name: 'length' }, 1)
