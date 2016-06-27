@@ -4,7 +4,7 @@ var app = require('../../app.js')
 var jpeg = __dirname+'/../fixtures/te-2rb.jpg'
 var assert = require('assert')
 
-describe('Avatars', function() {
+describe('Headers', function() {
 	var db
 	var agent = request.agent(app)
 	var testId = process.hrtime().join('')
@@ -27,8 +27,8 @@ describe('Avatars', function() {
 		})
 	})
 
-	it('sets user avatar', function(done) {
-		agent.post('/account/profile/avatar')
+	it('sets user header', function(done) {
+		agent.post('/account/profile/header')
 		.attach('file', jpeg, 'my.jpeg')
 		.expect(200)
 		.end(function(err, res) {
@@ -37,21 +37,21 @@ describe('Avatars', function() {
 			.expect(200)
 			.end(function(err, res) {
 				if (err) return done(err)
-				assert.equal('/data/'+username+'/profile/avatar/te-2rb-scaled.jpg',
-					res.body.data.avatar)
+				assert.equal('/data/'+username+'/profile/header/te-2rb-scaled.jpg',
+					res.body.data.header)
 				done()
 			})
 		})
 	})
 
-	it('scales avatar correctly', function(done) {
-		agent.post('/account/profile/avatar')
+	it('scales header correctly', function(done) {
+		agent.post('/account/profile/header')
 		.attach('file', jpeg, 'my.jpeg')
 		.expect(200)
 		.end(function(err, res) {
 			if (err) return done(err)
-			assert.equal(128, res.body.data.uploaded.scaled.width)
-			assert.equal(128, res.body.data.uploaded.scaled.height)
+			assert.equal(1440, res.body.data.uploaded.scaled.width)
+			assert.equal(340, res.body.data.uploaded.scaled.height)
 			done()
 		})
 	})

@@ -15,7 +15,9 @@ var userSchema = new mongoose.Schema({
 
 	profile: {
 		avatarOriginal: { type: String, default: '' },
-		avatarScaled: { type: String, default: '' }
+		avatarScaled: { type: String, default: '' },
+		headerOriginal: { type: String, default: '' },
+		headerScaled: { type: String, default: '' }
 	},
 
 	stats: {
@@ -55,6 +57,7 @@ userSchema.methods.toJSON = function() {
 		username: this.username,
 		email: this.email,
 		avatar: this.profile.avatarScaled,
+		header: this.profile.headerScaled,
 		gravatar: this.gravatar,
 		name: this.name,
 		stats: {
@@ -68,6 +71,7 @@ userSchema.methods.toPublicJSON = function() {
 	return {
 		username: this.username,
 		avatar: this.profile.avatarScaled,
+		header: this.profile.headerScaled,
 		gravatar: this.gravatar,
 		name: this.name,
 		stats: {

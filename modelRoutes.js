@@ -137,6 +137,21 @@ function modelRoutes(
 		expectUploadedFile,
 		imageController.setUserAvatar.bind(imageController))
 
+	// upload user profile header picture
+	app.post('/account/profile/header',
+		passportConf.isAuthenticated,
+		multer({
+			dest: tempDir,
+			limits: {
+				fileSize: 1024 * 1024 * 8 // 8m
+			},
+			rename: function (fieldname, filename) {
+				return filename.replace(/\W+/g, '-');
+			}
+		}),
+		imageController.setUserHeader.bind(imageController))
+
+
 	// upload
 	app.post('/upload/:model',
 		requireController,
