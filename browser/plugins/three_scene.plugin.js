@@ -39,6 +39,8 @@
 		this.scene = new THREE.Scene()
 		this.scene.backReference = this
 
+		E2.app.player.scene = this.scene
+
 		// add two children:
 		// [0] is the main scene
 		this.sceneRoot = new THREE.Group()

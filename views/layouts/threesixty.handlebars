@@ -42,14 +42,21 @@
 
     <script src="/scripts/ui-site.js"></script>
 
-    <script src="/data/dist/0.8/player.min.js"></script>
+    <script src="/scripts/player.min.js"></script>
+
+    <script src="/scripts/hardware.js"></script>
+    <script src="/vendor/borismus/webvr-polyfill.js"></script>
+    <script src="/vendor/borismus/webvr-manager.js"></script>
+    <script src="/scripts/webVRAdapter.js"></script>
+    
+    <script src="/scripts/ui/playerUI.js"></script>
+
     <script>
         (function() {
             {{{templateCache}}}
         }.apply(window))
     </script>
 
-    <script src="/scripts/ui/playerUI.js"></script>
     <script src="/scripts/threesixty.js"></script>
     <script>{{> mixpanel}}</script>
 </head>
