@@ -71,7 +71,8 @@ app.events = new EventEmitter()
 // view engine setup
 app.set('views', fsPath.join(__dirname, 'views'));
 
-var templateCache = new TemplateCache()
+// global as graphController may want to recompile
+templateCache = new TemplateCache()
 var hbs = exphbs.create({
 	defaultLayout: 'main',
 	partialsDir: [
