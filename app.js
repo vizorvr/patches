@@ -70,7 +70,6 @@ app.events = new EventEmitter()
 // view engine setup
 app.set('views', fsPath.join(__dirname, 'views'));
 
-// global as graphController may want to recompile
 var hbs = exphbs.create({
 	defaultLayout: 'main',
 	partialsDir: [

@@ -248,7 +248,6 @@ function renderEditor(res, graph, hasEdits) {
 	}
 
 	if (!releaseMode) {
-		// see app.js
 		templateCache.recompile(function() {
 			respond()
 		})
