@@ -29,10 +29,9 @@ var passport = require('passport');
 var expressValidator = require('express-validator');
 var exphbs  = require('express-handlebars');
 
-
 var diyHbsHelpers = require('diy-handlebars-helpers');
 var hbsHelpers = require('./lib/hbs-helpers');
-var TemplateCache = require('./lib/templateCache');
+var templateCache = require('./lib/templateCache').templateCache
 
 // Framework controllers (see below for asset controllers)
 var homeController = require('./controllers/home');
@@ -72,7 +71,6 @@ app.events = new EventEmitter()
 app.set('views', fsPath.join(__dirname, 'views'));
 
 // global as graphController may want to recompile
-templateCache = new TemplateCache()
 var hbs = exphbs.create({
 	defaultLayout: 'main',
 	partialsDir: [
@@ -85,6 +83,7 @@ var hbs = exphbs.create({
 		templateCache.helper()
 	)
 })
+
 templateCache.setHbs(hbs.handlebars)
 templateCache.compile()
 
