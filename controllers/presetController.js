@@ -1,7 +1,6 @@
 var Preset = require('../models/preset')
 var AssetController = require('./assetController')
 var fsPath = require('path')
-var templateCache = new(require('../lib/templateCache'))
 var assetHelper = require('../models/asset-helper')
 
 function PresetController(presetService, fs) {
