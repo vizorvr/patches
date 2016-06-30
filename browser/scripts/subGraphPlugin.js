@@ -174,7 +174,7 @@ SubGraphPlugin.prototype.proxy_connection_changed = function(on, proxyNode, othe
 			for(i = 0, len = node.outputs.length; i < len; i++) {
 				if(node.outputs[i].src_slot === gslot)
 					return true;
-			} 
+			}
 		}
 		
 		return false
@@ -275,9 +275,6 @@ SubGraphPlugin.prototype.proxy_connection_changed = function(on, proxyNode, othe
 SubGraphPlugin.prototype.update_output = function(slot) {
 	if (slot.dynamic)
 		return this.output_nodes[slot.uid].plugin.data
-	
-	this.updated = true
-	return this.texture
 }
 
 SubGraphPlugin.prototype.query_output = function(slot) {
@@ -303,7 +300,6 @@ SubGraphPlugin.prototype.setupProxies = function() {
 				') in graph(' + that.graph.plugin.parent_node.title + ').'); 
 
 		var p = n.plugin
-		
 		p.data = E2.core.get_default_value((p.id === 'input_proxy' ?
 			n.dyn_outputs : n.dyn_inputs)[0]
 		.dt)
@@ -311,9 +307,8 @@ SubGraphPlugin.prototype.setupProxies = function() {
 		return n
 	}
 
-	for(var uid in this.state.input_sids) {
+	for(var uid in this.state.input_sids)
 		this.input_nodes[this.state.input_sids[uid]] = find_node(uid)
-	}
 
 	for(var uid in this.state.output_sids)
 		this.output_nodes[this.state.output_sids[uid]] = find_node(uid)

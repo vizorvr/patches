@@ -148,6 +148,7 @@
 
 
     "STATE AND STRUCTURE": {
+        "Annotation": "annotation",
         "Read Variable": "variable_local_read",
         "Write Variable": "variable_local_write",
         "Write Variable on Trigger": "variable_local_write_conditional",
@@ -156,7 +157,6 @@
         "Nested Patch": "graph",
         "Loop": "loop",
         "Array Function": "array_function",
-        "Annotation": "annotation",
         "Is In VR": "is_in_vr"
     },
 
