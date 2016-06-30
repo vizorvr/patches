@@ -73,6 +73,8 @@
         if (!window.Vizor) window.Vizor = {}
         Vizor.origin = window.location.origin
 
+        Vizor.isEditor = false
+
     {{#if graph.owner}}
         Vizor.shareURL = window.location.origin + '/{{graph.owner}}/{{graph.name}}'
         Vizor.embedSrc = window.location.origin + '/embed/{{graph.owner}}/{{graph.name}}'

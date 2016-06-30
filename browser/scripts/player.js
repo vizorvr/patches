@@ -190,7 +190,7 @@ Player.prototype.loadAndPlay = function(url, forcePlay) {
 	// if there's an existing anim frame request, cancel it
 	// so that nothing gets rendered until we ask to play() again after
 	// loading
-	if(this.interval !== null) {
+	if (this.interval !== null) {
 		cancelAnimFrame(this.interval)
 		this.interval = null
 	}
@@ -200,7 +200,7 @@ Player.prototype.loadAndPlay = function(url, forcePlay) {
 		// so as this is called on touchstart,
 		// create a dummy audio source and play it
 		var audioSource = E2.core.audioContext.createBufferSource()
-		audioSource.start()//noteOn(0)
+		audioSource.start()
 	}
 
 	E2.app.player.load_from_url(url, function(err) {

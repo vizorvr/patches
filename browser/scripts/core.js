@@ -168,17 +168,27 @@ function Core() {
 		
 		this.resolve_dt[dt.id] = dt;
 	}
-	
-	// HTML5 audio context initialisation
-	if(window.AudioContext)
-		this.audioContext = new AudioContext();
-	else if(window.webkitAudioContext)
-		this.audioContext = new webkitAudioContext();
-	else
-		msg('NOTE: This host has no AudioContext support.');
+
+	if (Vizor.isEditor || Vizor.hasAudio)
+		this.createAudioContext()
 }
 
 Core.prototype = Object.create(EventEmitter.prototype)
+
+Core.prototype.createAudioContext = function() {
+	if (this.audioContext)
+		return this.audioContext
+
+	// HTML5 audio context initialisation
+	if (window.AudioContext)
+		this.audioContext = new AudioContext()
+	else if (window.webkitAudioContext)
+		this.audioContext = new webkitAudioContext()
+	else
+		msg('NOTE: This host has no AudioContext support.')
+
+	return this.audioContext
+}
 
 Core.prototype.get_uid = function() {
 	return E2.uid()
