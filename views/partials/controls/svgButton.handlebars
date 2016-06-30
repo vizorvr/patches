@@ -1,0 +1,13 @@
+<button type="button"
+    {{#if href}}
+        {{#if target}}
+            onclick="window.open('{{{href}}}','{{{target}}}');return false;"
+        {{else}}
+            onclick="window.location='{{{href}}}';return false;"
+        {{/if}}
+    {{/if}}
+
+    id="{{id}}" class="svg">
+    <svg><use xlink:href="#{{svgref}}"></use></svg>
+    <span>{{text}}</span>
+</button>
