@@ -1,7 +1,12 @@
+if (!E2.ui)
+ 	E2.ui = {}
 
-var vizor360 = new function() {
+E2.ui.ui360 = new function() {
 
 	var that = this
+	this.dom = {
+		controlsDiv: null
+	}
 	var $body = {},
 		$progress = {}	// progressbar element
 
@@ -442,28 +447,33 @@ var vizor360 = new function() {
 	}
 
 	this.addUploadButton = function() {
-		var svg = document.createElement('svg'),
-			span = document.createElement('span'),
-			button = document.createElement('button')
-
-		button.appendChild(svg)
-		button.appendChild(span)
-		button.dataset.svgref = 'vr360-upload-image'
-		button.className = 'svg'
-		button.id = 'uploadbutton'
-		span.innerText = 'Upload'
-
-		var controlsDiv = document.getElementById('topbar').getElementsByTagName('div')[1]
-		controlsDiv.appendChild(button)
+		var data = {
+			id: 'uploadbutton',
+			text: 'Upload',
+			svgref: 'vr360-upload-image'
+		}
+		var button = E2.views.partials.controls.svgButton(data)
 
 		var handler = function(e) {
 			e.preventDefault()
 			$('#threesixty-image-input').focus().trigger('click')
 			return false
 		}
-		button.addEventListener('click', handler)
-
-		VizorUI.replaceSVGButtons($(controlsDiv))
+		var btn = $(button)
+		btn.appendTo(this.dom.controlsDiv)
+		btn[0].addEventListener('click', handler)
+	}
+	
+	this.addTOSButton = function() {
+		var data = {
+			href: 'https://docs.google.com/document/d/172dWVz8bSEDxS_y2InXpqWhVvbM7w1Z9MSp1-Lw1rIc/edit?usp=sharing',
+			id: 'tosbutton',
+			text: 'Terms',
+			svgref : 'vr360-tos',
+			target: '_blank'
+		}
+		var button = E2.views.partials.controls.svgButton(data)
+		$(button).appendTo(this.dom.controlsDiv)
 	}
 
 
@@ -481,6 +491,8 @@ var vizor360 = new function() {
 		// scoped above
 		playerUI.headerDefaultFadeoutTimeMs = 3500
 
+		this.dom.controlsDiv = document.getElementById('topbar').getElementsByTagName('div')[1]
+
 		var $header = $('header')
 		var $container360 = $('#container360')
 		$container360.remove()
@@ -493,6 +505,7 @@ var vizor360 = new function() {
 
 		that.addUploadButton()
 		that.addCancelButton()
+		that.addTOSButton()
 		that.attach()
 
 		if (!window.Vizor) window.Vizor = {}
@@ -522,4 +535,4 @@ var vizor360 = new function() {
 	}
 }
 
-document.addEventListener('DOMContentLoaded', vizor360.init)
+document.addEventListener('DOMContentLoaded', E2.ui.ui360.init.bind(E2.ui.ui360))
