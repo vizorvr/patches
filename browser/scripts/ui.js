@@ -525,7 +525,7 @@ VizorUI.prototype.openPublishGraphModal = function() {
         graphname = graphname[1]
 
 	var graphdata = E2.app.player.core.serialise()
-	var graphpreview = E2.app.getScreenshot(1280, 720)
+	var graphpreview = E2.app.player.getScreenshot(1280, 720)
 	var assetdata = _.clone(E2.app.graphStore.getGraphSize())	// {size, numAssets, numNodes, hasAudio}
 
 

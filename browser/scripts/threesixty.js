@@ -90,15 +90,12 @@ var vizor360 = new function() {
 		history.pushState({}, '', asset.path)
 
 		E2.track({
-			event: 'ThreeSixty Loading Graph',
+			event: 'ThreeSixty Playing Graph',
 			path: asset.path
 		})
 
-		E2.app.player.loadAndPlay(asset.url, true)
-			.then(function(){
-				$('#sharebutton').show()
-				$('#edit').show()
-			})
+		$('#sharebutton').show()
+		$('#edit').show()
 	}
 
 	// STEP 3
@@ -111,10 +108,15 @@ var vizor360 = new function() {
 
 		E2.track({ event: 'ThreeSixty Uploading Graph' })
 
+		var previewImage = E2.app.player.getScreenshot(1280, 720)
+
 		$.ajax({
 			url: '/graph/v',
 			type: 'POST',
-			data: graphData,
+			data: { 
+				previewImage: previewImage,
+				graph: graphData
+			},
 			dataType: 'json',
 			success: function(response) {
 				E2.track({
@@ -164,14 +166,14 @@ var vizor360 = new function() {
 				// for the 360 template we are replacing
 				var nodes = graph.root.nodes;
 
-				for (var i=0; i<nodes.length; i++) {
+				for (var i=0; i < nodes.length; i++) {
 					var node = nodes[i];
 
 					// Check if we have the correct node, the 360 graph
 					// has this node generating the texture
 					if (node.plugin === 'url_texture_generator') {
-						node.state.url = imageUrl;
-						urlReplaced = true;
+						node.state.url = imageUrl
+						urlReplaced = true
 					}
 				}
 
@@ -181,12 +183,20 @@ var vizor360 = new function() {
 					var data = {
 						'path': name,
 						'graph': JSON.stringify(graph)
-					};
+					}
 
-					that.uploadGraph(data, function(asset) {
-						updateProgressBar(55)
-						dfd.resolve(asset, data)
-					});
+					E2.app.player.stop()
+
+					E2.app.player.load_from_object(graph, function() {
+						E2.core.once('player:firstFramePlayed', function() {
+							that.uploadGraph(data.graph, function(asset) {
+								updateProgressBar(55)
+								dfd.resolve(asset, data)
+							})
+						})
+	
+						E2.app.player.play()
+					})
 				}
 			},
 

@@ -25,9 +25,9 @@ var hashids = new Hashids(secrets.sessionSecret)
 var fs = require('fs')
 var packageJson = JSON.parse(fs.readFileSync(__dirname+'/../package.json'))
 
-function render404(res) {
-	res.status(404).render('error', {
-		message: 'Not found'
+function renderError(status, res, message) {
+	res.status(status).render('error', {
+		message: message || 'Not found'
 	})
 }
 
@@ -179,7 +179,7 @@ GraphController.prototype.userIndex = function(req, res, next) {
 			})
 
 			var data = {
-				profile: user.toPublicJSON(),
+				profile: user ? user.toPublicJSON() : {},
 				graphs: list || []
 			}
 
@@ -271,7 +271,7 @@ GraphController.prototype.edit = function(req, res, next) {
 	.then(function(graph) {
 		if (graph && (graph.editable === false || graph.private === true)) {
 			if (!isGraphOwner(req.user, graph))
-				return render404(res)
+				return renderError(404, res)
 		}
 
 		EditLog.hasEditsByName(that.redisClient, req.params.path.substring(1))
@@ -449,50 +449,6 @@ GraphController.prototype.upload = function(req, res, next) {
 	});
 };
 
-// POST /graph
-GraphController.prototype.saveAnonymous = function(req, res, next) {
-	var that = this
-	var anonReq = { user: { username: 'v', isAnonymous: true } }
-
-	return this.graphAnalyser.analyseJson(req.body.graph)
-	.then(function(analysis) {
-		if (!analysis.numNodes) {
-			return res.status(400)
-				.json({ message: 'Invalid data' })
-		}
-
-		return that.serialNumber.next('anonymousGraph')
-		.then(function(serial) {
-			var uid = makeHashid(serial)
-			var path = that._makePath(anonReq, uid)
-
-			var gridFsGraphPath = '/graph'+path+'.json'
-			var gridFsOriginalImagePath = '/previews'+path+'-preview-original.png'
-
-			return that._fs.writeString(gridFsGraphPath, req.body.graph)
-			.then(function() {
-				var url = that._fs.url(gridFsGraphPath);
-
-				var model = {
-					path: path,
-					url: url,
-					hasAudio: false,
-					stat: {
-						size: analysis.size,
-						numAssets: analysis.numAssets
-					}
-				}
-
-				return that._service.save(model, anonReq.user)
-				.then(function(asset) {
-					res.json(asset)
-				})
-			})
-		})
-	})
-	.catch(next)
-}
-
 // POST /graph/delete
 GraphController.prototype.delete = function(req, res, next) {
 	var that = this
@@ -527,12 +483,16 @@ GraphController.prototype.delete = function(req, res, next) {
 	.catch(next)
 }
 
-// POST /graph
-GraphController.prototype.save = function(req, res, next) {
-	var that = this;
-	var path = this._makePath(req, req.body.path);
+GraphController.prototype._save = function(path, user, req, res, next) {
+	var that = this
+
 	var wantsPrivate = !req.body.isPublic
 	var gridFsGraphPath = '/graph'+path+'.json';
+
+	if (user.isAnonymous) {
+		wantsPrivate = false
+		req.body.editable = true
+	}
 
 	var gridFsOriginalImagePath = '/previews'+path+'-preview-original.png'
 
@@ -548,6 +508,68 @@ GraphController.prototype.save = function(req, res, next) {
 
 	var tags = that._parseTags(req.body.tags);
 
+	return that._fs.writeString(gridFsGraphPath, req.body.graph)
+	.then(function() {
+		if (!req.body.previewImage) {
+			return
+		}
+
+		// save original image (if we ever need to batch process any of these)
+		return that._fs.writeString(gridFsOriginalImagePath, req.body.previewImage.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+		.then(function() {
+			// create preview images
+			return that.previewImageProcessor.process(path, req.body.previewImage, previewImageSpecs)
+			.then(function(processedImages) {
+				if (processedImages && processedImages.length === 2) {
+					// write small image
+					return that._fs.writeString(previewImageSpecs[0].gridFsPath, processedImages[0], 'base64')
+					.then(function() {
+						// write large image
+						that._fs.writeString(previewImageSpecs[1].gridFsPath, processedImages[1], 'base64')
+					})
+				}
+			})
+		})
+	})
+	.then(function() {
+		return that.graphAnalyser.analyseJson(req.body.graph)
+	})
+	.then(function(analysis) {
+		var url = that._fs.url(gridFsGraphPath);
+		var previewUrlSmall = that._fs.url(previewImageSpecs[0].gridFsPath)
+		var previewUrlLarge = that._fs.url(previewImageSpecs[1].gridFsPath)
+
+		var model = {
+			path: path,
+			tags: tags,
+			url: url,
+			private: wantsPrivate,
+			hasAudio: !!analysis.hasAudio,
+			editable: req.body.editable === false ? false : true,
+			stat: {
+				size: analysis.size,
+				numAssets: analysis.numAssets
+			},
+			previewUrlSmall: previewUrlSmall,
+			previewUrlLarge: previewUrlLarge
+		}
+
+		return that._service.save(model, user)
+		.then(function(asset) {
+			res.json(asset)
+		})
+		.catch(function(err) {
+			next(err)
+		})
+	})
+
+}
+
+// POST /graph
+GraphController.prototype.save = function(req, res, next) {
+	var that = this;
+	var path = this._makePath(req, req.body.path);
+
 	this._service.canWrite(req.user, path)
 	.then(function(can) {
 		if (!can) {
@@ -555,59 +577,34 @@ GraphController.prototype.save = function(req, res, next) {
 				.json({ message: 'Sorry, permission denied' })
 		}
 
-		return that._fs.writeString(gridFsGraphPath, req.body.graph)
-		.then(function() {
-			if (!req.body.previewImage) {
-				return
-			}
+		return that._save(path, req.user, req, res, next)
+	})
+	.catch(next)
+}
 
-			// save original image (if we ever need to batch process any of these)
-			return that._fs.writeString(gridFsOriginalImagePath, req.body.previewImage.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-			.then(function() {
-				// create preview images
-				return that.previewImageProcessor.process(path, req.body.previewImage, previewImageSpecs)
-				.then(function(processedImages) {
-					if (processedImages && processedImages.length === 2) {
-						// write small image
-						return that._fs.writeString(previewImageSpecs[0].gridFsPath, processedImages[0], 'base64')
-						.then(function() {
-							// write large image
-							that._fs.writeString(previewImageSpecs[1].gridFsPath, processedImages[1], 'base64')
-						})
-					}
-				})
-			})
-		})
-		.then(function() {
-			return that.graphAnalyser.analyseJson(req.body.graph)
-		})
-		.then(function(analysis) {
-			var url = that._fs.url(gridFsGraphPath);
-			var previewUrlSmall = that._fs.url(previewImageSpecs[0].gridFsPath)
-			var previewUrlLarge = that._fs.url(previewImageSpecs[1].gridFsPath)
+// POST /graph
+GraphController.prototype.saveAnonymous = function(req, res, next) {
+	var that = this
+	var anonReq = { user: { username: 'v', isAnonymous: true } }
 
-			var model = {
-				path: path,
-				tags: tags,
-				url: url,
-				private: wantsPrivate,
-				hasAudio: !!analysis.hasAudio,
-				editable: req.body.editable === false ? false : true,
-				stat: {
-					size: analysis.size,
-					numAssets: analysis.numAssets
-				},
-				previewUrlSmall: previewUrlSmall,
-				previewUrlLarge: previewUrlLarge
-			}
+	if (!req.body)
+		return renderError(400, res)
 
-			return that._service.save(model, req.user)
-			.then(function(asset) {
-				res.json(asset)
-			})
-			.catch(function(err) {
-				next(err)
-			})
+	return this.graphAnalyser.analyseJson(req.body.graph)
+	.then(function(analysis) {
+		if (!analysis.numNodes) {
+			return res.status(400)
+				.json({ message: 'Invalid data' })
+		}
+
+		return that.serialNumber.next('anonymousGraph')
+		.then(function(serial) {
+			var uid = makeHashid(serial)
+			var path = that._makePath(anonReq, uid)
+
+			req.body.path = path
+
+			return that._save(path, anonReq.user, req, res, next)
 		})
 	})
 	.catch(next)
