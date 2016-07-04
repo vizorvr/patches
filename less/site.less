@@ -73,7 +73,11 @@ div.breadcrumb {
 }
 
 
-
+body.bMain nav.primary {
+  a, li>button {
+	color: white;
+  }
+}
 
 body.bMain.modal-open {
   overflow: auto;	// seriously, bootbox
@@ -1225,7 +1229,18 @@ body.bMain {
 
 }
 
-body.bUserpage, body.bAccount, body.bProfile {
+body.bMain {
+  #flash {
+	z-index: 1000;
+	position: absolute;
+	left:0;
+	right:0;
+	top:0;
+	>div.in {
+	  z-index: 10;
+	}
+	background: #eee;
+  }
   #flash>div.in {
 	max-width: 1020px;
 	background: none;
@@ -1239,6 +1254,19 @@ body.bUserpage, body.bAccount, body.bProfile {
 	  color: #090;
 	}
   }
+  #flash .close {
+	opacity: 1;
+  }
+  #flash .ion-close-circled:before {
+	width: 22px;
+	height: 22px;
+	display: block;
+	content: "x";
+	border:1px solid #000;
+	border-radius: 100%;
+  }
+}
+body.bUserpage, body.bAccount, body.bProfile {
 
   section form.panel {
 	margin-bottom: 0;
@@ -1318,7 +1346,7 @@ body.bUserpage, body.bAccount, body.bProfile {
 		  justify-content: space-between;
 		}
 		nav, #projectListFilter {
-		  font-size: 18px;
+		  font-size: 16px;
 		}
 		nav {
 		  font-weight: 400;
@@ -1338,7 +1366,7 @@ body.bUserpage, body.bAccount, body.bProfile {
 		}
 		#projectListFilter {
 		  width: 260px;
-		  margin-top: 6px;
+		  margin-top: 5px;
 		  display: flex;
 		  justify-content: flex-end;
 		  a {

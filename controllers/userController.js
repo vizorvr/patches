@@ -502,7 +502,10 @@ exports.getAccount = function(req, res) {
  			req.flash('errors', { message: 'Password reset token is invalid or has expired.' })
  			return res.redirect('/forgot')
  		}
- 		res.render('server/partials/account/changepassword', {
+ 		res.render('server/pages/account/setPassword', {
+			meta: {
+				bodyclass: 'bLogin'
+			},
  			title: 'Password Reset',
  			token: req.params.token
  		})

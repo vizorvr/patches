@@ -67,7 +67,11 @@
 			<button id="programModeBtn" class="svg" data-svgref="icon-mode-patch"><svg />Program</button>
 		</div>
 		<div id="graphNameLabel" class="auto-editable">
-			(untitled)
+			{{#if graph}}
+                {{graph.name}}
+            {{else}}
+                (untitled)
+			{{/if}}
 		</div>
 		<div id="graphSizeLabel"></div>
 		<div id="breadcrumb"></div>
@@ -254,11 +258,7 @@
 	}
 
 	{{#if graph}}
-		boot.graph = {
-			path: '{{graph.path}}',
-			url: '{{graph.url}}'
-		}
-
+        boot.graph = {{{json graph}}}
 		boot.graphUrl = boot.graph.url
 	{{/if}}
 

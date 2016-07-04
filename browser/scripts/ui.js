@@ -198,6 +198,16 @@ VizorUI.prototype.init = function(e2) {	// normally the global E2 object
 
 	this.pluginDocsCache = new PluginDocsCache()
 
+	if (boot && boot.graph && boot.graph.name) {
+		var parentName = boot.graph.name
+		E2.core.on('forked', function () {
+			if (!parentName.endsWith('copy')) {
+				boot.graph.name = parentName + ' copy'
+				that.updateSceneName(boot.graph.name)
+			}
+		})
+	}
+
 	this._initialised = true;
 	this.emit(uiEvent.initialised, this);
 }
@@ -531,13 +541,20 @@ VizorUI.prototype.openPublishGraphModal = function() {
 
 	var prefs = E2.models.user.get('preferences')
 	var defaultPublic = prefs ? !!prefs.publishDefaultPublic : true
+
 	var data = {
 		path:	        graphname,
 		graph:	        graphdata,
 		previewImage:   graphpreview,
 		assetdata:		assetdata,
 		isPublic:		defaultPublic,
-		sizeFormatted: 	siteUI.formatFileSize(assetdata.size)
+		sizeFormatted: 	siteUI.formatFileSize(assetdata.size),
+		name:			''
+	}
+
+	if (boot && boot.graph) {
+		data.name = boot.graph.name
+		data.isPublic = !boot.graph.private
 	}
 
 	var openSaveGraph = function(dfd) {
@@ -815,6 +832,11 @@ VizorUI.prototype.updateProgressBar = function(percent) {
 		if ($(this).width() === winWidth)
 			$(this).fadeOut('slow');
 	}});
+}
+
+VizorUI.prototype.updateSceneName = function(newName) {
+	var nameLabel = document.getElementById('graphNameLabel')
+	nameLabel.innerText = newName
 }
 
 
