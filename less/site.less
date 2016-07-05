@@ -300,13 +300,12 @@ body.bMain {
 	.xhr.message {
 	  background: @bgcolor-message;
 	  color: @color-message;
-	  padding: 5px 15px;
+	  padding: 5px 0;
 	  border-radius: 3px;
 	  display:inline-block;
 	  &.success {
 		background: @bgcolor-message-success;
 		color: @color-message-success;
-		border: 1px solid #ddd;
 	  }
 	}
 
@@ -1690,6 +1689,13 @@ body.bUserpage, body.bProfile {
   border-radius: 4px 4px;
   div.header-overlay {
 	border-radius: 4px 4px;
+  }
+}
+
+body.bProfile {
+  #headerUploadForm .xhr.message,
+  #avatarUploadForm .xhr.message {
+	margin-left: 20px;
   }
 }
 

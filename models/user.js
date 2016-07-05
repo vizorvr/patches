@@ -62,10 +62,10 @@ userSchema.methods.toJSON = function() {
 	return {
 		id : this._id,
 		username: this.username,
+		name: this.name,
 		email: this.email,
 		createdAt: this.createdAt,
 		gravatar: this.gravatar,
-		name: this.name,
 		profile: {
 			website: this.profile.website,
 			bio: this.profile.bio,
@@ -90,11 +90,13 @@ userSchema.methods.toPublicJSON = function() {
 	return {
 		id : this._id,
 		username: this.username,
-		avatar: avatar,
-		header: this.profile.headerScaled,
 		name: this.name,
-		website: this.profile.website,
-		bio: this.profile.bio,
+		profile: {
+			avatar: avatar,
+			header: this.profile.headerScaled,
+			website: this.profile.website,
+			bio: this.profile.bio
+		},
 		stats: {
 			views: this.stats.views || 0,
 			projects: this.stats.projects || 0

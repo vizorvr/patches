@@ -200,7 +200,9 @@ GraphController.prototype._userOwnIndex = function(user, req, res, next) {
 			meta : {
 				header: 'srv/userpage/userpageHeader',
 				title: 'Your Files',
-				scripts : ['site/userpages.js']
+				scripts: [
+					helper.metaScript('site/userpages.js')
+				]
 			}
 		}, data)
 

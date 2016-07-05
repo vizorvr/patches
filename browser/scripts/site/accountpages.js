@@ -19,7 +19,7 @@ accountUI.prototype.initProfilePage = function() {
 	var passwordInput = document.getElementById('passwordinput')
 	var passwordForm = passwordInput.form
 	var passwordMeter = passwordForm.getElementsByTagName('meter')[0]
-	var strengthFunction = null	// todo: add strength function
+	var strengthFunction = null	// default strength function
 	this.passwordStrengthMeter(passwordInput, passwordMeter, strengthFunction)
 
 	E2.models.user.on('change', function(model){
@@ -78,7 +78,6 @@ accountUI.prototype.initCollapsibleToggles = function() {
 			var isCollapsed = section.classList.contains('collapsed')
 
 			section.classList.toggle('collapsed', !isCollapsed)
-			// todo: scrollto
 			return cancel(e)
 		})
 		a.addEventListener('contextmenu', cancel)

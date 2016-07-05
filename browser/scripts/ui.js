@@ -201,7 +201,7 @@ VizorUI.prototype.init = function(e2) {	// normally the global E2 object
 	if (boot && boot.graph && boot.graph.name) {
 		var parentName = boot.graph.name
 		E2.core.on('forked', function () {
-			if (!parentName.endsWith('copy')) {
+			if (!parentName.endsWith(' copy')) {
 				boot.graph.name = parentName + ' copy'
 				that.updateSceneName(boot.graph.name)
 			}

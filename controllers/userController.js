@@ -276,7 +276,6 @@ exports.getAccount = function(req, res) {
  * POST /account/profile
  * Update profile information.
  */
-
  exports.postUpdateProfile = function(req, res, next) {
 
 	 // to add a key
@@ -319,7 +318,7 @@ exports.getAccount = function(req, res) {
 		if ('website' in req.body.profile) {
 			// allow '' or valid URL only
 			if (req.body.profile.website !== '')
-				req.assert('profile[website]', 'Website is not valid').isURL()
+				req.assert('profile[website]', 'Website is not valid').isURL({require_protocol:true})
 			updateFields.profile.website = req.body.profile.website
 		}
 
@@ -338,19 +337,12 @@ exports.getAccount = function(req, res) {
 		req.assert('current_password', 'Your current password is required').notEmpty()
 
  	var errors = req.validationErrors()
- 	var wantJson = req.xhr || req.path.slice(-5) === '.json'
 
  	if (errors) {
- 		if (wantJson) {
- 			return res.status(400).json(
-				helper.responseStatusError('Failed validation', errors, {request:req.body})
-			)
- 		} else {
- 			req.flash('errors', helper.parseErrors(errors))
- 			return res.redirect('/account/profile')
- 		}
+		delete req.body.password
+		delete req.body.current_password
+		return helper.respond(req, res, 400, 'Failed validation', errors, null, '/account/profile')
  	}
-
 
 	 function updateUser(user, updateFields) {
 		function copyKeysIfExist(keys, fromObj, toObj) {
@@ -377,9 +369,9 @@ exports.getAccount = function(req, res) {
 				if (!existingUser)
 					return void save()
 				// else
-				return helper.respond(req, res, '409', 'Duplicate email',
-					helper.formatResponseError('email', req.body.email, 'Another account with that email already exists'),
-					null, '/account/profile')
+				var error = helper.formatResponseError('email', req.body.email, 'Another account with that email already exists')
+
+				return helper.respond(req, res, 409, 'Duplicate email', error, null, '/account/profile')
 			})
 		} else
 			save()

@@ -1,23 +1,24 @@
-.hideshow_hide() {
+*[data-hideshow='hide']:not([data-hideshow-target])
+{
   display: none;
 }
 
-.hideshow_show(@display) {
-  display: @display;
+*[data-hideshow='show']:not([data-hideshow-target])
+{
+  display: block;
 }
 
-*[data-hideshow='hide']:not([data-hideshow-target]) {
-  .hideshow_hide;
+*.hideshow-inline[data-hideshow='show']:not([data-hideshow-target])
+{
+  display: inline;
 }
 
-*[data-hideshow='show']:not([data-hideshow-target]) {
-  .hideshow_show('block');
+*.hideshow-inline-block[data-hideshow='show']:not([data-hideshow-target])
+{
+  display: inline-block;
 }
 
-*.hideshow-inline[data-hideshow='show']:not([data-hideshow-target]) {
-  .hideshow_show('inline');
-}
-
-*.hideshow-inline-block[data-hideshow='show']:not([data-hideshow-target]) {
-  .hideshow_show('inline-block');
+*.hideshow-flex[data-hideshow='show']:not([data-hideshow-target])
+{
+  display: flex;
 }

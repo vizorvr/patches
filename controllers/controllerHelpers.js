@@ -51,6 +51,8 @@ exports.metaScript = function(path) {
 		.join('/')
 }
 
+// send xhr/json response, or redirect with flash message
+// common pattern for handling forms in backend controllers
 exports.respond = function respond(req, res, status, message, bodyOrErrors, responseOptions, redirectIfNotXHR) {
 	var response
 	var isOk = (status === 200)

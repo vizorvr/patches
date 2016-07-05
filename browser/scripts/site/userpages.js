@@ -44,7 +44,7 @@ var userpagesUI = new function() {
 		jQuery('a#homeSignup').on('click', accountHandler(VizorUI.openSignupModal))
 	}
 
-	// currently unused as the buttons are wired directly (for search-engine indexing)
+	// note the buttons are wired directly (for search-engine indexing)
 	this.handleGraphOpen = function (e) {
 		if (e && e.detail && e.detail.url) {
 			e.preventDefault()
@@ -116,7 +116,7 @@ var userpagesUI = new function() {
 
 	}
 
-	this.findPublicList = function(el) {	// omit el for document
+	this.findPublicList = function(el) {
 		el = el || document
 		return el.querySelector('section.list.assets.public')
 	}
@@ -126,7 +126,7 @@ var userpagesUI = new function() {
 		return el.querySelector('section.list.assets.private')
 	}
 
-	// counts the number of asset cards listed, minus the new one
+	// counts the number of asset cards listed, minus the 'new' card
 	this.countCardsInList = function(listEl) {
 		return this.cardsInList(listEl).length
 	}
@@ -150,18 +150,17 @@ var userpagesUI = new function() {
 	}
 
 	this.findPositionForCard = function(sortId, listEl) {	// e.g. sortId = graph.updatedTS
-		// in the given listEl,
-		// find the element that has the biggest data-sortid not bigger than sortId
-		// returns e.g. existingcard to use in list.insertBefore(card,existingcard)
+		// in the given listEl, find existingcard for list.insertBefore(card,existingcard)
+		//  it is the element with highest data-sortid not bigger than sortId
 		// NB: does not check if card is already in list!
+		// (assumes list ordered descending)
 
 		var qs = this.cardsInList(listEl)
 		var card
 
-		// (assumes list is ordered by date desc (sortid desc))
 		for (var l=0; l<qs.length; l++) {
 			card = qs[l]
-			if (card.dataset.sortid <= sortId)
+			if (card.dataset.sortid && (card.dataset.sortid <= sortId))
 				break
 			else
 				card = null

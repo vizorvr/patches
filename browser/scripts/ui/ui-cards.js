@@ -23,7 +23,7 @@ VizorUI.actionGraphDelete = function(e) {
 		path: e.detail.url
 	}
 
-	return VizorUI.requireConfirm('sure to delete?')
+	return VizorUI.requireConfirm('Are you sure you want to delete this?')
 		.then(function(){
 			var xhr = $.ajax({
 				url: e.detail.url,
