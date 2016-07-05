@@ -143,7 +143,9 @@ GraphController.prototype.publicRankedIndex = function(req, res, next) {
 			meta : {
 				title: 'Vizor - Browse',
 				bodyclass: 'bBrowse',
-				scripts : ['site/userpages.js']
+				scripts : [
+					helper.metaScript('site/userpages.js')
+				]
 			},
 			graphs: list
 		})
@@ -192,7 +194,9 @@ GraphController.prototype.userIndex = function(req, res, next) {
 				meta : {
 					title: username+'\'s Files',
 					bodyclass: 'bUserpage',
-					scripts : ['site/userpages.js']
+					scripts : [
+						helper.metaScript('site/userpages.js')
+					]
 				}
 			});
 
@@ -222,7 +226,9 @@ GraphController.prototype.adminIndex = function(req, res) {
 			meta : {
 				title: 'Graphs',
 				bodyclass: 'bGraphs',
-				scripts : ['site/userpages.js']
+				scripts: [
+					helper.metaScript('site/userpages.js')
+				]
 			}
 		});
 
@@ -232,7 +238,7 @@ GraphController.prototype.adminIndex = function(req, res) {
 
 function renderEditor(res, graph, hasEdits) {
 	var releaseMode = process.env.NODE_ENV === 'production'
-	var layout = releaseMode ? 'editor-prod' : 'editor'
+	var layout = releaseMode ? 'editor-bundled' : 'editor'
 	
 	res.header('Cache-control', 'no-cache, must-revalidate, max-age=0')
 
@@ -303,8 +309,11 @@ function renderPlayer(graph, req, res, options) {
 	var version = graphJson.version || packageJson.version
 	version = version.split('.').slice(0,2).join('.')
 
+	var releaseMode = process.env.NODE_ENV === 'production'
+	var layout = releaseMode ? 'player-bundled' : 'player'
+
 	res.render('graph/show', {
-		layout: res.locals.layout || 'player',
+		layout: res.locals.layout || layout,
 		playerVersion: version,
 		autoplay: !!(options && options.autoplay),
 		noHeader: options.noHeader || false,

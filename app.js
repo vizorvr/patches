@@ -34,7 +34,7 @@ var hbsHelpers = require('./lib/hbs-helpers');
 var templateCache = require('./lib/templateCache').templateCache
 
 // Framework controllers (see below for asset controllers)
-var homeController = require('./controllers/home');
+var homeController = require('./controllers/homeController');
 var userController = require('./controllers/userController');
 
 // Threesixty site controller
@@ -65,13 +65,18 @@ var csrfExclude = [
 
 var app = express();
 
+// keep track of process startup time
+process.startTime = Date.now()
+
 app.events = new EventEmitter()
 
 // view engine setup
 app.set('views', fsPath.join(__dirname, 'views'));
 
+var releaseMode = process.env.NODE_ENV === 'production'
+
 var hbs = exphbs.create({
-	defaultLayout: 'main',
+	defaultLayout: releaseMode ? 'main-bundled' : 'main',
 	partialsDir: [
 		{dir:'views/partials'},
 		{dir:'views/server/partials', namespace: 'srv'}
@@ -97,7 +102,7 @@ app.use(connectAssets({
 	helperContext: app.locals
 }));
 
-app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
+app.use(morgan(releaseMode ? 'combined' : 'dev'));
 app.use(bodyParser.json({
 	limit: 1024 * 1024 * 128
 }));
@@ -429,16 +434,25 @@ function setupModelRoutes(mongoConnection) {
 		next();
 	});
 
-	if (process.env.NODE_ENV !== 'production') {
+	if (!releaseMode) {
 		app.use(function(req, res, next) {
 			res.setHeader('Cache-Control', 'no-cache')
 			next()
 		})
 	}
 
+	// drop the second parameter (timestamp) in meta-scripts
+	app.use('/meta-scripts', function(req, res, next) {
+		req.url = '/' + req.url.split('/').splice(2).join('/')
+		next()
+	}, express.static(
+		fsPath.join(__dirname, 'browser', 'scripts'), 
+		{ maxAge: week * 52 }
+	))
+
 	app.use(['/node_modules'],
 		express.static(fsPath.join(__dirname, 'node_modules'))
-	);
+	)
 
 	app.use(express.static(fsPath.join(__dirname, 'browser'),
 		{ maxAge: hour }))

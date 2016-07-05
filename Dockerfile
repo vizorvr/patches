@@ -26,6 +26,6 @@ ADD . /opt/app
 WORKDIR /opt/app
 
 RUN ./node_modules/.bin/gulp golive && \
-    node ./tools/editorBundler.js
+    sh bin/bundler.sh
 
 CMD forever ./app.js

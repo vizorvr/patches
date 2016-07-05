@@ -5,12 +5,15 @@ browser/data/scenes/**
 browser/data/textures/**
 browser/dist/**
 browser/tools/node_modules
-views/layouts/editor-prod.handlebars
+views/layouts/*-bundled.handlebars
 engistart.bat
 engistart.bat - Shortcut.lnk
 node_modules
 npm-debug.log
 browser/style/site.css
+browser/style/less.css
+browser/style/threesixty.css
 browser/style/site360.css
 browser/style/editor.css
 dummy.txt
+/builtAssets

@@ -32,6 +32,7 @@
 
 	{{{css 'site360'}}}
 
+    <!-- begin bundler -->
     <script src="/node_modules/jquery/dist/jquery.min.js"></script>
     <script src="/node_modules/lodash/dist/lodash.min.js"></script>
     <script src="/node_modules/moment/min/moment.min.js"></script>
@@ -42,22 +43,23 @@
 
     <script src="/scripts/ui-site.js"></script>
 
-    <script src="/scripts/player.min.js"></script>
+    <script src="/dist/player.min.js"></script>
 
     <script src="/scripts/hardware.js"></script>
     <script src="/vendor/borismus/webvr-polyfill.js"></script>
     <script src="/vendor/borismus/webvr-manager.js"></script>
     <script src="/scripts/webVRAdapter.js"></script>
-    
+
     <script src="/scripts/ui/playerUI.js"></script>
+ 
+    <script src="/scripts/threesixty.js"></script>
+    <!-- end bundler -->
 
     <script>
         (function() {
             {{{templateCache}}}
         }.apply(window))
     </script>
-
-    <script src="/scripts/threesixty.js"></script>
     <script>{{> mixpanel}}</script>
 </head>
 
