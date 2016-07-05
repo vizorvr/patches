@@ -108,12 +108,16 @@ app.use(bodyParser.urlencoded( {
 app.use(expressValidator());
 app.use(methodOverride());
 
+// parse the domain out from the FQDN and use it as the cookie domain
+// this way 360.vizor.io and vizor.io will use the same cookie
+var fqdn = process.env.FQDN || ''
+var domainFromFqdn = fqdn.split('.').splice(-2).join('.')
 app.use(cookieParser());
 app.use(sessions({
 	cookieName: 'vs070',
 	requestKey: 'session',
 	cookie: {
-		domain: process.env.FQDN,
+		domain: domainFromFqdn,
 	},
 	secret: secrets.sessionSecret,
 	duration: week,
