@@ -38,8 +38,6 @@ ImageController.prototype.upload = function(req, res, next) {
 ImageController.prototype.getMetadata = function(req, res, next) {
 	var path = req.path.replace(/^\/meta/, '')
 
-	console.error('metadata for', 'path:', path)
-
 	this._service.findOne({'scaled.url' : path}).then(function(item) {
 		if (!item) {
 			return next()
