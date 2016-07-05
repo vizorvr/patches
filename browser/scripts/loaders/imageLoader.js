@@ -3,96 +3,83 @@
 function ImageLoader(url) {
 	E2.Loader.apply(this, arguments)
 	var that = this
-	var img = new Image()
 
-	var CompleteCheck = function() {
-		var count = 0
+	function loadImage(data) {
+		var dfd = when.defer()
 
-		var img = null
-		var metadata = null
+		var xhr = new XMLHttpRequest()
+		xhr.open('GET', url, true)
+		xhr.crossOrigin = 'Anonymous'
+		xhr.responseType = 'arraybuffer'
 
-		var check = function() {
-			++count
-
-			if (count === 2) {
-				that.onImageLoaded(img, metadata)
-			}
+		xhr.onerror = function() {
+			that.errorHandler(new Error(this.status))
 		}
 
-		this.imageLoaded = function(loadedImage) {
-			img = loadedImage
-			check()
-		}
-
-		this.metadataLoaded = function(loadedMetadata) {
-			metadata = loadedMetadata
-			check()
-		}
-	}
-
-	var completeCheck = new CompleteCheck()
-
-	var imageXhr = new XMLHttpRequest()
-	imageXhr.open('GET', url, true)
-	imageXhr.crossOrigin = 'Anonymous'
-	imageXhr.responseType = 'arraybuffer'
-
-	imageXhr.onerror = function() {
-		that.errorHandler(new Error(this.status))
-	}
-
-	imageXhr.onload = (function() {
-		var checker = completeCheck
-		var xhr = this
-
-		return function () {
+		xhr.onload = function() {
 			console.time('Parse image')
 
-			if (this.status >= 400)
-				return xhr.onerror()
+			if (this.status >= 400) {
+				return dfd.reject( xhr.onerror())
+			}
 
 			var blob = new Blob([this.response])
+			var img = new Image()
 			img.src = window.URL.createObjectURL(blob)
 			img.onload = function () {
 				console.timeEnd('Parse image')
-				checker.imageLoaded(img)
+				data.img = img
+				return dfd.resolve(data)
 			}
 		}
-	})()
 
-	imageXhr.onprogress = function(evt) {
-		if (evt.total)
-			that.emit('progress', evt.loaded / evt.total)
+		xhr.onprogress = function(evt) {
+			if (evt.total)
+				that.emit('progress', evt.loaded / evt.total)
+		}
+
+		xhr.send()
+
+		return dfd.promise
 	}
 
-	imageXhr.send()
+	function loadMetadata(data) {
+		var dfd = when.defer()
 
-	var metadataXhr = new XMLHttpRequest()
-	metadataXhr.open('GET', '/meta' + url, true)
-	metadataXhr.crossOrigin = 'Anonymous'
-	metadataXhr.responseType = 'text'
+		var xhr = new XMLHttpRequest()
+		xhr.open('GET', '/meta' + url, true)
+		xhr.crossOrigin = 'Anonymous'
+		xhr.responseType = 'text'
 
-	metadataXhr.onerror = function() {
-		console.error('metadata error',url)
-		that.errorHandler(new Error(this.status))
-	}
-	
-	metadataXhr.onload = (function() {
-		var checker = completeCheck
+		xhr.onerror = function() {
+			dfd.reject(that.errorHandler(new Error(this.status)))
+		}
 
-		return function() {
+		xhr.onload = function() {
 			var result = {}
 
 			if (this.status < 400 && this.responseText) {
 				result = JSON.parse(this.responseText)
 			}
 
-			checker.metadataLoaded(result)
+			data.metadata = result
+			dfd.resolve(data)
 		}
-	})()
 
-	metadataXhr.send()
+		xhr.send()
+
+		return dfd.promise
+	}
+
+	var data = {}
+
+	loadImage(data).then(function(data) {
+		return loadMetadata(data)
+	}).then(function(data) {
+		return that.onImageLoaded(data.img, data.metadata)
+	})
 }
+
 ImageLoader.prototype = Object.create(E2.Loader.prototype)
 ImageLoader.prototype.onImageLoaded = function(img) {
 	this.emit('loaded', img)
