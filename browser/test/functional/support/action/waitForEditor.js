@@ -2,8 +2,10 @@ var config = require('../../config').config
 
 module.exports = function (done) {
     var timeout = config.options.waitforTimeout
+    var url = this.baseUrl + '/edit'
 
     this.browser
+        .url(url)
         .waitForVisible('div.welcome')
         .click('button.close')
 	    .timeoutsAsyncScript(timeout)
