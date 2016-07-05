@@ -9,6 +9,9 @@ var sizeSpec =
 	path: { type: String, required: true },
 	width: { type: Number, required: true },
 	height: { type: Number, required: true },
+	pitch: { type: Number, required: false },
+	heading: { type: Number, required: false },
+	roll: { type: Number, required: false },
 	bytes: Number,
 	mimetype: String
 };

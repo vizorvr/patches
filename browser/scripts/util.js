@@ -1,3 +1,5 @@
+if (typeof(E2) === 'undefined')
+	E2 = {}
 
 // Monkey-patch the window object with a request/cancelAnimationFrame shims.
 window.requestAnimFrame = (function()

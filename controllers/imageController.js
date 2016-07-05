@@ -35,6 +35,27 @@ ImageController.prototype.upload = function(req, res, next) {
 		.catch(next)
 }
 
+ImageController.prototype.getMetadata = function(req, res, next) {
+	var path = req.path.replace(/^\/meta/, '')
+
+	this._service.findOne({'scaled.url' : path}).then(function(item) {
+		if (!item) {
+			return next()
+		}
+
+		res.header('Cache-Control', 'public')
+
+		res.json({
+			width: item.scaled.width,
+			height: item.scaled.height,
+			pitch: item.scaled.pitch,
+			heading: item.scaled.heading,
+			roll: item.scaled.roll
+		})
+	})
+	.catch(next)
+}
+
 // called by setUserAvatar and setUserHeader
 ImageController.prototype._setUserProfileImage = function(req, res, next, imageProcessor, folder, profileFields) {
 	var that = this
