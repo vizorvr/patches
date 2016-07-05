@@ -43,6 +43,8 @@ ImageController.prototype.getMetadata = function(req, res, next) {
 			return next()
 		}
 
+		res.header('Cache-Control', 'public')
+
 		res.json({
 			width: item.scaled.width,
 			height: item.scaled.height,
