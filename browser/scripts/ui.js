@@ -738,21 +738,24 @@ VizorUI.prototype.showStartDialog = function(forceShow) {
 		times = 0
 	}
 
-	var isLogged = VizorUI.userIsLoggedIn()
-
-	var showDialog = forceShow ||
-		((isLogged &&  times <= 2) || (!isLogged &&  times <= 5))
-
+	var stats = E2.models.user.get('stats') || {}
+	var numPublished = stats.projects || 0
+	var showDialog = true
 	if (!forceShow) {
-		var d = new Date()
-		d.setTime(d.getTime() + (3 * 86400 * 1000))	// 3 days
-		Cookies.set(cookieName, {seen: ++times}, {expires: d})
+		times++
+		if (times > 3 || numPublished > 0)
+			showDialog = false
 	}
 
+	// return early in case of not showing dialog
 	if (!showDialog) {
 		dfd.resolve(selectedTemplateUrl)
 		return dfd.promise
 	}
+
+	var d = new Date()
+	d.setTime(d.getTime() + (3 * 86400 * 1000))	// 3 days
+	Cookies.set(cookieName, {seen: times}, {expires: d})
 
 	var welcomeModal = VizorUI.modalOpen(
 		E2.views.patch_editor.intro({user:E2.models.user.toJSON()}),
