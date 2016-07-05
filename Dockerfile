@@ -11,7 +11,7 @@ EXPOSE 8000
 
 # install our dependencies and nodejs
 RUN apt-get -q update && \ 
-    apt-get install -y graphicsmagick && \ 
+    apt-get install -y graphicsmagick exiftool && \ 
     npm install -g forever
 
 # use changes to package.json to force Docker not to use the cache
