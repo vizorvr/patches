@@ -6,6 +6,9 @@ function EditLogController() {
 EditLogController.prototype._canWrite = function(editLog, user) {
 	var creator = editLog._creator
 
+	if (!creator)
+		return false;
+
 	if (creator._id)
 		creator = creator._id
 

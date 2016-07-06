@@ -31,7 +31,13 @@
 			var heading = data.vizorMetadata.heading
 			var roll = data.vizorMetadata.roll
 
-			this.rotation = new THREE.Vector3(pitch / 180 * Math.PI, -heading / 180 * Math.PI, -roll / 180 * Math.PI)
+			this.rotation = new THREE.Vector3(pitch / 180 * Math.PI, heading / 180 * Math.PI, -roll / 180 * Math.PI)
+
+			//this.rotation = new THREE.Euler().setFromQuaternion(
+			//	new THREE.Quaternion().setFromEuler(
+			//		new THREE.Euler(pitch / 180 * Math.PI, heading / 180 * Math.PI, -roll / 180 * Math.PI, "YXZ")), "YZX")
+
+			//console.log('orientation x', this.rotation.x, 'y', this.rotation.y, 'z', this.rotation.z, '[', pitch, heading, roll, ']')
 		}
 		else {
 			this.rotation = this.defaultRotation
