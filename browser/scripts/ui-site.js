@@ -87,7 +87,7 @@ var siteUI = new function() {
 		VizorUI.enablePopupEmbedLinks($body);
 
 		var signupCallback = function() {	// slush
-			window.location.href = '/edit';
+			window.location.href = '/account';
 		};
 		var $signupForm = jQuery('#signupForm')
 		VizorUI.setupXHRForm($signupForm, signupCallback);
@@ -228,7 +228,7 @@ var siteUI = new function() {
 			e.stopPropagation()
 			VizorUI.openLoginModal()
 			.then(function(){
-				document.location.href="/edit"
+				document.location.href="/account"
 			})
 			return false
 		})
