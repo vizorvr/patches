@@ -31,7 +31,7 @@ exports.config = {
      */
     options: {
         logLevel: 'silent',
-        waitforTimeout: 60000
+        waitforTimeout: 45000
     },
 
     /**
