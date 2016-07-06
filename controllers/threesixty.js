@@ -9,6 +9,7 @@ exports.index = function(req, res) {
 	// get show frontpage graph URL
 	res.render('graph/show', {
 		layout: layout,
+		site: 'threesixty',
 		graphSrc: '/threesixty/featured',
 		graphMinUrl: '/threesixty/featured',
 		autoplay: true,
