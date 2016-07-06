@@ -71,7 +71,6 @@ function getHomeFeaturedScenes() {
  */
 exports.index = function(req, res)  {
 	res.render('home', {
-		layout: 'main',
 		featured: getHomeFeaturedScenes(),
 		meta : {
 			bodyclass : 'bHome bIndex',

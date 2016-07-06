@@ -92,7 +92,6 @@
     "yadda": "0.16.0"
   },
   "scripts": {
-    "setup": "node tools/setup.js",
     "start": "node app.js",
     "gulp": "node ./node_modules/gulp/bin/gulp",
     "gulp-engine": "node ./node_modules/gulp/bin/gulp js:engine",

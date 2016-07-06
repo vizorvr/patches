@@ -18,7 +18,10 @@
         <meta name="twitter:title" content="{{graphName}} by {{graphOwner}}" />
         <meta name="twitter:description" content="Vizor is a platform for creating and sharing VR experiences" />
         <meta name="twitter:image" content="{{previewImage}}" />
+
         {{{css 'site'}}}
+
+        <!-- begin bundler -->
 		<script src="/node_modules/jquery/dist/jquery.min.js"></script>
         <script src="/node_modules/lodash/dist/lodash.min.js"></script>
 		<script src="/vendor/bootstrap-3.1.1-dist/js/bootstrap.min.js"></script>
@@ -26,8 +29,8 @@
         <script src="/node_modules/moment/min/moment.min.js"></script>
         <script src="/node_modules/handlebars/dist/handlebars.min.js"></script>
 
+        <script src="/scripts/event-emitter.js"></script>
         <script src="/scripts/ui-site.js"></script>
-        <script src="/data/dist/{{playerVersion}}/player.min.js"></script>
 
         <script src="/scripts/hardware.js"></script>
         <script src="/vendor/borismus/webvr-polyfill.js"></script>
@@ -35,6 +38,9 @@
         <script src="/scripts/webVRAdapter.js"></script>
         
         <script src="/scripts/ui/playerUI.js"></script>
+        <!-- end bundler -->
+
+        <script src="/data/dist/{{playerVersion}}/player.min.js"></script>
 
         <script>
         (function(){
