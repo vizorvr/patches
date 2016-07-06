@@ -87,7 +87,6 @@
         "Render To Texture": "three_webgl_texture_renderer",
         "Scene": "three_scene",
         "Environment Settings": "three_environment_settings"
-
     },
 
     "3D GEOMETRY AND MESH TOOLS": {
@@ -169,8 +168,7 @@
         "Camera Forward Vector": "camera_forward_vector"
     },
 
-
-       "AUDIO": {
+    "AUDIO": {
         "Audio player": "audio_player",
         "Audio source player": "audio_source_player",
         "Analyse": "audio_analyse_modulator",
@@ -198,6 +196,7 @@
 
     "GRAPH CONTROL": {
         "Stop playback": "stop_emitter",
+        "Navigate to URL on Trigger": "open_url_on_trigger",
         "Load File on Trigger": "load_graph_on_trigger",
         "Initialise": "initialise_generator"
     },
@@ -213,7 +212,6 @@
         "XBOX 360 Gamepad": "gamepad_generator",
         "HTC Vive Controller": "vive_controller"
     },
-
 
     "TEXT TOOLS": {
         "Experimental: Text Geometry": "three_text_geometry",
@@ -304,13 +302,11 @@
         "Out Tweens": "tween_out_modulator"
     },
 
-
-    "EVENT EMITTER": {
+    "EVENTS": {
         "Emit Single Runtime Event": "runtime_event_write",
         "Emit Continuous Runtime Events": "runtime_event_write_continuous",
         "On Runtime Event": "runtime_event_read"
     },
-
 
     "VIDEO": {
         "Duration": "video_get_duration_modulator",
