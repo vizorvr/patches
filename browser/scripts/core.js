@@ -50,7 +50,7 @@ E2.slot_type = { input: 0, output: 1 };
 E2.erase_color = '#ff3b3b';
 E2.COLOR_COMPATIBLE_SLOT = '#080';
 
-E2.GRAPH_NODES = ['graph', 'loop', 'array_function'];
+E2.GRAPH_NODES = ['graph', 'loop', 'array_function', 'spawner']
 
 E2.LOADING_NODES = {
 	'three_loader_model': 'model',
@@ -168,17 +168,27 @@ function Core() {
 		
 		this.resolve_dt[dt.id] = dt;
 	}
-	
-	// HTML5 audio context initialisation
-	if(window.AudioContext)
-		this.audioContext = new AudioContext();
-	else if(window.webkitAudioContext)
-		this.audioContext = new webkitAudioContext();
-	else
-		msg('NOTE: This host has no AudioContext support.');
+
+	if (Vizor.isEditor || Vizor.hasAudio)
+		this.createAudioContext()
 }
 
 Core.prototype = Object.create(EventEmitter.prototype)
+
+Core.prototype.createAudioContext = function() {
+	if (this.audioContext)
+		return this.audioContext
+
+	// HTML5 audio context initialisation
+	if (window.AudioContext)
+		this.audioContext = new AudioContext()
+	else if (window.webkitAudioContext)
+		this.audioContext = new webkitAudioContext()
+	else
+		msg('NOTE: This host has no AudioContext support.')
+
+	return this.audioContext
+}
 
 Core.prototype.get_uid = function() {
 	return E2.uid()

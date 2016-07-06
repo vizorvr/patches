@@ -14,11 +14,14 @@ var helper = require('./controllerHelpers')
  exports.getLogin = function(req, res) {
  	if (req.user)
  		return res.redirect('/')
+
  	res.render('server/pages/account/login', {
  		meta: {
 			title: 'Login',
 			noUserPanel: true,
-			scripts: ['site/accountpages.js']
+			scripts: [
+				helper.metaScript('site/accountpages.js')
+			]
 		}
  	})
  }
@@ -102,7 +105,9 @@ var helper = require('./controllerHelpers')
 			meta : {
 				title: 'Sign up to Vizor',
 				noUserPanel: true,
-				scripts: ['site/accountpages.js']
+				scripts: [
+					helper.metaScript('site/accountpages.js')
+				]
 			}
 		})
 	}
@@ -258,7 +263,9 @@ exports.getAccountProfile = function(req, res) {
 					title: 'Account Management',
 					bodyclass: 'bProfile',
 					noUserPanel: true,
-					scripts: ['site/accountpages.js']
+					scripts: [
+						helper.metaScript('site/accountpages.js')
+					]
 				}
 			}
 			res.render('server/pages/account/profile', data)

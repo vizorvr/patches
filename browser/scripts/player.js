@@ -46,6 +46,8 @@ Player.prototype.play = function() {
 	this.current_state = this.state.PLAYING
 	this.last_time = (new Date()).getTime()
 
+	this.first_frame = true
+
 	E2.core.emit('player:playing')
 
 	if (!this.interval) {
@@ -85,6 +87,11 @@ Player.prototype.stop = function() {
 Player.prototype.on_anim_frame = function() {
 	this.interval = requestAnimFrame(this.on_anim_frame.bind(this))
 	this.on_update()
+
+	if (this.first_frame) {
+		E2.core.emit('player:firstFramePlayed')
+		this.first_frame = false
+	}
 }
 
 Player.prototype.on_update = function() {
@@ -135,6 +142,9 @@ Player.prototype.load_from_object = function(obj, cb) {
 			if (cb)
 				cb(err)
 		})
+		.finally(function() {
+			E2.core.emit('assetsLoaded')
+		})
 }
 
 Player.prototype.load_from_url = function(url, cb) {
@@ -180,7 +190,7 @@ Player.prototype.loadAndPlay = function(url, forcePlay) {
 	// if there's an existing anim frame request, cancel it
 	// so that nothing gets rendered until we ask to play() again after
 	// loading
-	if(this.interval !== null) {
+	if (this.interval !== null) {
 		cancelAnimFrame(this.interval)
 		this.interval = null
 	}
@@ -190,12 +200,10 @@ Player.prototype.loadAndPlay = function(url, forcePlay) {
 		// so as this is called on touchstart,
 		// create a dummy audio source and play it
 		var audioSource = E2.core.audioContext.createBufferSource()
-		audioSource.start()//noteOn(0)
+		audioSource.start()
 	}
 
 	E2.app.player.load_from_url(url, function(err) {
-		E2.core.emit('assetsLoaded')
-
 		if (!err || forcePlay === true)
 			E2.app.player.play()
 
@@ -206,6 +214,13 @@ Player.prototype.loadAndPlay = function(url, forcePlay) {
 	})
 
 	return dfd.promise
+}
+
+Player.prototype.getScreenshot = function(width, height) {
+	width = width || 1280
+	height = height || 720
+	var ssr = new ScreenshotRenderer(this.scene, this.camera.vrControlCamera)
+	return ssr.capture(width, height)
 }
 
 function CreatePlayer(cb) {

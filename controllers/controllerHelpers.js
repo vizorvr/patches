@@ -40,3 +40,10 @@ exports.parseErrors = function parseErrors(errors) {
 	return parsedErrors
 }
 
+exports.metaScript = function(path) {
+	var parts = path.split('/')
+	return [process.startTime]
+		.concat(parts[0])
+		.concat(parts.splice(1))
+		.join('/')
+}

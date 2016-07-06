@@ -1,7 +1,12 @@
+if (!E2.ui)
+ 	E2.ui = {}
 
-var vizor360 = new function() {
+E2.ui.ui360 = new function() {
 
 	var that = this
+	this.dom = {
+		controlsDiv: null
+	}
 	var $body = {},
 		$progress = {}	// progressbar element
 
@@ -90,15 +95,12 @@ var vizor360 = new function() {
 		history.pushState({}, '', asset.path)
 
 		E2.track({
-			event: 'ThreeSixty Loading Graph',
+			event: 'ThreeSixty Playing Graph',
 			path: asset.path
 		})
 
-		E2.app.player.loadAndPlay(asset.url, true)
-			.then(function(){
-				$('#sharebutton').show()
-				$('#edit').show()
-			})
+		$('#sharebutton').show()
+		$('#edit').show()
 	}
 
 	// STEP 3
@@ -111,10 +113,15 @@ var vizor360 = new function() {
 
 		E2.track({ event: 'ThreeSixty Uploading Graph' })
 
+		var previewImage = E2.app.player.getScreenshot(1280, 720)
+
 		$.ajax({
 			url: '/graph/v',
 			type: 'POST',
-			data: graphData,
+			data: { 
+				previewImage: previewImage,
+				graph: graphData
+			},
 			dataType: 'json',
 			success: function(response) {
 				E2.track({
@@ -164,14 +171,14 @@ var vizor360 = new function() {
 				// for the 360 template we are replacing
 				var nodes = graph.root.nodes;
 
-				for (var i=0; i<nodes.length; i++) {
+				for (var i=0; i < nodes.length; i++) {
 					var node = nodes[i];
 
 					// Check if we have the correct node, the 360 graph
 					// has this node generating the texture
 					if (node.plugin === 'url_texture_generator') {
-						node.state.url = imageUrl;
-						urlReplaced = true;
+						node.state.url = imageUrl
+						urlReplaced = true
 					}
 				}
 
@@ -181,12 +188,20 @@ var vizor360 = new function() {
 					var data = {
 						'path': name,
 						'graph': JSON.stringify(graph)
-					};
+					}
 
-					that.uploadGraph(data, function(asset) {
-						updateProgressBar(55)
-						dfd.resolve(asset, data)
-					});
+					E2.app.player.stop()
+
+					E2.app.player.load_from_object(graph, function() {
+						E2.core.once('player:firstFramePlayed', function() {
+							that.uploadGraph(data.graph, function(asset) {
+								updateProgressBar(55)
+								dfd.resolve(asset, data)
+							})
+						})
+	
+						E2.app.player.play()
+					})
 				}
 			},
 
@@ -432,28 +447,33 @@ var vizor360 = new function() {
 	}
 
 	this.addUploadButton = function() {
-		var svg = document.createElement('svg'),
-			span = document.createElement('span'),
-			button = document.createElement('button')
-
-		button.appendChild(svg)
-		button.appendChild(span)
-		button.dataset.svgref = 'vr360-upload-image'
-		button.className = 'svg'
-		button.id = 'uploadbutton'
-		span.innerText = 'Upload'
-
-		var controlsDiv = document.getElementById('topbar').getElementsByTagName('div')[1]
-		controlsDiv.appendChild(button)
+		var data = {
+			id: 'uploadbutton',
+			text: 'Upload',
+			svgref: 'vr360-upload-image'
+		}
+		var button = E2.views.partials.controls.svgButton(data)
 
 		var handler = function(e) {
 			e.preventDefault()
 			$('#threesixty-image-input').focus().trigger('click')
 			return false
 		}
-		button.addEventListener('click', handler)
-
-		VizorUI.replaceSVGButtons($(controlsDiv))
+		var btn = $(button)
+		btn.appendTo(this.dom.controlsDiv)
+		btn[0].addEventListener('click', handler)
+	}
+	
+	this.addTOSButton = function() {
+		var data = {
+			href: 'https://docs.google.com/document/d/172dWVz8bSEDxS_y2InXpqWhVvbM7w1Z9MSp1-Lw1rIc/edit?usp=sharing',
+			id: 'tosbutton',
+			text: 'Terms',
+			svgref : 'vr360-tos',
+			target: '_blank'
+		}
+		var button = E2.views.partials.controls.svgButton(data)
+		$(button).appendTo(this.dom.controlsDiv)
 	}
 
 
@@ -471,6 +491,8 @@ var vizor360 = new function() {
 		// scoped above
 		playerUI.headerDefaultFadeoutTimeMs = 3500
 
+		this.dom.controlsDiv = document.getElementById('topbar').getElementsByTagName('div')[1]
+
 		var $header = $('header')
 		var $container360 = $('#container360')
 		$container360.remove()
@@ -483,6 +505,7 @@ var vizor360 = new function() {
 
 		that.addUploadButton()
 		that.addCancelButton()
+		that.addTOSButton()
 		that.attach()
 
 		if (!window.Vizor) window.Vizor = {}
@@ -512,4 +535,4 @@ var vizor360 = new function() {
 	}
 }
 
-document.addEventListener('DOMContentLoaded', vizor360.init)
+document.addEventListener('DOMContentLoaded', E2.ui.ui360.init.bind(E2.ui.ui360))

@@ -12,11 +12,19 @@ describe('array_function', function() {
 		loadPlugin('array_function')
 		plugin = new E2.plugins.array_function(core)
 		plugin.graph = {
+			copies: [],
 			reset: function() {},
 			update: function() {},
+			clearCopies: function() {},
+			makeCopy: function(i) {
+				i = i || this.copies.length
+				this.copies[i] = this
+				return this
+			},
 			variables: {
 				read: function() {},
-				write: function() {}
+				write: function() {},
+				set_datatype: function() {}
 			}
 		}
 	})
@@ -34,13 +42,18 @@ describe('array_function', function() {
 		assert.equal(updates, 3)
 	})
 
+	it('creates copies of graph', function() {
+		plugin.update_input({ name: 'length' }, 3)
+		assert.equal(plugin.graph.copies.length, 3)
+	})
+
 	it('sets loop index', function(done) {
-		plugin.update_input({ name: 'length' }, 1)
 		plugin.graph.variables.write = function(k, v) {
 			assert.equal('index', k)
-			assert.equal(0, v)
+			assert.equal(1, v)
 			done()
 		}
+		plugin.update_input({ name: 'length' }, 1)
 		plugin.update_state({abs_t:0, delta_t:(1/60)})
 	})
 

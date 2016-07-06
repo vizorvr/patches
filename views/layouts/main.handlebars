@@ -31,6 +31,7 @@
 
 	{{{css 'site'}}}
 
+    <!-- begin bundler -->
     <script src="/node_modules/jquery/dist/jquery.min.js"></script>
 	<script src="/node_modules/lodash/dist/lodash.min.js"></script>
 	<script src="/node_modules/moment/min/moment.min.js"></script>
@@ -45,34 +46,44 @@
 
     <script src="/node_modules/handlebars/dist/handlebars.min.js"></script>
 
+	<script src="/dist/player.min.js"></script>
+
+    <script src="/scripts/hardware.js"></script>
+    <script src="/vendor/borismus/webvr-polyfill.js"></script>
+    <script src="/vendor/borismus/webvr-manager.js"></script>
+    <script src="/scripts/webVRAdapter.js"></script>
+
 	<script src="/scripts/models.js"></script>
 	<script src="/scripts/account-controller.js"></script>
 	<script src="/scripts/ui/uiDragAwareHelper.js"></script>
 	<script src="/scripts/ui-minislides.js"></script>
 	<script src="/scripts/ui-site.js"></script>
 
+    <!-- end bundler -->
+
 	{{#if meta.scripts}}{{#each meta.scripts}}
-		<script type="text/javascript" src="/scripts/{{this}}"></script>
+		<script type="text/javascript" src="/meta-scripts/{{this}}"></script>
 	{{/each}}{{/if}}
 
-	<script src="/scripts/core.js"></script>
-	<script src="/scripts/application.js"></script>
-
 	<script>
+		window.Vizor = {
+			hideWebVRButton: true,
+			autoplay: true
+		}
+
 		jQuery(document).ready(function(){
 			(function(){
 				{{{templateCache}}}
-			}).apply(window);
+			}).apply(window)
 
-			window.Vizor = {
-				hideWebVRButton: true,
-				autoplay: true
-			};
+			if (typeof E2.models === 'undefined') 
+				E2.models = {}
 
-			if (typeof E2.models === 'undefined') E2.models = {};
-			if (typeof E2.controllers === 'undefined') E2.controllers = {};
+			if (typeof E2.controllers === 'undefined')
+				E2.controllers = {}
 
-			E2.models.user = new User({});
+			E2.models.user = new User({})
+
 			if ('{{user.username}}' !== '') {
 				E2.models.user.set( {
 					id: '{{user._id}}',
@@ -83,15 +94,10 @@
 				})
 			}
 
-			E2.controllers.account = new AccountController();
-		});
+			E2.controllers.account = new AccountController()
+		})
     </script>
 
-	<script src="/scripts/player.min.js"></script>
-    <script src="/scripts/hardware.js"></script>
-    <script src="/vendor/borismus/webvr-polyfill.js"></script>
-    <script src="/vendor/borismus/webvr-manager.js"></script>
-    <script src="/scripts/webVRAdapter.js"></script>
     <script>{{> mixpanel}}</script>
 </head>
 

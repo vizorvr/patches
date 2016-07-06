@@ -105,27 +105,30 @@ Application.prototype.createPlugin = function(id, position) {
 
 		var node = new Node(activeGraph, id, position[0], position[1]);
 
-		if (name) { // is graph?
+		if (E2.GRAPH_NODES.indexOf(id) !== -1) { // is graph?
 			node.plugin.setGraph(new Graph(E2.core, activeGraph))
-			node.title = name
 			node.plugin.graph.plugin = node.plugin
 		}
+
+		if (name)
+			node.title = name
 
 		return node
 	}
 
-	var node
+	switch(id) {
+		case 'graph':
+			return _create('Graph')
+		case 'loop':
+			return _create('Loop')
+		case 'array_function':
+			return _create('Array Function')
+		case 'spawner':
+			return _create('Spawner')
+		default:
+			return _create()
+	}
 
-	if (id === 'graph')
-		node = _create('Graph')
-	else if (id === 'loop')
-		node = _create('Loop')
-	else if (id === 'array_function')
-		node = _create('Array function')
-	else
-		node = _create(null)
-
-	return node
 }
 
 Application.prototype.instantiatePlugin = function(id, position) {
@@ -1845,13 +1848,6 @@ Application.prototype.onNewClicked = function() {
 
 Application.prototype.onForkClicked = function() {
 	this.channel.fork()
-}
-
-Application.prototype.getScreenshot = function(width, height) {
-	width = width || 1280
-	height = height || 720
-	var ssr = new ScreenshotRenderer(this.worldEditor.scene, this.worldEditor.vrCamera)
-	return ssr.capture(width, height)
 }
 
 Application.prototype.setupEditorBindings = function() {

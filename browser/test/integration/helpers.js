@@ -220,7 +220,14 @@ exports.reset = function() {
 		mousemove:function(){},
 		outerHeight:function(){},
 		'0': {
-			getContext: function(){}
+			getContext: function() {
+				return {
+					clearRect: function() { return 0 },
+					measureText: function() { return 0 },
+					strokeText: function() { return 0 },
+					fillText: function() { return 0 },
+				}
+			}
 		}
 	}}
 

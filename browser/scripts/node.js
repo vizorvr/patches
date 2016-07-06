@@ -738,7 +738,7 @@ Node.prototype.deserialise = function(guid, d) {
 	var plg = E2.core.pluginManager.create(d.plugin, this);
 	
 	if (!plg) {
-		msg('ERROR: Failed to instance node of type \'' + d.plugin + '\' with title \'' + this.title + '\' and UID = ' + this.uid + '.');
+		msg('ERROR: Failed to instantiate node of type \'' + d.plugin + '\' with title \'' + this.title + '\' and UID = ' + this.uid + '.');
 		return false;
 	}
 	
@@ -901,7 +901,7 @@ Node.hydrate = function(guid, json) {
 }
 
 Node.isGraphPlugin = function(pluginId) {
-	return (['graph', 'loop', 'array_function'].indexOf(pluginId) > -1)
+	return (E2.GRAPH_NODES.indexOf(pluginId) > -1)
 }
 
 

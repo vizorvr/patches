@@ -3,9 +3,13 @@
  * Threesixty site
  */
 exports.index = function(req, res) {
+	var releaseMode = process.env.NODE_ENV === 'production'
+	var layout = releaseMode ? 'threesixty-bundled' : 'threesixty'
+
 	// get show frontpage graph URL
 	res.render('graph/show', {
-		layout: 'threesixty',
+		layout: layout,
+		site: 'threesixty',
 		graphSrc: '/threesixty/featured',
 		graphMinUrl: '/threesixty/featured',
 		autoplay: true,
