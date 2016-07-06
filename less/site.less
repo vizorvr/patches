@@ -531,7 +531,9 @@ section.list {
 	float:left;
 	margin:@margin-asset-card @margin-asset-card-h;
   }
-  body.bGraphlistSummary &.assets[data-numitems="0"] {
+  body.bGraphlistSummary:not(.noProjects) &.assets[data-numitems="0"],
+  body.bGraphlistSummary.noProjects &.assets[data-numitems="0"]+section
+  {
 	display: none;
 	visibility: hidden;
 	overflow: hidden;

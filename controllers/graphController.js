@@ -211,8 +211,9 @@ GraphController.prototype._userOwnIndex = function(user, req, res, next) {
 		data.privateGraphs = privateList || []
 		data.profile = profile
 
-		// :/ _.extend
-		data.meta.bodyclass = ('bUserpage ' + (data.bodyclass)).trim()
+		// allow the 'create' card to appear if both lists are empty. see css.
+		var noProjectsClass = (data.publicGraphs.length + data.privateGraphs.length > 0) ? '' : 'noProjects '
+		data.meta.bodyclass = ('bUserpage ' + noProjectsClass + data.bodyclass).trim()
 		delete data.bodyclass
 
 		if (req.xhr) {
@@ -225,7 +226,7 @@ GraphController.prototype._userOwnIndex = function(user, req, res, next) {
 
 	var profile = user.toJSON()
 
-	var maxNOnFront = 8
+	var maxNumOnFront = 8
 	var data = {
 		publicHasMoreLink : false,
 		privateHasMoreLink : false
@@ -235,17 +236,17 @@ GraphController.prototype._userOwnIndex = function(user, req, res, next) {
 		data.isSummaryPage = true
 		data.bodyclass = 'bGraphlistSummary'
 		var publicList, privateList
-		that._service.userGraphs(username, {private:false}, 0, maxNOnFront+1)
+		that._service.userGraphs(username, {private:false}, 0, maxNumOnFront+1)
 			.then(function(list){
-				if (list && (list.length >= maxNOnFront)) {
+				if (list && (list.length >= maxNumOnFront)) {
 					data.publicHasMoreLink = true
 					list.pop()
 				}
 				publicList = makeList(list)
-				return that._service.userGraphs(username, {private:true}, 0, maxNOnFront+1)
+				return that._service.userGraphs(username, {private:true}, 0, maxNumOnFront+1)
 			})
 			.then(function(list) {
-				if (list && (list.length >= maxNOnFront)) {
+				if (list && (list.length >= maxNumOnFront)) {
 					data.privateHasMoreLink = true
 					list.pop()
 				}
