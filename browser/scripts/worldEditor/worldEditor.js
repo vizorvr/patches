@@ -49,6 +49,8 @@ function WorldEditor(domElement) {
 
 	this.setupObjectPicking()
 
+	this.toggleLocalGlobalHandles()
+
 	E2.ui.state.on('changed:modifyMode', this.setTransformMode.bind(this));
 }
 
@@ -85,7 +87,7 @@ WorldEditor.prototype.update = function() {
 WorldEditor.prototype.preRenderUpdate = function() {
 	// update the camera selector just before render so that we get up to date
 	// camera information for this frame
-	this.cameraSelector.update(this.transformMode, this.vrCamera)
+	this.cameraSelector.update(this.transformMode, this.vrCamera, this.transformSpace)
 
 	// add the editor tree to the scene if it's not there already
 	var editorIdx = this.scene.children.indexOf(this.editorTree)
@@ -581,6 +583,10 @@ WorldEditor.prototype.matchEditorToVRCamera = function() {
 
 	editCamera.position.copy(vrCameraPlugin.state.position)
 	editCamera.quaternion.set(vrCameraPlugin.state.quaternion._x, vrCameraPlugin.state.quaternion._y, vrCameraPlugin.state.quaternion._z, vrCameraPlugin.state.quaternion._w)
+}
+
+WorldEditor.prototype.toggleLocalGlobalHandles = function() {
+	this.transformSpace = this.transformSpace === 'world' ? 'local' : 'world'
 }
 
 WorldEditor.prototype.toggleGrid = function() {

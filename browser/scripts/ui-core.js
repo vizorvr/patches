@@ -33,6 +33,7 @@ var uiKeys = {
 
 	toggleEditorHelpers                 : 'H',
 	toggleWorldEditorGrid               : 'G',
+	toggleWorldEditorLocalGlobalHandles : 'L',
 	toggleWorldEditorXCamera            : 'X',
 	toggleWorldEditorYCamera            : 'Y',
 	toggleWorldEditorZCamera            : 'Z',
@@ -667,6 +668,9 @@ VizorUI.prototype.onKeyPress = function(e) {
 			case uiKeys.modifyModeScale:
 				state.modifyModeDefault = uiModifyMode.scale
 				state.modifyMode = state.modifyModeDefault
+				break;
+			case uiKeys.toggleWorldEditorLocalGlobalHandles:
+				E2.app.worldEditor.toggleLocalGlobalHandles();
 				break;
 			case uiKeys.toggleWorldEditorGrid:
 				E2.app.worldEditor.toggleGrid();
