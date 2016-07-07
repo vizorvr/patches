@@ -1,10 +1,10 @@
 <div class="breadcrumb in">
 	{{#each crumbs}}
 		{{#unless @first}}
-			{{#with ../../options}}
+			{{#with ../options}}
 				{{#if useSeparator}}
-					{{#if ../separatorHtml}}
-						{{../../separatorHtml}}
+					{{#if separatorHtml}}
+						{{separatorHtml}}
 					{{else}}
 						<svg class="separator"><use xlink:href="#breadcrumb-separator"></use></svg>
 					{{/if}}
