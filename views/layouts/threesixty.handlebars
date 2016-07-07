@@ -6,7 +6,7 @@
 	{{#if meta.title}}
 		<title>{{meta.title}}</title>
 	{{else}}
-		<title>360.vizor.io - easy 360 photo sharing on the web</title>
+		<title>360.vizor.io - The easiest way to share your 360 photos</title>
 	{{/if}}
     {{#if meta.keywords }}
         <meta name="keywords" content="{{meta.keywords}}" />
@@ -16,15 +16,29 @@
     {{#if meta.description}}
         <meta name="description" content="{{meta.description}}" />
     {{else}}
-        <meta name="description" content="Vizor is a platform for creating and sharing VR content on the web. All you need is a WebVR capable browser and a headset, although you can use Vizor without one. There is no need to download and install large native applications." />
+        <meta name="description" content="Drag, drop, share. 360 photos made simple." />
     {{/if}}
 
     <meta id="viewportmeta" name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0, shrink-to-fit=no" />
     <!-- facebook -->
-    <meta name="og:description" content="Vizor is a platform for creating and sharing VR content on the web. All you need is a WebVR capable browser and a headset, although you can use Vizor without one. There is no need to download and install large native applications." />
-    <meta name="og:image" content="/images/vizor_social.jpg" />
+    <meta name="og:description" content="Drag, drop, share. 360 photos made simple." />
+
     <meta name="og:restrictions:age" content="13+" />
     <meta name="fb:profile_id" content="980737135276580" />
+
+    {{#if previewImage}}
+        <meta name="og:image" content="{{previewImage}}" />
+        <meta name="twitter:image" content="{{previewImage}}" />
+        <meta name="og:image:width" content="{{previewImageWidth}}" />
+        <meta name="og:image:height" content="{{previewImageHeight}}" />
+    {{else}}
+        <meta name="og:image" content="/images/vizor_social.jpg" />
+        <meta name="twitter:image" content="/images/vizor_social.jpg" />
+    {{/if}}
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@Vizor_VR" />
+    <meta name="twitter:description" content="Drag, drop, share. 360 photos made simple." />
 
     <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700,900" />
 	<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:200,300,400" />
