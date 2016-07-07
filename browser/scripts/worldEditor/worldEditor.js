@@ -424,6 +424,39 @@ WorldEditor.prototype.selectMeshAndDependencies = function(meshNode, sceneNode, 
 	}
 }
 
+WorldEditor.prototype.onComponentDroppedOnObject = function(object3d, component) {
+	// find the patch of the object
+	var meshNode = object3d.backReference.node
+	var entityPatch = meshNode.parent_graph
+
+	// paste the component into the entity patch
+	var dropped = E2.app.pasteInGraph(entityPatch, component)
+
+	// connect all outputs from component to inputs on mesh
+	var componentNode = dropped.nodes[0]
+	var outputs = componentNode.getDynamicOutputSlots()
+
+	outputs.map(function(output) {
+		console.log('connect', output.name, output.index)
+
+		var connection = Connection.hydrate(entityPatch, {
+			src_nuid: componentNode.uid,
+			dst_nuid: meshNode.uid,
+			src_slot: output.index,
+			src_dyn: true,
+			dst_slot: output.name,
+			dst_dyn: false
+		})
+
+		// figure out how to mix values on busy slots
+		// instead of replacing the connections
+		// depending on component (materials cant be mixed)
+
+		E2.app.graphApi.connect(entityPatch, connection)
+		E2.app.onLocalConnectionChanged(connection)
+	})
+}
+
 WorldEditor.prototype.pickObject = function(e) {
 	if (E2.app.noodlesVisible === true)
 		return
