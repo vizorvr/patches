@@ -997,9 +997,12 @@ Application.prototype.onCut = function(e) {
 }
 
 Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
+	this.pasteInGraph(E2.core.active_graph, srcDoc, offsetX, offsetY)
+}
+
+Application.prototype.pasteInGraph = function(targetGraph, srcDoc, offsetX, offsetY) {
 	this.undoManager.begin('Paste')
 
-	var ag = E2.core.active_graph
 	var createdNodes = []
 	var createdConnections = []
 	var globalUidMap = {}
@@ -1088,9 +1091,9 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 		docNode.x = Math.floor((docNode.x - docX1) + offsetX)
 		docNode.y = Math.floor((docNode.y - docY1) + offsetY)
 
-		this.graphApi.addNode(ag, Node.hydrate(ag.uid, docNode))
+		this.graphApi.addNode(targetGraph, Node.hydrate(targetGraph.uid, docNode))
 
-		createdNodes.push(ag.findNodeByUid(docNode.uid))
+		createdNodes.push(targetGraph.findNodeByUid(docNode.uid))
 	}
 
 	for(i = 0, len = doc.conns.length; i < len; i++) {
@@ -1099,7 +1102,7 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 		if (!dc.dst_nuid || !dc.src_nuid)
 			continue;
 
-		var destNode = ag.findNodeByUid(dc.dst_nuid)
+		var destNode = targetGraph.findNodeByUid(dc.dst_nuid)
 		if (!destNode)
 			continue;
 
@@ -1124,9 +1127,9 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 			continue;
 		}
 
-		this.graphApi.connect(ag, Connection.hydrate(E2.core.active_graph, dc))
+		this.graphApi.connect(targetGraph, Connection.hydrate(targetGraph, dc))
 
-		createdConnections.push(ag.findConnectionByUid(dc.uid))
+		createdConnections.push(targetGraph.findConnectionByUid(dc.uid))
 	}
 
 	if (this.isWorldEditorActive()) {
