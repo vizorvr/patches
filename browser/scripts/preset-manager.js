@@ -4,7 +4,7 @@ function PresetManager(base_url) {
 
 	this._base_url = base_url
 	this._presets = []
-	this._objects = []
+	this._droppables = []
 
 	this.refresh()
 
@@ -41,10 +41,11 @@ PresetManager.prototype.loadPresets = function() {
 			Object.keys(data[catName]).forEach(function(title) {
 				var entry = data[catName][title]
 				var name = entry.name
+
 				that.add(catName, title, that._base_url+'/'+name+'.json')
 
-				if (entry.isObject3d)
-					that.addObject3d(catName, title, that._base_url+'/'+name+'.json')
+				if (['entity', 'component'].indexOf(entry.type) > -1)
+					that.addDroppable(entry.type, catName, title, that._base_url+'/'+name+'.json')
 			})
 		})
 
@@ -103,13 +104,13 @@ PresetManager.prototype.refresh = function() {
 	})
 	.then(function() {
 		that.renderPresets()
-		that.renderObjects()
+		that.renderDroppables()
 	})
 }
 
 PresetManager.prototype.onOpen = function(path) {
 	if (path.indexOf('plugin/') === 0) {
-		return this.openPlugin(path);
+		return this.openPlugin(path)
 	}
 
 	this.openPreset(path)
@@ -126,30 +127,30 @@ PresetManager.prototype.renderPresets = function() {
 	})
 	.onOpen(this.onOpen.bind(this))
 	
-	var presetSearch = $('#presets-lib .searchbox input');
-	presetSearch.focus(E2.ui.onLibSearchClicked.bind(E2.ui));
+	var presetSearch = $('#presets-lib .searchbox input')
+	presetSearch.focus(E2.ui.onLibSearchClicked.bind(E2.ui))
 }
 
-PresetManager.prototype.renderObjects = function() {
+PresetManager.prototype.renderDroppables = function() {
 	E2.dom.objectsList.empty()
 
 	new CollapsibleSelectControl()
-	.data(this._objects)
+	.data(this._droppables)
 	.template(E2.views.presets.presets)
 	.render(E2.dom.objectsList, {
-		searchPlaceholderText : 'Search objects'
+		searchPlaceholderText : 'Search items'
 	})
 	.onOpen(this.onOpen.bind(this))
 	
-	var objectSearch = $('.searchbox input', E2.dom.objectsList);
-	objectSearch.focus(E2.ui.onLibSearchClicked.bind(E2.ui));
+	var objectSearch = $('.searchbox input', E2.dom.objectsList)
+	objectSearch.focus(E2.ui.onLibSearchClicked.bind(E2.ui))
 }
 
 PresetManager.prototype.openPreset = function(name) {
 	$.get(name)
 	.done(function(data) {
 		E2.track({
-			event: 'Preset Added', 
+			event: 'presetAdded', 
 			name: name
 		})
 
@@ -164,8 +165,9 @@ PresetManager.prototype.openPreset = function(name) {
 	})
 }
 
-PresetManager.prototype.addObject3d = function(category, title, path) {
-	this._objects.push({
+PresetManager.prototype.addDroppable = function(typeName, category, title, path) {
+	this._droppables.push({
+		type: typeName,
 		category: category, 
 		title: title,
 		path: path
@@ -180,16 +182,19 @@ PresetManager.prototype.add = function(category, title, path) {
 	})
 }
 
-PresetManager.prototype.openPlugin = function(path, cb)
-{
-	var id = path.substring('plugin/'.length);
-	var canvasX = E2.dom.canvases.position().left;
-	var mouseX = E2.app.mousePosition[0];
-	var canvasY = E2.dom.canvases.position().top;
-	var mouseY = E2.app.mousePosition[1];
+PresetManager.prototype.openPlugin = function(path, cb) {
+	var id = path.substring('plugin/'.length)
+	var canvasX = E2.dom.canvases.position().left
+	var mouseX = E2.app.mousePosition[0]
+	var canvasY = E2.dom.canvases.position().top
+	var mouseY = E2.app.mousePosition[1]
 
-	if(canvasX > mouseX) mouseX += canvasX; // Add the canvas X position to the mouse X position when double clicking from the preset list to avoid spawning plugins under the list
+	// Add the canvas X position to the mouse X position when double clicking from the preset list to avoid spawning plugins under the list
+	if (canvasX > mouseX)
+		mouseX += canvasX 
+	
 	mouseY -= canvasY
-	E2.app.instantiatePlugin(id, [mouseX, mouseY]);
+	
+	E2.app.instantiatePlugin(id, [mouseX, mouseY])
 }
 
