@@ -242,10 +242,11 @@ function modelRoutes(
 	})
 
 	// -----
-	// Preset routes
+	// User Preset routes
 	app.get('/:username/presets', function(req, res, next) {
 		presetController.findByCreatorName(req, res, next);
 	})
+
 	app.post('/:username/presets', function(req, res, next) {
 		presetController.save(req, res, next);
 	})

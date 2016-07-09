@@ -21,18 +21,18 @@
     "COMPONENTS: Wobble": {
         "Wobble on Y axis": {
             "name": "components/wobble-y-axis",
-            "type": "component"
+            "type": "entity_component"
         }
     },
 
     "COMPONENTS: Rotation": {
         "Rotation on Y axis": {
             "name": "components/rotation-y-axis",
-            "type": "component"
+            "type": "entity_component"
         },
         "Rotation on all axes": {
             "name": "components/rotation-all-axes",
-            "type": "component"
+            "type": "entity_component"
         }
     },
 

@@ -44,8 +44,7 @@ PresetManager.prototype.loadPresets = function() {
 				var name = entry.name
 
 				that.add(catName, title, that._base_url+'/'+name+'.json')
-
-				if (['entity', 'component'].indexOf(entry.type) > -1)
+				if (E2.TYPED_PATCHES.indexOf(entry.type) > -1)
 					that.addWorldPatch(entry.type, catName, title, that._base_url+'/'+name+'.json')
 			})
 		})
@@ -81,6 +80,9 @@ PresetManager.prototype.loadUserPresets = function() {
 			var cat = 'MY PRESETS'
 
 			presets.forEach(function(preset) {
+				if (E2.TYPED_PATCHES.indexOf(preset.type) > -1)
+					that.addWorldPatch(preset.type, cat, preset.name, preset.url)
+
 				that.add(cat, preset.name, preset.url)
 			})
 
@@ -95,6 +97,7 @@ PresetManager.prototype.refresh = function() {
 	var that = this
 
 	this._patches = []
+	this._worldPatches = []
 
 	this.loadUserPresets()
 	.then(function() {
@@ -173,6 +176,7 @@ PresetManager.prototype.openPreset = function(patchMeta, targetObject3d) {
 }
 
 PresetManager.prototype.addWorldPatch = function(typeName, category, title, path) {
+console.log('addWorldPatch', typeName, title, path)
 	var patchMeta = {
 		type: typeName,
 		category: category, 
@@ -185,11 +189,15 @@ PresetManager.prototype.addWorldPatch = function(typeName, category, title, path
 }
 
 PresetManager.prototype.add = function(category, title, path) {
-	this._patches.push({
+	var patchMeta = {		
+		type: 'patch',
 		category: category, 
 		title: title,
 		path: path
-	})
+	}
+
+	this._patchesByPath[path] = patchMeta
+	this._patches.push(patchMeta)
 }
 
 PresetManager.prototype.openPlugin = function(path, cb) {

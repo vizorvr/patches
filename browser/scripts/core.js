@@ -50,7 +50,15 @@ E2.slot_type = { input: 0, output: 1 };
 E2.erase_color = '#ff3b3b';
 E2.COLOR_COMPATIBLE_SLOT = '#080';
 
-E2.GRAPH_NODES = ['graph', 'loop', 'array_function', 'spawner']
+E2.TYPED_PATCHES = [
+	'entity', 'entity_component'
+]
+
+E2.GRAPH_NODES = [
+	'graph', 'loop', 
+	'entity', 'entity_component',
+	'array_function', 'spawner'
+]
 
 E2.LOADING_NODES = {
 	'three_loader_model': 'model',
@@ -62,6 +70,38 @@ E2.LOADING_NODES = {
 	// 'url_audio_generator': 'audio',
 	// 'url_json_generator': 'json',
 	// 'url_video_generator': 'video'
+}
+
+E2.dt = {
+	FLOAT: { id: 0, name: 'Float' },
+	SHADER: { id: 1, name: 'Shader' },
+	TEXTURE: { id: 2, name: 'Texture' },
+	COLOR: { id: 3, name: 'Color' },
+	MATRIX: { id: 4, name: 'Matrix' },
+	VECTOR: { id: 5, name: 'Vector' },
+	CAMERA: { id: 6, name: 'Camera' },
+	BOOL: { id: 7, name: 'Boolean' },
+	ANY: { id: 8, name: 'Arbitrary' },
+	MESH: { id: 9, name: 'Mesh' },
+	AUDIO: { id: 10, name: 'Audio' },
+	SCENE: { id: 11, name: 'Scene' },
+	MATERIAL: { id: 12, name: 'Material' },
+	LIGHT: { id: 13, name: 'Light' },
+	DELEGATE: { id: 14, name: 'Delegate' },
+	TEXT: { id: 15, name: 'Text' },
+	VIDEO: { id: 16, name: 'Video' },
+	ARRAY: { id: 17, name: 'Typed Array' },
+	OBJECT: { id: 18, name: 'Object' },
+
+	GEOMETRY: { id: 19, name: 'Geometry' },
+	QUATERNION: { id: 20, name: 'Quaternion' },
+	OBJECT3D: { id: 21, name: 'Object3D' },
+	
+	VECTOR4: { id: 22, name: 'Vector 4' },
+
+	ENVIRONMENTSETTINGS: { id: 23, name: 'Environment Settings' },
+
+	CUBETEXTURE: { id: 24, name: 'CubeTexture' },
 }
 
 E2.uid = function() {
@@ -83,38 +123,8 @@ function Core() {
 	EventEmitter.apply(this, arguments)
 
 	E2.core = this
-	
-	E2.dt = this.datatypes = {
-		FLOAT: { id: 0, name: 'Float' },
-		SHADER: { id: 1, name: 'Shader' },
-		TEXTURE: { id: 2, name: 'Texture' },
-		COLOR: { id: 3, name: 'Color' },
-		MATRIX: { id: 4, name: 'Matrix' },
-		VECTOR: { id: 5, name: 'Vector' },
-		CAMERA: { id: 6, name: 'Camera' },
-		BOOL: { id: 7, name: 'Boolean' },
-		ANY: { id: 8, name: 'Arbitrary' },
-		MESH: { id: 9, name: 'Mesh' },
-		AUDIO: { id: 10, name: 'Audio' },
-		SCENE: { id: 11, name: 'Scene' },
-		MATERIAL: { id: 12, name: 'Material' },
-		LIGHT: { id: 13, name: 'Light' },
-		DELEGATE: { id: 14, name: 'Delegate' },
-		TEXT: { id: 15, name: 'Text' },
-		VIDEO: { id: 16, name: 'Video' },
-		ARRAY: { id: 17, name: 'Typed Array' },
-		OBJECT: { id: 18, name: 'Object' },
 
-		GEOMETRY: { id: 19, name: 'Geometry' },
-		QUATERNION: { id: 20, name: 'Quaternion' },
-		OBJECT3D: { id: 21, name: 'Object3D' },
-		
-		VECTOR4: { id: 22, name: 'Vector 4' },
-
-		ENVIRONMENTSETTINGS: { id: 23, name: 'Environment Settings' },
-
-		CUBETEXTURE: { id: 24, name: 'CubeTexture' },
-	}
+	this.datatypes = E2.dt
 
 	this.renderer = { // compat for old plugins
 		matrix_identity: new THREE.Matrix4().identity(),
