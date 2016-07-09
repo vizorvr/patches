@@ -18,6 +18,24 @@
         }
     },
 
+    "COMPONENTS: Wobble": {
+        "Wobble on Y axis": {
+            "name": "components/wobble-y-axis",
+            "type": "component"
+        }
+    },
+
+    "COMPONENTS: Rotation": {
+        "Rotation on Y axis": {
+            "name": "components/rotation-y-axis",
+            "type": "component"
+        },
+        "Rotation on all axes": {
+            "name": "components/rotation-all-axes",
+            "type": "component"
+        }
+    },
+
     "OBJECTS: BASIC": {
         "3D model": {
             "name": "_add-3d-model",
@@ -234,20 +252,6 @@
         }
     },
 
-    "COMPONENTS: Rotation": {
-        "Wobble on Y axis": {
-            "name": "components/wobble-y-axis",
-            "type": "component"
-        },
-        "Rotation on Y axis": {
-            "name": "components/rotation-y-axis",
-            "type": "component"
-        },
-        "Rotation on all axes": {
-            "name": "components/rotation-all-axes",
-            "type": "component"
-        }
-    },
 
     "LIGHTS": {
         "Point light": {
