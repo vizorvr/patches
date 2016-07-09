@@ -245,7 +245,6 @@ WorldEditor.prototype.setSelection = function(selected) {
 
 	if (!anySelected) {
 		this.cameraSelector.transformControls.detach()
-this.dropZoneHelper.detach()
 	}
 
 	E2.ui.emit('worldEditor:selectionSet')
@@ -421,14 +420,15 @@ WorldEditor.prototype.selectMeshAndDependencies = function(meshNode, sceneNode, 
 
 		// go to the correct graph level for the selection
 		if (selectNodes.length > 0) {
-			selectNodes[0].parent_graph.tree_node.activate()
+			E2.app.onGraphSelected(selectNodes[0].plugin.graph)
 		}
 
 		// step 4:
 		// select the collected nodes
 		for (var i = 0; i < selectNodes.length; ++i) {
 			E2.app.markNodeAsSelected(selectNodes[i])
-			selectNodes[i].getConnections().map(E2.app.markConnectionAsSelected.bind(E2.app))
+			selectNodes[i].getConnections()
+				.map(E2.app.markConnectionAsSelected.bind(E2.app))
 		}
 
 	}
