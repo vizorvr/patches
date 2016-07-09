@@ -3,8 +3,9 @@ function PresetManager(base_url) {
 	EventEmitter.call(this)
 
 	this._base_url = base_url
-	this._presets = []
-	this._droppables = []
+	this._patches = []
+	this._worldPatches = []
+	this._patchesByPath = {}
 
 	this.refresh()
 
@@ -45,7 +46,7 @@ PresetManager.prototype.loadPresets = function() {
 				that.add(catName, title, that._base_url+'/'+name+'.json')
 
 				if (['entity', 'component'].indexOf(entry.type) > -1)
-					that.addDroppable(entry.type, catName, title, that._base_url+'/'+name+'.json')
+					that.addWorldPatch(entry.type, catName, title, that._base_url+'/'+name+'.json')
 			})
 		})
 
@@ -93,7 +94,7 @@ PresetManager.prototype.loadUserPresets = function() {
 PresetManager.prototype.refresh = function() {
 	var that = this
 
-	this._presets = []
+	this._patches = []
 
 	this.loadUserPresets()
 	.then(function() {
@@ -104,23 +105,26 @@ PresetManager.prototype.refresh = function() {
 	})
 	.then(function() {
 		that.renderPresets()
-		that.renderDroppables()
+		that.renderWorldPatches()
 	})
 }
 
-PresetManager.prototype.onOpen = function(path) {
+PresetManager.prototype.onOpen = function(selection) {
+	var path = selection.path
+	var obj = selection.targetObject3d // an object3d in the editor scene
+
 	if (path.indexOf('plugin/') === 0) {
 		return this.openPlugin(path)
 	}
 
-	this.openPreset(path)
+	this.openPreset(this._patchesByPath[path], selection.targetObject3d)
 }
 
 PresetManager.prototype.renderPresets = function() {
 	E2.dom.presets_list.empty()
 
 	new CollapsibleSelectControl()
-	.data(this._presets)
+	.data(this._patches)
 	.template(E2.views.presets.presets)
 	.render(E2.dom.presets_list, {
 		searchPlaceholderText : 'Search patches'
@@ -131,11 +135,11 @@ PresetManager.prototype.renderPresets = function() {
 	presetSearch.focus(E2.ui.onLibSearchClicked.bind(E2.ui))
 }
 
-PresetManager.prototype.renderDroppables = function() {
+PresetManager.prototype.renderWorldPatches = function() {
 	E2.dom.objectsList.empty()
 
 	new CollapsibleSelectControl()
-	.data(this._droppables)
+	.data(this._worldPatches)
 	.template(E2.views.presets.presets)
 	.render(E2.dom.objectsList, {
 		searchPlaceholderText : 'Search items'
@@ -146,18 +150,21 @@ PresetManager.prototype.renderDroppables = function() {
 	objectSearch.focus(E2.ui.onLibSearchClicked.bind(E2.ui))
 }
 
-PresetManager.prototype.openPreset = function(name) {
-	$.get(name)
+PresetManager.prototype.openPreset = function(patchMeta, targetObject3d) {
+	var that = this
+
+	$.ajax({
+		url: patchMeta.path,
+		dataType: 'text'
+	})
 	.done(function(data) {
 		E2.track({
-			event: 'presetAdded', 
-			name: name
+			event: 'presetAdded',
+			name: patchMeta.title,
+			path: patchMeta.path
 		})
 
-		var preset = data.root ? data.root : data
-
-		var doc = E2.app.fillCopyBuffer(preset.nodes, preset.conns, 0, 0)
-		E2.app.onPaste(doc)
+		that.emit('open', patchMeta, data, targetObject3d)
 	})
 	.fail(function(_j, _textStatus, _errorThrown) {
 		msg('ERROR: Failed to load the selected preset.')
@@ -165,17 +172,20 @@ PresetManager.prototype.openPreset = function(name) {
 	})
 }
 
-PresetManager.prototype.addDroppable = function(typeName, category, title, path) {
-	this._droppables.push({
+PresetManager.prototype.addWorldPatch = function(typeName, category, title, path) {
+	var patchMeta = {
 		type: typeName,
 		category: category, 
 		title: title,
 		path: path
-	})
+	}
+
+	this._patchesByPath[path] = patchMeta
+	this._worldPatches.push(patchMeta)
 }
 
 PresetManager.prototype.add = function(category, title, path) {
-	this._presets.push({
+	this._patches.push({
 		category: category, 
 		title: title,
 		path: path

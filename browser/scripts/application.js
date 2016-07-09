@@ -942,7 +942,7 @@ Application.prototype.selectionToObject = function(nodes, conns, sx, sy) {
 	return d;
 }
 
-Application.prototype.fillCopyBuffer = function(nodes, conns, sx, sy) {
+Application.prototype.stringifyNodesAndConnections = function(nodes, conns, sx, sy) {
 	return JSON.stringify(this.selectionToObject(nodes, conns, sx, sy))
 }
 
@@ -959,8 +959,8 @@ Application.prototype.onDelete = function(e) {
 	this.deleteSelectedNodes();
 }
 
-Application.prototype.serialiseSelection = function() {
-	return this.fillCopyBuffer(
+Application.prototype.stringifySelection = function() {
+	return this.stringifyNodesAndConnections(
 		this.selectedNodes,
 		this.selectedConnections,
 		this.scrollOffset[0],
@@ -977,7 +977,7 @@ Application.prototype.onCopy = function(e) {
 		return false
 	}
 
-	var data = this.serialiseSelection()
+	var data = this.stringifySelection()
 	
 	this.clipboard = data
 	
@@ -997,7 +997,7 @@ Application.prototype.onCut = function(e) {
 }
 
 Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
-	this.pasteInGraph(E2.core.active_graph, srcDoc, offsetX, offsetY)
+	return this.pasteInGraph(E2.core.active_graph, srcDoc, offsetX, offsetY)
 }
 
 Application.prototype.pasteInGraph = function(targetGraph, srcDoc, offsetX, offsetY) {
@@ -1133,12 +1133,15 @@ Application.prototype.pasteInGraph = function(targetGraph, srcDoc, offsetX, offs
 	}
 
 	if (this.isWorldEditorActive()) {
-		this.worldEditor.onPaste(createdNodes)
+		// this.worldEditor.onPaste(createdNodes)
 	}
 
 	this.undoManager.end()
 
-	return { nodes: createdNodes, connections: createdConnections }
+	return {
+		nodes: createdNodes,
+		connections: createdConnections 
+	}
 }
 
 Application.prototype.getNodeBoundingBox = function(node) {
@@ -1244,7 +1247,6 @@ Application.prototype.onPaste = function(json, x, y) {
 	this.clearSelection()
 
 	json = json || this.clipboard
-
 	var doc = JSON.parse(json)
 
 	if (doc.root)
@@ -1259,8 +1261,10 @@ Application.prototype.onPaste = function(json, x, y) {
 
 	// pasted node bbox: doc.x1, doc.y1 - doc.x2, doc.y2
 
-	// calculate paste position
+	var droppedOnObject
+
 	if (this.isWorldEditorActive()) {
+		// calculate paste position
 		var autoLayoutPosition = this.findSpaceInGraphFor(doc)
 		ox = autoLayoutPosition.x // doc.x1 // doc.nodes[0].x
 		oy = autoLayoutPosition.y // doc.y1 // doc.nodes[0].y
@@ -1279,15 +1283,14 @@ Application.prototype.onPaste = function(json, x, y) {
 }
 
 Application.prototype.markNodeAsSelected = function(node, addToSelection) {
-	if (node.ui) {
-		node.ui.setSelected(true);
-	}
+	if (node.ui)
+		node.ui.setSelected(true)
 
-	if (addToSelection !== false) {
-		this.selectedNodes.push(node)
-		E2.ui.state.selectedObjects = this.selectedNodes
-	}
+	if (!addToSelection)
+		return;
 
+	this.selectedNodes.push(node)
+	E2.ui.state.selectedObjects = this.selectedNodes
 }
 
 Application.prototype.deselectNode = function(node) {
@@ -1997,8 +2000,16 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 
 	E2.ui.init(E2)
 
-	this.presetManager = new PresetManager('/presets')
 	this.midPane = new E2.MidPane()
+
+	this.presetManager = new PresetManager('/presets')
+	this.presetManager.on('open', function(patchMeta, json, targetObject3d) {
+		if (targetObject3d && that.worldEditor.isActive()) {
+			that.worldEditor.onPatchDroppedOnObject(patchMeta, json, targetObject3d)
+		} else {
+			that.onPaste(json)
+		}
+	})
 
 	that.setupPeopleEvents()
 	that.setupStoreListeners()
