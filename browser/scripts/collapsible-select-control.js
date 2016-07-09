@@ -14,11 +14,15 @@ function dragAndDropMouseDownHandler(e) {
 	var assetsVisible = uiState.visibility.panel_assets;
 	var collapseAssets = E2.ui.togglePanelAssetsCollapsed.bind(E2.ui);
 
+	var targetObject3d
+
 	var mouseMoveBound = false
 	var mouseX = 0
 	var mouseY = 0
 	var scrollInterval
 	var scrollBound = false
+
+	E2.ui.emit('dragStarted', e)
 
 	var title = $('span.title', e.currentTarget).text()
 
@@ -56,8 +60,7 @@ function dragAndDropMouseDownHandler(e) {
 	}
 
 	// Handle document scrolling
-	var scrollHandler = function() {
-
+	function scrollHandler() {
 		var dragPreviewWidth = dragPreview.outerWidth()
 		var dragPreviewHeight = dragPreview.outerHeight()
 
@@ -83,42 +86,34 @@ function dragAndDropMouseDownHandler(e) {
 
 	// Update the preview box position while moving the mouse
 	function updatePreviewPosition(evt) {
-
 		mouseX = evt.pageX
 		mouseY = evt.pageY
 
-		if(mouseX < (canvasWidth + canvasX) && mouseX > canvasX && mouseY < (canvasHeight + canvasY) && mouseY > canvasY) {
+		if (mouseX < (canvasWidth + canvasX) && mouseX > canvasX && mouseY < (canvasHeight + canvasY) && mouseY > canvasY) {
 			dragPreview.css({ opacity: 1.0 }).find('span').show()
-			hoverArea.addClass('dragging-on-top')
+			// hoverArea.addClass('dragging-on-top')
 
 			// Only do scrolling after the user has dragged the object over the
 			// canvas area once so it doesn't start scrolling while you're
 			// initially holding the mouse button down over the preset list.
-			if(!scrollBound) {
-
+			if (!scrollBound) {
 				scrollBound = true
 
 				scrollInterval = setInterval(function() {
 					scrollHandler()
 				}, 10)
-
 			}
-
-		}
-		else {
-			hoverArea.removeClass('dragging-on-top')
+		} else {
+			// hoverArea.removeClass('dragging-on-top')
 			dragPreview.css({ opacity: 0.5 }).find('span').hide()
 		}
 
 		dragPreview.css({ top: mouseY - dragPreview.outerHeight(true) + 8, left: mouseX - (dragPreview.outerWidth(true) / 2) })
-
 	}
 
 	// Add the preview box to the DOM when moving the mouse for the first time away from the box, while holding the mouse button down
 	var mouseMoveHandler = function(evt) {
-
-		if(!dragPreviewInDom) {
-
+		if (!dragPreviewInDom) {
 			$('.plugin-drag-preview').remove()
 
 			dragPreview.appendTo('body')
@@ -131,25 +126,24 @@ function dragAndDropMouseDownHandler(e) {
 			E2.dom.chatWindow.addClass('dragging-not-allowed');
 			E2.dom.bottomBar.addClass('dragging-not-allowed');
 
-			hoverArea
-				.appendTo('body')
-				.width(canvas.width())
-				.height(canvas.height())
-				.css({ top: canvas.position().top, left: canvas.position().left })
+			// hoverArea
+			// 	.appendTo('body')
+			// 	.width(canvas.width())
+			// 	.height(canvas.height())
+			// 	.css({ top: canvas.position().top, left: canvas.position().left })
 
 			mouseMoveBound = true
-
 		}
 
 		updatePreviewPosition(evt)
 
+		E2.ui.emit('dragMoved', evt)
 	}
 
-	var mouseUpHandler
 	// On mouseup unbind everything and destroy the preview box
-	mouseUpHandler = function(evt) {
+	var mouseUpHandler = function(evt) {
 		dragPreview.remove()
-		hoverArea.remove()
+		// hoverArea.remove()
 		dragPreviewInDom = false
 		$(document).unbind('mousemove', mouseMoveHandler)
 		$(document).unbind('mouseup', mouseUpHandler)
@@ -167,13 +161,17 @@ function dragAndDropMouseDownHandler(e) {
 		
 		// Only create new item when released over the canvas and hide floating box if dropped under it;
 		if (E2.app.isWorldEditorActive() ||
-			(evt.pageX < (canvasWidth + canvasX) &&
-			evt.pageX > canvasX &&
-			evt.pageY < (canvasHeight + canvasY) &&
-			evt.pageY > canvasY))
+			(evt.pageX < (canvasWidth + canvasX) && evt.pageX > canvasX &&
+			 evt.pageY < (canvasHeight + canvasY) && evt.pageY > canvasY))
 		{
-			e.data.dropSuccessCb(e)
-			
+			if (E2.app.isWorldEditorActive())
+				targetObject3d = E2.app.worldEditor.getLastDropTarget()
+
+			e.data.dropSuccessCb({
+				path: $(e.currentTarget).data('path'),
+				targetObject3d: targetObject3d
+			})
+
 			if ((presetsVisible) && (evt.pageX < (plWidth + plX) && evt.pageX > plX && evt.pageY < (plHeight + plY) && evt.pageY > plY)) { 
 				collapsePresets();
 			}
@@ -189,7 +187,7 @@ function dragAndDropMouseDownHandler(e) {
 	}
 
 	// Take care to only bind mouse movement and mouseup once
-	if(!mouseMoveBound) {
+	if (!mouseMoveBound) {
 		$(document).bind('mousemove', mouseMoveHandler)
 		$(document).bind('mouseup', mouseUpHandler)
 	}
@@ -197,6 +195,7 @@ function dragAndDropMouseDownHandler(e) {
 	// prevent the list from scrolling as mouse is dragged beyond top/bottom when holding item
 	e.preventDefault()
 	e.stopPropagation()
+
 	return false
 }
 
@@ -273,13 +272,13 @@ CollapsibleSelectControl.prototype._search = function(text) {
 	var $lis = $('td', $pr)
 
 	$lis.dblclick(function(e) {
-		that._cb($(e.currentTarget).data('path'))
+		that._cb({
+			path: $(e.currentTarget).data('path')
+		})
 	})
 
 	$lis.bind('mousedown', {
-		dropSuccessCb: function(e) {
-			that._cb($(e.currentTarget).data('path'))
-		}
+		dropSuccessCb: this._finishDrop.bind(this)
 	},
 	dragAndDropMouseDownHandler)
 
@@ -294,6 +293,12 @@ CollapsibleSelectControl.prototype._search = function(text) {
 	if (E2.ui)
 		E2.ui.onSearchResultsChange(this._el);
 
+}
+
+CollapsibleSelectControl.prototype._finishDrop = function(eventData) {
+	this._cb(eventData)
+
+	E2.ui.emit('dragDropped', eventData)
 }
 
 CollapsibleSelectControl.prototype._filterData = function(text) {
@@ -420,7 +425,7 @@ CollapsibleSelectControl.prototype.render = function(el, templateOptions) {
 	$('li', el).bind('mousedown', {
 		dropSuccessCb: function(e) {
 			$input.blur()
-			that._cb($(e.currentTarget).data('path'))
+			that._finishDrop(e)
 		}
 	}, dragAndDropMouseDownHandler)
 
