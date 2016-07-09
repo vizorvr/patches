@@ -1087,7 +1087,6 @@ Application.prototype.pasteInGraph = function(targetGraph, srcDoc, offsetX, offs
 
 	for(var i = 0, len = doc.nodes.length; i < len; i++) {
 		var docNode = doc.nodes[i]
-
 		docNode.x = Math.floor((docNode.x - docX1) + offsetX)
 		docNode.y = Math.floor((docNode.y - docY1) + offsetY)
 
