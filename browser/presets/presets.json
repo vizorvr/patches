@@ -235,10 +235,18 @@
     },
 
     "COMPONENTS: Rotation": {
-    	"Rotation on Y axis": {
-    		"name": "components/rotation-y-axis",
-    		"type": "component"
-    	}
+        "Wobble on Y axis": {
+            "name": "components/wobble-y-axis",
+            "type": "component"
+        },
+        "Rotation on Y axis": {
+            "name": "components/rotation-y-axis",
+            "type": "component"
+        },
+        "Rotation on all axes": {
+            "name": "components/rotation-all-axes",
+            "type": "component"
+        }
     },
 
     "LIGHTS": {

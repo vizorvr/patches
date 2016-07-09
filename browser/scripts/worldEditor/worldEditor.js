@@ -33,7 +33,7 @@ function WorldEditor(domElement) {
 	this.radialHelper = new WorldEditorRadialHelper()
 	this.editorTree.add(this.radialHelper.mesh)
 
-	// root for any selection bboxes
+	// root for any selection objects
 	this.selectionTree = new THREE.Object3D()
 	this.editorTree.add(this.selectionTree)
 
@@ -45,11 +45,19 @@ function WorldEditor(domElement) {
 
 	this.cameraHelper = new VRCameraHelper()
 
+	// box to act as a drag & drop zone
+	this.dropZoneHelper = new BoundingBoxHelper()
+
 	var that = this
 
 	this.setupObjectPicking()
 
 	E2.ui.state.on('changed:modifyMode', this.setTransformMode.bind(this));
+
+	// whenever a drag is in progress, we want to know
+	E2.ui.on('dragStarted', this.onDragStarted.bind(this))
+	E2.ui.on('dragMoved', this.onDragMoved.bind(this))
+	E2.ui.on('dragDropped', this.onDragDropped.bind(this))
 }
 
 WorldEditor.prototype.setTransformMode = function(mode) {
@@ -67,7 +75,11 @@ WorldEditor.prototype.update = function() {
 		return f(v, n * 10)
 	}
 
-	var cameraDistanceToSelectedObject = this.cameraSelector.camera.position.clone().sub(this.cameraSelector.editorControls.center).length() || 1
+	var cameraDistanceToSelectedObject = 
+		this.cameraSelector.camera.position.clone()
+		.sub(this.cameraSelector.editorControls.center)
+		.length() || 1
+
 	var gridScale = f(cameraDistanceToSelectedObject, 0.01)
 
 	this.gridHelper.scale(gridScale)
@@ -222,10 +234,9 @@ WorldEditor.prototype.setSelection = function(selected) {
 
 	for (var i = 0; i < selected.length; ++i) {
 		var obj = selected[i]
-		if (obj.backReference !== undefined) {
+		if (obj && obj.backReference !== undefined) {
 			this.cameraSelector.transformControls.attach(obj)
 			this.selectionTree.add(this.cameraSelector.transformControls)
-
 			anySelected = true
 			// only attach to first valid item
 			break
@@ -234,6 +245,7 @@ WorldEditor.prototype.setSelection = function(selected) {
 
 	if (!anySelected) {
 		this.cameraSelector.transformControls.detach()
+this.dropZoneHelper.detach()
 	}
 
 	E2.ui.emit('worldEditor:selectionSet')
@@ -422,13 +434,15 @@ WorldEditor.prototype.selectMeshAndDependencies = function(meshNode, sceneNode, 
 	}
 }
 
-WorldEditor.prototype.onComponentDroppedOnObject = function(object3d, component) {
+WorldEditor.prototype.onPatchDroppedOnObject = function(patchMeta, json, object3d) {
+	console.debug('onPatchDroppedOnObject', patchMeta.path, object3d)
+
 	// find the patch of the object
 	var meshNode = object3d.backReference.node
 	var entityPatch = meshNode.parent_graph
 
 	// paste the component into the entity patch
-	var dropped = E2.app.pasteInGraph(entityPatch, component)
+	var dropped = E2.app.pasteInGraph(entityPatch, JSON.parse(json))
 
 	// connect all outputs from component to inputs on mesh
 	var componentNode = dropped.nodes[0]
@@ -455,90 +469,117 @@ WorldEditor.prototype.onComponentDroppedOnObject = function(object3d, component)
 	})
 }
 
+WorldEditor.prototype.onDragStarted = function(e) {
+	this.__wasPlayingOnDragStarted = E2.app.player.current_state === 1
+	if (this.__wasPlayingOnDragStarted)
+		E2.app.player.pause()
+}
+
+WorldEditor.prototype.onDragDropped = function(e) {
+	if (this.__wasPlayingOnDragStarted)
+		E2.app.player.play()
+
+	this.dropZoneHelper.detach()
+	this.selectionTree.remove(this.dropZoneHelper)
+	this._lastDropTarget = null
+}
+
+WorldEditor.prototype.onDragMoved = function(e) {
+	var obj = this.raycastFromMouseEvent(e, /* single = */ true)
+
+	if (obj === this.dropZoneHelper.object)
+		return;
+
+	if (!obj) {
+		this.dropZoneHelper.detach()
+		this.selectionTree.remove(this.dropZoneHelper)
+		this._lastDropTarget = null
+	} else if (obj.backReference) {
+		this._lastDropTarget = obj
+		this.dropZoneHelper.attach(obj)
+		this.selectionTree.add(this.dropZoneHelper)
+	}
+}
+
+WorldEditor.prototype.getLastDropTarget = function() {
+	return this._lastDropTarget
+}
+
 WorldEditor.prototype.pickObject = function(e) {
+	return this.setSelection([ this.raycastFromMouseEvent(e) ])
+}
+
+WorldEditor.prototype.raycastFromMouseEvent = function(e, selectSingleObject) {
 	if (E2.app.noodlesVisible === true)
 		return
 
+	if (!this.isActive() || !this.scene || !this.scene.children)
+		return
+	
 	// if alt is pressed, we try to select the single object we click
 	// otherwise we select the topmost group the clicked object is in
-	var selectSingleObject = E2.ui.flags.pressedAlt
+	selectSingleObject = selectSingleObject || E2.ui.flags.pressedAlt
 
-	var isEditor = this.isActive()
-
-	var mouseVector = new THREE.Vector3()
-
-	var w = this.domElement.clientWidth
-	var h = this.domElement.clientHeight
-
+	var selectedObject
 	var pointer = e.changedTouches ? e.changedTouches[0] : e
-
-	var rect = this.domElement.getBoundingClientRect();
-	var x = ( pointer.clientX - rect.left ) / rect.width;
-	var y = ( pointer.clientY - rect.top ) / rect.height;
+	var rect = this.domElement.getBoundingClientRect()
+	var x = ( pointer.clientX - rect.left ) / rect.width
+	var y = ( pointer.clientY - rect.top ) / rect.height
+	var mouseVector = new THREE.Vector3()
 
 	mouseVector.set( ( x * 2 ) - 1, - ( y * 2 ) + 1 );
 
-	if (this.scene && this.scene.children && this.scene.children.length > 0) {
-		this.raycaster.setFromCamera(mouseVector, this.getCamera())
+	this.raycaster.setFromCamera(mouseVector, this.getCamera())
 
-		var intersects = this.raycaster.intersectObjects(this.scene.children, /*recursive = */ true)
-		var selectObjects = []
+	var intersects = this.raycaster.intersectObjects(this.scene.children, /*recursive = */ true)
 
-		for (var i = 0; i < intersects.length; i++) {
-			// ancestor = object closest to object3d tree root
-			var ancestorObj = undefined
+	for (var i = 0; i < intersects.length; i++) {
+		// ancestor = object closest to object3d tree root
+		var ancestorObj
+		var seekObj = intersects[i].object
 
-			var seekObj = intersects[i].object
-
-			// traverse the tree hierarchy up to find a parent with a node back reference
-			// store a reference to the object closest to the scene root (ancestorObj)
-			while (seekObj) {
-				if (seekObj.helperObjectBackReference !== undefined) {
-					// resolve back from a helper object to the object
-					// the helper is for
-					seekObj = seekObj.helperObjectBackReference
-				}
-
-				if (seekObj.backReference && seekObj !== this.scene) {
-					ancestorObj = seekObj
-
-					if (selectSingleObject) {
-						break
-					}
-				}
-
-				seekObj = seekObj.parent
-			}
-			if (!ancestorObj) {
-				// nothing found
-				continue
+		// traverse the tree hierarchy up to find a parent with a node back reference
+		// store a reference to the object closest to the scene root (ancestorObj)
+		while (seekObj) {
+			if (seekObj.helperObjectBackReference) {
+				// resolve back from a helper object to the object the helper is for
+				seekObj = seekObj.helperObjectBackReference
 			}
 
-			if (ancestorObj.backReference.parentNode === this.scene.backReference.parentNode) {
-				// trying to select the scene, ignore
-				continue
+			if (seekObj.backReference && seekObj !== this.scene) {
+				ancestorObj = seekObj
+
+				if (selectSingleObject)
+					break
 			}
 
-			selectObjects.push(ancestorObj)
-
-			var selectionStartNode = ancestorObj.backReference.parentNode
-			var selectionEndNode = this.scene.backReference.parentNode
-
-			// select everything between the mesh and scene nodes
-			// (and any complete subgraph that contains the mesh)
-			this.selectMeshAndDependencies(selectionStartNode, selectionEndNode, selectSingleObject)
-
-			// only select a single object
-			break
+			seekObj = seekObj.parent
 		}
 
-		if (isEditor) {
-			this.setSelection(selectObjects)
+		if (!ancestorObj) {
+			// nothing found
+			continue
 		}
+
+		if (ancestorObj.backReference.parentNode === this.scene.backReference.parentNode) {
+			// trying to select the scene, ignore
+			continue
+		}
+
+		selectedObject = ancestorObj
+
+		var selectionStartNode = ancestorObj.backReference.parentNode
+		var selectionEndNode = this.scene.backReference.parentNode
+
+		// select everything between the mesh and scene nodes
+		// (and any complete subgraph that contains the mesh)
+		this.selectMeshAndDependencies(selectionStartNode, selectionEndNode, selectSingleObject)
+
+		// only select a single object
+		break
 	}
-	else if (isEditor) {
-		this.setSelection([])
-	}
+
+	return selectedObject
 }
 
 WorldEditor.prototype.mouseDown = function(e) {

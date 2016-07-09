@@ -57,7 +57,7 @@ function WorldEditorCameraSelector(domElement) {
 		function mouseDown() {
 			this.editorControls.enabled = false
 			if (E2.ui.flags.pressedAlt) {
-				var doc = E2.app.serialiseSelection()
+				var doc = E2.app.stringifySelection()
 				E2.app.onPaste(doc)
 			}
 		}
