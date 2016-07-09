@@ -1261,8 +1261,6 @@ Application.prototype.onPaste = function(json, x, y) {
 
 	// pasted node bbox: doc.x1, doc.y1 - doc.x2, doc.y2
 
-	var droppedOnObject
-
 	if (this.isWorldEditorActive()) {
 		// calculate paste position
 		var autoLayoutPosition = this.findSpaceInGraphFor(doc)
