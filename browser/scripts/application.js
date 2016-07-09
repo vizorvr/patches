@@ -1277,11 +1277,10 @@ Application.prototype.markNodeAsSelected = function(node, addToSelection) {
 	if (node.ui)
 		node.ui.setSelected(true)
 
-	if (!addToSelection)
-		return;
-
-	this.selectedNodes.push(node)
-	E2.ui.state.selectedObjects = this.selectedNodes
+	if (addToSelection !== false) {
+		this.selectedNodes.push(node)
+		E2.ui.state.selectedObjects = this.selectedNodes
+	}
 }
 
 Application.prototype.deselectNode = function(node) {
@@ -1300,10 +1299,8 @@ Application.prototype.selectAll = function() {
 	this.clearSelection()
 
 	var ag = E2.core.active_graph
-
 	ag.nodes.map(this.markNodeAsSelected.bind(this))
 	ag.connections.map(this.markConnectionAsSelected.bind(this))
-
 	this.updateCanvas(true)
 }
 
