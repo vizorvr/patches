@@ -3,8 +3,9 @@
 var isNode = typeof(process) !== 'undefined'
 var when = isNode ? require('when') : window.when
 
-if (isNode)
+if (isNode) {
 	E2 = require('../browser/scripts/core').E2
+}
 
 var loadingPlugins = Object.keys(E2.LOADING_NODES)
 
@@ -26,10 +27,27 @@ GraphAnalyser.prototype.parseAssets = function(graph) {
 		size: 0,
 		numAssets: 0,
 		numNodes: 0,
-		hasAudio: false
+		hasAudio: false,
+		type: 'file'
 	}
 
-	function findInGraph(subgraph) {
+	function readRoot(graph) {
+		if (!graph.nodes.length)
+			return
+
+		var patchNode = graph.nodes[0]
+		var patchNodeId = patchNode.plugin
+		var isPatchNode = (E2.GRAPH_NODES.indexOf(patchNodeId) > -1)	
+
+		if (!isPatchNode)
+			return;
+
+		stat.type = patchNodeId
+
+		return graph
+	}
+
+	function walkGraph(subgraph) {
 		if (!subgraph.nodes)
 			return when.resolve()
 
@@ -38,8 +56,8 @@ GraphAnalyser.prototype.parseAssets = function(graph) {
 
 			stat.numNodes++
 
-			if (id === 'graph')
-				return findInGraph(node.graph || node.plugin.graph)
+			if (E2.GRAPH_NODES.indexOf(id) > -1)
+				return walkGraph(node.graph || node.plugin.graph)
 
 			if (loadingPlugins.indexOf(id) === -1)
 				return
@@ -68,7 +86,10 @@ GraphAnalyser.prototype.parseAssets = function(graph) {
 		})
 	}
 
-	return findInGraph(graph)
+	
+	readRoot(graph)
+	
+	return walkGraph(graph)
 	.then(function() {
 		return stat
 	})

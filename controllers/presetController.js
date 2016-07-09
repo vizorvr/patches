@@ -2,11 +2,15 @@ var Preset = require('../models/preset')
 var AssetController = require('./assetController')
 var fsPath = require('path')
 var assetHelper = require('../models/asset-helper')
+var GraphAnalyser = require('../common/graphAnalyser').GraphAnalyser
+var helper = require('./controllerHelpers')
 
 function PresetController(presetService, fs) {
 	var args = Array.prototype.slice.apply(arguments)
 	args.unshift(Preset)
 	AssetController.apply(this, args)
+
+	this.graphAnalyser = new GraphAnalyser()
 }
 
 PresetController.prototype = Object.create(AssetController.prototype)
@@ -33,23 +37,35 @@ PresetController.prototype.save = function(req, res, next) {
 	.then(function(can) {
 		if (!can) {
 			return res.status(403)
-				.json({ message: 'Sorry, permission denied' })
+				.json(helper.responseStatusError('Sorry, permission denied'))
 		}
 
-		return that._fs.writeString(gridFsPath, req.body.graph)
-		.then(function() {
-			var url = that._fs.url(gridFsPath)
-
-			var model = {
-				name: req.body.name,
-				path: path,
-				tags: tags,
-				url: url
+		return that.graphAnalyser.analyseJson(req.body.graph)
+		.then(function(stat) {
+			if (!stat.numNodes) {
+				return res.status(400)
+					.json(helper.responseStatusError('bad data'))
 			}
 
-			return that._service.save(model, req.user)
-			.then(function(asset) {
-				res.json(asset)
+			return that._fs.writeString(gridFsPath, req.body.graph)
+			.then(function() {
+				var url = that._fs.url(gridFsPath)
+
+				var model = {
+					name: req.body.name,
+					type: stat.type || 'patch',
+					path: path,
+					tags: tags,
+					stat: stat,
+					url: url
+				}
+
+				console.log('Saved patch model', model)
+
+				return that._service.save(model, req.user)
+				.then(function(asset) {
+					res.json(asset)
+				})
 			})
 		})
 	})

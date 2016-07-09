@@ -444,7 +444,9 @@ WorldEditor.prototype.onPatchDroppedOnObject = function(patchMeta, json, object3
 	var entityPatch = meshNode.parent_graph
 
 	// paste the component into the entity patch
-	var dropped = E2.app.pasteInGraph(entityPatch, JSON.parse(json))
+	var patch = JSON.parse(json)
+	patch = patch.root ? patch.root : patch
+	var dropped = E2.app.pasteInGraph(entityPatch, patch)
 
 	// connect all outputs from component to inputs on mesh
 	var componentNode = dropped.nodes[0]

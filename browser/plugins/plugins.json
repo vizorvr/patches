@@ -145,18 +145,25 @@
         "Object Gaze Clicked": "on_three_object_gaze_clicked"
     },
 
-
     "STATE AND STRUCTURE": {
         "Annotation": "annotation",
+
+        "Is In VR": "is_in_vr",
+
         "Read Variable": "variable_local_read",
         "Write Variable": "variable_local_write",
         "Write Variable on Trigger": "variable_local_write_conditional",
+
         "Input proxy": "input_proxy",
         "Output proxy": "output_proxy",
+
         "Nested Patch": "graph",
+
+        "Entity": "entity",
+        "Entity Component": "entity_component",
+
         "Loop": "loop",
-        "Array Function": "array_function",
-        "Is In VR": "is_in_vr"
+        "Array Function": "array_function"
     },
 
     "CAMERAS": {
