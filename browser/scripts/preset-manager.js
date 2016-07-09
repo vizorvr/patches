@@ -112,18 +112,9 @@ PresetManager.prototype.refresh = function() {
 	})
 }
 
-PresetManager.prototype.onOpen = function(selection) {
-	var path = selection.path
-	var obj = selection.targetObject3d // an object3d in the editor scene
-
-	if (path.indexOf('plugin/') === 0) {
-		return this.openPlugin(path)
-	}
-
-	this.openPreset(this._patchesByPath[path], selection.targetObject3d)
-}
-
 PresetManager.prototype.renderPresets = function() {
+	var that = this
+
 	E2.dom.presets_list.empty()
 
 	new CollapsibleSelectControl()
@@ -132,7 +123,12 @@ PresetManager.prototype.renderPresets = function() {
 	.render(E2.dom.presets_list, {
 		searchPlaceholderText : 'Search patches'
 	})
-	.onOpen(this.onOpen.bind(this))
+	.onOpen(function(selection) {
+		if (selection.path.indexOf('plugin/') === 0)
+			return that.openPlugin(selection.path)
+
+		that.openPreset(selection)
+	})
 	
 	var presetSearch = $('#presets-lib .searchbox input')
 	presetSearch.focus(E2.ui.onLibSearchClicked.bind(E2.ui))
@@ -147,23 +143,27 @@ PresetManager.prototype.renderWorldPatches = function() {
 	.render(E2.dom.objectsList, {
 		searchPlaceholderText : 'Search items'
 	})
-	.onOpen(this.onOpen.bind(this))
+	.onOpen(this.openPreset.bind(this))
 	
 	var objectSearch = $('.searchbox input', E2.dom.objectsList)
 	objectSearch.focus(E2.ui.onLibSearchClicked.bind(E2.ui))
 }
 
-PresetManager.prototype.openPreset = function(patchMeta, targetObject3d) {
+PresetManager.prototype.openPreset = function(selection) {
 	var that = this
+	var targetObject3d = selection.targetObject3d
+	var patchMeta = this._patchesByPath[selection.path]
 
 	$.ajax({
-		url: patchMeta.path,
+		url: selection.path,
 		dataType: 'text'
 	})
 	.done(function(data) {
 		E2.track({
 			event: 'presetAdded',
-			name: patchMeta.title,
+			title: patchMeta.title,
+			category: patchMeta.category,
+			type: patchMeta.type,
 			path: patchMeta.path
 		})
 
@@ -176,7 +176,6 @@ PresetManager.prototype.openPreset = function(patchMeta, targetObject3d) {
 }
 
 PresetManager.prototype.addWorldPatch = function(typeName, category, title, path) {
-console.log('addWorldPatch', typeName, title, path)
 	var patchMeta = {
 		type: typeName,
 		category: category, 
@@ -189,6 +188,9 @@ console.log('addWorldPatch', typeName, title, path)
 }
 
 PresetManager.prototype.add = function(category, title, path) {
+	if (this._patchesByPath[path])
+		return;
+
 	var patchMeta = {		
 		type: 'patch',
 		category: category, 
