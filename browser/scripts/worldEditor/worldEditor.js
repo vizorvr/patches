@@ -437,7 +437,7 @@ WorldEditor.prototype.selectMeshAndDependencies = function(meshNode, sceneNode, 
 }
 
 WorldEditor.prototype.onPatchDroppedOnObject = function(patchMeta, json, object3d) {
-	console.debug('onPatchDroppedOnObject', patchMeta.path, object3d)
+	console.debug('onPatchDroppedOnObject', patchMeta, object3d.uuid)
 
 	// find the patch of the object
 	var meshNode = object3d.backReference.node
@@ -446,7 +446,9 @@ WorldEditor.prototype.onPatchDroppedOnObject = function(patchMeta, json, object3
 	// paste the component into the entity patch
 	var patch = JSON.parse(json)
 	patch = patch.root ? patch.root : patch
-	var dropped = E2.app.pasteInGraph(entityPatch, patch)
+
+	var space = E2.app.findSpaceInGraphFor(patch)
+	var dropped = E2.app.pasteInGraph(entityPatch, patch, space.x, space.y)
 
 	// connect all outputs from component to inputs on mesh
 	var componentNode = dropped.nodes[0]
