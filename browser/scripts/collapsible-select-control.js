@@ -209,9 +209,7 @@ function CollapsibleSelectControl(handlebars) {
 
 CollapsibleSelectControl.prototype.template = function(template) {
 	this._template = template
-
 	this._resultTpl = E2.views.presets.results
-
 	return this
 }
 
