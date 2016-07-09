@@ -237,6 +237,7 @@ WorldEditor.prototype.setSelection = function(selected) {
 		if (obj && obj.backReference !== undefined) {
 			this.cameraSelector.transformControls.attach(obj)
 			this.selectionTree.add(this.cameraSelector.transformControls)
+			E2.app.onGraphSelected(obj.backReference.node.parent_graph)
 			anySelected = true
 			// only attach to first valid item
 			break
@@ -252,85 +253,6 @@ WorldEditor.prototype.setSelection = function(selected) {
 
 WorldEditor.prototype.onDelete = function(nodes) {
 	this.cameraSelector.transformControls.detach()
-}
-
-WorldEditor.prototype.onPaste = function(nodes) {
-	if (!nodes || nodes.length < 1) {
-		return
-	}
-
-	var dropNode = nodes[0]
-
-	// empty graph can have this
-	if (!this.scene && !this.currentGroup)
-		return;
-
-	// find scene node
-	var sceneNode = this.currentGroup || this.scene.backReference.parentNode
-
-	sceneNode.slots_dirty = true
-
-	var slots = sceneNode.getDynamicInputSlots()
-	var slot = slots[slots.length - 1]
-
-	function findObject3DOutput(node) {
-		var staticSlots = node.plugin.output_slots
-		for (var i = 0; i < staticSlots.length; ++i) {
-			if (staticSlots[i].dt === E2.core.datatypes.OBJECT3D) {
-				return {index: i, dynamic: false}
-			}
-		}
-
-		// if it's not a static slot,
-		// assume it's the first dynamic slot
-		return {index: 0, dynamic: true}
-	}
-
-	var srcSlot = findObject3DOutput(dropNode)
-
-	// connect the new patch to the scene
-	var connection = Connection.hydrate(E2.core.root_graph, {
-		src_nuid: dropNode.uid,
-		dst_nuid: sceneNode.uid,
-		src_slot: srcSlot.index,
-		src_dyn: srcSlot.dynamic,
-		dst_slot: slot.index,
-		dst_dyn: true
-	})
-
-	E2.app.graphApi.connect(E2.core.root_graph, connection)
-
-	E2.app.onLocalConnectionChanged(connection)
-
-	E2.app.markConnectionAsSelected(connection)
-
-	// select the meshes in world editor
-	var selectNodes = []
-	function collectMeshes(node) {
-		if (node.plugin && node.plugin.object3d) {
-			node.plugin.object3d.traverse(function(n) {
-				if (n.backReference) {
-					selectNodes.push(n)
-				}
-			})
-		}
-
-		if (node.plugin.graph) {
-			for (var n = 0; n < node.plugin.graph.nodes.length; ++n) {
-				collectMeshes(node.plugin.graph.nodes[n])
-			}
-		}
-	}
-
-	for (var i = 0; i < nodes.length; ++i) {
-		var node = nodes[i]
-		collectMeshes(node)
-	}
-
-	this.setSelection(selectNodes)
-
-	// TODO: if selectNodes.length === 0, we didn't paste any objects
-	// and we could warn the user somehow
 }
 
 WorldEditor.prototype.selectMeshAndDependencies = function(meshNode, sceneNode, selectSingleObject) {
@@ -417,12 +339,6 @@ WorldEditor.prototype.selectMeshAndDependencies = function(meshNode, sceneNode, 
 			}
 		}
 
-
-		// go to the correct graph level for the selection
-		if (selectNodes.length > 0) {
-			E2.app.onGraphSelected(selectNodes[0].plugin.graph)
-		}
-
 		// step 4:
 		// select the collected nodes
 		for (var i = 0; i < selectNodes.length; ++i) {
@@ -434,29 +350,122 @@ WorldEditor.prototype.selectMeshAndDependencies = function(meshNode, sceneNode, 
 	}
 }
 
-WorldEditor.prototype.onPatchDroppedOnObject = function(patchMeta, json, object3d) {
-	console.debug('onPatchDroppedOnObject', patchMeta, object3d.uuid)
+WorldEditor.prototype.onPatchDropped = function(patchMeta, json, targetObject3d) {
+	console.debug('onPatchDropped', patchMeta, !!targetObject3d)
 
-	// find the patch of the object
-	var meshNode = object3d.backReference.node
-	var entityPatch = meshNode.parent_graph
+	// empty graph can have this
+	if (!this.scene && !this.currentGroup)
+		return;
 
-	// paste the component into the entity patch
+	var targetPatch = E2.core.root_graph
+
+	if (targetObject3d) {
+		// paste into the target entity patch
+		var meshNode = targetObject3d.backReference.node
+		targetPatch = meshNode.parent_graph
+	}
+
 	var patch = JSON.parse(json)
 	patch = patch.root ? patch.root : patch
 
-	var space = E2.app.findSpaceInGraphFor(patch)
-	var dropped = E2.app.pasteInGraph(entityPatch, patch, space.x, space.y)
+	var space = E2.app.findSpaceInGraphFor(targetPatch, patch)
+	var dropped = E2.app.pasteInGraph(targetPatch, patch, space.x, space.y)
+	var droppedNode = dropped.nodes[0]
+	droppedNode.x = E2.app.mousePosition[0]
+	droppedNode.y = E2.app.mousePosition[1]
+
+	switch(patchMeta.type) {
+		case 'entity':
+			return this.onEntityDropped(droppedNode)
+			break;
+		case 'entity_component':
+			if (!targetObject3d)
+				return;
+			return this.onComponentDropped(droppedNode, targetObject3d)
+			break;
+		default:
+			// materials on entities
+			// audio, video
+			break;
+	}
+}
+
+WorldEditor.prototype.onEntityDropped = function(dropNode) {
+	var sceneNode = this.currentGroup || this.scene.backReference.parentNode
+	sceneNode.slots_dirty = true
+
+	var slots = sceneNode.getDynamicInputSlots()
+	var slot = slots[slots.length - 1]
+
+	function findObject3DOutput(node) {
+		var staticSlots = node.plugin.output_slots
+		for (var i = 0; i < staticSlots.length; ++i) {
+			if (staticSlots[i].dt === E2.core.datatypes.OBJECT3D) {
+				return {index: i, dynamic: false}
+			}
+		}
+
+		// if it's not a static slot,
+		// assume it's the first dynamic slot
+		return {index: 0, dynamic: true}
+	}
+
+	var srcSlot = findObject3DOutput(dropNode)
+
+	// connect the new patch to the scene
+	var connection = Connection.hydrate(E2.core.root_graph, {
+		src_nuid: dropNode.uid,
+		dst_nuid: sceneNode.uid,
+		src_slot: srcSlot.index,
+		src_dyn: srcSlot.dynamic,
+		dst_slot: slot.index,
+		dst_dyn: true
+	})
+
+	E2.app.graphApi.connect(E2.core.root_graph, connection)
+	E2.app.onLocalConnectionChanged(connection)
+	E2.app.markConnectionAsSelected(connection)
+
+	// select the meshes in world editor
+	var selectNodes = [dropNode]
+
+	function collectMeshes(node) {
+		if (node.plugin && node.plugin.object3d) {
+			node.plugin.object3d.traverse(function(n) {
+				if (n.backReference) {
+					selectNodes.push(n)
+				}
+			})
+		}
+
+		if (node.plugin.graph) {
+			for (var n = 0; n < node.plugin.graph.nodes.length; ++n) {
+				collectMeshes(node.plugin.graph.nodes[n])
+			}
+		}
+	}
+
+	collectMeshes(dropNode)
+
+	this.setSelection(selectNodes)
+
+	// TODO: if selectNodes.length === 0, we didn't paste any objects
+	// and we could warn the user somehow
+}
+
+WorldEditor.prototype.onComponentDropped = function(droppedNode, targetObject3d) {
+	// find the patch of the object
+	var meshNode = targetObject3d.backReference.node
+	var targetPatch = meshNode.parent_graph
+
+console.log('onComponentDropped', droppedNode, targetPatch, meshNode)
 
 	// connect all outputs from component to inputs on mesh
-	var componentNode = dropped.nodes[0]
-	var outputs = componentNode.getDynamicOutputSlots()
-
-	outputs.map(function(output) {
-		console.log('connect', output.name, output.index)
-
-		var connection = Connection.hydrate(entityPatch, {
-			src_nuid: componentNode.uid,
+	droppedNode
+	.getDynamicOutputSlots()
+	.map(function(output) {
+		var connection = Connection.hydrate(targetPatch, {
+			src_nuid: droppedNode.uid,
 			dst_nuid: meshNode.uid,
 			src_slot: output.index,
 			src_dyn: true,
@@ -466,9 +475,8 @@ WorldEditor.prototype.onPatchDroppedOnObject = function(patchMeta, json, object3
 
 		// figure out how to mix values on busy slots
 		// instead of replacing the connections
-		// depending on component (materials cant be mixed)
 
-		E2.app.graphApi.connect(entityPatch, connection)
+		E2.app.graphApi.connect(targetPatch, connection)
 		E2.app.onLocalConnectionChanged(connection)
 	})
 }
