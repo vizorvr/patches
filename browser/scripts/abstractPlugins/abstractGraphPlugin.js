@@ -29,6 +29,16 @@ AbstractGraphPlugin.prototype.getInspectorProperties = function() {
 	}
 }
 
+AbstractGraphPlugin.prototype.isEntityPatch = function() {
+	if (this.id === 'entity')
+		return true
+
+	if (this.node.dyn_outputs.length === 1)
+		return this.node.dyn_outputs[0].dt.id === E2.dt.OBJECT3D.id
+
+	return false
+}
+
 AbstractGraphPlugin.prototype.drilldown = function() {
 	return NodeUI.drilldown(this);
 }

@@ -234,15 +234,20 @@ WorldEditor.prototype.setSelection = function(selected) {
 
 	var anySelected = false
 
+	this.selectedEntityPatch = null
+	this.selectedEntityNode = null
+
 	for (var i = 0; i < selected.length; ++i) {
 		var obj = selected[i]
 		if (obj && obj.backReference !== undefined) {
+			this.selectedEntityPatch = obj.backReference.node.parent_graph
+			this.selectedEntityNode = this.selectedEntityPatch.plugin.node
 			this.cameraSelector.transformControls.attach(obj)
 			this.selectionTree.add(this.cameraSelector.transformControls)
 	
 			// set the active graph to the entity selected
-			if (E2.ui.state.isBuildMode())
-				E2.app.onGraphSelected(obj.backReference.node.parent_graph)
+			if (E2.app.isWorldEditorActive())
+				E2.app.onGraphSelected(this.selectedEntityPatch)
 
 			anySelected = true
 			// only attach to first valid item
@@ -514,6 +519,7 @@ WorldEditor.prototype.onDragDropped = function(e) {
 }
 
 WorldEditor.prototype.onDragMoved = function(e) {
+console.log('onDragMoved')
 	var obj = this.raycastFromMouseEvent(e, /* single = */ true)
 
 	if (obj === this.dropZoneHelper.object)
@@ -535,7 +541,7 @@ WorldEditor.prototype.getLastDropTarget = function() {
 }
 
 WorldEditor.prototype.pickObject = function(e) {
-	return this.setSelection([ this.raycastFromMouseEvent(e) ])
+	return this.setSelection([ this.raycastFromMouseEvent(e, false) ])
 }
 
 WorldEditor.prototype.raycastFromMouseEvent = function(e, selectSingleObject) {
@@ -602,7 +608,8 @@ WorldEditor.prototype.raycastFromMouseEvent = function(e, selectSingleObject) {
 
 		// select everything between the mesh and scene nodes
 		// (and any complete subgraph that contains the mesh)
-		this.selectMeshAndDependencies(selectionStartNode, selectionEndNode, selectSingleObject)
+		if (!selectSingleObject)
+			this.selectMeshAndDependencies(selectionStartNode, selectionEndNode, selectSingleObject)
 
 		// only select a single object
 		break
