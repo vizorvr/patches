@@ -743,7 +743,7 @@ Node.prototype.deserialise = function(guid, d) {
 	if (d.plugin === 'graph' && d.dyn_out &&
 		d.dyn_out.length === 1 && d.dyn_out[0].dt === E2.dt.OBJECT3D.id)
 	{
-		// d.plugin = 'entity'
+		d.plugin = 'entity'
 	}
 
 	var plg = E2.core.pluginManager.create(d.plugin, this)
