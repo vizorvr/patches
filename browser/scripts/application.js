@@ -1688,6 +1688,13 @@ Application.prototype.setupStoreListeners = function() {
 Application.prototype.onGraphSelected = function(graph) {
 	var that = this
 
+console.log('onGraphSelected', 
+E2.core.active_graph === graph, 
+'from',
+E2.core.active_graph.tree_node.title,
+'to',
+graph.tree_node.title)
+
 	E2.core.active_graph.destroy_ui()
 	E2.core.active_graph = graph
 
@@ -2039,9 +2046,14 @@ Application.prototype.startWithGraph = function(selectedGraphUrl) {
 	function start() {
 		E2.dom.canvas_parent.toggle(that.noodlesVisible)
 
-		// create root graph ui once to calculate dimensions
-		E2.core.root_graph.create_ui()
-		E2.core.root_graph.destroy_ui()
+		// create root graph ui once to calculate its dimensions
+		if (!that.noodlesVisible && E2.core.active_graph !== E2.core.root_graph) {
+			if (E2.core.root_graph.ui)
+				return;
+
+			E2.core.root_graph.create_ui()
+			E2.core.root_graph.destroy_ui()
+		}
 
 		that.startPlaying()
 	}
