@@ -44,7 +44,7 @@ PresetManager.prototype.loadPresets = function() {
 				var name = entry.name
 
 				that.add(catName, title, that._base_url+'/'+name+'.json')
-				if (E2.TYPED_PATCHES.indexOf(entry.type) > -1)
+				if (E2.WORLD_PATCHES.indexOf(entry.type) > -1)
 					that.addWorldPatch(entry.type, catName, title, that._base_url+'/'+name+'.json')
 			})
 		})
@@ -80,7 +80,7 @@ PresetManager.prototype.loadUserPresets = function() {
 			var cat = 'MY PRESETS'
 
 			presets.forEach(function(preset) {
-				if (E2.TYPED_PATCHES.indexOf(preset.type) > -1)
+				if (E2.WORLD_PATCHES.indexOf(preset.type) > -1)
 					that.addWorldPatch(preset.type, cat, preset.name, preset.url)
 
 				that.add(cat, preset.name, preset.url)
