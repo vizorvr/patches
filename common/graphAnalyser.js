@@ -15,6 +15,8 @@ var audioPlugins = [
 ]
 
 function GraphAnalyser(gfs) {
+	if (!gfs)
+		throw new Error('GraphAnalyser needs a GridFS instance.')
 	this._fs = gfs
 }
 
@@ -76,7 +78,7 @@ GraphAnalyser.prototype.parseAssets = function(graph) {
 
 			return that._fs.stat(aurl)
 			.then(function(assetStat) {
-				stat.numAssets++
+				stat.numAssets++;
 
 				if (!assetStat) // not found
 					return;
@@ -85,7 +87,6 @@ GraphAnalyser.prototype.parseAssets = function(graph) {
 			})
 		})
 	}
-
 	
 	readRoot(graph)
 	
