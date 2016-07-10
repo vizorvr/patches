@@ -479,7 +479,7 @@ Application.prototype.deleteSelectedNodes = function() {
 	this.deleteSelectedConnections()
 
 	hns.forEach(function(n) {
-		that.graphApi.removeNode(ag, n)
+		that.graphApi.removeNode(n.parent_graph, n)
 	})
 
 	this.undoManager.end('Delete nodes')
@@ -921,16 +921,21 @@ Application.prototype.stringifyNodesAndConnections = function(nodes, conns, sx, 
 }
 
 Application.prototype.onDelete = function(e) {
-	if (!this.selectedNodes.length)
+	if (E2.ui.isInProgramMode() && !this.selectedNodes.length)
 		return;
 
-	this.hoverNode = this.selectedNodes[0];
+	this.hoverNode = this.selectedNodes[0]
 
 	if (this.isWorldEditorActive()) {
+		var sn = this.worldEditor.selectedEntityNode
+		this.onGraphSelected(this.worldEditor.selectedEntityPatch.parent_graph)
+		this.selectedNodes = []
+		this.selectedConnections = sn.outputs.concat(sn.inputs)
+		this.markNodeAsSelected(sn)
 		this.worldEditor.onDelete(this.selectedNodes)
 	}
 
-	this.deleteSelectedNodes();
+	this.deleteSelectedNodes()
 }
 
 Application.prototype.stringifySelection = function() {
@@ -1256,7 +1261,7 @@ Application.prototype.markNodeAsSelected = function(node, addToSelection) {
 		E2.ui.state.selectedObjects = this.selectedNodes
 	}
 
-	if (E2.WORLD_PATCHES.indexOf(node.plugin.id) > -1)
+	if (!this.isWorldEditorActive() && node.isEntityPatch())
 		this.worldEditor.selectEntityPatch(node)
 }
 
@@ -2033,8 +2038,11 @@ Application.prototype.startWithGraph = function(selectedGraphUrl) {
 
 	function start() {
 		E2.dom.canvas_parent.toggle(that.noodlesVisible)
-		// create root graph ui once
+
+		// create root graph ui once to calculate dimensions
 		E2.core.root_graph.create_ui()
+		E2.core.root_graph.destroy_ui()
+
 		that.startPlaying()
 	}
 
@@ -2272,7 +2280,7 @@ E2.InitialiseEngi = function(loadGraphUrl) {
 			E2.app.clearEditState()
 			E2.app.clearSelection()
 
-			if (E2.core.active_graph.isEntityPatch() &&  E2.ui.state.isProgramMode())
+			if (E2.core.active_graph.isEntityPatch() &&  E2.ui.isInProgramMode())
 				E2.app.worldEditor.selectEntityPatch(E2.core.active_graph)
 		},
 		// on graph reorder
