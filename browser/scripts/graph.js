@@ -21,11 +21,16 @@ function Graph(core, parent_graph, uid) {
 Graph.prototype = Object.create(EventEmitter.prototype)
 
 Graph.prototype.isEntityPatch = function() {
-	return this.plugin && this.plugin.id === 'entity'
-}
+	if (!this.plugin)
+		return false
 
-Graph.prototype.isWorldPatch = function() {
-	return this.plugin && E2.WORLD_PATCHES.indexOf(this.plugin.id) > -1
+	if (this.plugin.id === 'entity')
+		return true
+
+	var node = this.plugin.node
+	node.isEntityPatch()
+
+	return false
 }
 
 Graph.prototype.get_node_uid = function() {

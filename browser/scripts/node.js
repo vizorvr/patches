@@ -35,6 +35,10 @@ function Node(parent_graph, plugin_id, x, y) {
 
 Node.prototype = Object.create(EventEmitter.prototype)
 
+Node.prototype.isEntityPatch = function() {
+	return !!this.plugin.isEntityPatch && this.plugin.isEntityPatch()
+}
+
 Node.prototype.getConnections = function() {
 	return this.inputs.concat(this.outputs)
 }
@@ -735,14 +739,20 @@ Node.prototype.deserialise = function(guid, d) {
 	
 	this.title = d.title ? d.title : null;
 
-	var plg = E2.core.pluginManager.create(d.plugin, this);
-	
-	if (!plg) {
-		msg('ERROR: Failed to instantiate node of type \'' + d.plugin + '\' with title \'' + this.title + '\' and UID = ' + this.uid + '.');
-		return false;
+	// make object3d patches use `entity` instead
+	if (d.plugin === 'graph' && d.dyn_out &&
+		d.dyn_out.length === 1 && d.dyn_out[0].dt === E2.dt.OBJECT3D.id)
+	{
+		d.plugin = 'entity'
 	}
-	
-	this.set_plugin(plg);
+
+	var plg = E2.core.pluginManager.create(d.plugin, this)
+	if (!plg) {
+		msg('ERROR: Failed to instantiate node of type \'' + d.plugin + '\' with title \'' + this.title + '\' and UID = ' + this.uid + '.')
+		return false
+	}
+
+	this.set_plugin(plg)
 	
 	if (this.plugin.isGraph) {
 		this.plugin.setGraph(new Graph(E2.core, null, null))
