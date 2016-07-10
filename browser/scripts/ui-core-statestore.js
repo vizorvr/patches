@@ -395,6 +395,14 @@ var UiState = function(persistentStorageRef, context) {
 
 UiState.prototype = Object.create(EventEmitter.prototype)
 
+UiState.prototype.isBuildMode = function() {
+	return this.mode === 'build'
+}
+
+UiState.prototype.isProgramMode = function() {
+	return this.mode === 'program'
+}
+
 UiState.prototype.store = function() {
 	this._save_t = null
 	if (!this._storageRef) {
