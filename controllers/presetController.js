@@ -10,7 +10,7 @@ function PresetController(presetService, fs) {
 	args.unshift(Preset)
 	AssetController.apply(this, args)
 
-	this.graphAnalyser = new GraphAnalyser()
+	this.graphAnalyser = new GraphAnalyser(fs)
 }
 
 PresetController.prototype = Object.create(AssetController.prototype)
