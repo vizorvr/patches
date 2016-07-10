@@ -237,7 +237,11 @@ WorldEditor.prototype.setSelection = function(selected) {
 		if (obj && obj.backReference !== undefined) {
 			this.cameraSelector.transformControls.attach(obj)
 			this.selectionTree.add(this.cameraSelector.transformControls)
-			E2.app.onGraphSelected(obj.backReference.node.parent_graph)
+	
+			// set the active graph to the entity selected
+			if (E2.ui.state.isBuildMode())
+				E2.app.onGraphSelected(obj.backReference.node.parent_graph)
+
 			anySelected = true
 			// only attach to first valid item
 			break
@@ -253,6 +257,17 @@ WorldEditor.prototype.setSelection = function(selected) {
 
 WorldEditor.prototype.onDelete = function(nodes) {
 	this.cameraSelector.transformControls.detach()
+}
+
+WorldEditor.prototype.selectEntityPatch = function(entityPatchNode) {
+	if (!entityPatchNode.plugin.getObject3D)
+		return;
+
+	return this.setSelection([
+		entityPatchNode
+			.plugin
+			.getObject3D()
+	])
 }
 
 WorldEditor.prototype.selectMeshAndDependencies = function(meshNode, sceneNode, selectSingleObject) {

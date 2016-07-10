@@ -20,6 +20,14 @@ function Graph(core, parent_graph, uid) {
 
 Graph.prototype = Object.create(EventEmitter.prototype)
 
+Graph.prototype.isEntityPatch = function() {
+	return this.plugin && this.plugin.id === 'entity'
+}
+
+Graph.prototype.isWorldPatch = function() {
+	return this.plugin && E2.WORLD_PATCHES.indexOf(this.plugin.id) > -1
+}
+
 Graph.prototype.get_node_uid = function() {
 	return E2.core.get_uid()
 }

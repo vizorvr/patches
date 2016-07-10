@@ -624,32 +624,6 @@ Application.prototype.onNodeDragStopped = function(node) {
 	})
 }
 
-Application.prototype.clearSelection = function() {
-	var sn = this.selectedNodes;
-	var sc = this.selectedConnections;
-
-	for(var i = 0, len = sn.length; i < len; i++) {
-		var nui = sn[i].ui;
-
-		if(nui) {
-			nui.setSelected(false);
-		}
-	}
-
-	for(var i = 0, len = sc.length; i < len; i++) {
-		var cui = sc[i].ui;
-
-		if(cui)
-			cui.selected = false;
-	}
-
-	this.selectedNodes = [];
-	this.selectedConnections = [];
-
-	E2.ui.state.selectedObjects = this.selectedNodes
-
-}
-
 Application.prototype.redrawConnection = function(connection) {	/* @TODO: rename this method */
 	var cn = connection
 	if (!cn.ui) {
@@ -1281,6 +1255,9 @@ Application.prototype.markNodeAsSelected = function(node, addToSelection) {
 		this.selectedNodes.push(node)
 		E2.ui.state.selectedObjects = this.selectedNodes
 	}
+
+	if (E2.WORLD_PATCHES.indexOf(node.plugin.id) > -1)
+		this.worldEditor.selectEntityPatch(node)
 }
 
 Application.prototype.deselectNode = function(node) {
@@ -1293,6 +1270,34 @@ Application.prototype.markConnectionAsSelected = function(conn) {
 	if (conn.ui)
 		conn.ui.selected = true
 	this.selectedConnections.push(conn)
+}
+
+Application.prototype.clearSelection = function() {
+	var sn = this.selectedNodes;
+	var sc = this.selectedConnections;
+
+	for(var i = 0, len = sn.length; i < len; i++) {
+		var nui = sn[i].ui;
+
+		if(nui) {
+			nui.setSelected(false);
+		}
+	}
+
+	for(var i = 0, len = sc.length; i < len; i++) {
+		var cui = sc[i].ui;
+
+		if(cui)
+			cui.selected = false;
+	}
+
+	this.worldEditor.setSelection([])
+
+	this.selectedNodes = [];
+	this.selectedConnections = [];
+
+	E2.ui.state.selectedObjects = this.selectedNodes
+
 }
 
 Application.prototype.selectAll = function() {
@@ -2266,6 +2271,9 @@ E2.InitialiseEngi = function(loadGraphUrl) {
 		function() { // On item activation
 			E2.app.clearEditState()
 			E2.app.clearSelection()
+
+			if (E2.core.active_graph.isEntityPatch() &&  E2.ui.state.isProgramMode())
+				E2.app.worldEditor.selectEntityPatch(E2.core.active_graph)
 		},
 		// on graph reorder
 		E2.app.graphApi.reorder.bind(E2.app.graphApi)
