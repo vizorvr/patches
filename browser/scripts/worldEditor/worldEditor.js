@@ -515,6 +515,7 @@ WorldEditor.prototype.onDragDropped = function(e) {
 
 	this.dropZoneHelper.detach()
 	this.selectionTree.remove(this.dropZoneHelper)
+
 	this._lastDropTarget = null
 }
 
