@@ -131,6 +131,20 @@ Application.prototype.createPlugin = function(id, position) {
 
 }
 
+Application.prototype.setActiveGraph = function(graph) {
+	if (E2.core.active_graph === graph)
+		return;
+
+	E2.app.dispatcher.dispatch({
+		actionType: 'uiActiveGraphChanged',
+		activeGraphUid: graph.uid
+	})
+
+	if (graph.tree_node) {
+		graph.tree_node.activate()
+	}
+}
+
 Application.prototype.instantiatePlugin = function(id, position) {
 	position = position || this.mousePosition
 	var newX = Math.floor(position[0] + this.scrollOffset[0])
@@ -928,7 +942,7 @@ Application.prototype.onDelete = function(e) {
 
 	if (this.isWorldEditorActive()) {
 		var sn = this.worldEditor.selectedEntityNode
-		this.onGraphSelected(this.worldEditor.selectedEntityPatch.parent_graph)
+		this.setActiveGraph(this.worldEditor.selectedEntityPatch.parent_graph)
 		this.selectedNodes = []
 		this.selectedConnections = sn.outputs.concat(sn.inputs)
 		this.markNodeAsSelected(sn)
@@ -1688,7 +1702,7 @@ Application.prototype.setupStoreListeners = function() {
 Application.prototype.onGraphSelected = function(graph) {
 	var that = this
 
-console.log('onGraphSelected', 
+console.trace('onGraphSelected', 
 E2.core.active_graph === graph, 
 'from',
 E2.core.active_graph.tree_node.title,
@@ -1842,7 +1856,7 @@ Application.prototype.setupPeopleEvents = function() {
 	})
 
 	this.peopleStore.on('activeGraphChanged', function(person) {
-		if (E2.app.channel.uid === person.uid) // it's for me
+		if (E2.app.channel.uid === person.uid) // it's me
 			return E2.app.onGraphSelected(Graph.lookup(person.activeGraphUid))
 
 		var $cursor = cursors[person.uid]
@@ -2078,7 +2092,7 @@ Application.prototype.startWithGraph = function(selectedGraphUrl) {
 Application.prototype.startPlaying = function() {
 	E2.core.rebuild_structure_tree()
 
-	this.onGraphSelected(E2.core.active_graph)
+	this.setActiveGraph(E2.core.active_graph)
 
 	E2.core.emit('vizorFileLoaded')
 
@@ -2092,7 +2106,7 @@ Application.prototype.startPlaying = function() {
 	if (window.location.hash[1] === '/') {
 		// path in graph
 		// only root supported
-		this.onGraphSelected(E2.core.root_graph)
+		this.setActiveGraph(E2.core.root_graph)
 		E2.ui.state.mode = 'program'
 	}
 }

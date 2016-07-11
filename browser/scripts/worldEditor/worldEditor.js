@@ -257,6 +257,8 @@ WorldEditor.prototype.setSelection = function(selected) {
 
 	if (!anySelected) {
 		this.cameraSelector.transformControls.detach()
+		if (E2.app.isWorldEditorActive())
+			E2.app.onGraphSelected(E2.core.root_graph)
 	}
 
 	E2.ui.emit('worldEditor:selectionSet')

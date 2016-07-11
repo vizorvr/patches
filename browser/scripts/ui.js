@@ -500,7 +500,9 @@ VizorUI.prototype.buildBreadcrumb = function(graph, beforeRender) {
 	function buildBreadcrumb(parentEl, graph, add_handler) {
 		var title = graph.tree_node.title || graph.tree_node.id
 		if (add_handler) {
-			b.prepend(title, null, function() { graph.tree_node.activate() })
+			b.prepend(title, null, function() {
+				E2.app.setActiveGraph(graph)
+			})
 		} else {
 			b.prepend(title, null)
 		}
