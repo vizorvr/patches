@@ -898,15 +898,14 @@ Application.prototype.selectionToObject = function(nodes, conns, sx, sy) {
 
 		var b = [p.left, p.top, p.left + width, p.top + height];
 
-		if(dom)
-			n = n.serialise();
+		// n = n.serialise();
 
-		if(b[0] < x1) x1 = b[0];
-		if(b[1] < y1) y1 = b[1];
-		if(b[2] > x2) x2 = b[2];
-		if(b[3] > y2) y2 = b[3];
+		if (b[0] < x1) x1 = b[0];
+		if (b[1] < y1) y1 = b[1];
+		if (b[2] > x2) x2 = b[2];
+		if (b[3] > y2) y2 = b[3];
 
-		d.nodes.push(n);
+		d.nodes.push(n.serialise());
 	}
 
 	if (domHasValidDimensions) {
@@ -924,14 +923,16 @@ Application.prototype.selectionToObject = function(nodes, conns, sx, sy) {
 
 	for(var i = 0, len = conns.length; i < len; i++) {
 		var c = conns[i];
-		d.conns.push(c.ui ? c.serialise() : c);
+		d.conns.push(c.serialise())
 	}
 
-	return d;
+	return d
 }
 
 Application.prototype.stringifyNodesAndConnections = function(nodes, conns, sx, sy) {
-	return JSON.stringify(this.selectionToObject(nodes, conns, sx, sy))
+	return JSON.stringify(
+		this.selectionToObject(nodes, conns, sx, sy)
+	)
 }
 
 Application.prototype.onDelete = function(e) {
