@@ -118,7 +118,7 @@ Application.prototype.createPlugin = function(id, position) {
 
 	switch(id) {
 		case 'graph':
-			return _create('Graph')
+			return _create('Nested Patch')
 		case 'loop':
 			return _create('Loop')
 		case 'array_function':
