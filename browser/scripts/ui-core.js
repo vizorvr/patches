@@ -155,6 +155,11 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 			var inBuildMode = mode === uiMode.build
 			var inProgramMode = !inBuildMode
 
+			if (inProgramMode)
+				E2.track({ event: 'programMode' })
+			else
+				E2.track({ event: 'buildMode' })
+
 			dom.btnBuildMode
 				.toggleClass('ui_on', inBuildMode)
 				.toggleClass('ui_off', inProgramMode);
