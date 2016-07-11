@@ -906,7 +906,7 @@ NodeUI.drilldown = function(node) {	// taken from nested graph plugin
 			ptn.rebuild_dom()
 		}
 
-		p.graph.tree_node.activate()
+		E2.app.setActiveGraph(p.graph)
 	}
 	return false;
 };
