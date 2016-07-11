@@ -9,7 +9,7 @@
 				return
 
 			subgraph.nodes.map(function(node) {
-				if (node.plugin.id === 'graph')
+				if (E2.GRAPH_NODES.indexOf(node.plugin.id) > -1)
 					return findInGraph(node.plugin.graph)
 
 				if (meshPlugins.indexOf(node.plugin.id) === -1)
