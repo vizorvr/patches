@@ -151,7 +151,7 @@ AssetLoader.prototype.parse = function(graph) {
 			return
 
 		subgraph.nodes.map(function(node) {
-			if (node.plugin === 'graph')
+			if (E2.GRAPH_NODES.indexOf(node.plugin) > -1)
 				return findInGraph(node.graph)
 
 			var assetType = loadingPlugins[node.plugin]
