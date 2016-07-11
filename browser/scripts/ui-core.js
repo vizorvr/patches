@@ -550,7 +550,7 @@ VizorUI.prototype.onKeyPress = function(e) {
 		switch(key) {
 			case uiKeys.gotoParentGraph:
 				if (E2.core.active_graph.parent_graph)
-					E2.treeView.select(E2.core.active_graph.parent_graph.tree_node)
+					E2.app.setActiveGraph(E2.core.active_graph.parent_graph)
 				break;
 			case uiKeys.viewSource:
 			case 'shift+' + uiKeys.viewSource:
