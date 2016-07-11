@@ -519,8 +519,10 @@ WorldEditor.prototype.onDragDropped = function(e) {
 	this._lastDropTarget = null
 }
 
-WorldEditor.prototype.onDragMoved = function(e) {
-console.log('onDragMoved')
+WorldEditor.prototype.onDragMoved = function(e, patchMeta) {
+	if (patchMeta.type === 'entity') // always drop in root
+		return;
+
 	var obj = this.raycastFromMouseEvent(e, /* single = */ true)
 
 	if (obj === this.dropZoneHelper.object)

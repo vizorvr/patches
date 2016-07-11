@@ -137,7 +137,10 @@ function dragAndDropMouseDownHandler(e) {
 
 		updatePreviewPosition(evt)
 
-		E2.ui.emit('dragMoved', evt)
+		E2.ui.emit('dragMoved', evt, {
+			path: $(e.currentTarget).data('path'),
+			type: $(e.currentTarget).data('type')
+		})
 	}
 
 	// On mouseup unbind everything and destroy the preview box
