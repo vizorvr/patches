@@ -56,7 +56,7 @@ var userpagesUI = new function() {
 
 	this.onProfileChanged = function (e) {
 		var profileId = e.detail.id
-		var profileData = Vizor.page.getProfile(profileId)
+		var profileData = Vizor.pageObjects.getProfile(profileId)
 		if (!profileData)
 			return
 		var cards = VizorUI.findProfileCards(profileId)
@@ -83,7 +83,7 @@ var userpagesUI = new function() {
 		var privateList = this.findPrivateList()
 
 		var card
-		var cardData = Vizor.page.getGraph(e.detail.id)
+		var cardData = Vizor.pageObjects.getGraph(e.detail.id)
 		var isInPublic = false
 		var isInPrivate = false
 
@@ -99,7 +99,7 @@ var userpagesUI = new function() {
 			if (privateList)
 				this.addCardToList(card, privateList)
 			else
-				VizorUI.growl('made "'+ cardData.prettyName +'" private')
+				VizorUI.growl('Project "'+ cardData.prettyName +'" is now private.')
 
 		}
 		else if (isInPrivate && !isCardPrivate) {
@@ -107,7 +107,7 @@ var userpagesUI = new function() {
 			if (publicList)
 				this.addCardToList(card, publicList)
 			else
-				VizorUI.growl('made "'+ cardData.prettyName +'" public')
+				VizorUI.growl('Project "'+ cardData.prettyName +'" is now public.')
 		}
 		if (privateList)
 			privateList.dataset.numitems = this.countCardsInList(privateList)

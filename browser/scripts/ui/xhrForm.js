@@ -70,8 +70,10 @@ VizorUI.setupXHRForm = function($form, onSuccess) {	// see views/account/signup 
 				//	$this.attr('placeholder', $this.data('placeholder'));
 				$this.removeClass('in_focus')
 				if (required && had_error &&
-					(($this.val() === '') || ($this.val() === had_error_value))
-					) $this.parent().addClass('error')
+					(($this.val() === '') || ($this.val() === had_error_value)) ) {
+					// then
+						$this.parent().addClass('error')
+				}
 				return true
 			})
 		}

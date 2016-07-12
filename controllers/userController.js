@@ -366,8 +366,10 @@ exports.getAccount = function(req, res) {
 		// if updating email, then check that email does not exist already
 		if ('email' in updateFields) {
 			User.findOne({email: updateFields.email}, function(err, existingUser){
-				if (!existingUser)
-					return void save()
+				if (!existingUser) {
+					save()
+					return
+				}
 				// else
 				var error = helper.formatResponseError('email', req.body.email, 'Another account with that email already exists')
 

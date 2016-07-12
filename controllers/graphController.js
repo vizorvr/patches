@@ -25,6 +25,8 @@ var hashids = new Hashids(secrets.sessionSecret)
 var fs = require('fs')
 var packageJson = JSON.parse(fs.readFileSync(__dirname+'/../package.json'))
 
+
+
 function renderError(status, res, message) {
 	res.status(status).render('error', {
 		message: message || 'Not found'
@@ -111,6 +113,14 @@ function prettyPrintGraphInfo(graph) {
 	return graph
 }
 
+function prettyPrintList(list) {
+	if (!list || !list.length)
+		return list
+	return list.map(function(graph) {
+		return prettyPrintGraphInfo(graph.toJSON())
+	})
+}
+
 function makeGraphSummary(req,graph) {
 	graph = prettyPrintGraphInfo(graph)
 	return {
@@ -125,7 +135,9 @@ function makeGraphSummary(req,graph) {
 		createdAt:		graph.createdAt,
 		updatedAt:		graph.updatedAt,
 		createdTS:		graph.createdTS,
-		updatedTS:		graph.updatedTS
+		updatedTS:		graph.updatedTS,
+		private: 		graph.private,
+		editable: 		graph.editable
 	}
 }
 
@@ -182,14 +194,6 @@ GraphController.prototype._userOwnIndex = function(user, req, res, next) {
 		wantPrivate = (req.query.public === '0')
 	}
 
-	var makeList = function(list) {
-		if (!list || !list.length)
-			return
-		return list.map(function(graph) {
-			return prettyPrintGraphInfo(graph.toJSON())
-		})
-	}
-
 	function render(publicList, privateList, profile, data) {
 		data = _.extend({
 			bodyclass: '',
@@ -242,7 +246,7 @@ GraphController.prototype._userOwnIndex = function(user, req, res, next) {
 					data.publicHasMoreLink = true
 					list.pop()
 				}
-				publicList = makeList(list)
+				publicList = prettyPrintList(list)
 				return that._service.userGraphs(username, {private:true}, 0, maxNumOnFront+1)
 			})
 			.then(function(list) {
@@ -250,7 +254,7 @@ GraphController.prototype._userOwnIndex = function(user, req, res, next) {
 					data.privateHasMoreLink = true
 					list.pop()
 				}
-				privateList = makeList(list)
+				privateList = prettyPrintList(list)
 
 				render(publicList, privateList, profile, data)
 			})
@@ -260,9 +264,8 @@ GraphController.prototype._userOwnIndex = function(user, req, res, next) {
 		that._service.userGraphs(username, {private: wantPrivate})
 			.then(function(list){
 				data.bodyclass = (wantPrivate) ? 'bGraphlistPrivate' : 'bGraphlistPublic'
-				list = list.map(function(graph) {
-					return prettyPrintGraphInfo(graph.toJSON())
-				})
+				list = prettyPrintList(list)
+
 
 				if (wantPrivate)
 					render(null, list, profile, data)
@@ -288,10 +291,7 @@ GraphController.prototype._userPublicIndex = function(user, req, res, next) {
 				return next()
 			}
 
-			list = list
-			.map(function(graph) {
-				return prettyPrintGraphInfo(graph.toJSON())
-			})
+			list = prettyPrintList(list)
 
 			var data = {
 				profile: user ? user.toPublicJSON() : {},
@@ -346,9 +346,7 @@ GraphController.prototype.adminIndex = function(req, res) {
 		if (req.xhr || req.path.slice(-5) === '.json')
 			return res.json(list);
 
-		list = list.map(function(graph) {
-			return prettyPrintGraphInfo(graph.toJSON())
-		})
+		list = prettyPrintList(list)
 
 		var data = {
 			graphs: list
@@ -554,9 +552,6 @@ GraphController.prototype.graphModify = function(req, res, next) {
 				}
 
 				var data = makeGraphSummary(req, savedGraph.toJSON())
-				// add these two to response
-				data.private = savedGraph.private
-				data.editable = savedGraph.editable
 				if (wantXhr)
 					return res.json(helper.responseStatusSuccess('OK', data))
 				// else

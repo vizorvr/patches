@@ -503,7 +503,7 @@ function setupModelRoutes(mongoConnection) {
 
 		res.status(err.status || 500);
 
-		if (req.xhr || (req.query.ajax === '1'))
+		if (req.xhr)
 			return res.json({ success: false, message: err.message });
 
 		res.render('error', {

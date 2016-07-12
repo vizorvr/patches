@@ -86,7 +86,8 @@ var siteUI = new function() {
 		VizorUI.enableScrollToLinks($body);
 		VizorUI.enablePopupEmbedLinks($body);
 
-		var signupCallback = function() {	// slush
+		// default if the signup form ever gets hit on a static page
+		var signupCallback = function() {
 			window.location.href = '/account';
 		};
 		var $signupForm = jQuery('#signupForm')

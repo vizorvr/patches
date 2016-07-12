@@ -150,7 +150,7 @@ GraphService.prototype._save = function(data, user, opts) {
 }
 
 
-GraphService.prototype.save = function(data, user, playerVersion) {
+GraphService.prototype.save = function(data, user) {
 	var that = this;
 	var gridFsPath = '/graph'+data.path+'.json';
 	var optimisedGfsPath = '/graph'+data.path+'.min.json';

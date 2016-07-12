@@ -31,17 +31,16 @@ VizorUI.actionGraphDelete = function(e) {
 				data: data
 			}).done(
 				function(response){
-					console.log(response)
 					var cards = VizorUI.findAssetCards(id)
 					if (!cards.length) return
 
 					var title = 'Project'
 
-					var page = window.Vizor.page
-					if (page && page.deleteGraph) {
-						var scene = page.getGraph(id)
+					var pageObjects = window.Vizor.pageObjects
+					if (pageObjects && pageObjects.deleteGraph) {
+						var scene = pageObjects.getGraph(id)
 						title = '"' + scene.prettyName + '"'
-						page.deleteGraph(id)
+						pageObjects.deleteGraph(id)
 					}
 
 					Array.prototype.forEach.call(cards, function(/* HTMLElement */ card, ix){
@@ -51,7 +50,7 @@ VizorUI.actionGraphDelete = function(e) {
 					VizorUI.notifyBySite(title + " was deleted")
 				})
 				.fail(function(response){
-					console.log(response)
+					console.error(response)
 					alert('failed to delete ' + id)
 				})
 			return xhr
@@ -65,18 +64,9 @@ VizorUI.actionGraphTogglePrivate = function(e) {
 	if (!(e && e.detail))
 				return console.error('no event detail')
 	// find card
-	var graph = Vizor.page.getGraph(e.detail.id)
+	var graph = Vizor.pageObjects.getGraph(e.detail.id)
 	if (!graph)
 		return void console.error('could not find card ' + e.detail.id)
-
-	console.log({
-		id: graph.id,
-		owner: graph.owner,
-		'private': graph.private,
-		url:	e.detail.url,
-		path:	graph.path,
-		newPrivate: !graph.private
-	})
 
 	var data = {
 		'private': !graph.private
@@ -84,7 +74,6 @@ VizorUI.actionGraphTogglePrivate = function(e) {
 	var checkbox = e.detail.triggeredByEl
 	return $.post(graph.path, data)
 		.done(function(response){
-			console.log(response)
 			var data = response.data
 			// change the label too
 			checkbox.parentElement.dataset.content = (data.private) ? "Make public" : "Make private"
@@ -96,7 +85,7 @@ VizorUI.actionGraphTogglePrivate = function(e) {
 			var message = 'could not make "' + graph.prettyName + '" ' + (graph.private ? 'public' : 'private')
 			VizorUI.growl(message)
 			checkbox.checked = graph.private
-			console.log(ex)
+			console.error(ex)
 		})
 }
 
