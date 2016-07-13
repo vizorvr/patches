@@ -30389,10 +30389,8 @@ THREE.WebGLShadowMap = function ( _renderer, _lights, _objects ) {
 			var shadow = light.shadow;
 
 			if ( shadow === undefined ) {
-
-				console.warn( 'THREE.WebGLShadowMap:', light, 'has no shadow.' );
+				// console.warn( 'THREE.WebGLShadowMap:', light, 'has no shadow.' );
 				continue;
-
 			}
 
 			var shadowCamera = shadow.camera;
