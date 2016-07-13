@@ -223,6 +223,13 @@ Player.prototype.getScreenshot = function(width, height) {
 	return ssr.capture(width, height)
 }
 
+Player.prototype.getSphericalScreenshot = function(width, height) {
+	width = width || 2048
+	height = height || 1024
+	var ssr = new SphericalScreenshotRenderer(this.scene, this.camera.vrControlCamera)
+	return ssr.capture(width, height)
+}
+
 function CreatePlayer(cb) {
 	$(document).ajaxError(function(e, jqxhr, settings, ex) {
 		if(typeof(ex) === 'string') {

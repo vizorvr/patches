@@ -31,6 +31,8 @@ var uiKeys = {
 	focusChatPanel		: '@',
 	viewHelp 			: '?',
 
+	debugTakeScreenshot : 'A',
+
 	toggleEditorHelpers                 : 'H',
 	toggleWorldEditorGrid               : 'G',
 	toggleWorldEditorXCamera            : 'X',
@@ -532,6 +534,11 @@ VizorUI.prototype.onKeyPress = function(e) {
 		case uiKeys.viewHelp:
 		case 'shift+'+uiKeys.viewHelp:
 			VizorUI.openEditorHelp();
+			e.preventDefault();
+			e.stopPropagation();
+			break;
+		case uiKeys.debugTakeScreenshot:
+			console.log(E2.app.player.getSphericalScreenshot(2048,1024))
 			e.preventDefault();
 			e.stopPropagation();
 			break;

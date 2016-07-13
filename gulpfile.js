@@ -53,6 +53,7 @@ var paths = {
 			'./browser/scripts/worldEditor/objectPlacementHelper.js',
 
 			'./browser/scripts/screenshot/ScreenshotRenderer.js',
+			'./browser/scripts/screenshot/SphericalScreenshotRenderer.js',
 
 			'./browser/scripts/loaders/loader.js',
 			'./browser/scripts/loaders/imageLoader.js',

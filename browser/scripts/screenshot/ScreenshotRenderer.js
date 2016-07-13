@@ -49,7 +49,7 @@ ScreenshotRenderer.prototype.capture = function(width, height) {
 
 	var imgData = new Uint8Array(width * height * 4)
 
-	// scale to half res
+	// scale to half res (and perform 4X multisample antialiasing)
 	for (var j = 0, j2 = 0; j < height; ++j, j2 += 2) {
 		for (var i = 0, i2 = 0; i < width; ++i, i2 += 2) {
 			for (var comp = 0; comp < 4; ++comp) {
