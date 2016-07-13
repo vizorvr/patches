@@ -392,6 +392,8 @@ WorldEditor.prototype.onPatchDropped = function(patchMeta, json, targetObject3d)
 	var patch = JSON.parse(json)
 	patch = patch.root ? patch.root : patch
 
+	E2.app.undoManager.begin('Drag and Drop Patch')
+
 	var space = E2.app.findSpaceInGraphFor(targetPatch, patch)
 	var dropped = E2.app.pasteInGraph(targetPatch, patch, space.x, space.y)
 	var droppedNode = dropped.nodes[0]
@@ -412,6 +414,8 @@ WorldEditor.prototype.onPatchDropped = function(patchMeta, json, targetObject3d)
 			// audio, video
 			break;
 	}
+
+	E2.app.undoManager.end()
 }
 
 WorldEditor.prototype.onEntityDropped = function(dropNode) {
@@ -488,6 +492,8 @@ console.log('onComponentDropped', droppedNode, targetPatch, meshNode)
 	droppedNode
 	.getDynamicOutputSlots()
 	.map(function(output) {
+		// remove any existing connection 
+
 		var connection = Connection.hydrate(targetPatch, {
 			src_nuid: droppedNode.uid,
 			dst_nuid: meshNode.uid,

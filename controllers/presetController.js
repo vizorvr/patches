@@ -15,14 +15,16 @@ function PresetController(presetService, fs) {
 
 PresetController.prototype = Object.create(AssetController.prototype)
 
-PresetController.prototype._makePath = function(req, path) {
-	return '/' + req.user.username
-		+ '/' + assetHelper.slugify(fsPath.basename(path, fsPath.extname(path)))
+PresetController.prototype._makePath = function(req, name) {
+	return '/' 
+		+ req.user.username
+		+ '/presets/'
+		+ assetHelper.slugify(fsPath.basename(name, fsPath.extname(name)))
 		+ '.json'
 }
 
 PresetController.prototype._makeGridFsPath = function(req, path) {
-	return '/preset'+this._makePath(req, path)
+	return this._makePath(req, path)
 }
 
 // POST /:username/presets
