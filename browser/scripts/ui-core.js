@@ -33,6 +33,7 @@ var uiKeys = {
 
 	toggleEditorHelpers                 : 'H',
 	toggleWorldEditorGrid               : 'G',
+	toggleWorldEditorLocalGlobalHandles : 'L',
 	toggleWorldEditorXCamera            : 'X',
 	toggleWorldEditorYCamera            : 'Y',
 	toggleWorldEditorZCamera            : 'Z',
@@ -153,6 +154,11 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 		.on('changed:mode', function(mode) {
 			var inBuildMode = mode === uiMode.build
 			var inProgramMode = !inBuildMode
+
+			if (inProgramMode)
+				E2.track({ event: 'programMode' })
+			else
+				E2.track({ event: 'buildMode' })
 
 			dom.btnBuildMode
 				.toggleClass('ui_on', inBuildMode)
@@ -667,6 +673,9 @@ VizorUI.prototype.onKeyPress = function(e) {
 			case uiKeys.modifyModeScale:
 				state.modifyModeDefault = uiModifyMode.scale
 				state.modifyMode = state.modifyModeDefault
+				break;
+			case uiKeys.toggleWorldEditorLocalGlobalHandles:
+				E2.app.worldEditor.toggleLocalGlobalHandles();
 				break;
 			case uiKeys.toggleWorldEditorGrid:
 				E2.app.worldEditor.toggleGrid();
