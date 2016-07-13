@@ -122,10 +122,7 @@ Connection.prototype.serialise = function() {
 	d.src_slot = this.src_slot.dynamic ? this.src_slot.index : this.src_slot.name
 	d.dst_slot = this.dst_slot.dynamic ? this.dst_slot.index : this.dst_slot.name
 	d.uid = this.uid
-	
-	d.src_connected = this.src_slot.is_connected
-	d.dst_connected = this.dst_slot.is_connected
-	
+		
 	if (this.src_slot.uid !== undefined)
 		d.src_dyn = true
 	
@@ -146,7 +143,7 @@ Connection.prototype.deserialise = function(d) {
 
 	this.src_slot = {
 		dynamic: !!d.src_dyn,
-		is_connected: d.src_connected
+		is_connected: true
 	}
 
 	if (this.src_slot.dynamic) {
@@ -162,7 +159,7 @@ Connection.prototype.deserialise = function(d) {
 
 	this.dst_slot = {
 		dynamic: !!d.dst_dyn,
-		is_connected: d.dst_connected
+		is_connected: true
 	}
 
 	if (this.dst_slot.dynamic) {
