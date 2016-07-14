@@ -230,7 +230,7 @@ GraphController.prototype._userOwnIndex = function(user, req, res, next) {
 
 	var profile = user.toJSON()
 
-	var maxNumOnFront = 8
+	var maxNumOnFront = 7	// allow for "create new" card
 	var data = {
 		publicHasMoreLink : false,
 		privateHasMoreLink : false
@@ -240,14 +240,14 @@ GraphController.prototype._userOwnIndex = function(user, req, res, next) {
 		data.isSummaryPage = true
 		data.bodyclass = 'bGraphlistSummary'
 		var publicList, privateList
-		that._service.userGraphs(username, {private:false}, 0, maxNumOnFront+1)
+		that._service.userGraphsWithPrivacy(username, 0, maxNumOnFront+1, false)
 			.then(function(list){
 				if (list && (list.length >= maxNumOnFront)) {
 					data.publicHasMoreLink = true
 					list.pop()
 				}
 				publicList = prettyPrintList(list)
-				return that._service.userGraphs(username, {private:true}, 0, maxNumOnFront+1)
+				return that._service.userGraphsWithPrivacy(username, 0, maxNumOnFront+1, true)
 			})
 			.then(function(list) {
 				if (list && (list.length >= maxNumOnFront)) {
@@ -261,7 +261,7 @@ GraphController.prototype._userOwnIndex = function(user, req, res, next) {
 	} else {
 		// "Public" or "Private" lists
 		data.isSummaryPage = false
-		that._service.userGraphs(username, {private: wantPrivate})
+		that._service.userGraphsWithPrivacy(username, null, null, wantPrivate)
 			.then(function(list){
 				data.bodyclass = (wantPrivate) ? 'bGraphlistPrivate' : 'bGraphlistPublic'
 				list = prettyPrintList(list)
@@ -279,12 +279,15 @@ GraphController.prototype._userOwnIndex = function(user, req, res, next) {
 GraphController.prototype._userPublicIndex = function(user, req, res, next) {
 	var that = this
 	var username = (user) ? user.username : null
+	var graphs
 
-	var filter = (req.user && req.user.isAdmin) ? null : {'private':false}
+	if (req.user && req.user.isAdmin)
+		graphs = that._service.userGraphs(username)
+	else
+		graphs = that._service.userGraphsWithPrivacy(username)
 
-	that._service.userGraphs(username, filter)
+	graphs
 		.then(function(list) {
-
 			// no files found, but if there is a user
 			// then show empty userpage
 			if (!user && (!list || !list.length)) {

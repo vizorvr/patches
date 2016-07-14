@@ -59,10 +59,18 @@ GraphService.prototype.publicRankedList = function() {
 	return dfd.promise
 }
 
-GraphService.prototype.userGraphs = function(username, filter, offset, limit) {
+/**
+ * get user graphs for username. defaults to filter for non-deleted graphs only.
+ * @param username string
+ * @param offset int
+ * @param limit int
+ * @param filter object mongo filter (as in .find({...}))
+ * @returns {Promise}
+ * @private
+ */
+GraphService.prototype._userGraphs = function(username, offset, limit, filter) {
 	var dfd = when.defer()
 
-	filter = filter || {}
 	filter = _.extend({deleted:false}, filter)
 	filter.owner = username
 
@@ -87,6 +95,19 @@ GraphService.prototype.userGraphs = function(username, filter, offset, limit) {
 
 	return dfd.promise
 }
+
+GraphService.prototype.userGraphs = function(username, offset, limit) {
+	return this._userGraphs(username, offset, limit)
+}
+
+// allows to filter by private graph. defaults to public graphs
+GraphService.prototype.userGraphsWithPrivacy = function(username, offset, limit, isPrivate) {
+	var filter = {
+		'private': !!isPrivate
+	}
+	return this._userGraphs(username, offset, limit, filter)
+}
+
 
 // e.g. when toggling public/private or renaming, but not touching anything else
 // opts {updatedAt, version}
