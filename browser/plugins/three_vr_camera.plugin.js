@@ -13,8 +13,8 @@
 			{ name: 'rotation', dt: core.datatypes.VECTOR },
 			{ name: 'fov', dt: core.datatypes.FLOAT, def: this.defaultFOV },
 			{ name: 'aspectRatio', dt: core.datatypes.FLOAT, def: 1.0},
-			{ name: 'near', dt: core.datatypes.FLOAT, def: 0.001 },
-			{ name: 'far', dt: core.datatypes.FLOAT, def: 1000.0 },
+			{ name: 'near', dt: core.datatypes.FLOAT, def: 0.01 },
+			{ name: 'far', dt: core.datatypes.FLOAT, def: 10000.0 },
 			{
 				name:   'lock transform',
 				dt:     core.datatypes.BOOL,
