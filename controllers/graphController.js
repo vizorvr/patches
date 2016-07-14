@@ -544,7 +544,7 @@ GraphController.prototype.graphModify = function(req, res, next) {
 		}
 
 		var opts = {
-			version: graph.playerVersion,
+			version: graph.version,
 			updatedAt: graph.updatedAt
 		}
 		
