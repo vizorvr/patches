@@ -182,7 +182,7 @@ WorldEditorCameraSelector.prototype = {
 	update: function(transformMode, vrCamera, localOrWorldSpace) {
 		// needs calling on every update otherwise the transform controls draw incorrectly
 		this.transformControls.setMode(transformMode)
-		this.transformControls.setSpace(localOrWorldSpace)
+		this.transformControls.setSpace(transformMode === 'scale' ? 'local' : localOrWorldSpace)
 		this.transformControls.updateTransformLock()
 
 		this.cameras[this.currentCameraId].camera.update();
