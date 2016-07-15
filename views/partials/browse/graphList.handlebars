@@ -1,0 +1,32 @@
+{{!-- {{>graphlist . list=publicGraphs heading='Public projects' withNew=(equals profile.username user.username)}} --}}
+<section class="list assets clearfix noselect {{class}}"
+        data-numitems="{{length list}}"
+        data-with-new="{{withNew}}"
+        data-with-actions="{{withActions}}"
+        data-allow-all-actions="{{allowAllActions}}"
+        data-profile="{{profile.username}}">
+
+{{#if heading}}
+    <h4 style="margin-left:10px">{{heading}}</h4>
+{{/if}}
+
+
+{{#if withNew}}
+    {{> assets/newCard assetType='graph' assetTypeText='project' path='/edit' iconRef='card-new-project-2'}}
+{{/if}}
+
+{{#each list}}
+    {{!-- context (this) is graph --}}
+    {{#eq ../profile.username ../user.username}}
+        {{> assets/graphCard visitor=../user profile=../profile withActions=true allowAllActions=true }}
+    {{else}}
+        {{> assets/graphCard visitor=../user profile=../profile withActions=true }}
+    {{/eq}}
+{{/each}}
+
+    {{#if withMoreLink}}
+    <p class="more" style="clear:both;">
+        <a href="{{{moreLinkHref}}}" class="more">&raquo; {{moreLinkText}}</a>
+    </p>
+    {{/if}}
+</section>

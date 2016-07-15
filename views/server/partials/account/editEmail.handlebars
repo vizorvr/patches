@@ -1,0 +1,25 @@
+<form id="editEmailForm" action="/account/profile" class="xhr panel" method="POST"> {{!-- #717 --}}
+    <input type="hidden" name="_csrf" value={{_csrf}}>
+
+    <p>Your email address is <span>{{profile.email}}</span></p>
+
+    {{#with profile}}<fieldset>
+
+        <div class="form-input" id="f_email_current_password">
+            <label for="email_currentpasswordinput">Current password</label>
+            <input type="password" class="required" placeholder="" name="current_password" id="email_currentpasswordinput" tabindex="11">
+            <a href="#" class="forgotPassword needhelp">Forgot your password?</a>
+            <span class="message"></span>
+        </div>
+
+        <div class="form-input" id="f_newemail">
+            <label for="email_passwordinput">New email address</label>
+            <input type="email" class="required" placeholder="{{user.email}}"  name="email" id="emailinput" tabindex="12">
+            <span class="message"></span>
+        </div>
+
+        <div class="modal-error" id="unknown_error"><span></span></div>
+    </fieldset>{{/with}}
+
+    <button class="" type="submit" data-svgref="icon-go">Update</button>
+</form>

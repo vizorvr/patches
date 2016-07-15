@@ -56,10 +56,6 @@ var userpageUI = new function() {
 			$('#newProjectModal').show();
 			$('.modal-backdrop.in').show();
 		});
-		$('#new-project-card').click(function() {
-			$('#newProjectModal').show();
-			$('.modal-backdrop.in').show();
-		});
 		$('#new-graph-card').click(function() {
 			$('#newGraphModal').show();
 			$('.modal-backdrop.in').show();

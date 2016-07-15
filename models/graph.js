@@ -68,6 +68,15 @@ graphSchema.index({ owner: 1, private: 1, deleted: 1 })
 // index owner+deleted for own userpage
 graphSchema.index({ owner: 1, deleted: 1 })
 
+// used for sorting
+graphSchema.virtual('updatedTS').get(function() {
+	return this.updatedAt ? this.updatedAt.getTime() : null
+})
+// added for consistency
+graphSchema.virtual('createdTS').get(function() {
+	return this.createdAt ? this.createdAt.getTime() : null
+})
+
 graphSchema.virtual('path').get(function() {
 	return '/'+this.owner+'/'+this.name
 })

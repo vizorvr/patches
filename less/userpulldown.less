@@ -1,0 +1,121 @@
+@default-pulldown-bg: #232333;
+@editor-pulldown-bg: @bg-light;
+@default-pulldown-link: #bbb;
+@editor-pulldown-link: #afbfdf;
+
+#btn-account-top {
+  outline: none;
+  border: 0;
+}
+
+#userpulldowncontainer:before {
+  border-top: 1px solid @bg-lightest;
+  border-left: 1px solid @bg-lightest;
+  background: @default-pulldown-bg;
+  width: 12px;
+  height: 12px;
+  display: block;
+  float:right;
+  position: relative;
+  right: 30px;
+  top: -7px;
+  content: " ";
+  transform: rotateZ(45deg);
+}
+
+#userpulldowncontainer {
+  position: absolute;
+  right: 0;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  width: 160px;
+  z-index: 1000;
+  background: #232333;
+  border:1px solid @bg-lightest;
+  padding: 0;
+  text-align: left;
+  ul {
+	padding: 8px 0;
+	margin: 0;
+  }
+  li {
+	line-height: 2;
+  }
+  a {
+	text-decoration: none;
+	display: block;
+	padding: 5px 20px;
+	color: @default-pulldown-link;
+	&:hover {
+	  background: @bg-bright;
+	  color: white;
+	}
+  }
+}
+
+
+.top-userpic {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    position: relative;
+    img {
+        width: 24px;
+        height: auto;
+        margin: -12px 0  0 -12px;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        padding: 0;
+        border: 0 none;
+        border-radius: 100%;
+    }
+}
+
+
+header nav li.account {
+  z-index: 100;
+  .top-userpic {
+	margin-top:0;
+  }
+}
+
+body.bEditor {
+  #userpulldowncontainer:before {
+    background: @editor-pulldown-bg;
+  }
+  #userpulldowncontainer {
+    top: 74px;
+    background: @editor-pulldown-bg;
+    a {
+      color: @editor-pulldown-link;
+    }
+  }
+  header nav li.account {
+    max-width: 58px;
+  }
+  .top-userpic {
+    display: block;
+    margin: 15px auto 6px;
+    overflow: hidden;
+  }
+}
+
+body.bMain {
+  #userpulldowncontainer {
+    top: 55px;
+  }
+  #btn-account-top {
+    padding-top:0;
+    padding-bottom: 0;
+  }
+  header nav li.account {
+    min-width: 72px;
+    max-width: 240px;
+    text-align: right;
+  }
+  .top-userpic {
+    vertical-align: middle;
+    margin-right: 5px;
+  }
+}

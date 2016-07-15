@@ -1,11 +1,26 @@
+{{#*inline 'action'}}
+    {{!-- context graph --}}
+    <button data-action="{{act}}" 	class="action {{act}} svg tiny {{class}}" data-svgref="{{icon}}">
+        {{#if text}}{{text}}{{else}}{{act}}{{/if}}</button>
+{{/inline}}
+
 <div class="actions flexcenter">
-	<button data-action="duplicate" {{!-- data-objectid="{{id}}" --}}
-									class="action duplicate svg tiny" 	data-svgref="icon-ca-duplicate">Duplicate</button>
-	<button data-action="share" 	class="action share svg tiny" 		data-svgref="icon-ca-share">Share</button>
+    {{>action act='share' text='Share' icon='icon-ca-share'}}
+
 	{{#if allowAllActions }}
-	<button data-action="publish" 	class="action publish svg tiny" 	data-svgref="icon-ca-publish">Publish</button>
-	<button data-action="download" 	class="action download svg tiny" 	data-svgref="icon-ca-download">Download</button>
-	<button data-action="move" 		class="action move svg tiny" 		data-svgref="icon-ca-move">Move</button>
-	<button data-action="delete" 	class="action delete warn svg tiny" data-svgref="icon-ca-delete">Delete</button>
+        {{> controls/toggle name='private' value=1 checked=private
+            class='small monochrome'
+            withLabel=false id=(concat 'graph_' _id '_public')
+            tooltip=(byindex private 'Make private' 'Make public')
+            markup=(unescape 'data-action="toggleprivate"')
+            }}
+
+        {{!--
+        duplicate
+        publish/unpublish
+        download
+        move
+        --}}
+        {{>action act='delete' text='Delete' class='warn' icon='icon-ca-delete'}}
 	{{/if}}
 </div>

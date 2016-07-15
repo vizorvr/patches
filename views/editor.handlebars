@@ -8,7 +8,14 @@
 <header id="editor-header" class="clearfix">
 	<div class="editor-header clearfix">
 		<div id="top-header-logo">
-			<svg class="vizor-top-logo"><use xlink:href="#vizor-top-logo"></use></svg>
+			<a
+                {{#if user.username}}
+                    href="/{{user.username}}" title="Back to your profile page"
+                {{else}}
+                    href="/" title="Back to the homepage"
+                {{/if}}
+
+            ><svg class="vizor-top-logo"><use xlink:href="#vizor-top-logo"></use></svg></a>
 		</div>
 		<div class="menu-bar">
 			<div class="buttons button-group" id="grpFileIO" >
@@ -48,7 +55,9 @@
 
 			<div class="buttons button-group" id="grpElse">
 				<button class="btn svg" id="btn-publish" data-svgref="icon-publish"><svg /> Publish</button>
-				<div id="account" class="button">{{!-- account-controller populates this --}}</div>
+				<div id="account" class="button">
+                    {{>userpulldown user}}
+                </div>
 			</div>
 		</div>
 	</div>
@@ -58,7 +67,11 @@
 			<button id="programModeBtn" class="svg" data-svgref="icon-mode-patch"><svg />Program</button>
 		</div>
 		<div id="graphNameLabel" class="auto-editable">
-			(untitled)
+			{{#if graph}}
+                {{graph.name}}
+            {{else}}
+                (untitled)
+			{{/if}}
 		</div>
 		<div id="graphSizeLabel"></div>
 		<div id="breadcrumb"></div>
@@ -215,14 +228,6 @@
 			</button>
 		</li>
 
-		{{!-- #694
-		<li>
-			<button class="btn" id="btn-v3" data-toggle="popover" data-placement="top" title="View 3">
-				<svg class="icon-vr"><use xlink:href="#icon-view-3"></use></svg>
-			</button>
-		</li>
-		--}}
-
 	</ul>
 </footer>
 <div id="drag-overlay">
@@ -244,6 +249,7 @@
 	boot.hasEdits = {{hasEdits}}
 
 	window.Vizor = {
+        pageObjects: {graphs:{}, profiles:{}},
 		hideWebVRButton: true,
 		isEditor: true,
 		releaseMode: {{releaseMode}},
@@ -252,11 +258,7 @@
 	}
 
 	{{#if graph}}
-		boot.graph = {
-			path: '{{graph.path}}',
-			url: '{{graph.url}}'
-		}
-
+        boot.graph = {{{json graph}}}
 		boot.graphUrl = boot.graph.url
 	{{/if}}
 
@@ -272,19 +274,7 @@
 		}
 
 		{{#if user.username}}
-			E2.models.user.set({
-				id: '{{user._id}}',
-				name: '{{user.name}}',
-				username: '{{user.username}}',
-				email: '{{user.email}}',
-				avatar: '{{user.avatar}}',
-				gravatar: '{{{user.gravatar}}}',
-				stats: {
-					views: {{user.stats.views}},
-					projects: {{user.stats.projects}}
-				}
-			})
-
+            E2.models.user.set({{{json user}}})
 			mixpanel.identify('{{user.username}}')
 		{{/if}}
 

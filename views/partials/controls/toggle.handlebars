@@ -1,0 +1,10 @@
+{{#if withLabel}}<label id="{{labelId}}" for="{{id}}">
+        {{#if checked}}{{labelOn}}{{else}}{{labelOff}}{{/if}}
+    </label>{{/if}}
+<label
+    {{#if tooltip}}
+        data-toggle='popover' data-placement='auto top' data-trigger='hover' data-delay='{"show":750, "hide":100}'
+        data-content='{{tooltip}}'
+    {{/if}}
+    class="toggleWrap"><input type="checkbox" id="{{id}}" class="toggle-rounded {{class}}" name="{{name}}" value="{{value}}"
+              {{#if checked}}checked{{/if}} {{markup}} /><span></span></label>

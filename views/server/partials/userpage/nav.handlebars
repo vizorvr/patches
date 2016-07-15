@@ -1,13 +1,36 @@
-<nav id='userpageNav' class='secondary sel_{navSelected}'>
-    <li id='nProjectsLi'><a>Projects</a></li>
-    <li id='nGraphs'><a>Graphs</a></li>
-    <li id='nSharedGraphs'><a>Shared Graphs</a></li>
-    <li id='nExamples'><a>Examples</a></li>
-    {{!--
-    <li id='nObjects'><a>Objects</a></li>
-    <li id='nTextures'><a>Textures</a></li>
-    <li id='nAudio'><a>Audio</a></li>
-    --}}
-    <li id='nSavedPatches'><a>Saved Patches</a></li>
-    <li id='nMyAssets'><a>My Assets</a></li>
-</nav>
+{{!-- userpage & account nav --}}
+
+{{#*inline 'email'}}
+    <a {{#if id}}id="{{id}}"{{/if}} class='email'
+       href='mailto:{{to}}{{#if subject}}?subject={{subject}}{{/if}}'>{{#if linkText}}{{linkText}}{{else}}{{to}}{{/if}}</a>
+{{/inline}}
+
+
+{{> srv/home/_header }}
+<div class="secondarynav">
+
+    <div class="in">
+        <div id="profileheader">
+            {{> profile profile}}
+        </div> {{!-- /#profileheader --}}
+    </div> {{!-- /.in --}}
+
+
+    {{#eq profile.username user.username}}{{!-- looking at own page --}}
+        <div class="in">
+            <nav id='userpageNav' class='secondary'>
+                <ul>
+                    <li id='nProjectsLi'><span><a href="/{{profile.username}}">Projects</a></span></li>
+                    <li id='nAccountSettingsLi'><span><a href="/account">Account Settings</a></span></li>
+                </ul>
+            </nav>
+            {{#if withProjectListFilter}}
+                <ul id='projectListFilter'>
+                    <li id="plfAll"><a href="/{{user.username}}">All</a></li>
+                    <li id="plfPublic"><a href="/{{user.username}}?public=1">Public</a></li>
+                    <li id="plfPrivate"><a href="/{{user.username}}?public=0">Private</a></li>
+                </ul>
+            {{/if}}
+        </div>
+    {{/eq}}
+</div>

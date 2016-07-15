@@ -290,9 +290,17 @@ function modelRoutes(
 
 	// GET /fthr/dunes-world -- PLAYER
 	app.get('/:username/:graph', function(req, res, next) {
-		req.params.path = '/'+req.params.username+'/'+req.params.graph;
-		graphController.graphLanding(req, res, next);
-	});
+		req.params.path = '/'+req.params.username+'/'+req.params.graph
+		graphController.graphLanding(req, res, next)
+	})
+
+	// POST /fthr/dunes-world -- USERPAGE
+	app.post('/:username/:graph',
+		passportConf.isAuthenticated,
+		function(req, res, next) {
+			req.params.path = '/'+req.params.username+'/'+req.params.graph
+			graphController.graphModify(req, res, next)
+		})
 
 	// DELETE /fthr/dunes-world
 	app.delete('/:username/:graph', 

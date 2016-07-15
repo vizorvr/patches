@@ -1,0 +1,41 @@
+{{#with profile}}
+ <section id="profileEditAvatar">
+    <form id="avatarUploadForm" method="post" class="xhr" action="/account/profile/avatar" enctype="multipart/form-data">
+        <div class="droptarget"></div>
+        {{#if profile.avatar}}
+        <img class="user avatar" src="{{profile.avatar}}" />
+        {{else}}
+        <img class="user gr avatar" src="{{profile.gravatar}}" />
+        {{/if}}
+
+        <button class="withWaitState spinner" type="button" style="margin-left:20px" onclick="document.getElementById('avatarUploadFile').click()">
+            Choose avatar
+            <svg class="waitOff"><use xlink:href="#icon-go"></use></svg>
+            <svg class="waitOn"><use xlink:href="#icon-button-spinner"></use></svg>
+        </button>
+
+        <button type="submit" class="hide" name="submit" id="avatarUploadSubmit">Upload</button>
+        <input type="file" class="hide" name="file" id="avatarUploadFile" onchange="if (this.value) document.getElementById('avatarUploadSubmit').click()" />
+    </form>
+</section>
+
+<section id="profileEditHeader">
+   <form id="headerUploadForm" method="post" class="xhr" action="/account/profile/header" enctype="multipart/form-data">
+       <div class="droptarget"></div>
+
+       <div class="user-header clearfix header-preview {{#unless profile.header}}noHeader{{/unless}}" style="background: url('{{profile.header}}') center center; background-size: cover"
+       ><div class="header-overlay"></div></div>
+
+       {{!-- <input type="url" id="headerUrlInput" placeholder="Copy a vizor project URL here" /> --}}
+       <button class="withWaitState spinner" type="button" style="margin:20px auto 20px 0" onclick="document.getElementById('headerUploadFile').click()">
+            Choose header image
+            <svg class="waitOff"><use xlink:href="#icon-go"></use></svg>
+            <svg class="waitOn"><use xlink:href="#icon-button-spinner"></use></svg>
+        </button>
+       <span class="explain" style="margin-left:20px">Please use 1400 x 450px to avoid scaling.</span>
+
+       <button type="submit" class="hide" name="submit" id="headerUploadSubmit">Upload</button>
+       <input type="file" class="hide" name="file" id="headerUploadFile" onchange="if (this.value) document.getElementById('headerUploadSubmit').click()" />
+   </form>
+</section>
+{{/with}}

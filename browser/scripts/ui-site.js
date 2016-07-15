@@ -1,4 +1,3 @@
-
 // requires bootbox
 if (typeof msg === 'undefined')
 	var msg = function(msg) {console.error(msg)};
@@ -70,6 +69,10 @@ var siteUI = new function() {
 			$body.addClass('orientationInitial');
 		}
 
+		Array.prototype.forEach.call(
+			document.body.querySelectorAll('[data-hideshow-target]'),
+			VizorUI.hideshow)
+
 		// common account forms
 		VizorUI.setupXHRForm(jQuery('#accountDetailsForm'));
 		VizorUI.setupXHRForm(jQuery('#resetPasswordForm'));
@@ -83,8 +86,9 @@ var siteUI = new function() {
 		VizorUI.enableScrollToLinks($body);
 		VizorUI.enablePopupEmbedLinks($body);
 
-		var signupCallback = function() {	// slush
-			window.location.href = '/edit';
+		// default if the signup form ever gets hit on a static page
+		var signupCallback = function() {
+			window.location.href = '/account';
 		};
 		var $signupForm = jQuery('#signupForm')
 		VizorUI.setupXHRForm($signupForm, signupCallback);
@@ -172,6 +176,8 @@ var siteUI = new function() {
 		else if (jQuery('body.bHome.bAbout').length > 0) {
 			that.initAbout()
 		}
+		// auto popovers
+		$('[data-toggle="popover"]').popover()
 
 	}
 
@@ -223,7 +229,7 @@ var siteUI = new function() {
 			e.stopPropagation()
 			VizorUI.openLoginModal()
 			.then(function(){
-				document.location.href="/edit"
+				document.location.href="/account"
 			})
 			return false
 		})
@@ -355,7 +361,6 @@ var siteUI = new function() {
 
 	}
 
-
 	// check if device resembles touch-capable.
 	this.isTouchCapable = function() {
 	  return !!('ontouchstart' in window);
@@ -393,7 +398,7 @@ var siteUI = new function() {
 
 		var devicePixelRatio = window.devicePixelRatio || 1
 
-		var isBrowser = VizorUI.isBrowser
+		var isBrowser = E2.util.isBrowser
 		$body
 			.toggleClass('uaSafari', isBrowser.Safari())
 			.toggleClass('uaFirefox', isBrowser.Firefox())
@@ -430,7 +435,7 @@ var siteUI = new function() {
 			}
 		}
 
-		if (VizorUI.isMobile.Android())
+		if (E2.util.isMobile.Android())
 			setTimeout(tagLandscapeOrPortrait, 300)
 		else
 			tagLandscapeOrPortrait()
@@ -440,7 +445,7 @@ var siteUI = new function() {
 
 	// check if orientation resembles portrait
 	this.isPortraitLike = function() {
-		if (VizorUI.isMobile.Android()) {
+		if (E2.util.isMobile.Android()) {
 			// http://stackoverflow.com/questions/30753522/chrome-43-window-size-bug-after-full-screen
 			// https://www.sencha.com/forum/showthread.php?303224-Wrong-orientation-for-Galaxy-Tab-devices
 			return window.innerWidth <= window.innerHeight
@@ -575,24 +580,31 @@ VizorUI.userIsLoggedIn = function() {
 	return (typeof user.username !== 'undefined') && (user.username !== '');
 };
 
-/***** INTERIM MODAL LAYER *****/
+/***** MODAL LAYER *****/
 VizorUI.modalOpen = function(html, heading, className, onEscape, opts) {
-	onEscape = (typeof onEscape !== 'undefined') ? onEscape : true;
-	opts = opts || {}
-	opts.message = html;
-	opts.onEscape = onEscape;
-	if (typeof opts.backdrop === 'undefined') opts.backdrop = onEscape;	// bb 4.4+
-	if ((typeof heading !== 'undefined') && heading) opts.title = heading;
-	if ((typeof className !== 'undefined') && className) opts.className = className;
-	var b = bootbox.dialog(opts);
+	opts = _.extend({
+		title: heading,
+		className : className,
+		onEscape: (typeof onEscape !== 'undefined') ? onEscape : true
+	}, opts)
 
-	var trackModalStatus = function(){siteUI.isModalOpen(); return true}
-	b
+	opts.message = html	// always overwrite
+	if (typeof opts.backdrop === 'undefined')
+		opts.backdrop = opts.onEscape	// bb 4.4+
+
+	var modal = bootbox.dialog(opts)
+
+	var trackModalStatus = function() {
+		siteUI.isModalOpen()
+		return true
+	}
+
+	modal
 		.on('hidden.bs.modal', trackModalStatus)
 		.on('shown.bs.modal', trackModalStatus)
 
-	return b
-};
+	return modal
+}
 
 VizorUI.modalClose = function(bb) {
 	if (typeof bb !== 'undefined') bb.modal('hide');
@@ -748,207 +760,6 @@ VizorUI._setupAccountUsernameField = function($input, currentUsername) {
 };
 
 /**
- * enables a form to submit and process its response via xhr call
- * validation is done in backend
- * @param $form
- * @param onSuccess
- */
-VizorUI.setupXHRForm = function($form, onSuccess) {	// see views/account/signup for example
-
-	var xhrEnabled = $form.data('xhrEnabled');
-	if (xhrEnabled) {
-		msg("ERROR: setupXHRForm but form already enabled " + $form.attr('id'))
-		return false;
-	}
-
-	if (typeof onSuccess !== 'function') {
-		onSuccess = function(response) {
-			if (response && (typeof response.redirect !== 'undefined') && (response.redirect)) {
-				window.location.href = response.redirect
-				return;
-			}
-			// append a message to our form
-			var message = jQuery('<p></p>')
-							.text(response.message)
-							.addClass('xhr success message');
-			$form.append(message);
-			$form.find(':focus').trigger('blur');
-
-			var detail = {
-				id: 		$form.attr('id'),
-				response: 	response
-			};
-			var successEvent = new CustomEvent(uiEvent.xhrFormSuccess, {detail: detail});
-			document.dispatchEvent(successEvent);
-		}
-	}
-
-	$form.find('input, textarea').each(function(){
-		var $this = jQuery(this);
-		var placeholder = $this.attr('placeholder');
-		var required = $this.hasClass('required');
-		var had_error = false;
-		var had_error_value = false;
-		if (placeholder) {
-			if (required) placeholder += '*';
-			$this.attr('placeholder', placeholder);
-			$this.on('focus', function(){
-				had_error = $this.parent().hasClass('error');
-				had_error_value = (had_error) ? $this.val() : false;
-				$this.parent().removeClass('error').find('span.message').html('');
-				$this.addClass('in_focus');
-				// ux
-				//	$this.data('placeholder', placeholder);
-				//	$this.attr('placeholder', '');
-				return true;
-			});
-
-			$this.on('blur', function(){
-				// ux
-				//	$this.attr('placeholder', $this.data('placeholder'));
-				$this.removeClass('in_focus');
-				if (required && had_error &&
-					(($this.val() === '') || ($this.val() === had_error_value))
-					) $this.parent().addClass('error');
-				return true;
-			});
-		}
-	});
-
-	var inProgress = false;
-	var $body = jQuery(document.body);
-
-	$form.submit(function(event) {
-
-		if (inProgress) return false;
-
-		// if (!can_submit) return false;
-
-		// future decision on forms without this set
-		var actionURL = $form.attr('action');
-		if (!actionURL) return true;
-
-		event.preventDefault();
-		var formData = $form.serialize();
-
-		$form.not('.keepMessage')
-			.removeClass('hasMessage')
-			.addClass('noMessage')
-
-		$form.find('p.xhr.success.message').remove();
-		$form.find('span.message').html('');
-		$form.find('div.form-input').removeClass('error');
-
-		var $unknownError = jQuery('#unknown_error', $form);
-		if ($unknownError.length < 1) $unknownError = jQuery('.genericError', $form);
-
-		if (!$form.hasClass('keepMessage'))
-			$unknownError.html('').hide();
-		
-		inProgress = true;
-		$body.addClass('loading');
-		$form.addClass('loading');
-
-		jQuery.ajax({
-			type:	'POST',
-			url:	actionURL,
-			data:	formData,
-			dataType: 'json',
-			error: function(err) {
-				inProgress = false;
-				var detail = {}
-				$body.removeClass('loading');
-				$form.removeClass('loading');
-				if (err.responseJSON) {
-					var json = err.responseJSON;
-					var errors
-					// best case expect err.responseJSON.errors[{msg:'',param:'',value:''}, ...]
-					if (json.errors instanceof Array) {
-						errors = json.errors
-					} // exceptions follow
-					else if (json instanceof Array) {
-						// validation returns array, but some simple responses only have message
-						errors = json;
-						msg("ERROR: #596 lazy format error");
-						console.log(errors);
-					}
-					else if (json.error && json.error.errors){	// graphController
-						errors = [];
-						var ers = json.error.errors;
-						for (var key in ers) {
-							if (ers.hasOwnProperty(key)) {
-								errors.push({
-									param: key,
-									msg: ers[key].message
-								});
-							}
-						}
-					}
-					else if (json.error && json.error.status) {
-						errors = [json.error];
-					}
-					else {
-						msg("ERROR: #596 lazy format error");
-						console.log(json);
-						errors = [{
-							param:	json.param || '',
-							msg:	json.message
-						}];
-					}
-					errors.map(function(ei) {
-						var $field = $form.find('#f_'+ei.param);
-
-						if (ei.param && (ei.msg || ei.message) && ($field.length>0)) {
-							$field.addClass('error')
-								.find('span.message').html(ei.msg || ei.message)
-						} else {
-							// in case no 'param' comes back
-							$unknownError.html($unknownError.html() + '<span>'+ (ei.msg || ei.message) + '</span>').show();
-						}
-					});
-					if (!errors.length) {	// should errors be empty
-						$unknownError.html($unknownError.html() + '<span>'+ (json.message) + '</span>').show();
-					}
-					detail = {
-						errors: errors,
-						json: json
-					}
-				} else {
-					if (err.status === 200) {	// the response was deemed an error but has good status (jQuery timeout / last resort)
-						$unknownError.html('<span>The server said: (' + err.status + '): ' + err.statusText +'</span>').show();
-					} else {
-						// in case no json comes back, e.g. just a code
-						$unknownError.html('<span>An error ('+err.status+') occurred. Please check all required fields</span>').show();
-					}
-					detail = {
-						err: err
-					}
-				}
-				$form[0].dispatchEvent(new CustomEvent('xhrerror', {detail:detail}))
-				$form
-					.removeClass('noMessage')
-					.addClass('hasMessage')
-			},
-			success: function() {
-				inProgress = false;
-				$body.removeClass('loading');
-				onSuccess.apply(this,arguments);
-			}
-
-		});
-		return false;
-	});
-
-	$form
-		.data('xhrEnabled', true)
-		.attr('data-xhrEnabled', 'true')
-
-	$form
-			.removeClass('hasMessage')
-			.addClass('noMessage')
-};
-
-/**
  * replaces all svg buttons that have a data-svgref attribute,
  * if class .tiny also moving text from the content of the button to a popover tooltip
  * @param $selector jQuery
@@ -973,12 +784,16 @@ VizorUI.replaceSVGButtons = function($selector) {
 				$button.popover({
 					content: $button.text(),
 					delay: {
-						show: 1000,
+						show: 750,
 						hide: 100
 					},
 					placement: 'auto top',
 					trigger: 'hover'
-				});
+				})
+
+				$button.click(function(){
+					$button.popover('hide')
+				})
 			} else {
 				if (!$button.attr('title'))
 					$button.attr('title', $button.text())
@@ -997,57 +812,145 @@ VizorUI.replaceSVGButtons = function($selector) {
 };
 
 /**
+ * makes an element hide or show on trigger click
+ * @example <button data-hideshow="hide" data-target="hstarget">click</button><div id="hstarget">...</div>
+ * @param triggerEl
+ * @emits hideshow:changed on triggerEl when its visibility changes
+ */
+VizorUI.hideshow = function(triggerEl) {
+	if (triggerEl.hideshow)
+		triggerEl.removeEventListener('click', triggerEl.hideshow._listener)
+
+	var initialState = triggerEl.dataset['hideshow']
+	triggerEl.hideshow = {
+		set : function(state) {
+			this.visible = (state === 'show')
+		},
+		toggle : function() {
+			this.visible = !this.visible
+		},
+		get default() {
+			return initialState
+		},
+		get target() {
+			return document.getElementById(triggerEl.dataset['hideshowTarget'])
+		},
+		get visible() {
+			return this.target.dataset['hideshow'] === 'show'
+		},
+		set visible(v) {
+			var target = this.target
+			target.dataset['hideshow'] = triggerEl.dataset['hideshow'] = v ? 'show' : 'hide'
+			target.dispatchEvent(new CustomEvent('hideshow:changed', {detail:{visible: this.visible, trigger: triggerEl}}))
+			return !!v
+		},
+		_listener : function(e) {
+			e.preventDefault()
+			e.currentTarget.hideshow.toggle()
+		}
+	}
+
+	triggerEl.hideshow.set(initialState)
+	triggerEl.addEventListener('click', triggerEl.hideshow._listener)
+}
+
+/**
  * wires up svg buttons on asset card to fire events as per assetUIEvent
  * @param $card
  */
 VizorUI.setupAssetCard = function($card) {
 
-	VizorUI.replaceSVGButtons($card);
-
-	jQuery('button', $card).off('.assetUI');	// remove just us from all buttons
-
-	jQuery('button.action', $card).on('click.assetUI', function(e){
-		var $this = jQuery(e.currentTarget);
-		$card = $this.parents('article.asset.card').first();
-		if (!$card) return true;
+	var dispatchAction = function(e){
+		var $this = jQuery(e.currentTarget)
+		$card = $this.parents('article.asset.card').first()
+		if (!$card) return true
 		var detail = {
 			id: 	$card.data('objectid'),
 			url: 	$card.data('url'),
 			type: 	$card.data('asset-type'),
-			action:	$this.data('action')
-		};
-		var eventName = detail.type + '.' + detail.action;	// e.g. graph.open, project.delete
-		var cardEvent = new CustomEvent(eventName, {detail: detail});
-		document.dispatchEvent(cardEvent);
-		return true;
-	})
-
-	function formatDate(date) {
-		var mdate = moment(date)
-		var now = moment(Date.now())
-		
-		if (mdate.isSame(now, 'd'))
-			return moment(date).calendar()
-
-		if (mdate.isSame(now, 'y'))
-			return moment(date).format('MMM Do h:mm A')
-
-		return moment(date).format('ll h:mm A')
+			action:	$this.data('action'),
+			triggeredByEl: e.currentTarget
+		}
+		var eventName = detail.type + '.' + detail.action	// e.g. graph.open, project.delete
+		var cardEvent = new CustomEvent(eventName, {detail: detail})
+		document.dispatchEvent(cardEvent)
+		return true
 	}
 
-	var $updatedAt = $('.updatedAt', $card)
-	var date = $updatedAt.text()
-	$updatedAt.text(formatDate(date))
+	VizorUI.replaceSVGButtons($card);
 
-	return true;
+	jQuery('button', $card).off('.assetUI');	// remove just us from all buttons
+
+	jQuery('button.action', $card).on('click.assetUI', dispatchAction)
+	jQuery('input[type=checkbox]', $card).on('change.assetUI', dispatchAction)
+
+	return true
+}
+
+// returns a promise for a confirmation dialog
+VizorUI.requireConfirm = function(message) {
+	return new Promise(function(resolve, reject){
+		if (confirm(message || 'please confirm?'))
+			resolve()
+		else
+			reject()
+	})
 }
 
 VizorUI.toggleAccountDropdown = function() {
 	if (VizorUI.userIsLoggedIn()) {
-		jQuery('#userPullDown').toggle();
+		jQuery('#userPullDown').toggle()
 	}
-	return false;
+	return false
+}
+
+/**
+ * data : {	origin:		Vizor.origin,		e.g. http://localhost:8000
+ * 			shareURL : 	Vizor.shareURL,		e.g. http://localhost:8000/eesn/flamingofront
+ * 			embedSrc : 	Vizor.embedSrc		e.g. http://localhost:8000/embed/eesn/flamingofront
+ * 		   }
+ */
+VizorUI.graphShareDialog = function(data, opts) {
+	data.autoplay = true
+	data.noHeader = false
+	opts = _.extend({
+		title: "Share this"
+	}, opts)
+
+	var html = E2.views.partials.playerShareDialog(data)
+	var modal = VizorUI.modalOpen(html, opts.title, 'player_share doselect_all', undefined, opts)
+	modal
+		.find('textarea, input')
+		.on('mouseup touchup', function (e) {
+			e.currentTarget.select()
+			e.currentTarget.setSelectionRange(0, 9999)
+			e.preventDefault()
+			return true
+		})
+		.on('focus', function (e) {
+			e.preventDefault()
+			e.stopPropagation()
+			return false
+		})
+
+	siteUI.initCollapsible(modal)
+	return modal
 }
 
 
-jQuery('document').ready(siteUI.init.bind(siteUI));
+VizorUI.renderGraphTile = function(tileData, withActions, withAllActions) {
+	var data = _.extend(_.cloneDeep(tileData), {
+			withActions:withActions,
+			allowAllActions: withAllActions
+		})
+	return E2.views.partials.assets.graphCard(data)
+}
+
+
+jQuery('document').ready(function(){
+	if (!window)
+		return
+	window.VizorUI.isMobile = E2.util.isMobile
+	window.VizorUI.isBrowser = E2.util.isBrowser
+	siteUI.init()
+})

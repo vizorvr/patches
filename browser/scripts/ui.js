@@ -198,6 +198,16 @@ VizorUI.prototype.init = function(e2) {	// normally the global E2 object
 
 	this.pluginDocsCache = new PluginDocsCache()
 
+	if (boot && boot.graph && boot.graph.name) {
+		var parentName = boot.graph.name
+		E2.core.on('forked', function () {
+			if (!parentName.endsWith(' copy')) {
+				boot.graph.name = parentName + ' copy'
+				that.updateSceneName(boot.graph.name)
+			}
+		})
+	}
+
 	this._initialised = true;
 	this.emit(uiEvent.initialised, this);
 }
@@ -529,13 +539,22 @@ VizorUI.prototype.openPublishGraphModal = function() {
 	var assetdata = _.clone(E2.app.graphStore.getGraphSize())	// {size, numAssets, numNodes, hasAudio}
 
 
+	var prefs = E2.models.user.get('preferences')
+	var defaultPublic = prefs ? !!prefs.publishDefaultPublic : true
+
 	var data = {
 		path:	        graphname,
 		graph:	        graphdata,
 		previewImage:   graphpreview,
 		assetdata:		assetdata,
-		isPublic:		true,
-		sizeFormatted: 	siteUI.formatFileSize(assetdata.size)
+		isPublic:		defaultPublic,
+		sizeFormatted: 	siteUI.formatFileSize(assetdata.size),
+		name:			''
+	}
+
+	if (boot && boot.graph) {
+		data.name = boot.graph.name
+		data.isPublic = !boot.graph.private
 	}
 
 	var openSaveGraph = function(dfd) {
@@ -719,21 +738,24 @@ VizorUI.prototype.showStartDialog = function(forceShow) {
 		times = 0
 	}
 
-	var isLogged = VizorUI.userIsLoggedIn()
-
-	var showDialog = forceShow ||
-		((isLogged &&  times <= 2) || (!isLogged &&  times <= 5))
-
+	var stats = E2.models.user.get('stats') || {}
+	var numPublished = stats.projects || 0
+	var showDialog = true
 	if (!forceShow) {
-		var d = new Date()
-		d.setTime(d.getTime() + (3 * 86400 * 1000))	// 3 days
-		Cookies.set(cookieName, {seen: ++times}, {expires: d})
+		times++
+		if (times > 3 || numPublished > 0)
+			showDialog = false
 	}
 
+	// return early in case of not showing dialog
 	if (!showDialog) {
 		dfd.resolve(selectedTemplateUrl)
 		return dfd.promise
 	}
+
+	var d = new Date()
+	d.setTime(d.getTime() + (3 * 86400 * 1000))	// 3 days
+	Cookies.set(cookieName, {seen: times}, {expires: d})
 
 	var welcomeModal = VizorUI.modalOpen(
 		E2.views.patch_editor.intro({user:E2.models.user.toJSON()}),
@@ -813,6 +835,11 @@ VizorUI.prototype.updateProgressBar = function(percent) {
 		if ($(this).width() === winWidth)
 			$(this).fadeOut('slow');
 	}});
+}
+
+VizorUI.prototype.updateSceneName = function(newName) {
+	var nameLabel = document.getElementById('graphNameLabel')
+	nameLabel.innerText = newName
 }
 
 

@@ -5,14 +5,16 @@
 		{{/each}}
 	</ul>
 {{/if}}
+
 <form method="POST" action="/account/profile" id="accountDetailsForm"
 	  class="panel form-horizontal {{#if errors}}{{#each errors}}err_{{param}} {{/each}}{{/if}}">
     <input type="hidden" name="_csrf" value={{_csrf}}>
+    {{#with profile}}
     <fieldset>
 
         <div class="form-input" id="f_name">
             <label for="name_id">Name</label>
-            <input type="text" class="required" placeholder="Your name" name="name" id="name_id" value="{{user.name}}" tabindex="0">
+            <input type="text" class="required" placeholder="Your name" name="name" id="name_id" value="{{name}}" tabindex="0">
             <span class="message"></span>
         </div>
 
@@ -26,18 +28,21 @@
 
         <div class="form-input" id="f_email">
             <label for="email_id">Email</label>
-            <input type="email" class="required" name="email" value="{{user.email}}" id="email_id" placeholder="Email" tabindex="0" >
+            <input type="email" class="required" name="email" value="{{email}}" id="email_id" placeholder="Email" tabindex="0" >
             <span class="message"></span>
         </div>
 
         <div class="modal-error" id="unknown_error"><span></span></div>
     </fieldset>
+    {{/with}}
 
     <button id="update-profile-btn" class="sign-btn svg" type="submit">
         <span>Update Account</span>
         <svg class="icon-sign-in"><use xlink:href="#icon-go"></use></svg>
     </button>
+
 </form>
+
 {{#if modal }}
 <div class="modal-footer clearfix twocol">
 	{{!-- <div class="col left"><a href="#/account/delete" id="delete_account">Delete account</a></div> #704 --}}

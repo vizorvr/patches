@@ -1,35 +1,78 @@
-function AccountController(handlebars) {
+function AccountController() {
 	EventEmitter.call(this)
 
+	this._model = E2.models.user
 	this.dom = {
-		container : jQuery('#account')
-	};
+		accountDropdown : jQuery('#account'),
+		profilePanel: jQuery('#profileheader'),
+		userHeader: jQuery('body.bProfile header, body.bUserpage header')
+	}
 
-	this._handlebars = handlebars || window.Handlebars;
-	E2.models.user.on('change', this.renderLoginView.bind(this));
+	E2.models.user.on('change', this.renderLoginView.bind(this))
+	E2.models.user.on('change', this.renderProfileView.bind(this))
+	E2.models.user.on('change', this.renderHeaderView.bind(this))
 
-	this.renderLoginView(E2.models.user)
+	// bind dropdown
+	this._bindModalLinks(this.dom.accountDropdown)
+
 }
 
 AccountController.prototype = Object.create(EventEmitter.prototype)
 
-AccountController.prototype.renderLoginView = function(user) {
-	var viewTemplate = E2.views.partials.userpulldown
-	var html = viewTemplate({
-		user: user.toJSON()
-	})
+AccountController.prototype._renderView = function(user, view, container, cb) {
+	if (!container.length)
+		return
 
-	$('a, button', this.dom.container).off('.accountController');
-	this.dom.container.html(html);
+	var data = user.toJSON()
 
-	this._bindModalLinks(this.dom.container)
+	var html = view(data)
+
+	$('a, button', container).off('.accountController')
+	container.html(html)
+
+	if (cb)
+		cb(container, user)
+
 	this.emit('redrawn')
+}
+
+AccountController.prototype.renderLoginView = function(user) {
+	if (!this.dom.accountDropdown.length)
+		return
+
+	return this._renderView(user, 
+		E2.views.partials.userpulldown,
+		this.dom.accountDropdown,
+		this._bindModalLinks.bind(this)
+	)
+}
+
+AccountController.prototype.renderHeaderView = function(user) {
+	if (!this.dom.userHeader.length)
+		return
+
+	if (this.dom.userHeader.data('uid') !== user.id)
+		return
+
+	var profile = user.get('profile')
+
+	this.dom.userHeader.css({
+		'background-image': 'url('+(profile.header || '')+')'
+	})
+}
+
+AccountController.prototype.renderProfileView = function(user) {
+	if (!this.dom.profilePanel.length)
+		return
+	
+	return this._renderView(user, 
+		E2.views.partials.profile,
+		this.dom.profilePanel
+	)
 }
 
 AccountController.prototype._bindModalLinks = function(el, dfd) {
 	var that = this;
-
-	var $userPullDown = jQuery('#userPullDown', el);
 
 	$('a, button', el).off('.accountController');
 
@@ -54,28 +97,17 @@ AccountController.prototype._bindModalLinks = function(el, dfd) {
 		return false;
 	});
 
-	$('a.account', el).on('click.accountController', function(evt) {
-		evt.preventDefault();
-		VizorUI.modalClose();
-		that.openAccountModal(dfd);
-		if ($userPullDown.is(':visible'))
-			$userPullDown.hide();
-		return false;
-	});
+	if (el.length)
+		Array.prototype.forEach.call(el[0].querySelectorAll('[data-hideshow-target]'), VizorUI.hideshow)
 
-	$('#btn-account-top', el).on('click.accountController', function(evt){
-		evt.preventDefault();
-		VizorUI.modalClose();
-		$userPullDown.toggle();
-		return false;
-	});
 }
 
 AccountController.prototype.openLoginModal = function(dfd) {
 	dfd = dfd || when.defer();
 	var loginTemplate = E2.views.partials.account.login;
 
-	var $modal = VizorUI.modalOpen(loginTemplate(), 'Sign in', 'nopad mLogin');
+	var data = {profile:this._model.toJSON()}
+	var $modal = VizorUI.modalOpen(loginTemplate(data), 'Sign in', 'nopad mLogin');
 	this._bindModalLinks($modal, dfd);
 
 	var onSuccess = function(response) {
@@ -199,7 +231,11 @@ AccountController.prototype.openChangePasswordModal = function(dfd) {
 AccountController.prototype.openAccountModal = function(dfd) {
 	var that = this;
 	dfd = dfd || when.defer();
-	var accountTemplate = E2.views.partials.account.account({user: E2.models.user.toJSON(), modal:true});
+	var data = {
+		profile: this._model.toJSON(),
+		modal: true
+	}
+	var accountTemplate = E2.views.partials.account.account(data);
 
 	E2.track({ event: 'accountDialogOpened' })
 
@@ -211,13 +247,6 @@ AccountController.prototype.openAccountModal = function(dfd) {
 		that.openChangePasswordModal(dfd);
 	});
 
-	// #704
-	/*
-	jQuery('a#deleteAccountLink', $modal).on('click', function(evt) {
-		evt.preventDefault();
-		// ...
-	});
-	*/
 
 	var onSuccess = function(response) {
 		var user = response.data;

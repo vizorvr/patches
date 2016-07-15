@@ -504,10 +504,10 @@ function setupModelRoutes(mongoConnection) {
 		res.status(err.status || 500);
 
 		if (req.xhr)
-			return res.json({ message: err.message });
+			return res.json({ success: false, message: err.message });
 
 		res.render('error', {
-			layout: 'min',
+			layout: 'errorlayout',
 			message: err.message,
 			error: {}
 		});
