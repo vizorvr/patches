@@ -17,6 +17,11 @@ if (typeof VizorUI === 'undefined')
  */
 VizorUI.makeStore = function (obj, objClass, objId) {
 
+	if (typeof obj !== 'object') {
+		console.warn('obj is not object')
+		return obj
+	}
+
 	var changed = function(className, k, v) {
 		// emit changed:objClass, objId, k, v
 		// e.g. changed:graph, {id: '5abc723781273', class: 'graph', key: 'stats.views', value: 4
@@ -29,7 +34,6 @@ VizorUI.makeStore = function (obj, objClass, objId) {
 		}
 		var e = new CustomEvent('changed:'+className, {detail:detail})
 		document.dispatchEvent(e)
-		console.info('changed:'+className, detail)
 	}
 
 	var makeObj = function(o, className, id, stack) {
@@ -135,4 +139,12 @@ VizorUI.pageStore = function() {
 
 }
 
-document.addEventListener('DOMContentLoaded', VizorUI.pageStore)
+
+if (typeof(module) !== 'undefined') {
+	module.exports = {
+		pageStore : VizorUI.pageStore,
+		makeStore : VizorUI.makeStore
+	}
+} else {
+	document.addEventListener('DOMContentLoaded', VizorUI.pageStore)
+}
