@@ -680,6 +680,7 @@ div.bootbox.modal {
 }
 
 
+
 // welcome slides
 
 @modal-welcome-width: 588px;
@@ -701,17 +702,204 @@ div.bootbox.modal {
   .launch-button-macro;
 }
 
-.bootbox.modal.editorIntro {
-  .bootbox-close-button {
-	z-index: 10;
-  }
-  .modal-content {
-	left: -94px;
-	top: 40px;
-	overflow: hidden;
-	.modal-intro-tight;
-	.modal-intro-dimensions;
-  }
+
+div#helpscreen.bootbox.modal .modal-dialog {
+    width: 716px;
+    height: 485px;
+}
+div#helpscreen.bootbox.modal .modal-content {
+    border: 0;
+
+    button.bootbox-close-button {
+        top: -4px;
+        right: -34px;
+
+        svg {
+            width: 20px;
+            height: 20px;
+            stroke-width: 3px !important;
+        }
+    }
+    .modal-body {
+        padding: 0;
+        border: 0;
+        background: #f2f2f2;
+    }
+    .bootbox-body {
+        //background: #f2f2f2;
+    }
 }
 
+#helpContainer {
 
+    background: #f2f2f2;
+    .noselect_all;
+    nav {
+        background: #181c2a;
+        display: flex;
+        a {
+            color: @editor-text-inactive;
+            flex: 1;
+            font: 500 12px/42px 'Source Sans Pro', 'Source Sans', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            &[data-active='true'] {
+                color: @editor-text-hover;
+                background: #272E47;
+            }
+            &:hover {
+                color: white;
+            }
+        }
+        a+a {
+            border-left: 1px solid transparent;
+        }
+        a:not([data-active])+a:not([data-active]) {
+            border-left: 1px solid rgba(255,255,255,0.1);
+        }
+    }
+    @keyframes loadflash {
+        to { color: #fff; }
+    }
+    section {
+        margin: 5px 10px;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        padding: 5px 10px;
+        background: #f2f2f2;
+        height: 420px;
+        &.loading {
+            position: relative;
+            >* {
+                opacity: 0.5;
+            }
+            &:after {
+                .center-neg-margin(120px,40px);
+                line-height: 40px;
+                border-radius: 4px;
+                content: "Loading...";
+                background: #272e47;
+                color: #AFBFDF;
+                display: block;
+                letter-spacing: 0.5px;
+                animation: loadflash 0.3s infinite alternate;
+            }
+        }
+        &#helpRecent, &#helpTemplates, &#helpExamples {
+            .scrollbar;
+
+            &::-webkit-scrollbar-track-piece {
+                background: white;
+            }
+            &::-webkit-scrollbar-thumb {
+                background: rgba(0,0,0,0.3);
+            }
+            max-height: 420px;
+            overflow-y: auto;
+
+            .graph.card .meta .user {display: none}
+        }
+    }
+
+    .graph.card {
+        margin: 10px 0;
+        width: 200px;
+        height:185px;
+        flex-grow: 0;
+        .mainaction.open {display: none}
+        .image {
+            height: 130px;
+            background-position: 0 0;
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+        div.meta {
+            top: 130px;
+            height:55px;
+            padding: 5px 15px;
+            h4 {
+                margin: 0;
+                padding-top: 0;
+                padding-bottom: 0;
+                text-align: left;
+                font-weight: 400;
+                font-size: 13px;
+                color: #444;
+            }
+            p {
+                text-align: left;
+            }
+
+            a {
+                color: #454545;
+                &:hover {
+                    color: @brand-primary;
+                }
+            }
+        }
+    }
+    #helpLinks {
+        h2 {
+            width:100%;
+        }
+        a.svg {
+            display: block;
+            position:relative;
+            width: 200px;
+            height: 185px;
+            margin: 10px 0;
+            flex-grow: 0;
+            color: white;
+            border-radius: 4px;
+            background-size: 100%;
+            background-position: center center;
+            transition: background-size 0.1s linear;
+            font-size: 13px;
+            font-weight: 500;
+            &::before {
+                z-index: 1;
+                content: " ";
+                display: block;
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                border-radius: 4px;
+                background: transparent;
+                background-image: radial-gradient(circle, rgba(0,0,0,0.6), rgba(0,0,0,0.5));
+                transition: opacity 0.1s linear;
+                opacity:0.75;
+            }
+            &:hover::before {
+                opacity: 1;
+            }
+            &:hover {
+                background-size: 110%;
+            }
+
+            img, svg, span {
+                position: absolute;
+            }
+            svg {
+                z-index: 2;
+
+                width: 100px;
+                height: 100px;
+
+                left:50%;
+                top:50%;
+                margin-left: -50px;
+                margin-top: -50px;
+            }
+            span {
+                z-index: 3;
+                left: 0;
+                right: 0;
+                top: 118px;
+                display: block;
+                text-align: center;
+            }
+        }
+    }
+}
