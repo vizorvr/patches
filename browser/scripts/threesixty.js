@@ -89,8 +89,8 @@ E2.ui.ui360 = new function() {
 			return false
 		})
 
-		Vizor.shareURL = window.location.origin  + asset.path
-		Vizor.embedSrc = window.location.origin  + 'embed/' + asset.path
+		Vizor.shareURL = window.location.origin + asset.path
+		Vizor.embedSrc = window.location.origin + '/embed/' + asset.path
 		playerUI.headerEnableAutoFadeout()
 		history.pushState({}, '', asset.path)
 
