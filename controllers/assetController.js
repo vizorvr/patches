@@ -76,7 +76,7 @@ AssetController.prototype._makeGridFsPath = function(req) {
 	return '/'+this._modelName+'/'+file.sha1+fsPath.extname(file.path)
 }
 
-// eg. GET /:username/presets.json
+// eg. GET /:username/patches.json
 AssetController.prototype.findByCreatorName = function(req, res, next) {
 	this._service
 	.findByCreatorName(req.params.username)

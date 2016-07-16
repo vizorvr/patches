@@ -358,7 +358,7 @@ exports.setupGlobals = function() {
 	}
 
 	global.TextureCache = function() {}
-	global.PresetManager = function() {}
+	global.PatchManager = function() {}
 	
 	require(requireRoot+'/scripts/commands/graphEditCommands')
 	exports.runScript(requireRoot+'scripts/commands/graphEditCommands.js')

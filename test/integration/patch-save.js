@@ -1,8 +1,7 @@
 var testId = rand()
-process.env.MONGODB = 'mongodb://localhost:27017/preset'+testId
-process.env.RETHINKDB_NAME = 'preset' + testId
+process.env.MONGODB = 'mongodb://localhost:27017/patch'+testId
 
-var Preset = require('../../models/preset')
+var Patch = require('../../models/patch')
 var request = require('supertest')
 var app = require('../../app.js')
 var fs = require('fs')
@@ -17,7 +16,7 @@ function rand() {
 	return Math.floor(Math.random() * 10000)
 }
 
-describe('Preset', function() {
+describe('Patch', function() {
 	var username = 'user'+rand()
 	var deets = {
 		name: 'Foo Bar',
@@ -29,9 +28,8 @@ describe('Preset', function() {
 
 	var agent = request.agent(app)
 
-	function sendPreset(name, cb)
-	{
-		return agent.post('/'+deets.username+'/presets').send({
+	function sendPatch(name, cb) {
+		return agent.post('/'+deets.username+'/patches').send({
 			name: name,
 			graph: graphData
 		})
@@ -50,10 +48,10 @@ describe('Preset', function() {
 	})
 
 	it('should use the expected name, owner, path, and url', function(done) {
-		var name = 'This is a preset'
-		var expectedPath = '/'+username+'/'+'this-is-a-preset.json'
+		var name = 'This is a patch'
+		var expectedPath = '/'+username+'/patches/this-is-a-patch.json'
 
-		sendPreset(name, function(err, res) {
+		sendPatch(name, function(err, res) {
 			if (err) return done(err)
 			var json = {
 				name: res.body.name,
@@ -63,7 +61,7 @@ describe('Preset', function() {
   			expect({
 				name: name,
 				path: expectedPath,
-				url: '/data/preset'+expectedPath
+				url: '/data'+expectedPath
 			}).to.deep.equal(json)
 			done()
 		})
@@ -72,7 +70,7 @@ describe('Preset', function() {
 	it('should return data by url', function(done) {
 		var path = 'button-'+rand()
 
-		sendPreset(path, function(err, res) {
+		sendPatch(path, function(err, res) {
 			if (err) return done(err)
 			request(app).get(res.body.url)
 			.expect(200).end(function(err, res)
@@ -88,26 +86,26 @@ describe('Preset', function() {
 		var path = '/blah/quux/bar/foo.png'
 		var expectedPath = '/'+username+'/foo.json'
 
-		sendPreset(path, function(err, res) {
+		sendPatch(path, function(err, res) {
 			if (err) return done(err)
 			expect(res.body.path).to.equal(expectedPath)
 			done()
 		})
 	})
 
-	it('should list user presets', function(done) {
-		Preset.remove().exec(function(err) {
+	it('should list user patches', function(done) {
+		Patch.remove().exec(function(err) {
 			if (err) return done(err)
 
-			sendPreset('Awesomesauce Preset', function(err, res) {
+			sendPatch('Awesomesauce Patch', function(err, res) {
 				if (err) return done(err)
 				request(app)
-				.get('/'+username+'/presets')
+				.get('/'+username+'/patches')
 				.expect(200).end(function(err, res)
 				{
 					if (err) return done(err)
 					expect(res.body.length).to.equal(1)
-					expect(res.body[0].name).to.equal('Awesomesauce Preset')
+					expect(res.body[0].name).to.equal('Awesomesauce Patch')
 					done()
 				})
 			})

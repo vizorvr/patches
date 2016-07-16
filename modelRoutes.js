@@ -31,7 +31,7 @@ function modelRoutes(
 	var GraphController = require('./controllers/graphController');
 	var ImageController = require('./controllers/imageController');
 	var SceneController = require('./controllers/sceneController');
-	var PresetController = require('./controllers/presetController');
+	var PatchController = require('./controllers/patchController');
 
 	var AssetService = require('./services/assetService');
 	var GraphService = require('./services/graphService');
@@ -72,8 +72,8 @@ function modelRoutes(
 		gfs
 	);
 
-	var presetController = new PresetController(
-		new AssetService(require('./models/preset')),
+	var patchController = new PatchController(
+		new AssetService(require('./models/patch')),
 		gfs
 	);
 
@@ -92,7 +92,7 @@ function modelRoutes(
 		video: videoController,
 		json: jsonController,
 
-		preset: presetController
+		patch: patchController
 	}
 
 	function getController(req, res, next) {
@@ -242,13 +242,13 @@ function modelRoutes(
 	})
 
 	// -----
-	// User Preset routes
-	app.get('/:username/presets', function(req, res, next) {
-		presetController.findByCreatorName(req, res, next);
+	// User Patch routes
+	app.get('/:username/patches', function(req, res, next) {
+		patchController.findByCreatorName(req, res, next);
 	})
 
-	app.post('/:username/presets', function(req, res, next) {
-		presetController.save(req, res, next);
+	app.post('/:username/patches', function(req, res, next) {
+		patchController.save(req, res, next);
 	})
 
 	// -----

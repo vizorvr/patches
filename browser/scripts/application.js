@@ -1518,12 +1518,12 @@ Application.prototype.loadGraph = function(graphPath) {
 	return dfd.promise
 }
 
-Application.prototype.onSaveAsPresetClicked = function() {
+Application.prototype.onSaveAsPatchClicked = function() {
 	var graph = this.selectionToObject(this.selectedNodes, this.selectedConnections)
-	this.openPresetSaveDialog(JSON.stringify({ root: graph }))
+	this.openPatchSaveDialog(JSON.stringify({ root: graph }))
 }
 
-Application.prototype.openPresetSaveDialog = null;	// ui replaces this
+Application.prototype.openPatchSaveDialog = null;	// ui replaces this
 
 
 Application.prototype.onPublishClicked = function() {
@@ -1992,7 +1992,7 @@ Application.prototype.setupEditorBindings = function() {
 	E2.dom.viewSourceButton.click(E2.ui.viewSource);
 
 	E2.dom.saveACopy.click(E2.app.onSaveACopyClicked.bind(E2.app))
-	E2.dom.saveAsPreset.click(E2.app.onSaveAsPresetClicked.bind(E2.app))
+	E2.dom.saveAsPatch.click(E2.app.onSaveAsPatchClicked.bind(E2.app))
 	E2.dom.open.click(E2.app.onOpenClicked.bind(E2.app))
 	E2.dom.btnNew.click(E2.app.onNewClicked.bind(E2.app))
 	E2.dom.forkButton.click(E2.app.onForkClicked.bind(E2.app))
@@ -2022,8 +2022,8 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 
 	this.midPane = new E2.MidPane()
 
-	this.presetManager = new PresetManager('/presets')
-	this.presetManager.on('open', function(patchMeta, json, targetObject3d) {
+	this.patchManager = new PatchManager()
+	this.patchManager.on('open', function(patchMeta, json, targetObject3d) {
 		if (that.isWorldEditorActive()) {
 			that.worldEditor.onPatchDropped(patchMeta, json, targetObject3d)
 		} else {
@@ -2185,7 +2185,7 @@ E2.InitialiseEngi = function(loadGraphUrl) {
 
 	E2.dom.btnAssets = $('#btn-assets');
 	E2.dom.btnInspector = $('#btn-inspector');
-	E2.dom.btnPresets = $('#btn-presets');
+	E2.dom.btnPatches = $('#btn-patches');
 	E2.dom.btnSavePatch = $('#btn-save-patch');
 	
 	E2.dom.btnGraph = $('#btn-graph');
@@ -2208,8 +2208,8 @@ E2.InitialiseEngi = function(loadGraphUrl) {
 	E2.dom.assetsToggle = $('#assets-toggle');
 	E2.dom.assetsClose = $('#assets-close');
 	
-	E2.dom.presetsLib = $('#presets-lib');
-	E2.dom.presets_list = $('#presets');
+	E2.dom.patchesLib = $('#patches-lib');
+	E2.dom.patches_list = $('#patches');
 	E2.dom.objectsList = $('#objects');
 	
 	E2.dom.canvas_parent = $('#canvas_parent');
@@ -2228,8 +2228,8 @@ E2.InitialiseEngi = function(loadGraphUrl) {
 	E2.dom.chat = $('#chat');
 	
 	E2.dom.peopleTab = $('#peopleTab');
-	E2.dom.presetsToggle = $('#presets-toggle');
-	E2.dom.presetsClose = $('#presets-close');
+	E2.dom.patchesToggle = $('#patches-toggle');
+	E2.dom.patchesClose = $('#patches-close');
 	
 	E2.dom.dbg = $('#dbg');
 
@@ -2242,7 +2242,7 @@ E2.InitialiseEngi = function(loadGraphUrl) {
 	E2.dom.forkButton = $('#fork-button');
 	E2.dom.viewSourceButton = $('#view-source');
 	E2.dom.saveACopy = $('.save-copy-button');
-	E2.dom.saveAsPreset = E2.dom.btnSavePatch;
+	E2.dom.saveAsPatch = E2.dom.btnSavePatch;
 	E2.dom.dl_graph = $('#dl-graph');
 	E2.dom.open = $('#open');
 	E2.dom.structure = $('#structure');
