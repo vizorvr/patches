@@ -21,8 +21,8 @@ var uiKeys = {
 	// single characters handled on keypress
 	openInspector		: 'I',
 	toggleEditorCamera	: 'V',
-	focusPresetSearch	: '/',
-	focusPresetSearchAlt: 'Q',
+	focusPatchSearch	: '/',
+	focusPatchSearchAlt: 'Q',
 	viewSource			: '\\',
 
 	modifyModeMove		: 'M',
@@ -95,7 +95,7 @@ var VizorUI = function() {			// becomes E2.ui
 
 	this.dom = {				// init sets this to E2.dom
 		chatWindow : null,
-		presetsLib : null,
+		patchesLib : null,
 		assetsLib : null
 	};
 
@@ -134,7 +134,7 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 	var dom = this.dom;		// normally E2.dom
 	var state = this.state;
 	var visibility = state.visibility;
-	var $assets = dom.assetsLib, $presets = dom.presetsLib, $chat = dom.chatWindow, $properties = dom.propertiesPanel;
+	var $assets = dom.assetsLib, $patches = dom.patchesLib, $chat = dom.chatWindow, $properties = dom.propertiesPanel;
 	var $patch_editor = dom.canvas_parent;
 
 	E2.app.graphStore.on('changed:size', function(size) {
@@ -171,7 +171,7 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 				.toggleClass('ui_off', inProgramMode)
 				.toggleClass('ui_on', inBuildMode)
 
-			dom.tabPresets
+			dom.tabPatches
 				.toggleClass('ui_off', inBuildMode)
 				.toggleClass('ui_on', inProgramMode)
 
@@ -193,7 +193,7 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 				dom.tabObjProperties.find('a').trigger('click')
 			}
 			else if (inProgramMode) {
-				dom.tabPresets.find('a').trigger('click')
+				dom.tabPatches.find('a').trigger('click')
 				dom.tabNodeProperties.find('a').trigger('click')
 			}
 
@@ -232,11 +232,11 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 
 	state
 		.on('changed:visibility:panel_assets', 	changedVisibilityPanelHandler($assets, dom.btnAssets))
-		.on('changed:visibility:panel_presets', changedVisibilityPanelHandler($presets, dom.btnPresets))
+		.on('changed:visibility:panel_patches', changedVisibilityPanelHandler($patches, dom.btnPatches))
 		.on('changed:visibility:panel_properties', 	changedVisibilityPanelHandler($properties, dom.btnInspector))
 		.on('changed:visibility:panel_chat', 	changedVisibilityPanelHandler($chat, dom.btnChatDisplay))
 		.emit('changed:visibility:panel_assets', 	visibility.panel_assets)
-		.emit('changed:visibility:panel_presets', 	visibility.panel_presets)
+		.emit('changed:visibility:panel_patches', 	visibility.panel_patches)
 		.emit('changed:visibility:panel_properties', visibility.panel_properties)
 		.emit('changed:visibility:panel_chat', 		visibility.panel_chat);
 
@@ -249,7 +249,7 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 					that.dom.tabObjects.find('a').trigger('click')
 			}
 			if (that.isInProgramMode() && that.state.visibility.patch_editor) {
-				that.dom.tabPresets.find('a').trigger('click')
+				that.dom.tabPatches.find('a').trigger('click')
 			}
 			dom.btnSavePatch.attr('disabled', !visible);
 		})
@@ -299,20 +299,20 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 		VizorUI.constrainPanel(panel);
 	});
 
-	state.on('changed:panelStates:presets', function(panelState){
+	state.on('changed:panelStates:patches', function(panelState){
 		if (!panelState) return;
 		if (!panelState._found) return;
 		if (that.isFullScreen()) return;
-		VizorUI.applyPanelState(dom.presetsLib, panelState);
-		var controlsHeight = dom.presetsLib.find('.drag-handle').outerHeight(true) +
-					   dom.presetsLib.find('.block-header').outerHeight(true) +
-					   dom.presetsLib.find('.searchbox').outerHeight(true);
+		VizorUI.applyPanelState(dom.patchesLib, panelState);
+		var controlsHeight = dom.patchesLib.find('.drag-handle').outerHeight(true) +
+					   dom.patchesLib.find('.block-header').outerHeight(true) +
+					   dom.patchesLib.find('.searchbox').outerHeight(true);
 		if (!panelState.collapsed) {
 			that.onSearchResultsChange();
 		} else {
-			dom.presetsLib.addClass('collapsed').height(controlsHeight);
+			dom.patchesLib.addClass('collapsed').height(controlsHeight);
 		}
-		VizorUI.constrainPanel(dom.presetsLib);
+		VizorUI.constrainPanel(dom.patchesLib);
 	});
 
 	state.on('changed:panelStates:assets', function(panelState){
@@ -360,7 +360,7 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 
 	state
 		.emit('changed:panelStates:properties', state.panelStates.properties)
-		.emit('changed:panelStates:presets', state.panelStates.presets)
+		.emit('changed:panelStates:patches', state.panelStates.patches)
 		.emit('changed:panelStates:assets', state.panelStates.assets)
 		.emit('changed:panelStates:chat', state.panelStates.chat)
 
@@ -369,7 +369,7 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 			// store the panel states and sync again
 			that.state.panelStates.chat = VizorUI.getDomPanelState(dom.chatWindow);
 			that.state.panelStates.assets = VizorUI.getDomPanelState(dom.assetsLib);
-			that.state.panelStates.presets = VizorUI.getDomPanelState(dom.presetsLib);
+			that.state.panelStates.patches = VizorUI.getDomPanelState(dom.patchesLib);
 			that.state.panelStates.properties = VizorUI.getDomPanelState(dom.propertiesPanel);
 		})
 		.emit('changed:context', state.context)
@@ -513,13 +513,13 @@ VizorUI.prototype.onKeyPress = function(e) {
 		case uiKeys.toggleEditorHelpers:
 			E2.app.toggleHelperObjects()
 			break;
-		case uiKeys.focusPresetSearchAlt:
-		case uiKeys.focusPresetSearch:
-		case 'shift+' + uiKeys.focusPresetSearch:
-			state.visibility.panel_presets = true;
+		case uiKeys.focusPatchSearchAlt:
+		case uiKeys.focusPatchSearch:
+		case 'shift+' + uiKeys.focusPatchSearch:
+			state.visibility.panel_patches = true;
 			if (that.isInProgramMode()) {
-				that.dom.tabPresets.find('a').trigger('click')
-				that.dom.presets_list.find('.searchbox input').focus().select();
+				that.dom.tabPatches.find('a').trigger('click')
+				that.dom.patches_list.find('.searchbox input').focus().select();
 			} else {
 				that.dom.tabObjects.find('a').trigger('click')
 				that.dom.objectsList.find('.searchbox input').focus().select();
@@ -544,10 +544,10 @@ VizorUI.prototype.onKeyPress = function(e) {
 
 	// keys for program-mode (noodles visible) only:
 	if (this.isInProgramMode()) {
-		function openPresetOrPlugin(item) {
+		function openPatchOrPlugin(item) {
 			var name = item.substring(7)
-			if (item.indexOf('preset:') === 0)
-				E2.app.presetManager.openPreset('/presets/' + name + '.json')
+			if (item.indexOf('patch:') === 0)
+				E2.app.patchManager.openPatch('/patches/' + name + '.json')
 			else
 				E2.app.instantiatePlugin(name)
 		}
@@ -592,34 +592,34 @@ VizorUI.prototype.onKeyPress = function(e) {
 				e.preventDefault();
 				break;
 			case uiKeys.shortcutKey0:
-				openPresetOrPlugin('plugin:output_proxy');
+				openPatchOrPlugin('plugin:output_proxy');
 				break;
 			case uiKeys.shortcutKey1:
-				openPresetOrPlugin('plugin:input_proxy');
+				openPatchOrPlugin('plugin:input_proxy');
 				break;
 			case uiKeys.shortcutKey2:
-				openPresetOrPlugin('plugin:graph');
+				openPatchOrPlugin('plugin:graph');
 				break;
 			case uiKeys.shortcutKey3:
-				openPresetOrPlugin('plugin:slider_float_generator');
+				openPatchOrPlugin('plugin:slider_float_generator');
 				break;
 			case uiKeys.shortcutKey4:
-				openPresetOrPlugin('plugin:const_float_generator');
+				openPatchOrPlugin('plugin:const_float_generator');
 				break;
 			case uiKeys.shortcutKey5:
-				openPresetOrPlugin('plugin:float_display');
+				openPatchOrPlugin('plugin:float_display');
 				break;
 			case uiKeys.shortcutKey6:
-				openPresetOrPlugin('plugin:multiply_modulator');
+				openPatchOrPlugin('plugin:multiply_modulator');
 				break;
 			case uiKeys.shortcutKey7:
-				openPresetOrPlugin('plugin:vector');
+				openPatchOrPlugin('plugin:vector');
 				break;
 			case uiKeys.shortcutKey8:
-				openPresetOrPlugin('plugin:toggle_button');
+				openPatchOrPlugin('plugin:toggle_button');
 				break;
 			case uiKeys.shortcutKey9:
-				openPresetOrPlugin('plugin:knob_float_generator');
+				openPatchOrPlugin('plugin:knob_float_generator');
 				break;
 		}
 
@@ -801,7 +801,7 @@ VizorUI.prototype.onKeyUp = function(e) {
 
 VizorUI.prototype.constrainAllPanels = function() {
 	VizorUI.constrainPanel(this.dom.chatWindow)
-	VizorUI.constrainPanel(this.dom.presetsLib)
+	VizorUI.constrainPanel(this.dom.patchesLib)
 	VizorUI.constrainPanel(this.dom.assetsLib)
 	VizorUI.constrainPanel(this.dom.propertiesPanel)
 }
@@ -874,7 +874,7 @@ VizorUI.getDomPanelState = function($domElement) {	/* @var $domElement jQuery */
 		var $activeLi = $domElement.find('li.active');
 		if ($activeLi.length>0) {
 			var tabName, tabLink;
-			tabName = $activeLi.data('tabname');			// data-tabname='presets' preferred
+			tabName = $activeLi.data('tabname');			// data-tabname='patches' preferred
 			if (tabName) {
 				state.selectedTab = tabName;
 			} else {

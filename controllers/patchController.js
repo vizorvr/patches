@@ -1,34 +1,35 @@
-var Preset = require('../models/preset')
+var Patch = require('../models/patch')
 var AssetController = require('./assetController')
 var fsPath = require('path')
 var assetHelper = require('../models/asset-helper')
 var GraphAnalyser = require('../common/graphAnalyser').GraphAnalyser
 var helper = require('./controllerHelpers')
 
-function PresetController(presetService, fs) {
+function PatchController(patchService, fs) {
 	var args = Array.prototype.slice.apply(arguments)
-	args.unshift(Preset)
+	args.unshift(Patch)
 	AssetController.apply(this, args)
 
 	this.graphAnalyser = new GraphAnalyser(fs)
 }
 
-PresetController.prototype = Object.create(AssetController.prototype)
+PatchController.prototype = Object.create(AssetController.prototype)
 
-PresetController.prototype._makePath = function(req, name) {
+PatchController.prototype._makePath = function(req, name) {
 	return '/' 
 		+ req.user.username
-		+ '/presets/'
-		+ assetHelper.slugify(fsPath.basename(name, fsPath.extname(name)))
+		+ '/patches/'
+		+ assetHelper.slugify(
+			fsPath.basename(name, fsPath.extname(name)))
 		+ '.json'
 }
 
-PresetController.prototype._makeGridFsPath = function(req, path) {
+PatchController.prototype._makeGridFsPath = function(req, path) {
 	return this._makePath(req, path)
 }
 
-// POST /:username/presets
-PresetController.prototype.save = function(req, res, next) {
+// POST /:username/patches
+PatchController.prototype.save = function(req, res, next) {
 	var that = this
 	var path = this._makePath(req, req.body.name)
 	var gridFsPath = this._makeGridFsPath(req, req.body.name)
@@ -74,4 +75,4 @@ PresetController.prototype.save = function(req, res, next) {
 	.catch(next)
 }
 
-module.exports = PresetController
+module.exports = PatchController

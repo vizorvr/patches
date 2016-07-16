@@ -157,7 +157,7 @@ E2.ui.ui360 = new function() {
 	this.publishTemplateWithUrl = function(imageUrl) {
 		var dfd = when.defer()
 
-		var templateUrl = "/presets/_template-360-photo.json";
+		var templateUrl = "/patches/_template-360-photo.json";
 
 		$.ajax({
 			url: templateUrl,

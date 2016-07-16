@@ -7,9 +7,9 @@ function dragAndDropMouseDownHandler(e) {
 	var chatWindow = E2.dom.chatWindow;
 	var chatVisible = uiState.visibility.panel_chat;
 	var collapseChat = E2.ui.togglePanelChatCollapsed.bind(E2.ui);
-	var presetsLib = E2.dom.presetsLib;
-	var presetsVisible = uiState.visibility.panel_presets;
-	var collapsePresets = E2.ui.togglePanelPresetsCollapsed.bind(E2.ui);
+	var patchesLib = E2.dom.patchesLib;
+	var patchesVisible = uiState.visibility.panel_patches;
+	var collapsePatches = E2.ui.togglePanelPatchesCollapsed.bind(E2.ui);
 	var assetsLib = E2.dom.assetsLib;
 	var assetsVisible = uiState.visibility.panel_assets;
 	var collapseAssets = E2.ui.togglePanelAssetsCollapsed.bind(E2.ui);
@@ -40,11 +40,11 @@ function dragAndDropMouseDownHandler(e) {
 	var cp = E2.dom.canvases
 	var scrollHoverAreaSize = 25 // Pixel size for hover area for scrolling around the canvas
 	
-	if (presetsVisible) {
-		var plHeight = presetsLib.outerHeight(true);
-		var plWidth = presetsLib.outerWidth(true);
-		var plX = presetsLib.position().left;
-		var plY = presetsLib.position().top;
+	if (patchesVisible) {
+		var plHeight = patchesLib.outerHeight(true);
+		var plWidth = patchesLib.outerWidth(true);
+		var plX = patchesLib.position().left;
+		var plY = patchesLib.position().top;
 	}
 	if (assetsVisible && assetsLib.length) {
 		var alHeight = assetsLib.outerHeight(true);
@@ -95,7 +95,7 @@ function dragAndDropMouseDownHandler(e) {
 
 			// Only do scrolling after the user has dragged the object over the
 			// canvas area once so it doesn't start scrolling while you're
-			// initially holding the mouse button down over the preset list.
+			// initially holding the mouse button down over the patch list.
 			if (!scrollBound) {
 				scrollBound = true
 
@@ -122,7 +122,7 @@ function dragAndDropMouseDownHandler(e) {
 			E2.dom.editorHeader.addClass('dragging-not-allowed');
 			E2.dom.breadcrumb.addClass('dragging-not-allowed');
 			E2.dom.assetsLib.addClass('dragging-not-allowed');
-			E2.dom.presetsLib.addClass('dragging-not-allowed');
+			E2.dom.patchesLib.addClass('dragging-not-allowed');
 			E2.dom.chatWindow.addClass('dragging-not-allowed');
 			E2.dom.bottomBar.addClass('dragging-not-allowed');
 
@@ -154,7 +154,7 @@ function dragAndDropMouseDownHandler(e) {
 		E2.dom.editorHeader.removeClass('dragging-not-allowed');
 		E2.dom.breadcrumb.removeClass('dragging-not-allowed');
 		E2.dom.assetsLib.removeClass('dragging-not-allowed');
-		E2.dom.presetsLib.removeClass('dragging-not-allowed');
+		E2.dom.patchesLib.removeClass('dragging-not-allowed');
 		E2.dom.chatWindow.removeClass('dragging-not-allowed');
 		E2.dom.bottomBar.removeClass('dragging-not-allowed');
 
@@ -175,8 +175,8 @@ function dragAndDropMouseDownHandler(e) {
 				targetObject3d: targetObject3d
 			})
 
-			if ((presetsVisible) && (evt.pageX < (plWidth + plX) && evt.pageX > plX && evt.pageY < (plHeight + plY) && evt.pageY > plY)) { 
-				collapsePresets();
+			if ((patchesVisible) && (evt.pageX < (plWidth + plX) && evt.pageX > plX && evt.pageY < (plHeight + plY) && evt.pageY > plY)) { 
+				collapsePatches();
 			}
 			
 			if ((assetsVisible) && (evt.pageX < (alWidth + alX) && evt.pageX > alX && evt.pageY < (alHeight + alY) && evt.pageY > alY)) { 
@@ -212,7 +212,7 @@ function CollapsibleSelectControl(handlebars) {
 
 CollapsibleSelectControl.prototype.template = function(template) {
 	this._template = template
-	this._resultTpl = E2.views.presets.results
+	this._resultTpl = E2.views.patches.results
 	return this
 }
 
@@ -241,7 +241,7 @@ CollapsibleSelectControl.prototype.focus = function() {
 CollapsibleSelectControl.prototype._reset = function() {
 	$('.panel', this._el).show();
 	$('table.result', this._el).empty().remove();
-	$('.preset-result', this._el).empty();
+	$('.patch-result', this._el).empty();
 	this._filterText = '';
 	if (E2.ui)
 		E2.ui.onSearchResultsChange(this._el);
@@ -263,7 +263,7 @@ CollapsibleSelectControl.prototype._search = function(text) {
 
 	$('.panel', this._el).hide()
 
-	var $pr = $('.preset-result', this._el)
+	var $pr = $('.patch-result', this._el)
 	
 	var data = this._filterData(text)
 	

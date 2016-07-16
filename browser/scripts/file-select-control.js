@@ -527,8 +527,8 @@ FileSelectControl.createAudioSelector = function(selected, okButton, okFn) {
 	return FileSelectControl.createForUrl('/audio', selected, okButton, okFn)
 }
 
-FileSelectControl.createPresetSelector = function(selected, okButton, okFn) {
-	return FileSelectControl.createForUrl('/preset', selected, okButton, okFn)
+FileSelectControl.createPatchSelector = function(selected, okButton, okFn) {
+	return FileSelectControl.createForUrl('/patch', selected, okButton, okFn)
 }
 
 FileSelectControl.createSceneSelector = function(selected, okButton, okFn) {

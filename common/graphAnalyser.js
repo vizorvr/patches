@@ -35,18 +35,35 @@ GraphAnalyser.prototype.parseAssets = function(graph) {
 
 	function readRoot(graph) {
 		if (!graph.nodes.length)
-			return
+			return console.error('No nodes to GraphAnalyser.parseAssets')
 
 		var patchNode = graph.nodes[0]
 		var patchNodeId = patchNode.plugin
-		var isPatchNode = (E2.GRAPH_NODES.indexOf(patchNodeId) > -1)	
+		var isPatchNode = (E2.GRAPH_NODES.indexOf(patchNodeId) > -1)
 
 		if (!isPatchNode)
 			return;
 
-		stat.type = patchNodeId
+		var patchStrongType = patchNodeId
 
-		return graph
+		// catch single-node patches with one dynamic output
+		if (graph.nodes.length === 1 && patchNode.dyn_out) {
+			// maybe entity / other typed patch
+			var soloOutName = patchNode.dyn_out[0].name
+			switch(soloOutName) {
+				case 'object3d':
+					patchStrongType = 'entity'
+					break;
+				case 'position':
+				case 'rotation':
+				case 'scale':
+				case 'material':
+					patchStrongType = 'entity_component'
+					break;
+			}
+		}
+
+		stat.type = patchStrongType
 	}
 
 	function walkGraph(subgraph) {
@@ -76,10 +93,10 @@ GraphAnalyser.prototype.parseAssets = function(graph) {
 			if (isNode)
 				aurl = aurl.replace(/^\/data/, '')
 
+			stat.numAssets++;
+
 			return that._fs.stat(aurl)
 			.then(function(assetStat) {
-				stat.numAssets++;
-
 				if (!assetStat) // not found
 					return;
 

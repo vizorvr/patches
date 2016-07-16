@@ -578,12 +578,14 @@ NodeUI.prototype.showRenameControl = function() {
 				var name = $(e.target).val().replace(/^\s+|\s+$/g,'') // remove extra spaces
 				jQuery(e.target).trigger('blur');
 
-				if (name === "") {
-					if (node.id === "Graph") {
-						// TODO: for preset subgraphs get the name of the preset.
+				if (!name) {
+					if (E2.GRAPH_NODES.indexOf(node.plugin.id) > -1) {
+						// TODO: for patches get the name of the patch.
 						name = false;	// do not rename node for now
 					}
-					else name = node.id;
+					else {
+						name = node.id
+					}
 				}
 
 				if (name) {

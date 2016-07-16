@@ -1,8 +1,7 @@
 
-function PresetManager(base_url) {
+function PatchManager() {
 	EventEmitter.call(this)
 
-	this._base_url = base_url
 	this._patches = []
 	this._worldPatches = []
 	this._patchesByPath = {}
@@ -12,9 +11,9 @@ function PresetManager(base_url) {
 	E2.models.user.on('change', this.refresh.bind(this))
 }
 
-PresetManager.prototype = Object.create(EventEmitter.prototype)
+PatchManager.prototype = Object.create(EventEmitter.prototype)
 
-PresetManager.prototype.loadPlugins = function() {
+PatchManager.prototype.loadPlugins = function() {
 	var that = this
 	var dfd = when.defer()
 
@@ -31,44 +30,40 @@ PresetManager.prototype.loadPlugins = function() {
 	return dfd.promise
 }
 
-PresetManager.prototype.loadPresets = function() {
+PatchManager.prototype.loadPatches = function() {
 	var that = this
 	var dfd = when.defer()
 
-	function processPresets(data) {
-		E2.core.presetsByCategory = data
+	function processPatches(data) {
+		E2.core.patchesList = data
 
-		Object.keys(data).forEach(function(catName) {
-			Object.keys(data[catName]).forEach(function(title) {
-				var entry = data[catName][title]
-				var name = entry.name
+		data.map(function(patchMeta) {
+			that.add(patchMeta.category, patchMeta.name, patchMeta.url)
 
-				that.add(catName, title, that._base_url+'/'+name+'.json')
-				if (E2.WORLD_PATCHES.indexOf(entry.type) > -1)
-					that.addWorldPatch(entry.type, catName, title, that._base_url+'/'+name+'.json')
-			})
+			if (E2.WORLD_PATCHES.indexOf(patchMeta.type) > -1)
+				that.addWorldPatch(patchMeta.type, patchMeta.category, patchMeta.name, patchMeta.url)
 		})
 
 		dfd.resolve()
 	}
 
-	if (E2.core.presetsByCategory)
-		return processPresets(E2.core.presetsByCategory)
+	if (E2.core.patchesList)
+		return processPatches(E2.core.patchesList)
 
 	$.ajax({
-		url: this._base_url + '/presets.json',
+		url: '/vizor/patches',
 		cache: true
 	})
-	.done(processPresets)
+	.done(processPatches)
 	.fail(function() {
-		msg('ERROR: PresetsMgr: No presets found.')
-		dfd.reject('ERROR: PresetsMgr: No presets found.')
+		msg('ERROR: PatchManager: No patches found.')
+		dfd.reject('ERROR: PatchManager: No patches found.')
 	})
 
 	return dfd.promise
 }
 
-PresetManager.prototype.loadUserPresets = function() {
+PatchManager.prototype.loadUserPatches = function() {
 	var that = this
 	var dfd = when.defer()
 
@@ -76,14 +71,14 @@ PresetManager.prototype.loadUserPresets = function() {
 	if (!username) {
 		dfd.resolve()
 	} else {
-		$.get('/'+username+'/presets', function(presets) {
-			var cat = 'MY PRESETS'
+		$.get('/'+username+'/patches', function(patches) {
+			var cat = 'MY PATCHES'
 
-			presets.forEach(function(preset) {
-				if (E2.WORLD_PATCHES.indexOf(preset.type) > -1)
-					that.addWorldPatch(preset.type, cat, preset.name, preset.url)
+			patches.forEach(function(patch) {
+				if (E2.WORLD_PATCHES.indexOf(patch.type) > -1)
+					that.addWorldPatch(patch.type, cat, patch.name, patch.url)
 
-				that.add(cat, preset.name, preset.url)
+				that.add(cat, patch.name, patch.url)
 			})
 
 			dfd.resolve()
@@ -93,63 +88,63 @@ PresetManager.prototype.loadUserPresets = function() {
 	return dfd.promise
 }
 
-PresetManager.prototype.refresh = function() {
+PatchManager.prototype.refresh = function() {
 	var that = this
 
 	this._patches = []
 	this._worldPatches = []
 
-	this.loadUserPresets()
+	this.loadUserPatches()
 	.then(function() {
-		return that.loadPresets()
+		return that.loadPatches()
 	})
 	.then(function() {
 		return that.loadPlugins()
 	})
 	.then(function() {
-		that.renderPresets()
+		that.renderPatches()
 		that.renderWorldPatches()
 	})
 }
 
-PresetManager.prototype.renderPresets = function() {
+PatchManager.prototype.renderPatches = function() {
 	var that = this
 
-	E2.dom.presets_list.empty()
+	E2.dom.patches_list.empty()
 
 	new CollapsibleSelectControl()
 	.data(this._patches)
-	.template(E2.views.presets.presets)
-	.render(E2.dom.presets_list, {
+	.template(E2.views.patches.patches)
+	.render(E2.dom.patches_list, {
 		searchPlaceholderText : 'Search patches'
 	})
 	.onOpen(function(selection) {
 		if (selection.path.indexOf('plugin/') === 0)
 			return that.openPlugin(selection.path)
 
-		that.openPreset(selection)
+		that.openPatch(selection)
 	})
 	
-	var presetSearch = $('#presets-lib .searchbox input')
-	presetSearch.focus(E2.ui.onLibSearchClicked.bind(E2.ui))
+	var patchSearch = $('#patches-lib .searchbox input')
+	patchSearch.focus(E2.ui.onLibSearchClicked.bind(E2.ui))
 }
 
-PresetManager.prototype.renderWorldPatches = function() {
+PatchManager.prototype.renderWorldPatches = function() {
 	E2.dom.objectsList.empty()
 
 	new CollapsibleSelectControl()
 	.data(this._worldPatches)
-	.template(E2.views.presets.presets)
+	.template(E2.views.patches.patches)
 	.render(E2.dom.objectsList, {
 		searchPlaceholderText : 'Search items'
 	})
-	.onOpen(this.openPreset.bind(this))
+	.onOpen(this.openPatch.bind(this))
 	
 	var objectSearch = $('.searchbox input', E2.dom.objectsList)
 	objectSearch.focus(E2.ui.onLibSearchClicked.bind(E2.ui))
 }
 
-PresetManager.prototype.openPreset = function(selection) {
+PatchManager.prototype.openPatch = function(selection) {
 	var that = this
 	var targetObject3d = selection.targetObject3d
 	var patchMeta = this._patchesByPath[selection.path]
@@ -160,7 +155,7 @@ PresetManager.prototype.openPreset = function(selection) {
 	})
 	.done(function(data) {
 		E2.track({
-			event: 'presetAdded',
+			event: 'patchAdded',
 			title: patchMeta.title,
 			category: patchMeta.category,
 			type: patchMeta.type,
@@ -170,12 +165,12 @@ PresetManager.prototype.openPreset = function(selection) {
 		that.emit('open', patchMeta, data, targetObject3d)
 	})
 	.fail(function(_j, _textStatus, _errorThrown) {
-		msg('ERROR: Failed to load the selected preset.')
+		msg('ERROR: Failed to load the selected patch.')
 		console.error(_errorThrown)
 	})
 }
 
-PresetManager.prototype.addWorldPatch = function(typeName, category, title, path) {
+PatchManager.prototype.addWorldPatch = function(typeName, category, title, path) {
 	var patchMeta = {
 		type: typeName,
 		category: category, 
@@ -187,7 +182,7 @@ PresetManager.prototype.addWorldPatch = function(typeName, category, title, path
 	this._worldPatches.push(patchMeta)
 }
 
-PresetManager.prototype.add = function(category, title, path) {
+PatchManager.prototype.add = function(category, title, path) {
 	if (this._patchesByPath[path])
 		return;
 
@@ -202,14 +197,14 @@ PresetManager.prototype.add = function(category, title, path) {
 	this._patches.push(patchMeta)
 }
 
-PresetManager.prototype.openPlugin = function(path, cb) {
+PatchManager.prototype.openPlugin = function(path, cb) {
 	var id = path.substring('plugin/'.length)
 	var canvasX = E2.dom.canvases.position().left
 	var mouseX = E2.app.mousePosition[0]
 	var canvasY = E2.dom.canvases.position().top
 	var mouseY = E2.app.mousePosition[1]
 
-	// Add the canvas X position to the mouse X position when double clicking from the preset list to avoid spawning plugins under the list
+	// Add the canvas X position to the mouse X position when double clicking from the patch list to avoid spawning plugins under the list
 	if (canvasX > mouseX)
 		mouseX += canvasX 
 	

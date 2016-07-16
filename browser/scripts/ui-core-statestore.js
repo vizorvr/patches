@@ -90,7 +90,7 @@ var UiState = function(persistentStorageRef, context) {
 		panelStates : {
 			_internal: {
 				chat:		null,
-				presets:	null,
+				patches:	null,
 				assets:		null,
 				properties: null
 			}
@@ -116,7 +116,7 @@ var UiState = function(persistentStorageRef, context) {
 		{
 			floating_panels : true,
 			panel_chat : true,
-			panel_presets : true,
+			panel_patches : true,
 			panel_assets : true,
 			patch_editor : false,
 			panel_properties: false
@@ -190,7 +190,7 @@ var UiState = function(persistentStorageRef, context) {
 				}
 			}
 			emitVisibility('panel_chat', v.panel_chat)
-			emitVisibility('panel_presets', v.panel_presets)
+			emitVisibility('panel_patches', v.panel_patches)
 			emitVisibility('panel_assets', v.panel_assets)
 			emitVisibility('panel_properties', v.panel_properties)
 			emitVisibility('floating_panels', v.floating_panels)
@@ -235,19 +235,19 @@ var UiState = function(persistentStorageRef, context) {
 						this.patch_editor = false
 					}
 					var noPanelsAreSetToVisible = !(this._internal.panel_chat ||
-						this._internal.panel_presets ||
+						this._internal.panel_patches ||
 						this._internal.panel_assets ||
 						this._internal.panel_properties)
 					if (noPanelsAreSetToVisible) {
 						// this.panel_assets = true // not in this build
 						this.panel_chat = true
-						this.panel_presets = true
+						this.panel_patches = true
 						this.panel_properties = true
 					}
 				}
 
 				emitVisibility('panel_chat', this.panel_chat)
-				emitVisibility('panel_presets', this.panel_presets)
+				emitVisibility('panel_patches', this.panel_patches)
 				emitVisibility('panel_assets', this.panel_assets)
 				emitVisibility('panel_properties', this.panel_properties)
 				emitVisibility('floating_panels', this.floating_panels)
@@ -257,7 +257,7 @@ var UiState = function(persistentStorageRef, context) {
 
 	var notifyFloatingPanels = function() {
 		var v = that.visibility, _vi = that.visibility._internal
-		var isAnyPanelVisible = (_vi.panel_chat || _vi.panel_presets || _vi.panel_assets || _vi.panel_properties)
+		var isAnyPanelVisible = (_vi.panel_chat || _vi.panel_patches || _vi.panel_assets || _vi.panel_properties)
 		if (isAnyPanelVisible && !v.floating_panels) {
 			v.floating_panels = true
 		}
@@ -268,7 +268,7 @@ var UiState = function(persistentStorageRef, context) {
 			emitVisibility('floating_panels')
 	}
 	this.on('_internal:visibility:panel_chat', notifyFloatingPanels)
-	this.on('_internal:visibility:panel_presets', notifyFloatingPanels)
+	this.on('_internal:visibility:panel_patches', notifyFloatingPanels)
 	this.on('_internal:visibility:panel_assets', notifyFloatingPanels)
 	this.on('_internal:visibility:panel_properties', notifyFloatingPanels)
 
@@ -278,7 +278,7 @@ var UiState = function(persistentStorageRef, context) {
 		var old = this[which]
 		if (value === old) return value
 
-		var panels = ['panel_assets', 'panel_presets', 'panel_properties', 'panel_chat']
+		var panels = ['panel_assets', 'panel_patches', 'panel_properties', 'panel_chat']
 		var ix = panels.indexOf(which)
 		if (ix === -1) {
 			console.error('not found ' + which)
@@ -318,12 +318,12 @@ var UiState = function(persistentStorageRef, context) {
 		}
 	)
 
-	defineProperty(this._internal.visibility, 'panel_presets', {
+	defineProperty(this._internal.visibility, 'panel_patches', {
 			get: function() {
-				return this.floating_panels && this._internal.panel_presets
+				return this.floating_panels && this._internal.panel_patches
 			},
 			set: function(value) {	// this = state.visibility
-				return this._panelLogic('panel_presets', value)
+				return this._panelLogic('panel_patches', value)
 			}
 		}
 	)
@@ -366,7 +366,7 @@ var UiState = function(persistentStorageRef, context) {
 			this._internal.context = context
 			emitMain('context', context)
 			emitPanels('chat', this.panelStates.chat)
-			emitPanels('presets', this.panelStates.presets)
+			emitPanels('patches', this.panelStates.patches)
 			emitPanels('assets', this.panelStates.assets)
 			emitPanels('properties', this.panelStates.properties)
 		}
@@ -467,7 +467,7 @@ UiState.prototype._apply = function(newState) {
 	if (newState.panelStates)  {
 		var ps = newState.panelStates
 		if (ps.chat) 	internalPanelStates.chat = ps.chat
-		if (ps.presets) internalPanelStates.presets = ps.presets
+		if (ps.patches) internalPanelStates.patches = ps.patches
 		if (ps.assets) 	internalPanelStates.assets = ps.assets
 		if (ps.properties) 	internalPanelStates.properties = ps.properties
 	}
