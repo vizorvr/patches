@@ -34,7 +34,7 @@ GraphAnalyser.prototype.parseAssets = function(graph) {
 	}
 
 	function readRoot(graph) {
-		if (!graph.nodes.length)
+		if (!graph.nodes || !graph.nodes.length)
 			return console.error('No nodes to GraphAnalyser.parseAssets')
 
 		var patchNode = graph.nodes[0]
@@ -46,7 +46,7 @@ GraphAnalyser.prototype.parseAssets = function(graph) {
 
 		var patchStrongType = patchNodeId
 
-		// catch single-node patches with one dynamic output
+		// catch single-node patches with matching outputs
 		if (graph.nodes.length === 1 && patchNode.dyn_out) {
 			// maybe entity / other typed patch
 			var soloOutName = patchNode.dyn_out[0].name
