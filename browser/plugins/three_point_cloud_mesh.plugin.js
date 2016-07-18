@@ -4,7 +4,7 @@
 	}
 
 	var createThreePointCloud = function(geom, mats) {
-		var pc = new THREE.PointCloud(geom, mats)
+		var pc = new THREE.Points(geom, mats)
 		return pc
 	}
 
