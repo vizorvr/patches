@@ -118,7 +118,7 @@ Application.prototype.createPlugin = function(id, position) {
 
 	switch(id) {
 		case 'graph':
-			return _create('Graph')
+			return _create('Nested Patch')
 		case 'loop':
 			return _create('Loop')
 		case 'array_function':
@@ -129,6 +129,20 @@ Application.prototype.createPlugin = function(id, position) {
 			return _create()
 	}
 
+}
+
+Application.prototype.setActiveGraph = function(graph) {
+	if (E2.core.active_graph === graph)
+		return;
+
+	E2.app.dispatcher.dispatch({
+		actionType: 'uiActiveGraphChanged',
+		activeGraphUid: graph.uid
+	})
+
+	if (graph.tree_node) {
+		graph.tree_node.activate()
+	}
 }
 
 Application.prototype.instantiatePlugin = function(id, position) {
@@ -479,7 +493,7 @@ Application.prototype.deleteSelectedNodes = function() {
 	this.deleteSelectedConnections()
 
 	hns.forEach(function(n) {
-		that.graphApi.removeNode(ag, n)
+		that.graphApi.removeNode(n.parent_graph, n)
 	})
 
 	this.undoManager.end('Delete nodes')
@@ -622,32 +636,6 @@ Application.prototype.onNodeDragStopped = function(node) {
 		nodeUids: di.nodes.map(function(n) { return n.uid }),
 		delta: { x: dx, y: dy }
 	})
-}
-
-Application.prototype.clearSelection = function() {
-	var sn = this.selectedNodes;
-	var sc = this.selectedConnections;
-
-	for(var i = 0, len = sn.length; i < len; i++) {
-		var nui = sn[i].ui;
-
-		if(nui) {
-			nui.setSelected(false);
-		}
-	}
-
-	for(var i = 0, len = sc.length; i < len; i++) {
-		var cui = sc[i].ui;
-
-		if(cui)
-			cui.selected = false;
-	}
-
-	this.selectedNodes = [];
-	this.selectedConnections = [];
-
-	E2.ui.state.selectedObjects = this.selectedNodes
-
 }
 
 Application.prototype.redrawConnection = function(connection) {	/* @TODO: rename this method */
@@ -910,15 +898,14 @@ Application.prototype.selectionToObject = function(nodes, conns, sx, sy) {
 
 		var b = [p.left, p.top, p.left + width, p.top + height];
 
-		if(dom)
-			n = n.serialise();
+		// n = n.serialise();
 
-		if(b[0] < x1) x1 = b[0];
-		if(b[1] < y1) y1 = b[1];
-		if(b[2] > x2) x2 = b[2];
-		if(b[3] > y2) y2 = b[3];
+		if (b[0] < x1) x1 = b[0];
+		if (b[1] < y1) y1 = b[1];
+		if (b[2] > x2) x2 = b[2];
+		if (b[3] > y2) y2 = b[3];
 
-		d.nodes.push(n);
+		d.nodes.push(n.serialise());
 	}
 
 	if (domHasValidDimensions) {
@@ -936,31 +923,38 @@ Application.prototype.selectionToObject = function(nodes, conns, sx, sy) {
 
 	for(var i = 0, len = conns.length; i < len; i++) {
 		var c = conns[i];
-		d.conns.push(c.ui ? c.serialise() : c);
+		d.conns.push(c.serialise())
 	}
 
-	return d;
+	return d
 }
 
-Application.prototype.fillCopyBuffer = function(nodes, conns, sx, sy) {
-	return JSON.stringify(this.selectionToObject(nodes, conns, sx, sy))
+Application.prototype.stringifyNodesAndConnections = function(nodes, conns, sx, sy) {
+	return JSON.stringify(
+		this.selectionToObject(nodes, conns, sx, sy)
+	)
 }
 
 Application.prototype.onDelete = function(e) {
-	if (!this.selectedNodes.length)
+	if (E2.ui.isInProgramMode() && !this.selectedNodes.length)
 		return;
 
-	this.hoverNode = this.selectedNodes[0];
+	this.hoverNode = this.selectedNodes[0]
 
 	if (this.isWorldEditorActive()) {
+		var sn = this.worldEditor.selectedEntityNode
+		this.setActiveGraph(this.worldEditor.selectedEntityPatch.parent_graph)
+		this.selectedNodes = []
+		this.selectedConnections = sn.outputs.concat(sn.inputs)
+		this.markNodeAsSelected(sn)
 		this.worldEditor.onDelete(this.selectedNodes)
 	}
 
-	this.deleteSelectedNodes();
+	this.deleteSelectedNodes()
 }
 
-Application.prototype.serialiseSelection = function() {
-	return this.fillCopyBuffer(
+Application.prototype.stringifySelection = function() {
+	return this.stringifyNodesAndConnections(
 		this.selectedNodes,
 		this.selectedConnections,
 		this.scrollOffset[0],
@@ -977,7 +971,7 @@ Application.prototype.onCopy = function(e) {
 		return false
 	}
 
-	var data = this.serialiseSelection()
+	var data = this.stringifySelection()
 	
 	this.clipboard = data
 	
@@ -996,16 +990,59 @@ Application.prototype.onCut = function(e) {
 	}
 }
 
+Application.prototype.onPaste = function(json) {
+	this.clearSelection()
+
+	json = json || this.clipboard
+	var doc = JSON.parse(json)
+
+	if (doc.root)
+		doc = doc.root
+
+	var cp = E2.dom.canvases
+	var sx = this.scrollOffset[0]
+	var sy = this.scrollOffset[1]
+
+	// pasted node bbox: doc.x1, doc.y1 - doc.x2, doc.y2
+
+	var ox = Math.max(this.mousePosition[0] - cp.position().left + sx, 100)
+	var oy = Math.max(this.mousePosition[1] - cp.position().top + sy, 100)
+
+	var pasted = this.paste(doc, ox, oy)
+
+	pasted.nodes.map(this.markNodeAsSelected.bind(this))
+	pasted.connections.map(this.markConnectionAsSelected.bind(this))
+
+	return pasted
+}
+
 Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
+	return this.pasteInGraph(E2.core.active_graph, srcDoc, offsetX, offsetY)
+}
+
+Application.prototype.pasteInGraph = function(targetGraph, srcDoc, offsetX, offsetY) {
 	this.undoManager.begin('Paste')
 
-	var ag = E2.core.active_graph
 	var createdNodes = []
 	var createdConnections = []
 	var globalUidMap = {}
 
-	var docX1 = srcDoc.x1 || 0
-	var docY1 = srcDoc.y1 || 0
+	var leftEdgeFound
+	var topEdgeFound
+
+	// find top left edge offset in patch
+	for (var i=0; i < srcDoc.nodes.length; i++) {
+		var n = srcDoc.nodes[i]
+		if (!leftEdgeFound || n.x < leftEdgeFound)
+			leftEdgeFound = n.x
+		if (!topEdgeFound || n.y < topEdgeFound)
+			topEdgeFound = n.y
+	}
+
+	function placeDocNode(docNode) {
+		docNode.x = Math.floor((docNode.x - leftEdgeFound) + offsetX)
+		docNode.y = Math.floor((docNode.y - topEdgeFound) + offsetY)
+	}
 
 	function mapSlotIds(sids, localUidMap) {
 		var nsids = {}
@@ -1084,13 +1121,9 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 
 	for(var i = 0, len = doc.nodes.length; i < len; i++) {
 		var docNode = doc.nodes[i]
-
-		docNode.x = Math.floor((docNode.x - docX1) + offsetX)
-		docNode.y = Math.floor((docNode.y - docY1) + offsetY)
-
-		this.graphApi.addNode(ag, Node.hydrate(ag.uid, docNode))
-
-		createdNodes.push(ag.findNodeByUid(docNode.uid))
+		placeDocNode(docNode)
+		this.graphApi.addNode(targetGraph, Node.hydrate(targetGraph.uid, docNode))
+		createdNodes.push(targetGraph.findNodeByUid(docNode.uid))
 	}
 
 	for(i = 0, len = doc.conns.length; i < len; i++) {
@@ -1099,7 +1132,7 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 		if (!dc.dst_nuid || !dc.src_nuid)
 			continue;
 
-		var destNode = ag.findNodeByUid(dc.dst_nuid)
+		var destNode = targetGraph.findNodeByUid(dc.dst_nuid)
 		if (!destNode)
 			continue;
 
@@ -1124,18 +1157,17 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 			continue;
 		}
 
-		this.graphApi.connect(ag, Connection.hydrate(E2.core.active_graph, dc))
+		this.graphApi.connect(targetGraph, Connection.hydrate(targetGraph, dc))
 
-		createdConnections.push(ag.findConnectionByUid(dc.uid))
-	}
-
-	if (this.isWorldEditorActive()) {
-		this.worldEditor.onPaste(createdNodes)
+		createdConnections.push(targetGraph.findConnectionByUid(dc.uid))
 	}
 
 	this.undoManager.end()
 
-	return { nodes: createdNodes, connections: createdConnections }
+	return {
+		nodes: createdNodes,
+		connections: createdConnections 
+	}
 }
 
 Application.prototype.getNodeBoundingBox = function(node) {
@@ -1160,13 +1192,11 @@ Application.prototype.getNodeBoundingBox = function(node) {
 	}
 }
 
-// find a space for doc in the currently active graph
+// find a space for doc in the graph
 // return a {x: ..., y: ...} object with coordinates
 // where the object will fit without overlapping with
 // any pre-existing nodes
-Application.prototype.findSpaceInGraphFor = function(doc) {
-	var activeGraph = E2.core.active_graph
-
+Application.prototype.findSpaceInGraphFor = function(activeGraph, doc) {
 	// minimum spacing between nodes
 	var spacing = {x: 30, y: 20}
 
@@ -1233,58 +1263,21 @@ Application.prototype.findSpaceInGraphFor = function(doc) {
 	}
 
 	var result = autoLayout(doc, bboxes)
-
+console.debug('autoLayout', doc, bboxes, result)
 	return {x: result.x1, y: result.y1}
 }
 
-Application.prototype.onPaste = function(json, x, y) {
-	this.clearSelection()
-
-	json = json || this.clipboard
-
-	var doc = JSON.parse(json)
-
-	if (doc.root)
-		doc = doc.root
-
-	var cp = E2.dom.canvases
-	var sx = this.scrollOffset[0]
-	var sy = this.scrollOffset[1]
-
-	var ox
-	var oy
-
-	// pasted node bbox: doc.x1, doc.y1 - doc.x2, doc.y2
-
-	// calculate paste position
-	if (this.isWorldEditorActive()) {
-		var autoLayoutPosition = this.findSpaceInGraphFor(doc)
-		ox = autoLayoutPosition.x // doc.x1 // doc.nodes[0].x
-		oy = autoLayoutPosition.y // doc.y1 // doc.nodes[0].y
-	}
-	else {
-		ox = Math.max(this.mousePosition[0] - cp.position().left + sx, 100)
-		oy = Math.max(this.mousePosition[1] - cp.position().top + sy, 100)
-	}
-
-	var pasted = this.paste(doc, x || ox, y || oy)
-
-	pasted.nodes.map(this.markNodeAsSelected.bind(this))
-	pasted.connections.map(this.markConnectionAsSelected.bind(this))
-
-	return pasted
-}
-
 Application.prototype.markNodeAsSelected = function(node, addToSelection) {
-	if (node.ui) {
-		node.ui.setSelected(true);
-	}
+	if (node.ui)
+		node.ui.setSelected(true)
 
 	if (addToSelection !== false) {
 		this.selectedNodes.push(node)
 		E2.ui.state.selectedObjects = this.selectedNodes
 	}
 
+	if (!this.isWorldEditorActive() && node.isEntityPatch())
+		this.worldEditor.selectEntityPatch(node)
 }
 
 Application.prototype.deselectNode = function(node) {
@@ -1299,14 +1292,40 @@ Application.prototype.markConnectionAsSelected = function(conn) {
 	this.selectedConnections.push(conn)
 }
 
+Application.prototype.clearSelection = function() {
+	var sn = this.selectedNodes;
+	var sc = this.selectedConnections;
+
+	for(var i = 0, len = sn.length; i < len; i++) {
+		var nui = sn[i].ui;
+
+		if(nui) {
+			nui.setSelected(false);
+		}
+	}
+
+	for(var i = 0, len = sc.length; i < len; i++) {
+		var cui = sc[i].ui;
+
+		if(cui)
+			cui.selected = false;
+	}
+
+	this.worldEditor.setSelection([])
+
+	this.selectedNodes = [];
+	this.selectedConnections = [];
+
+	E2.ui.state.selectedObjects = this.selectedNodes
+
+}
+
 Application.prototype.selectAll = function() {
 	this.clearSelection()
 
 	var ag = E2.core.active_graph
-
 	ag.nodes.map(this.markNodeAsSelected.bind(this))
 	ag.connections.map(this.markConnectionAsSelected.bind(this))
-
 	this.updateCanvas(true)
 }
 
@@ -1499,12 +1518,12 @@ Application.prototype.loadGraph = function(graphPath) {
 	return dfd.promise
 }
 
-Application.prototype.onSaveAsPresetClicked = function() {
+Application.prototype.onSaveAsPatchClicked = function() {
 	var graph = this.selectionToObject(this.selectedNodes, this.selectedConnections)
-	this.openPresetSaveDialog(JSON.stringify({ root: graph }))
+	this.openPatchSaveDialog(JSON.stringify({ root: graph }))
 }
 
-Application.prototype.openPresetSaveDialog = null;	// ui replaces this
+Application.prototype.openPatchSaveDialog = null;	// ui replaces this
 
 
 Application.prototype.onPublishClicked = function() {
@@ -1684,6 +1703,13 @@ Application.prototype.setupStoreListeners = function() {
 Application.prototype.onGraphSelected = function(graph) {
 	var that = this
 
+console.trace('onGraphSelected', 
+E2.core.active_graph === graph, 
+'from',
+E2.core.active_graph.tree_node.title,
+'to',
+graph.tree_node.title)
+
 	E2.core.active_graph.destroy_ui()
 	E2.core.active_graph = graph
 
@@ -1831,7 +1857,7 @@ Application.prototype.setupPeopleEvents = function() {
 	})
 
 	this.peopleStore.on('activeGraphChanged', function(person) {
-		if (E2.app.channel.uid === person.uid) // it's for me
+		if (E2.app.channel.uid === person.uid) // it's me
 			return E2.app.onGraphSelected(Graph.lookup(person.activeGraphUid))
 
 		var $cursor = cursors[person.uid]
@@ -1966,7 +1992,7 @@ Application.prototype.setupEditorBindings = function() {
 	E2.dom.viewSourceButton.click(E2.ui.viewSource);
 
 	E2.dom.saveACopy.click(E2.app.onSaveACopyClicked.bind(E2.app))
-	E2.dom.saveAsPreset.click(E2.app.onSaveAsPresetClicked.bind(E2.app))
+	E2.dom.saveAsPatch.click(E2.app.onSaveAsPatchClicked.bind(E2.app))
 	E2.dom.open.click(E2.app.onOpenClicked.bind(E2.app))
 	E2.dom.btnNew.click(E2.app.onNewClicked.bind(E2.app))
 	E2.dom.forkButton.click(E2.app.onForkClicked.bind(E2.app))
@@ -1994,8 +2020,16 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 
 	E2.ui.init(E2)
 
-	this.presetManager = new PresetManager('/presets')
 	this.midPane = new E2.MidPane()
+
+	this.patchManager = new PatchManager()
+	this.patchManager.on('open', function(patchMeta, json, targetObject3d) {
+		if (that.isWorldEditorActive()) {
+			that.worldEditor.onPatchDropped(patchMeta, json, targetObject3d)
+		} else {
+			that.onPaste(json)
+		}
+	})
 
 	that.setupPeopleEvents()
 	that.setupStoreListeners()
@@ -2026,6 +2060,16 @@ Application.prototype.startWithGraph = function(selectedGraphUrl) {
 
 	function start() {
 		E2.dom.canvas_parent.toggle(that.noodlesVisible)
+
+		// create root graph ui once to calculate its dimensions
+		if (!that.noodlesVisible && E2.core.active_graph !== E2.core.root_graph) {
+			if (E2.core.root_graph.ui)
+				return;
+
+			E2.core.root_graph.create_ui()
+			E2.core.root_graph.destroy_ui()
+		}
+
 		that.startPlaying()
 	}
 
@@ -2049,7 +2093,7 @@ Application.prototype.startWithGraph = function(selectedGraphUrl) {
 Application.prototype.startPlaying = function() {
 	E2.core.rebuild_structure_tree()
 
-	this.onGraphSelected(E2.core.active_graph)
+	this.setActiveGraph(E2.core.active_graph)
 
 	E2.core.emit('vizorFileLoaded')
 
@@ -2063,7 +2107,7 @@ Application.prototype.startPlaying = function() {
 	if (window.location.hash[1] === '/') {
 		// path in graph
 		// only root supported
-		this.onGraphSelected(E2.core.root_graph)
+		this.setActiveGraph(E2.core.root_graph)
 		E2.ui.state.mode = 'program'
 	}
 }
@@ -2141,7 +2185,7 @@ E2.InitialiseEngi = function(loadGraphUrl) {
 
 	E2.dom.btnAssets = $('#btn-assets');
 	E2.dom.btnInspector = $('#btn-inspector');
-	E2.dom.btnPresets = $('#btn-presets');
+	E2.dom.btnPatches = $('#btn-patches');
 	E2.dom.btnSavePatch = $('#btn-save-patch');
 	
 	E2.dom.btnGraph = $('#btn-graph');
@@ -2164,8 +2208,8 @@ E2.InitialiseEngi = function(loadGraphUrl) {
 	E2.dom.assetsToggle = $('#assets-toggle');
 	E2.dom.assetsClose = $('#assets-close');
 	
-	E2.dom.presetsLib = $('#presets-lib');
-	E2.dom.presets_list = $('#presets');
+	E2.dom.patchesLib = $('#patches-lib');
+	E2.dom.patches_list = $('#patches');
 	E2.dom.objectsList = $('#objects');
 	
 	E2.dom.canvas_parent = $('#canvas_parent');
@@ -2184,8 +2228,8 @@ E2.InitialiseEngi = function(loadGraphUrl) {
 	E2.dom.chat = $('#chat');
 	
 	E2.dom.peopleTab = $('#peopleTab');
-	E2.dom.presetsToggle = $('#presets-toggle');
-	E2.dom.presetsClose = $('#presets-close');
+	E2.dom.patchesToggle = $('#patches-toggle');
+	E2.dom.patchesClose = $('#patches-close');
 	
 	E2.dom.dbg = $('#dbg');
 
@@ -2198,7 +2242,7 @@ E2.InitialiseEngi = function(loadGraphUrl) {
 	E2.dom.forkButton = $('#fork-button');
 	E2.dom.viewSourceButton = $('#view-source');
 	E2.dom.saveACopy = $('.save-copy-button');
-	E2.dom.saveAsPreset = E2.dom.btnSavePatch;
+	E2.dom.saveAsPatch = E2.dom.btnSavePatch;
 	E2.dom.dl_graph = $('#dl-graph');
 	E2.dom.open = $('#open');
 	E2.dom.structure = $('#structure');
@@ -2262,6 +2306,9 @@ E2.InitialiseEngi = function(loadGraphUrl) {
 		function() { // On item activation
 			E2.app.clearEditState()
 			E2.app.clearSelection()
+
+			if (E2.core.active_graph.isEntityPatch() &&  E2.ui.isInProgramMode())
+				E2.app.worldEditor.selectEntityPatch(E2.core.active_graph)
 		},
 		// on graph reorder
 		E2.app.graphApi.reorder.bind(E2.app.graphApi)

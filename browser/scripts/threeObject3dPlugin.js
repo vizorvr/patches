@@ -66,6 +66,10 @@ ThreeObject3DPlugin.prototype.reset = function() {
 	this.updateTransforms()
 }
 
+ThreeObject3DPlugin.prototype.getObject3D = function() {
+	return this.object3d
+}
+
 ThreeObject3DPlugin.prototype.setObject3D = function(newObject3d) {
 	this.object3d = newObject3d
 

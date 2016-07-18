@@ -4,10 +4,10 @@ var fs = require('fs')
 global.Handlebars = {}
 global.E2 = {uid:function(){return Date.now()}}
 var CollapsibleSelectControl = require(__dirname+'/../../scripts/collapsible-select-control.js')
-var presetsJson = JSON.parse(fs.readFileSync(__dirname+'/../../presets/presets.json'))
-var presets = Object.keys(presetsJson).reduce(function(arr, catName) {
-	Object.keys(presetsJson[catName]).map(function(title) {
-		arr.push({ category: catName, title: title, path: presetsJson[catName][title]})
+var patchesJson = JSON.parse(fs.readFileSync(__dirname+'/../../patches/patches.json'))
+var patches = Object.keys(patchesJson).reduce(function(arr, catName) {
+	Object.keys(patchesJson[catName]).map(function(title) {
+		arr.push({ category: catName, title: title, path: patchesJson[catName][title]})
 	})
 	return arr
 }, [])
@@ -25,9 +25,7 @@ var plugins = Object.keys(pluginsJson)
 		return arr
 	}, [])
 
-presets = presets.concat(plugins)
-
-console.log('presets', presets.length)
+patches = patches.concat(plugins)
 
 describe('scoring',function(){
 	var c = new CollapsibleSelectControl()
@@ -53,7 +51,7 @@ describe('filtering',function(){
 	var c 
 	beforeEach(function() {
 		c = new CollapsibleSelectControl()
-		c.data(presets.concat(plugins))
+		c.data(patches.concat(plugins))
 	})
 
 	it('finds oscillators with `oscillate`', function() {
