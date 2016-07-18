@@ -89,7 +89,7 @@
 
             E2.models.user = new User({})
             {{#if user.username}}
-            E2.models.user.set({{{json user}}})
+                E2.models.user.set({{{json user}}})
             {{/if}}
 
 			E2.controllers.account = new AccountController()
