@@ -25,7 +25,7 @@
 
 	ThreePointCloudMaterialPlugin.prototype.reset = function() {
 		AbstractThreeMaterialPlugin.prototype.reset.call(this)
-		this.material = new THREE.PointCloudMaterial()
+		this.material = new THREE.PointsMaterial()
 	}
 
 })()
