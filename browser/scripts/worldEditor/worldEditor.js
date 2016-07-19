@@ -482,7 +482,7 @@ WorldEditor.prototype.onEntityDropped = function(dropNode) {
 
 WorldEditor.prototype.onComponentDropped = function(droppedNode, targetObject3d) {
 	var meshNode = targetObject3d.backReference.node
-	E2.app.graphApi.autoConnect(droppedNode, meshNode)
+	E2.app.graphApi.autoConnectPatchToNode(droppedNode, meshNode)
 }
 
 WorldEditor.prototype.onDragStarted = function(e) {
