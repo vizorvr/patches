@@ -30,6 +30,7 @@ function makePath(username, patchName) {
 function sanitisePatch(patch) {
 	var dfd = when.defer()
 
+	var origPath = patch.path
 	var fixedPath = makePath(patch._creator.username, patch.path)
 	var relativeUrl = patch.url.substring(5)
 
@@ -78,10 +79,18 @@ function sanitisePatch(patch) {
 				if (exists)
 					return readPatch(relativeUrl)
 
-				console.log('not found', patch.path)
+				console.log('  not found', patch.path)
+
+				var edfd = when.defer() 
+				Patch.remove({ path: origPath }, function(err) {
+					console.log('  deleted', origPath)
+					if (err)
+						return dfd.reject(err)
+					edfd.resolve()
+				})
+				return edfd.promise
 			})
 		}
-
 	})
 }
 
@@ -89,8 +98,9 @@ function writePatch(patch) {
 	var dfd = when.defer()
 	var gridFsPath = patch.path
 	var that = this
+	var json = JSON.stringify(patch.patch)
 
-	gfs.writeString(gridFsPath, JSON.stringify(patch.patch))
+	gfs.writeString(gridFsPath, json)
 	.then(function() {
 		var url = gfs.url(gridFsPath)
 
@@ -143,23 +153,24 @@ exports.execute = function() {
 
 	mongoose.connect(secrets.db)
 
-	mongoose.connection.on('connected', function() {
+	mongoose.connection.once('connected', function() {
 		gfs = new GridFsStorage('/data')
-		gfs.on('ready', function() {
+		gfs.once('ready', function() {
 			Patch.find({})
 			.populate('_creator')
 			.exec(function(err, patches) {
 				if (err || !patches)
 					return done(err)
 
-				console.log('patches', patches.length)
-
 				graphAnalyser = new GraphAnalyser(gfs)
 
 				return when.map(patches, function(patch) {
 					return sanitisePatch(patch)
-					.then(function() {
-						return writePatch(patch)
+					.then(function(sanitised) {
+						if (!sanitised)
+							return;
+						console.log('    did ', sanitised.path)
+						return writePatch(sanitised)
 					})
 					.catch(function(err) {
 						console.error(err)
