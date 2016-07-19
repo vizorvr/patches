@@ -422,7 +422,7 @@ WorldEditor.prototype.onEntityDropped = function(dropNode) {
 	sceneNode.slots_dirty = true
 
 	var slots = sceneNode.getDynamicInputSlots()
-	var slot = slots[slots.length - 1]
+	var sceneSlot = slots[slots.length - 1]
 
 	function findObject3DOutput(node) {
 		var staticSlots = node.plugin.output_slots
@@ -445,7 +445,7 @@ WorldEditor.prototype.onEntityDropped = function(dropNode) {
 		dst_nuid: sceneNode.uid,
 		src_slot: srcSlot.index,
 		src_dyn: srcSlot.dynamic,
-		dst_slot: slot.index,
+		dst_slot: sceneSlot.index,
 		dst_dyn: true
 	})
 
@@ -476,38 +476,13 @@ WorldEditor.prototype.onEntityDropped = function(dropNode) {
 
 	this.setSelection(selectNodes)
 
-	// TODO: if selectNodes.length === 0, we didn't paste any objects
-	// and we could warn the user somehow
+	if (!selectNodes.length)
+		E2.app.growl('Oops, nothing was dropped.')
 }
 
 WorldEditor.prototype.onComponentDropped = function(droppedNode, targetObject3d) {
-	// find the patch of the object
 	var meshNode = targetObject3d.backReference.node
-	var targetPatch = meshNode.parent_graph
-
-console.log('onComponentDropped', droppedNode, targetPatch, meshNode)
-
-	// connect all outputs from component to inputs on mesh
-	droppedNode
-	.getDynamicOutputSlots()
-	.map(function(output) {
-		// remove any existing connection 
-
-		var connection = Connection.hydrate(targetPatch, {
-			src_nuid: droppedNode.uid,
-			dst_nuid: meshNode.uid,
-			src_slot: output.index,
-			src_dyn: true,
-			dst_slot: output.name,
-			dst_dyn: false
-		})
-
-		// figure out how to mix values on busy slots
-		// instead of replacing the connections
-
-		E2.app.graphApi.connect(targetPatch, connection)
-		E2.app.onLocalConnectionChanged(connection)
-	})
+	E2.app.graphApi.autoConnect(droppedNode, meshNode)
 }
 
 WorldEditor.prototype.onDragStarted = function(e) {
