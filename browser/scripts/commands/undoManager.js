@@ -1,6 +1,17 @@
+(function() {
+
+function undoItem(xi) {
+	return xi.undo()
+}
+
+function redoItem(xi) {
+	return xi.redo()
+}
+
 function UndoManager() {
 	this.undoStack = []
 	this.redoStack = []
+	this._nestedTransactions = 0
 }
 
 UndoManager.prototype.isUndoable = function() {
@@ -20,8 +31,11 @@ UndoManager.prototype.getRedoStack = function() {
 }
 
 UndoManager.prototype.begin = function(title) {
-	if (this._transaction) // xa already in progress, nop
+	this._nestedTransactions++
+
+	if (this._transaction) { // xa already in progress, nop
 		return;
+	}
 
 	var xa = {
 		title: title,
@@ -29,21 +43,20 @@ UndoManager.prototype.begin = function(title) {
 	}
 
 	xa.redo = function() {
-		xa.undoStack.reverse().map(function(xi) {
-			xi.redo()
-		})
+		xa.undoStack.reverse().map(redoItem)
 	}
 
 	xa.undo = function() {
-		xa.undoStack.reverse().map(function(xi) {
-			xi.undo()
-		})
+		xa.undoStack.reverse().map(undoItem)
 	}
 
 	this._transaction = xa
 }
 
 UndoManager.prototype.end = function() {
+	if (--this._nestedTransactions > 0)
+		return;
+
 	var xa = this._transaction
 
 	if (!xa)
@@ -67,7 +80,7 @@ UndoManager.prototype.undo = function() {
 
 	this.redoStack.push(item)
 
-	return item.undo()
+	return undoItem(item)
 }
 
 UndoManager.prototype.redo = function() {
@@ -78,17 +91,21 @@ UndoManager.prototype.redo = function() {
 
 	this.undoStack.push(item)
 
-	return item.redo()
+	return redoItem(item)
 }
 
 UndoManager.prototype.push = function(item) {
+	this.redoStack = []
+
 	if (this._transaction)
 		return this._transaction.undoStack.push(item)
 
 	this.undoStack.push(item)
-	this.redoStack = []
 }
 
 if (typeof(module) !== 'undefined')
 	module.exports = UndoManager
+else
+	window.UndoManager = UndoManager
 
+})()
