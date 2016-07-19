@@ -402,12 +402,11 @@ WorldEditor.prototype.onPatchDropped = function(patchMeta, json, targetObject3d)
 
 	switch(patchMeta.type) {
 		case 'entity':
-			return this.onEntityDropped(droppedNode)
+			this.onEntityDropped(droppedNode)
 			break;
 		case 'entity_component':
-			if (!targetObject3d)
-				return;
-			return this.onComponentDropped(droppedNode, targetObject3d)
+			if (targetObject3d)
+				this.onComponentDropped(droppedNode, targetObject3d)
 			break;
 		default:
 			// materials on entities
