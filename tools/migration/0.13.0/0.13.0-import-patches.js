@@ -130,9 +130,9 @@ exports.execute = function() {
 
 	mongoose.connect(secrets.db)
 
-	mongoose.connection.on('connected', function() {
+	mongoose.connection.once('connected', function() {
 		gfs = new GridFsStorage('/data')
-		gfs.on('ready', function() {
+		gfs.once('ready', function() {
 			User.findOne({ username: 'vizor' }, function(err, vizorUser) {
 				if (err || !vizorUser)
 					return done(err)
