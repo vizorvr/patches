@@ -75,10 +75,10 @@ PatchManager.prototype.loadUserPatches = function() {
 			var cat = 'MY PATCHES'
 
 			patches.forEach(function(patch) {
+				that.add(cat, patch.name, patch.url)
+
 				if (E2.WORLD_PATCHES.indexOf(patch.type) > -1)
 					that.addWorldPatch(patch.type, cat, patch.name, patch.url)
-
-				that.add(cat, patch.name, patch.url)
 			})
 
 			dfd.resolve()
@@ -93,6 +93,7 @@ PatchManager.prototype.refresh = function() {
 
 	this._patches = []
 	this._worldPatches = []
+	this._patchesByPath = {}
 
 	this.loadUserPatches()
 	.then(function() {
@@ -109,8 +110,6 @@ PatchManager.prototype.refresh = function() {
 
 PatchManager.prototype.renderPatches = function() {
 	var that = this
-
-	E2.dom.patches_list.empty()
 
 	new CollapsibleSelectControl()
 	.data(this._patches)
@@ -130,13 +129,11 @@ PatchManager.prototype.renderPatches = function() {
 }
 
 PatchManager.prototype.renderWorldPatches = function() {
-	E2.dom.objectsList.empty()
-
 	new CollapsibleSelectControl()
 	.data(this._worldPatches)
 	.template(E2.views.patches.patches)
 	.render(E2.dom.objectsList, {
-		searchPlaceholderText : 'Search items'
+		searchPlaceholderText : 'Search world patches'
 	})
 	.onOpen(this.openPatch.bind(this))
 	

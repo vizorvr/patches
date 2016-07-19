@@ -55,6 +55,7 @@ PatchController.prototype.save = function(req, res, next) {
 				var url = that._fs.url(gridFsPath)
 
 				var model = {
+					category: req.body.category,
 					name: req.body.name,
 					type: stat.type || 'patch',
 					path: path,
