@@ -395,10 +395,8 @@ CollapsibleSelectControl.prototype.render = function(el, templateOptions) {
 		categories: this._data
 	})
 
+	el = el || $('<div class="collapsible-select-control">').appendTo('body')
 	el.empty()
-
-	el = el || $('<div class="collapsible-select-control">') .appendTo('body')
-
 	this._el = el
 
 	el.html(this._template(templateData))
