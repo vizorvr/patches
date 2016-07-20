@@ -234,9 +234,6 @@ WorldEditor.prototype.setSelection = function(selected) {
 
 	var anySelected = false
 
-	this.selectedEntityPatch = null
-	this.selectedEntityNode = null
-
 	for (var i = 0; i < selected.length; ++i) {
 		var obj = selected[i]
 		if (obj && obj.backReference !== undefined) {
@@ -255,13 +252,17 @@ WorldEditor.prototype.setSelection = function(selected) {
 		}
 	}
 
-	if (!anySelected) {
-		this.cameraSelector.transformControls.detach()
-		if (E2.app.isWorldEditorActive())
-			E2.app.onGraphSelected(E2.core.root_graph)
-	}
+	if (!anySelected)
+		this.clearSelection()
 
 	E2.ui.emit('worldEditor:selectionSet')
+}
+
+WorldEditor.prototype.clearSelection = function() {
+	this.selectedEntityPatch = undefined
+	this.selectedEntityNode = undefined
+	this.selectionTree.children = []
+	this.cameraSelector.transformControls.detach()
 }
 
 WorldEditor.prototype.onDelete = function(nodes) {
@@ -534,7 +535,14 @@ WorldEditor.prototype.getLastDropTarget = function() {
 }
 
 WorldEditor.prototype.pickObject = function(e) {
-	return this.setSelection([ this.raycastFromMouseEvent(e, false) ])
+	var obj = this.raycastFromMouseEvent(e, false)
+	
+	if (!obj) {
+		this.clearSelection()
+		return E2.app.onGraphSelected(E2.core.root_graph)
+	}
+
+	return this.setSelection([ obj ])
 }
 
 WorldEditor.prototype.raycastFromMouseEvent = function(e, selectSingleObject) {

@@ -1332,14 +1332,13 @@ Application.prototype.clearSelection = function() {
 
 	this.clearNodeSelection()
 
-	this.worldEditor.setSelection([])
+	this.worldEditor.clearSelection()
 }
 
 Application.prototype.clearNodeSelection = function() {
 	this.selectedNodes = []
 	this.selectedConnections = []
 	E2.ui.state.selectedObjects = this.selectedNodes
-
 }
 
 Application.prototype.selectAll = function() {
@@ -1532,8 +1531,8 @@ Application.prototype.loadGraph = function(graphPath) {
 	this.player.load_from_url(graphPath, function() {
 		that.setupEditorChannel()
 		.then(function() {
-			that.startPlaying()
 			that.onGraphSelected(E2.core.root_graph)
+			that.startPlaying()
 			dfd.resolve()
 		})
 	})
@@ -1727,6 +1726,9 @@ Application.prototype.onGraphSelected = function(graph) {
 	var that = this
 
 	this.clearNodeSelection()
+
+	if (graph === E2.core.active_graph)
+		return;
 
 	E2.core.active_graph.destroy_ui()
 	E2.core.active_graph = graph
