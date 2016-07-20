@@ -1727,7 +1727,7 @@ Application.prototype.onGraphSelected = function(graph) {
 
 	this.clearNodeSelection()
 
-	if (graph === E2.core.active_graph)
+	if (graph !== E2.core.active_graph && graph.ui)
 		return;
 
 	E2.core.active_graph.destroy_ui()
