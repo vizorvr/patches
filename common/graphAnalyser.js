@@ -30,7 +30,7 @@ GraphAnalyser.prototype.parseAssets = function(graph) {
 		numAssets: 0,
 		numNodes: 0,
 		hasAudio: false,
-		type: 'file'
+		type: 'patch'
 	}
 
 	function readRoot(graph) {
@@ -44,7 +44,7 @@ GraphAnalyser.prototype.parseAssets = function(graph) {
 		if (!isPatchNode)
 			return;
 
-		var patchStrongType = patchNodeId
+		var patchStrongType = 'patch'
 
 		// catch single-node patches with matching outputs
 		if (graph.nodes.length === 1 && patchNode.dyn_out) {

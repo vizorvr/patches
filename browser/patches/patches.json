@@ -348,7 +348,8 @@
             "name": "util_9_step_stepsequencer"
         },
         "Display number": {
-            "name": "_util-display-number"
+            "name": "_util-display-number",
+            "type": "patch"
         }
     }
 }

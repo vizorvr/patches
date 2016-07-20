@@ -107,7 +107,7 @@ function writePatch(patch) {
 		Patch.findOne({ _id: patch._id })
 		.then(function(patchModel) {
 			var patchModelData = {
-				category: patch.category || 'MY PATCHES',
+				category: patch.category,
 				path: patch.path,
 				type: patch.stat.type,
 				stat: patch.stat,

@@ -410,7 +410,8 @@ WorldEditor.prototype.onPatchDropped = function(patchMeta, json, targetObject3d)
 			break;
 		default:
 			// materials on entities
-			// audio, video
+			// modifiers on materials
+			// audio, video entities?
 			break;
 	}
 
@@ -503,6 +504,10 @@ WorldEditor.prototype.onDragDropped = function(e) {
 
 WorldEditor.prototype.onDragMoved = function(e, patchMeta) {
 	if (patchMeta.type === 'entity') // always drop in root
+		return;
+
+	// disable in production until Components library is ready
+	if (Vizor.releaseMode)
 		return;
 
 	var obj = this.raycastFromMouseEvent(e, /* single = */ true)

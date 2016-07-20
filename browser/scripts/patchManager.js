@@ -21,7 +21,7 @@ PatchManager.prototype.loadPlugins = function() {
 
 	Object.keys(data).forEach(function(catName) {
 		Object.keys(data[catName]).forEach(function(title) {
-			that.add(catName, title, 'plugin/'+data[catName][title])
+			that.add(catName, title, 'plugin', 'plugin/'+data[catName][title])
 		})
 	})
 
@@ -38,7 +38,12 @@ PatchManager.prototype.loadPatches = function() {
 		E2.core.patchesList = data
 
 		data.map(function(patchMeta) {
-			that.add(patchMeta.category, patchMeta.name, patchMeta.url)
+			// disable Components in production until Components library is ready
+			// My Patches will still include them below
+			if (Vizor.releaseMode && patchMeta.type === 'entity_component')
+				return;
+
+			that.add(patchMeta.category, patchMeta.name, patchMeta.type, patchMeta.url)
 
 			if (E2.WORLD_PATCHES.indexOf(patchMeta.type) > -1)
 				that.addWorldPatch(patchMeta.type, patchMeta.category, patchMeta.name, patchMeta.url)
@@ -75,7 +80,7 @@ PatchManager.prototype.loadUserPatches = function() {
 			var cat = 'MY PATCHES'
 
 			patches.forEach(function(patch) {
-				that.add(cat, patch.name, patch.url)
+				that.add(cat, patch.name, patch.type, patch.url)
 
 				if (E2.WORLD_PATCHES.indexOf(patch.type) > -1)
 					that.addWorldPatch(patch.type, cat, patch.name, patch.url)
@@ -108,11 +113,29 @@ PatchManager.prototype.refresh = function() {
 	})
 }
 
+function categorySort(a, b) {
+	if (a.category === 'MY PATCHES')
+		return -1
+
+	if (b.category === 'MY PATCHES')
+		return 1
+
+	if (a.type === 'plugin' && b.type !== 'plugin')
+		return 1
+
+	if (b.type === 'plugin' && a.type !== 'plugin')
+		return -1
+
+	var score = a.category.localeCompare(b.category)
+
+	return score
+}
+
 PatchManager.prototype.renderPatches = function() {
 	var that = this
 
 	new CollapsibleSelectControl()
-	.data(this._patches)
+	.data(this._patches.sort(categorySort))
 	.template(E2.views.patches.patches)
 	.render(E2.dom.patches_list, {
 		searchPlaceholderText : 'Search patches'
@@ -130,7 +153,7 @@ PatchManager.prototype.renderPatches = function() {
 
 PatchManager.prototype.renderWorldPatches = function() {
 	new CollapsibleSelectControl()
-	.data(this._worldPatches)
+	.data(this._worldPatches.sort(categorySort))
 	.template(E2.views.patches.patches)
 	.render(E2.dom.objectsList, {
 		searchPlaceholderText : 'Search world patches'
@@ -169,7 +192,7 @@ PatchManager.prototype.openPatch = function(selection) {
 
 PatchManager.prototype.addWorldPatch = function(typeName, category, title, path) {
 	var patchMeta = {
-		type: typeName,
+		type: typeName || 'patch',
 		category: category, 
 		title: title,
 		path: path
@@ -179,12 +202,12 @@ PatchManager.prototype.addWorldPatch = function(typeName, category, title, path)
 	this._worldPatches.push(patchMeta)
 }
 
-PatchManager.prototype.add = function(category, title, path) {
+PatchManager.prototype.add = function(category, title, type, path) {
 	if (this._patchesByPath[path])
 		return;
 
-	var patchMeta = {		
-		type: 'patch',
+	var patchMeta = {
+		type: type || 'patch',
 		category: category, 
 		title: title,
 		path: path
