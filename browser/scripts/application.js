@@ -132,13 +132,15 @@ Application.prototype.createPlugin = function(id, position) {
 }
 
 Application.prototype.setActiveGraph = function(graph) {
-	if (E2.core.active_graph === graph)
+	if (E2.core.active_graph === graph && graph.ui)
 		return;
 
 	E2.app.dispatcher.dispatch({
 		actionType: 'uiActiveGraphChanged',
 		activeGraphUid: graph.uid
 	})
+
+	this.onGraphSelected(graph)
 
 	if (graph.tree_node) {
 		graph.tree_node.activate()
@@ -1198,12 +1200,12 @@ Application.prototype.getNodeBoundingBox = function(node) {
 // any pre-existing nodes
 Application.prototype.findSpaceInGraphFor = function(activeGraph, desiredPlace) {
 	// minimum spacing between nodes
-	var spacing = { x: 250, y: 65 }
+	var spacing = { x: 20, y: 30 }
 	var box = {
 		x1: desiredPlace.x || 200,
 		y1: desiredPlace.y || 200,
 	}
-	box.x2 = box.x1 + spacing.x
+	box.x2 = box.x1 + 200
 	box.y2 = box.y1 + spacing.y
 
 	var didCreateUi = false
@@ -1531,8 +1533,6 @@ Application.prototype.loadGraph = function(graphPath) {
 	this.player.load_from_url(graphPath, function() {
 		that.setupEditorChannel()
 		.then(function() {
-			that.onGraphSelected(E2.core.root_graph)
-			that.startPlaying()
 			dfd.resolve()
 		})
 	})
@@ -1727,7 +1727,7 @@ Application.prototype.onGraphSelected = function(graph) {
 
 	this.clearNodeSelection()
 
-	if (graph !== E2.core.active_graph && graph.ui)
+	if (graph === E2.core.active_graph && graph.ui)
 		return;
 
 	E2.core.active_graph.destroy_ui()

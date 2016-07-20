@@ -377,6 +377,7 @@ WorldEditor.prototype.selectMeshAndDependencies = function(meshNode, sceneNode, 
 
 WorldEditor.prototype.onPatchDropped = function(patchMeta, json, targetObject3d) {
 	var sceneNode = this.currentGroup || this.scene.backReference.parentNode
+	var leftFromSceneNode = 300
 
 	console.debug('onPatchDropped', patchMeta, !!targetObject3d)
 
@@ -384,20 +385,24 @@ WorldEditor.prototype.onPatchDropped = function(patchMeta, json, targetObject3d)
 	if (!this.scene && !this.currentGroup)
 		return;
 
+	var patch = JSON.parse(json)
+	patch = patch.root ? patch.root : patch
+
 	var targetPatch = E2.core.root_graph
 
 	if (targetObject3d) {
 		// paste into the target entity patch
 		var meshNode = targetObject3d.backReference.node
 		targetPatch = meshNode.parent_graph
+	} else {
+		// minimise patches dropped in root
+		if (patch.nodes[0])
+			patch.nodes[0].open = false
 	}
-
-	var patch = JSON.parse(json)
-	patch = patch.root ? patch.root : patch
 
 	E2.app.undoManager.begin('Drag and Drop Patch')
 
-	var desiredPlace = { x: sceneNode.x - 200, y: sceneNode.y }
+	var desiredPlace = { x: sceneNode.x - leftFromSceneNode, y: sceneNode.y }
 	var finalPlace = E2.app.findSpaceInGraphFor(targetPatch, desiredPlace)
 	var dropped = E2.app.pasteInGraph(targetPatch, patch, finalPlace.x, finalPlace.y)
 	var droppedNode = dropped.nodes[0]
