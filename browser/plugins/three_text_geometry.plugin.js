@@ -49,7 +49,6 @@
 		this.fontSelector.createUi($ui, function(newFont, newSelection) {
 			that.undoableSetState('fontId', newSelection, that.state.fontId)
 			that.font = newFont
-			console.log('selector: load font', that.state.fontId)
 		})
 
 		return $ui
