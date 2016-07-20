@@ -128,6 +128,9 @@ function categorySort(a, b) {
 
 	var score = a.category.localeCompare(b.category)
 
+	if (score === 0)
+		return a.title.localeCompare(b.title)
+
 	return score
 }
 
