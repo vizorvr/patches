@@ -1196,9 +1196,22 @@ Application.prototype.getNodeBoundingBox = function(node) {
 // return a {x: ..., y: ...} object with coordinates
 // where the object will fit without overlapping with
 // any pre-existing nodes
-Application.prototype.findSpaceInGraphFor = function(activeGraph, doc) {
+Application.prototype.findSpaceInGraphFor = function(activeGraph, desiredPlace) {
 	// minimum spacing between nodes
-	var spacing = {x: 30, y: 20}
+	var spacing = { x: 250, y: 65 }
+	var box = {
+		x1: desiredPlace.x || 200,
+		y1: desiredPlace.y || 200,
+	}
+	box.x2 = box.x1 + spacing.x
+	box.y2 = box.y1 + spacing.y
+
+	var didCreateUi = false
+
+	if (!activeGraph) {
+		didCreateUi = true
+		active_graph.create_ui()
+	}
 
 	// create sorted array of nodes in y
 	var sortedNodes = activeGraph.nodes.slice()
@@ -1213,7 +1226,7 @@ Application.prototype.findSpaceInGraphFor = function(activeGraph, doc) {
 	for(var i = 0; i < sortedNodes.length; ++i) {
 		var bbox = this.getNodeBoundingBox(sortedNodes[i])
 
-		if (bbox.y2 + spacing.y < doc.y1) {
+		if (bbox.y2 + spacing.y < box.y1) {
 			// ignore any nodes above our one, they don't matter
 			continue
 		}
@@ -1224,12 +1237,12 @@ Application.prototype.findSpaceInGraphFor = function(activeGraph, doc) {
 
 	// easy case, nothing overlaps
 	if (bboxes.length === 0) {
-		return {x: doc.x1, y: doc.y1}
+		return {x: box.x1, y: box.y1}
 	}
 
 	// easy case, the next node is outside our bbox vertically
-	if (bboxes[0].y1 > doc.y2 + spacing.y) {
-		return {x: doc.x1, y: doc.y1}
+	if (bboxes[0].y1 > box.y2 + spacing.y) {
+		return {x: box.x1, y: box.y1}
 	}
 
 	// scan the set of bboxes down to find space for our pasted node(s)
@@ -1253,7 +1266,10 @@ Application.prototype.findSpaceInGraphFor = function(activeGraph, doc) {
 				var offset = graphNodeBboxes[i].y2 - pasteBbox.y1 + spacing.y
 
 				var newBboxes = graphNodeBboxes.splice(i + 1)
-				var newNodeBbox = {x1: pasteBbox.x1, y1: pasteBbox.y1 + offset, x2: pasteBbox.x2, y2: pasteBbox.y2 + offset}
+				var newNodeBbox = {
+					x1: pasteBbox.x1, y1: pasteBbox.y1 + offset,
+					x2: pasteBbox.x2, y2: pasteBbox.y2 + offset
+				}
 
 				return autoLayout(newNodeBbox, newBboxes)
 			}
@@ -1262,9 +1278,12 @@ Application.prototype.findSpaceInGraphFor = function(activeGraph, doc) {
 		return pasteBbox
 	}
 
-	var result = autoLayout(doc, bboxes)
-console.debug('autoLayout', doc, bboxes, result)
-	return {x: result.x1, y: result.y1}
+	box = autoLayout(box, bboxes)
+
+	if (didCreateUi)
+		activeGraph.destroy_ui()
+
+	return { x: box.x1, y: box.y1 }
 }
 
 Application.prototype.markNodeAsSelected = function(node, addToSelection) {
@@ -1514,6 +1533,7 @@ Application.prototype.loadGraph = function(graphPath) {
 		that.setupEditorChannel()
 		.then(function() {
 			that.startPlaying()
+			that.onGraphSelected(E2.core.root_graph)
 			dfd.resolve()
 		})
 	})

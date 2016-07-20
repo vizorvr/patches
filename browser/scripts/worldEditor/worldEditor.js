@@ -375,6 +375,8 @@ WorldEditor.prototype.selectMeshAndDependencies = function(meshNode, sceneNode, 
 }
 
 WorldEditor.prototype.onPatchDropped = function(patchMeta, json, targetObject3d) {
+	var sceneNode = this.currentGroup || this.scene.backReference.parentNode
+
 	console.debug('onPatchDropped', patchMeta, !!targetObject3d)
 
 	// empty graph can have this
@@ -394,11 +396,12 @@ WorldEditor.prototype.onPatchDropped = function(patchMeta, json, targetObject3d)
 
 	E2.app.undoManager.begin('Drag and Drop Patch')
 
-	var space = E2.app.findSpaceInGraphFor(targetPatch, patch)
-	var dropped = E2.app.pasteInGraph(targetPatch, patch, space.x, space.y)
+	var desiredPlace = { x: sceneNode.x - 200, y: sceneNode.y }
+	var finalPlace = E2.app.findSpaceInGraphFor(targetPatch, desiredPlace)
+	var dropped = E2.app.pasteInGraph(targetPatch, patch, finalPlace.x, finalPlace.y)
 	var droppedNode = dropped.nodes[0]
-	droppedNode.x = E2.app.mousePosition[0]
-	droppedNode.y = E2.app.mousePosition[1]
+	droppedNode.x = finalPlace.x
+	droppedNode.y = finalPlace.y
 
 	switch(patchMeta.type) {
 		case 'entity':

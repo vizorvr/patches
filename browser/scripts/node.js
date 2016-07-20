@@ -451,6 +451,9 @@ Node.prototype.disconnectSlotConnections = function(slot) {
 
 Node.prototype.addInput = function(newConn) {
 	// enforce only one connection per input slot
+	if (this.inputs.indexOf(newConn) > -1)
+		console.trace('ALREADY EXISTS')
+	
 	this.disconnectSlotConnections(newConn.dst_slot)
 
 	// Ensure that the order of inbound connections are stored ordered by the indices
