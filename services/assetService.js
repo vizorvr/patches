@@ -83,6 +83,7 @@ AssetService.prototype.findOne = function(q) {
 	var dfd = when.defer()
 	this._model
 		.findOne(q)
+		.populate('_creator', 'username profile')
 		.exec(function(err, item)
 	{
 		if (err)
