@@ -145,8 +145,6 @@ GraphService.prototype._save = function(data, user, opts) {
 		if (data.hasAudio)
 			asset.hasAudio = data.hasAudio
 
-		,
-
 		// by default bumps to latest player version
 		asset.version = opts.version
 
