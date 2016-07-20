@@ -264,7 +264,10 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 				else if (selected.length === 1)
 					text = selected[0].title || selected[0].id;
 			}
-			that.buildBreadcrumb(E2.core.active_graph, function(b){if (text) b.add(text)});
+			that.buildBreadcrumb(E2.core.active_graph, function(b) {
+				if (text)
+					b.add(text)
+			});
 		})
 		.emit('changed:selectedObjects', state.selectedObjects);
 

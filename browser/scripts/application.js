@@ -1311,11 +1311,14 @@ Application.prototype.clearSelection = function() {
 			cui.selected = false;
 	}
 
+	this.clearNodeSelection()
+
 	this.worldEditor.setSelection([])
+}
 
-	this.selectedNodes = [];
-	this.selectedConnections = [];
-
+Application.prototype.clearNodeSelection = function() {
+	this.selectedNodes = []
+	this.selectedConnections = []
 	E2.ui.state.selectedObjects = this.selectedNodes
 
 }
@@ -1703,12 +1706,7 @@ Application.prototype.setupStoreListeners = function() {
 Application.prototype.onGraphSelected = function(graph) {
 	var that = this
 
-console.trace('onGraphSelected', 
-E2.core.active_graph === graph, 
-'from',
-E2.core.active_graph.tree_node.title,
-'to',
-graph.tree_node.title)
+	this.clearNodeSelection()
 
 	E2.core.active_graph.destroy_ui()
 	E2.core.active_graph = graph

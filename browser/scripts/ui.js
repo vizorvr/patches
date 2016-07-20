@@ -497,7 +497,8 @@ VizorUI.prototype.setModeProgram = function() {
 
 VizorUI.prototype.buildBreadcrumb = function(graph, beforeRender) {
 	var b = new UIbreadcrumb()
-	function buildBreadcrumb(parentEl, graph, add_handler) {
+	
+	function processGraph(parentEl, graph, add_handler) {
 		var title = graph.tree_node.title || graph.tree_node.id
 		if (add_handler) {
 			b.prepend(title, null, function() {
@@ -507,12 +508,16 @@ VizorUI.prototype.buildBreadcrumb = function(graph, beforeRender) {
 			b.prepend(title, null)
 		}
 		if (graph.parent_graph)
-			buildBreadcrumb(parentEl, graph.parent_graph, true)
+			processGraph(parentEl, graph.parent_graph, true)
 	}
-	buildBreadcrumb(this.dom.breadcrumb, graph, false)
 
-	if (typeof beforeRender === 'function') beforeRender(b);
+	processGraph(this.dom.breadcrumb, graph, false)
+
+	if (typeof beforeRender === 'function') 
+		beforeRender(b);
+
 	b.render(this.dom.breadcrumb)
+
 	return b;
 }
 
