@@ -114,6 +114,9 @@ PatchManager.prototype.refresh = function() {
 }
 
 function categorySort(a, b) {
+	if (a.category === 'MY PATCHES' && b.category === 'MY PATCHES')
+		return 0 // keep ordered by most-recent
+
 	if (a.category === 'MY PATCHES')
 		return -1
 
