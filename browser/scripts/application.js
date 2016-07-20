@@ -1181,10 +1181,10 @@ Application.prototype.getNodeBoundingBox = function(node) {
 
 	// default width / height = 100 / 20 if the graph is not visible
 	if (width === 0)
-		width = 100
+		width = 200
 
 	if (height === 0)
-		height = 20
+		height = node.open ? 60 : 30
 
 	return {
 		x1: pos.left,
@@ -1198,28 +1198,33 @@ Application.prototype.getNodeBoundingBox = function(node) {
 // return a {x: ..., y: ...} object with coordinates
 // where the object will fit without overlapping with
 // any pre-existing nodes
-Application.prototype.findSpaceInGraphFor = function(activeGraph, desiredPlace) {
+Application.prototype.findSpaceInGraphFor = function(activeGraph, desiredPlace, leftOfNode) {
 	// minimum spacing between nodes
-	var spacing = { x: 20, y: 30 }
+	var spacing = { x: 20, y: 10 }
 	var box = {
 		x1: desiredPlace.x || 200,
 		y1: desiredPlace.y || 200,
 	}
 	box.x2 = box.x1 + 200
-	box.y2 = box.y1 + spacing.y
-
-	var didCreateUi = false
-
-	if (!activeGraph) {
-		didCreateUi = true
-		active_graph.create_ui()
-	}
+	box.y2 = box.y1 + 30
 
 	// create sorted array of nodes in y
 	var sortedNodes = activeGraph.nodes.slice()
 	sortedNodes.sort(function(a, b) {
-		return a.y - b.y
+		var ay = a.y, by = b.y
+		if (a.open) ay += 30
+		if (b.open) by += 30
+		return ay - by
 	})
+
+	// filter out nodes not connected to leftOfNode
+	if (leftOfNode) {
+		sortedNodes = sortedNodes.filter(function(node) {
+			return node.outputs.some(function(connection) {
+				return connection.dst_node === leftOfNode
+			})
+		})
+	}
 
 	// find the initial set of bboxes that account for this operation -
 	// i.e. anything below the pasted node set
@@ -1266,11 +1271,11 @@ Application.prototype.findSpaceInGraphFor = function(activeGraph, desiredPlace) 
 				// move the candidate bbox down by offset = height of a node + spacing
 				// and recurse back into trying to match the new candidate area
 				var offset = graphNodeBboxes[i].y2 - pasteBbox.y1 + spacing.y
-
 				var newBboxes = graphNodeBboxes.splice(i + 1)
 				var newNodeBbox = {
-					x1: pasteBbox.x1, y1: pasteBbox.y1 + offset,
-					x2: pasteBbox.x2, y2: pasteBbox.y2 + offset
+					// line up left with box above
+					x1: graphNodeBboxes[i].x1, y1: pasteBbox.y1 + offset,
+					x2: graphNodeBboxes[i].x2, y2: pasteBbox.y2 + offset
 				}
 
 				return autoLayout(newNodeBbox, newBboxes)
@@ -1281,9 +1286,6 @@ Application.prototype.findSpaceInGraphFor = function(activeGraph, desiredPlace) 
 	}
 
 	box = autoLayout(box, bboxes)
-
-	if (didCreateUi)
-		activeGraph.destroy_ui()
 
 	return { x: box.x1, y: box.y1 }
 }

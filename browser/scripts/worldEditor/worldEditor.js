@@ -400,10 +400,16 @@ WorldEditor.prototype.onPatchDropped = function(patchMeta, json, targetObject3d)
 			patch.nodes[0].open = false
 	}
 
+	var isRoot = targetPatch === E2.core.root_graph
+
 	E2.app.undoManager.begin('Drag and Drop Patch')
 
 	var desiredPlace = { x: sceneNode.x - leftFromSceneNode, y: sceneNode.y }
-	var finalPlace = E2.app.findSpaceInGraphFor(targetPatch, desiredPlace)
+	var finalPlace = E2.app.findSpaceInGraphFor(
+		targetPatch, 
+		desiredPlace, 
+		isRoot ? sceneNode : null
+	)
 	var dropped = E2.app.pasteInGraph(targetPatch, patch, finalPlace.x, finalPlace.y)
 	var droppedNode = dropped.nodes[0]
 	droppedNode.x = finalPlace.x
