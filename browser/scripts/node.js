@@ -745,6 +745,13 @@ Node.prototype.deserialise = function(guid, d) {
 	
 	this.title = d.title ? d.title : null;
 
+	// make object3d patches use `entity` instead
+	if (d.plugin === 'graph' && d.dyn_out && d.dyn_out.length === 1 &&
+		d.dyn_out[0].dt === E2.dt.OBJECT3D.id)
+	{
+		d.plugin = 'entity'
+	}
+
 	var plg = E2.core.pluginManager.create(d.plugin, this)
 	if (!plg) {
 		msg('ERROR: Failed to instantiate node of type \'' + d.plugin + '\' with title \'' + this.title + '\' and UID = ' + this.uid + '.')
