@@ -17,7 +17,7 @@ describe('GraphStore', function() {
 			},
 			core: {
 				on: function(){},
-				root_graph: {}
+				root_graph: { nodes: [ 'node' ] }
 			},
 			GraphAnalyser: function() {
 				return {

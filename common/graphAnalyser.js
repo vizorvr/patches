@@ -119,7 +119,7 @@ GraphAnalyser.prototype.analyseJson = function(graphJson) {
 	try {
 		graph = JSON.parse(graphJson)
 	} catch(e) {
-		console.error('PARSE ERROR', e.stack, graphJson)
+		console.error('PARSE ERROR', e.stack)
 		return e
 	}
 	

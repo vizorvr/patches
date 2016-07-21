@@ -15,7 +15,6 @@ describe('SubGraphCutUndo', function() {
 
 		app = E2.app
 		app.player = { core: core }
-		app.worldEditor = { isActive: function() { return false } }
 		app.channel = { broadcast: function(){}}
 		app.updateCanvas = function(){}
 		global.E2.app = app

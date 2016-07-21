@@ -10,7 +10,7 @@ var assert = require('assert')
 var expect = require('chai').expect
 
 var graphFile = __dirname+'/../../browser/data/graphs/default.json'
-var graphData = fs.readFileSync(graphFile)
+var graphData = fs.readFileSync(graphFile).toString()
 
 function rand() {
 	return Math.floor(Math.random() * 10000)
@@ -84,7 +84,7 @@ describe('Patch', function() {
 
 	it('should force the right path', function(done) {
 		var path = '/blah/quux/bar/foo.png'
-		var expectedPath = '/'+username+'/foo.json'
+		var expectedPath = '/'+username+'/patches/foo.json'
 
 		sendPatch(path, function(err, res) {
 			if (err) return done(err)

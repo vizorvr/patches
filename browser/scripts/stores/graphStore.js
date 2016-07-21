@@ -256,7 +256,7 @@ GraphStore.prototype.assetsMayHaveChanged = function(node) {
 GraphStore.prototype._calculateGraphSize = function() {
 	var that = this
 
-	if (!E2.core.root_graph.nodes.length)
+	if (!E2.core.root_graph || !E2.core.root_graph.nodes.length)
 		return when.resolve()
 
 	if (this._statDfd) {

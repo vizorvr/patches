@@ -282,6 +282,7 @@ exports.reset = function() {
 	}
 
 	global.E2.app.worldEditor = {
+		clearSelection: function() {},
 		isActive: function() {
 			return false
 		}
@@ -373,6 +374,9 @@ exports.setupGlobals = function() {
 	}
 
 	E2.ui = {
+		isInProgramMode: function() {
+			return false
+		},
 		buildBreadcrumb: function() {},
 		state: {},
 		showStartDialog: function() {return when.resolve()}
