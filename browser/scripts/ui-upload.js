@@ -66,7 +66,7 @@ function uploadFile(file) {
 // Traverse the pasted nodes and perform any fixup (fix
 function postPasteFixup(nodes, fixupCallback) {
 	function fixupNode(node) {
-		if (node.plugin.id === "graph") {
+		if (E2.GRAPH_NODES.indexOf(node.plugin.id) > -1) {
 			for (var i = 0, len = node.plugin.graph.nodes.length; i < len; ++i) {
 				fixupNode(node.plugin.graph.nodes[i])
 			}
