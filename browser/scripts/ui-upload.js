@@ -72,7 +72,8 @@ function postPasteFixup(nodes, fixupCallback) {
 			}
 		}
 
-		fixupCallback(node)
+		if (fixupCallback)
+			fixupCallback(node)
 	}
 
 	for (var i = 0, len = nodes.length; i < len; ++i) {
