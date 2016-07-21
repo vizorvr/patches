@@ -50,6 +50,8 @@ PatchManager.prototype.loadPatches = function() {
 		})
 
 		dfd.resolve()
+
+		return dfd.promise
 	}
 
 	if (E2.core.patchesList)
