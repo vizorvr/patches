@@ -29,7 +29,6 @@ function dragAndDropMouseDownHandler(e) {
 	var dragPreview = $('<div class="plugin-drag-preview"><div class="drag-add-icon"><svg class='
 					  + '"icon-drag-add"><use xlink:href="#icon-drag-add"></use></svg></div>'
 					  + '<span style="display: none;">Drop to create:</span>'+title+'</div>')
-	var hoverArea = $('<div class="dragging-allowed"></div>')
 	var dragPreviewInDom = false // only append the preview element when moving the mouse cursor while dragging
 	
 	var canvas = $('#canvases')
@@ -91,7 +90,6 @@ function dragAndDropMouseDownHandler(e) {
 
 		if (mouseX < (canvasWidth + canvasX) && mouseX > canvasX && mouseY < (canvasHeight + canvasY) && mouseY > canvasY) {
 			dragPreview.css({ opacity: 1.0 }).find('span').show()
-			// hoverArea.addClass('dragging-on-top')
 
 			// Only do scrolling after the user has dragged the object over the
 			// canvas area once so it doesn't start scrolling while you're
@@ -104,7 +102,6 @@ function dragAndDropMouseDownHandler(e) {
 				}, 10)
 			}
 		} else {
-			// hoverArea.removeClass('dragging-on-top')
 			dragPreview.css({ opacity: 0.5 }).find('span').hide()
 		}
 
@@ -126,12 +123,6 @@ function dragAndDropMouseDownHandler(e) {
 			E2.dom.chatWindow.addClass('dragging-not-allowed');
 			E2.dom.bottomBar.addClass('dragging-not-allowed');
 
-			// hoverArea
-			// 	.appendTo('body')
-			// 	.width(canvas.width())
-			// 	.height(canvas.height())
-			// 	.css({ top: canvas.position().top, left: canvas.position().left })
-
 			mouseMoveBound = true
 		}
 
@@ -146,7 +137,6 @@ function dragAndDropMouseDownHandler(e) {
 	// On mouseup unbind everything and destroy the preview box
 	var mouseUpHandler = function(evt) {
 		dragPreview.remove()
-		// hoverArea.remove()
 		dragPreviewInDom = false
 		$(document).unbind('mousemove', mouseMoveHandler)
 		$(document).unbind('mouseup', mouseUpHandler)
