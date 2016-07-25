@@ -66,7 +66,7 @@
 		this.geometries = this.getDefaultGeometries()
 		this.materials = this.getDefaultMaterials()
 
-		console.log('AbstractThreeLoaderObjPlugin loading', this.state.url)
+		console.log('ThreeLoaderModelPlugin loading', this.state.url)
 
 		E2.core.assetLoader
 		.loadAsset('model', this.state.url)

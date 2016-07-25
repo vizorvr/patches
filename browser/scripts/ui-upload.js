@@ -8,6 +8,7 @@ var modelsByExtension = {
 	'.js': 'scene',
 	'.json': 'scene',
 	'.obj': 'scene',
+	'.gltf': 'scene',
 	'.fbx': 'scene',
 	'.dae': 'scene',
 	'.zip': 'scene'
@@ -119,14 +120,17 @@ function instantiatePluginForUpload(uploaded, position) {
 	return dfd.promise
 }
 
-function instantiateTemplateForUpload(uploaded, position) {
+function instantiateTemplateForUpload(asset, position) {
 	var templateName
 	var dfd = when.defer()
 
 	var fixupCallback = function() {}
+	var templateData = {}
 
+	console.info('instantiating template for asset', asset)
+	
 	// add to scene if graph not visible
-	switch(uploaded.modelName) {
+	switch(asset.modelName) {
 		case 'image':
 			templateName = 'texture-plane.hbs'
 			fixupCallback = function(node) {
@@ -137,14 +141,19 @@ function instantiateTemplateForUpload(uploaded, position) {
 			break;
 		case 'scene':
 			templateName = 'scene.hbs'
+
 			fixupCallback = function(node) {
-				if (node.plugin.id === 'three_loader_scene') {
+				if (node.plugin.id === 'three_loader_scene') 
 					node.plugin.postLoadCallback = new ObjectPlacementHelper()
-				}
 			}
+	
+			templateData = _.clone(asset)
+	
+			if (asset.templates)
+				templateData.templateUrl = asset.templates[0]
 			break;
 		case 'audio':
-			return instantiatePluginForUpload(uploaded, position)
+			return instantiatePluginForUpload(asset, position)
 			break;
 		case 'video':
 			templateName = 'video_plane.patch.hbs'
@@ -162,7 +171,7 @@ function instantiateTemplateForUpload(uploaded, position) {
 			return dfd.reject(err)
 		}
 
-		E2.app.undoManager.begin('Drag & Drop')
+		E2.app.undoManager.begin('Drag & Drop Upload')
 
 		var copyBuffer = E2.app.fillCopyBuffer(
 			patch.root.nodes,
