@@ -16,7 +16,7 @@ uiEvent.xhrFormUIReset	= 'xhrFormUIReset'		//	dispatched on form
 VizorUI.setupXHRForm = function($form, onSuccess) {	// see views/account/signup for example
 
 	if ($form.length !== 1)
-		return console.error('must call with exacly 1 form')
+		return console.error('must call with exactly 1 form')
 
 	var xhrEnabled = $form.data('xhrenabled')
 	if (xhrEnabled) {
