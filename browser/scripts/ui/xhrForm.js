@@ -15,7 +15,10 @@ uiEvent.xhrFormUIReset	= 'xhrFormUIReset'		//	dispatched on form
  */
 VizorUI.setupXHRForm = function($form, onSuccess) {	// see views/account/signup for example
 
-	var xhrEnabled = $form.data('xhrEnabled')
+	if ($form.length !== 1)
+		return console.error('must call with exactly 1 form')
+
+	var xhrEnabled = $form.data('xhrenabled')
 	if (xhrEnabled) {
 		msg("ERROR: setupXHRForm but form already enabled " + $form.attr('id'))
 		return false
@@ -92,6 +95,10 @@ VizorUI.setupXHRForm = function($form, onSuccess) {	// see views/account/signup 
 			$unknownError = jQuery('.genericError', $form)
 
 	var resetUIstate = function() {
+		$form
+			.attr('data-lastresult', null)
+			.attr('data-laststatus', null)
+
 		$form.not('.keepMessage')
 			.removeClass('hasMessage')
 			.addClass('noMessage')
@@ -200,7 +207,11 @@ VizorUI.setupXHRForm = function($form, onSuccess) {	// see views/account/signup 
 				inProgress = false
 				var detail = {}
 				$body.removeClass('loading')
-				$form.removeClass('loading')
+				$form
+					.removeClass('loading')
+					.attr('data-lastresult', 'error')
+					.attr('data-laststatus', err.status)
+
 				bindResetUIOnInputAfterResponse()
 				if (err.responseJSON) {
 					var json = err.responseJSON
@@ -272,9 +283,14 @@ VizorUI.setupXHRForm = function($form, onSuccess) {	// see views/account/signup 
 					.removeClass('noMessage')
 					.addClass('hasMessage')
 			},
-			success: function() {
+			success: function(content, textStatus, jqxhr) {
 				inProgress = false
 				$body.removeClass('loading')
+				$form
+					.removeClass('loading')
+					.attr('data-lastresult', 'success')
+					.attr('data-laststatus', jqxhr.status)
+
 				bindResetUIOnInputAfterResponse()
 				onSuccess.apply(this,arguments)
 			}
@@ -283,8 +299,7 @@ VizorUI.setupXHRForm = function($form, onSuccess) {	// see views/account/signup 
 		return false
 	})
 
-	$form
-		.data('xhrEnabled', true)
-		.attr('data-xhrEnabled', 'true')
+	resetUIstate()
+	$form.attr('data-xhrenabled', 'true')
 
 }

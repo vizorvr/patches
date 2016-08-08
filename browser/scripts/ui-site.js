@@ -73,26 +73,29 @@ var siteUI = new function() {
 			document.body.querySelectorAll('[data-hideshow-target]'),
 			VizorUI.hideshow)
 
-		// common account forms
-		VizorUI.setupXHRForm(jQuery('#accountDetailsForm'));
-		VizorUI.setupXHRForm(jQuery('#resetPasswordForm'));
-		VizorUI.setupXHRForm(jQuery('#loginForm'));
-		VizorUI.setupXHRForm(jQuery('#forgotPasswordForm'));
-
 		jQuery('form.xhr').each(function(){
 			VizorUI.setupXHRForm(jQuery(this));
 		});
 
+		// legacy forms
+		jQuery('#accountDetailsForm, #resetPasswordForm, #loginForm, #forgotPasswordForm')
+			.not('[data-xhrenabled]')
+			.each(function(){
+				VizorUI.setupXHRForm(jQuery(this));
+			});
+
 		VizorUI.enableScrollToLinks($body);
 		VizorUI.enablePopupEmbedLinks($body);
 
-		// default if the signup form ever gets hit on a static page
-		var signupCallback = function() {
-			window.location.href = '/account';
-		};
 		var $signupForm = jQuery('#signupForm')
-		VizorUI.setupXHRForm($signupForm, signupCallback);
-		VizorUI._setupAccountUsernameField(jQuery('input[name=username]', $signupForm)); // currentUsername is still unavailable
+		if ($signupForm.length) {
+			// default if the signup form ever gets hit on a static page
+			var signupCallback = function () {
+				window.location.href = '/account';
+			};
+			VizorUI.setupXHRForm($signupForm, signupCallback);
+			VizorUI._setupAccountUsernameField(jQuery('input[name=username]', $signupForm)); // currentUsername is still unavailable
+		}
 
 		$(document).on("shown.bs.modal", function() {
 			$('.bootbox-close-button')
