@@ -13,7 +13,7 @@ var scenes = {
 	},
 	valid: {
 			name: 'scene.zip',
-			path: __dirname+'/../fixtures/scene.zip'
+			path: __dirname+'/../fixtures/lambent-obj-mtl-tga.zip'
 	}
 }
 
@@ -37,18 +37,18 @@ describe('SceneProcessor', function() {
 	})
 
 	it('rejects an invalid zip', function(done) {
-		sp.validate(scenes.actuallyAnImage, 'foo')
-		.then(function(valid) {
-			assert.ok(!valid)
+		sp.preprocess(scenes.actuallyAnImage, 'foo')
+		.then(function(manifest) {
+			assert.ok(!manifest.valid)
 			done()
 		})
 		.catch(done)
 	})
 
 	it('accepts a valid zip', function(done) {
-		sp.validate(scenes.valid, 'foo')
-		.then(function(valid) {
-			assert.ok(valid)
+		sp.preprocess(scenes.valid, 'foo')
+		.then(function(manifest) {
+			assert.ok(manifest.valid)
 			done()
 		})
 		.catch(done)
@@ -80,7 +80,7 @@ describe('SceneProcessor', function() {
 		var wrote = 0
 		gfs.createWriteStream = function(path) {
 			var dfd = when.defer()
-			if (path === '/the/right/stuff/scene.json')
+			if (path === '/the/right/stuff/scene/lambent-obj-mtl-tga.obj')
 				done()
 
 			var ee = new EventEmitter()
@@ -101,7 +101,7 @@ describe('SceneProcessor', function() {
 
 		sp.handleUpload(scenes.valid, '/foo/scenes/blah')
 		.then(function(sceneUrl) {
-			assert.equal('/root/foo/scenes/blah/scene.json', sceneUrl.url)
+			assert.equal('/root/foo/scenes/blah/scene/lambent-obj-mtl-tga.obj', sceneUrl.url)
 			done()
 		})
 		.catch(done)
