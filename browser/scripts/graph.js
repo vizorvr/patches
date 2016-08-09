@@ -28,9 +28,7 @@ Graph.prototype.isEntityPatch = function() {
 		return true
 
 	var node = this.plugin.node
-	node.isEntityPatch()
-
-	return false
+	return node.isEntityPatch()
 }
 
 Graph.prototype.get_node_uid = function() {
