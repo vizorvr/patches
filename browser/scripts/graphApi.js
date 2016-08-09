@@ -27,9 +27,6 @@ GraphApi.prototype.autoConnectPatchToNode = function(patchNode, targetNode) {
 			dst_dyn: false
 		})
 
-		// figure out how to mix values on busy slots
-		// instead of replacing the connections
-
 		that.connect(parentPatch, connection)
 		E2.app.onLocalConnectionChanged(connection)
 	})
