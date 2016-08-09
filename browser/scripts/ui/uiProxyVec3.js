@@ -262,7 +262,7 @@ UIVector3.prototype.attach = function() {
 			else
 				adapter[map[xyz]] = v
 
-			var e = new CustomEvent('change', {
+			var evt = new CustomEvent('change', {
 				detail: {
 					value: _.clone(adapter.uiValue),
 					previousValue: previousValue,
@@ -271,7 +271,7 @@ UIVector3.prototype.attach = function() {
 					transient: isTransient
 				}
 			})
-			el.dispatchEvent(e)
+			el.dispatchEvent(evt)
 		}
 		var onEnd = function(){
 			that.isStillChanging = false

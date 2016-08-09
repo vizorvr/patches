@@ -30,6 +30,10 @@ var uiEnterValueControl = function(node, parentNode, onChange, options) {
 	var oldValue = $node.text()
 	var prevValue = oldValue
 
+	function valueFromEventTarget(e) {
+		return $(e.target).val().replace(/^\s+|\s+$/g,'') // remove extra spaces
+	}
+
 	function tryChange(value) {
 		if (value === "") value = oldValue
 		if (value !== oldValue) {
@@ -59,9 +63,8 @@ var uiEnterValueControl = function(node, parentNode, onChange, options) {
 	}
 
 	var commit = function(e) {
-		var value = $(e.target).val().replace(/^\s+|\s+$/g,'') // remove extra spaces
 		done = true
-		tryChange(value)
+		tryChange(valueFromEventTarget(e))
 		jQuery(e.target).trigger('blur');
 	}
 
@@ -91,8 +94,7 @@ var uiEnterValueControl = function(node, parentNode, onChange, options) {
 				$node[0].dispatchEvent(new CustomEvent('tabToNext'))
 			}
 			else if (o.onTransientChange) {
-				var value = $(e.target).val().replace(/^\s+|\s+$/g,'') // remove extra spaces
-				transientChange(value)
+				transientChange(valueFromEventTarget(e))
 			}
 			return true;
 		})
@@ -107,16 +109,14 @@ var uiEnterValueControl = function(node, parentNode, onChange, options) {
 				jQuery(e.target).trigger('blur');
 			}
 			else if (o.onTransientChange) {
-				var value = $(e.target).val().replace(/^\s+|\s+$/g,'') // remove extra spaces
-				transientChange(value)
+				transientChange(valueFromEventTarget(e))
 			}
 			return true;
 		})
 		.select()
 		.bind('blur', function(e) {
 			if (!(cancelling || done)) {
-				var value = $(e.target).val().replace(/^\s+|\s+$/g,'') // remove extra spaces
-				tryChange(value)
+				tryChange(valueFromEventTarget(e))
 			}
 			$(this).remove()	// this = input
 			$node.removeClass('uiTextEntry')
