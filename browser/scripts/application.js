@@ -938,10 +938,8 @@ Application.prototype.stringifyNodesAndConnections = function(nodes, conns, sx, 
 }
 
 Application.prototype.onDelete = function(e) {
-	if (E2.ui.isInProgramMode() && !this.selectedNodes.length)
+	if (!this.isWorldEditorActive() && !this.selectedNodes.length)
 		return;
-
-	this.hoverNode = this.selectedNodes[0]
 
 	if (this.isWorldEditorActive()) {
 		var sn = this.worldEditor.selectedEntityNode
@@ -951,6 +949,8 @@ Application.prototype.onDelete = function(e) {
 		this.markNodeAsSelected(sn)
 		this.worldEditor.onDelete(this.selectedNodes)
 	}
+
+	this.hoverNode = this.selectedNodes[0]
 
 	this.deleteSelectedNodes()
 }
