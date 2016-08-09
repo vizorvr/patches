@@ -900,8 +900,6 @@ Application.prototype.selectionToObject = function(nodes, conns, sx, sy) {
 
 		var b = [p.left, p.top, p.left + width, p.top + height];
 
-		// n = n.serialise();
-
 		if (b[0] < x1) x1 = b[0];
 		if (b[1] < y1) y1 = b[1];
 		if (b[2] > x2) x2 = b[2];
