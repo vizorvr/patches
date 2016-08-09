@@ -12,9 +12,6 @@ var AbstractGraphPlugin = function(core) {
 		input_sids:     {},
 		output_sids:    {}
 	}
-		
-	this.is_reset = true
-
 }
 
 AbstractGraphPlugin.prototype = Object.create(SubGraphPlugin.prototype)
