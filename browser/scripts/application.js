@@ -1179,7 +1179,7 @@ Application.prototype.getNodeBoundingBox = function(node) {
 	var width = (dom ? dom.width() : 0)
 	var height = (dom ? dom.height() : 0)
 
-	// default width / height = 100 / 20 if the graph is not visible
+	// default width & height if the graph is not visible
 	if (width === 0)
 		width = 200
 
