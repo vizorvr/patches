@@ -155,6 +155,55 @@ UIVector3.prototype.attach = function() {
 		z: 'uiZ'
 	}
 
+	function _makeParseTextInput(min, max) {
+		var clamp = THREE.Math.clamp
+		var ops = {
+			multiply: function(v, ov) { return ov*v},
+			divide: function(v,ov) { return (v !== 0) ? ov/v : ov},
+			add: function(v,ov) { return ov+v},
+			subtract: function(v,ov) { return ov-v}
+		}
+		return function(inputValue, oldValue, transient) {
+			var input = inputValue
+			var op = null
+			if (input) {
+				if (input.startsWith('++')) {
+					input = input.substring(2)
+					op = ops.add
+				}
+				else if (input.startsWith('--')) {
+					input = input.substring(2)
+					op = ops.subtract
+				}
+				else if (input.startsWith('*')) {
+					input = input.substring(1)
+					op = ops.multiply
+				}
+				else if (input.startsWith('/')) {
+					input = input.substring(1)
+					op = ops.divide
+				}
+
+				if (op) {
+					input = parseFloat(input)
+					if (isFinite(input))
+						inputValue = input
+					else
+						op = null
+				}
+			}
+
+			if (transient && op)
+				return false
+			
+			var v = parseFloat(inputValue)
+			if (isNaN(v)) return false
+			if (!isFinite(v)) return false
+			var newValue = clamp(v, min, max)
+			return (op) ? op(newValue, oldValue) : newValue
+		}
+	}
+	
 	function enableEntry(domElement, xyz, opts) {
 		if (!domElement) return
 		opts = _.extend({
@@ -173,7 +222,8 @@ UIVector3.prototype.attach = function() {
 
 		var onStart = function(){
 			that.isStillChanging = true
-			oldValue 	= _.clone(adapter.sourceValue)
+			if (oldValue === null)
+				oldValue 	= _.clone(adapter.sourceValue)
 
 			el.dispatchEvent(new CustomEvent('beginchange', {
 				detail: {
@@ -182,9 +232,10 @@ UIVector3.prototype.attach = function() {
 				}
 			}))
 		}
-		var onChange = function(v) {
+		var onChange = function(v, oldV, isTransient) {
 			previousValue = _.clone(adapter.uiValue)
-
+			if (oldValue === null)
+				oldValue 	= _.clone(adapter.sourceValue)
 			if (that.linkXYZ) {
 				// xyz is 'x', 'y', or 'z'
 				var ov = oldValue[xyz],
@@ -211,9 +262,21 @@ UIVector3.prototype.attach = function() {
 			else
 				adapter[map[xyz]] = v
 
-
-			var e = new CustomEvent('change', {
+			var evt = new CustomEvent('change', {
 				detail: {
+					value: _.clone(adapter.uiValue),
+					previousValue: previousValue,
+					oldValue: oldValue,
+					part: xyz,
+					transient: isTransient
+				}
+			})
+			el.dispatchEvent(evt)
+		}
+		var onEnd = function(){
+			that.isStillChanging = false
+			var e = new CustomEvent('endchange', {
+				detail:{
 					value: _.clone(adapter.uiValue),
 					previousValue: previousValue,
 					oldValue: oldValue,
@@ -222,17 +285,9 @@ UIVector3.prototype.attach = function() {
 			})
 			el.dispatchEvent(e)
 		}
-		var onEnd = function(){
-			that.isStillChanging = false
-			el.dispatchEvent(new CustomEvent('endchange', {
-				detail:{
-					value: _.clone(adapter.uiValue),
-					previousValue: previousValue,
-					oldValue: oldValue,
-					part: xyz
-				}
-			}))
-		}
+		opts.parseTextInput = _makeParseTextInput(opts.min, opts.max)
+		opts.allowTransientTextInput = true
+		
 		that.dragger[xyz] = uiMakeDragToAdjust(domElement, onStart, onChange, onEnd, opts)
 		domElement.addEventListener('tabToNext', function(e){
 			e.stopPropagation()

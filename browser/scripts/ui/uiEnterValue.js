@@ -4,10 +4,11 @@ var uiEnterValueControl = function(node, parentNode, onChange, options) {
 	var $node = jQuery(node)
 	var $parent = jQuery(parentNode)
 	if ($node.hasClass('uiTextInput')) return true;
-	var o = {
+	var o = _.extend({
 		type : 'text',
-		placeholder : ''
-	}
+		placeholder : '',
+		onTransientChange: null		// supply your transient change handler here
+	}, options)
 
 	var $input = $('<input class="node-value-input" type="'+ o.type +'" placeholder="'+ o.placeholder +'" />')
 
@@ -26,16 +27,32 @@ var uiEnterValueControl = function(node, parentNode, onChange, options) {
 		})
 	}
 
+	var oldValue = $node.text()
+	var prevValue = oldValue
+
+	function valueFromEventTarget(e) {
+		return $(e.target).val().replace(/^\s+|\s+$/g,'') // remove extra spaces
+	}
+
 	function tryChange(value) {
 		if (value === "") value = oldValue
 		if (value !== oldValue) {
 			onChange(value, oldValue)
 			oldValue = value
-			return true;
+			return true
 		}
 		return false
 	}
-	var oldValue = $node.text();
+	function transientChange(value) {
+		if (value !== prevValue) {
+			o.onTransientChange(value, prevValue)
+			prevValue = value
+			return true
+		}
+		return false
+	}
+
+
 	var cancelling = false
 	var done = false
 
@@ -43,6 +60,12 @@ var uiEnterValueControl = function(node, parentNode, onChange, options) {
 		var t = e.target
 		if (t !== $input[0]) $input.trigger('blur')
 		return true;
+	}
+
+	var commit = function(e) {
+		done = true
+		tryChange(valueFromEventTarget(e))
+		jQuery(e.target).trigger('blur');
 	}
 
 	document.addEventListener('mousedown', forceBlur, true)
@@ -60,21 +83,18 @@ var uiEnterValueControl = function(node, parentNode, onChange, options) {
 		.val(oldValue)
 		.keydown(function(e){
 			var code = e.keyCode || e.which
-			var commit = function() {
-				var value = $(e.target).val().replace(/^\s+|\s+$/g,'') // remove extra spaces
-				done = true
-				tryChange(value)
-				jQuery(e.target).trigger('blur');
-			}
 			if (code === 13) {
-				commit()
+				commit(e)
 			}
 			else if (code === 9) {
 				// tab!
 				e.preventDefault()
 				e.stopPropagation()
-				commit()
+				commit(e)
 				$node[0].dispatchEvent(new CustomEvent('tabToNext'))
+			}
+			else if (o.onTransientChange) {
+				transientChange(valueFromEventTarget(e))
 			}
 			return true;
 		})
@@ -82,21 +102,27 @@ var uiEnterValueControl = function(node, parentNode, onChange, options) {
 			var code = e.keyCode || e.which
 			if(code === 27) {
 				cancelling = true
+				if (o.onTransientChange) {
+					$input.val(oldValue)
+					transientChange(oldValue)
+				}
 				jQuery(e.target).trigger('blur');
+			}
+			else if (o.onTransientChange) {
+				transientChange(valueFromEventTarget(e))
 			}
 			return true;
 		})
 		.select()
 		.bind('blur', function(e) {
 			if (!(cancelling || done)) {
-				var value = $(e.target).val().replace(/^\s+|\s+$/g,'') // remove extra spaces
-				tryChange(value)
+				tryChange(valueFromEventTarget(e))
 			}
-			$(this).remove();	// this = input
-			$node.removeClass('uiTextEntry');
+			$(this).remove()	// this = input
+			$node.removeClass('uiTextEntry')
 			$parent.css({
 				position: parentStylePosition
-			});
+			})
 			document.removeEventListener('mousedown', forceBlur, true)
 		})
 		.focus()
