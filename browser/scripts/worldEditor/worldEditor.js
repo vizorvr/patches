@@ -379,8 +379,6 @@ WorldEditor.prototype.onPatchDropped = function(patchMeta, json, targetObject3d)
 	var sceneNode = this.currentGroup || this.scene.backReference.parentNode
 	var leftFromSceneNode = 300
 
-	console.debug('onPatchDropped', patchMeta, !!targetObject3d)
-
 	// empty graph can have this
 	if (!this.scene && !this.currentGroup)
 		return;
