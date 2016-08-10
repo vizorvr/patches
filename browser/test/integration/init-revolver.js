@@ -1,12 +1,9 @@
 var assert = require('assert');
 
-var helpers = require('./helpers')
 var reset = require('./helpers').reset
 var fs = require('fs')
-var when = require('when')
 
 describe('Initialisation together with if statements', function() {
-	var core, app
 
 	beforeEach(function() {
 		reset()
@@ -19,7 +16,6 @@ describe('Initialisation together with if statements', function() {
 		E2.core.deserialiseObject(source)
 
 		var ag = E2.core.active_graph
-		var navigation = E2.core.active_graph.nodes[3]
 		var floatDisplay = ag.nodes[10]
 
 		ag.update({abs_t: 0, delta_t: 1/60})

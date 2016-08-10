@@ -32,10 +32,6 @@ function Player() {
 	
 	this.core.active_graph = this.core.root_graph = new Graph(this.core, null, 'root')
 	this.core.graphs.push(this.core.root_graph)
-	
-	E2.core.on('ready', function() {
-		that.select_active_graph()
-	})
 }
 
 Player.prototype.play = function() {

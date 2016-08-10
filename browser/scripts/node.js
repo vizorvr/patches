@@ -35,6 +35,10 @@ function Node(parent_graph, plugin_id, x, y) {
 
 Node.prototype = Object.create(EventEmitter.prototype)
 
+Node.prototype.isEntityPatch = function() {
+	return !!this.plugin.isEntityPatch && this.plugin.isEntityPatch()
+}
+
 Node.prototype.getConnections = function() {
 	return this.inputs.concat(this.outputs)
 }
@@ -412,33 +416,38 @@ Node.prototype.rename_slot = function(slot_type, suid, name) {
 	
 Node.prototype.change_slot_datatype = function(slot_type, suid, dt, arrayness) {
 	var slot = this.find_dynamic_slot(slot_type, suid);
-	var pg = this.parent_graph;
 
 	slot.array = arrayness
 	
 	if (slot.dt.id === dt.id) // Anything to do?
 		return false;
 	
-	if (slot.dt.id !== pg.core.datatypes.ANY.id) {
+	if (slot.dt.id !== E2.dt.ANY.id) {
 		// Destroy all attached connections.
-		var conns = slot_type === E2.slot_type.input ? this.inputs : this.outputs;
-		var pending = [];
-		var c = null;
-
-		for(var i = 0, len = conns.length; i < len; i++) {
-			c = conns[i];
-		
-			if(c.src_node === this || c.dst_node === this)
-				pending.push(c);
-		}
-
-		for(var i = 0, len = pending.length; i < len; i++)
-			pg.disconnect(pending[i]);
+		this.disconnectSlotConnections(slot)
 	}
 		
 	slot.dt = dt;
 	return true;
 };
+
+Node.prototype.disconnectSlotConnections = function(slot) {
+	var pg = this.parent_graph;
+	var conns = slot.type === E2.slot_type.input ? this.inputs : this.outputs
+	var pending = []
+	var c = null
+
+	for(var i = 0, len = conns.length; i < len; i++) {
+		c = conns[i]
+	
+		if (c.src_slot === slot || c.dst_slot === slot)
+			pending.push(c)
+	}
+
+	for(var i = 0, len = pending.length; i < len; i++) {
+		pg.disconnect(pending[i])
+	}
+}
 
 Node.prototype.addInput = function(newConn) {
 	// Ensure that the order of inbound connections are stored ordered by the indices
@@ -450,8 +459,9 @@ Node.prototype.addInput = function(newConn) {
 		}
 	}.bind(this))
 	
-	if (!inserted)
+	if (!inserted) {
 		this.inputs.push(newConn)
+	}
 }
 
 Node.prototype.addOutput = function(conn) {
@@ -735,14 +745,20 @@ Node.prototype.deserialise = function(guid, d) {
 	
 	this.title = d.title ? d.title : null;
 
-	var plg = E2.core.pluginManager.create(d.plugin, this);
-	
-	if (!plg) {
-		msg('ERROR: Failed to instantiate node of type \'' + d.plugin + '\' with title \'' + this.title + '\' and UID = ' + this.uid + '.');
-		return false;
+	// make object3d patches use `entity` instead
+	if (d.plugin === 'graph' && d.dyn_out && d.dyn_out.length === 1 &&
+		d.dyn_out[0].dt === E2.dt.OBJECT3D.id)
+	{
+		d.plugin = 'entity'
 	}
-	
-	this.set_plugin(plg);
+
+	var plg = E2.core.pluginManager.create(d.plugin, this)
+	if (!plg) {
+		msg('ERROR: Failed to instantiate node of type \'' + d.plugin + '\' with title \'' + this.title + '\' and UID = ' + this.uid + '.')
+		return false
+	}
+
+	this.set_plugin(plg)
 	
 	if (this.plugin.isGraph) {
 		this.plugin.setGraph(new Graph(E2.core, null, null))

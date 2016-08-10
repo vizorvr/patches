@@ -4,13 +4,13 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 	if (typeof e2 === 'undefined') return false;
 
 	dom = dom || this.dom;
-	e2.app.openPresetSaveDialog = this.openPresetSaveDialog.bind(e2.app);
+	e2.app.openPatchSaveDialog = this.openPatchSaveDialog.bind(e2.app);
 
 	var that = this;
 
 
 	dom.btnAssets.click(this.onBtnAssetsClicked.bind(this));
-	dom.btnPresets.click(this.onBtnPresetsClicked.bind(this));
+	dom.btnPatches.click(this.onBtnPatchesClicked.bind(this));
 	dom.btnChatDisplay.click(this.onBtnChatClicked.bind(this));
 	dom.btnHideAll.click(this.onBtnHideAllClicked.bind(this));
 	dom.btnInspector.click(this.onBtnInspectorClicked.bind(this));
@@ -22,8 +22,8 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 	setModeProgram = this.setModeProgram.bind(this)
 	dom.btnBuildMode.click(setModeBuild);
 	dom.btnProgramMode.click(setModeProgram);
-	dom.presetsLib.find('a[href="#objects"]').click(setModeBuild)
-	dom.presetsLib.find('a[href="#presets"]').click(setModeProgram)
+	dom.patchesLib.find('a[href="#objects"]').click(setModeBuild)
+	dom.patchesLib.find('a[href="#patches"]').click(setModeProgram)
 
 	var makeTabHandler = function(panelStateKey) {
 		return function(e) {
@@ -31,7 +31,7 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 				e.preventDefault();
 			}
 			var $a = jQuery(e.currentTarget);
-			var $li = $a.parent();	// e.g. dom.tabObjects, dom.tabPresets, etc.
+			var $li = $a.parent();	// e.g. dom.tabObjects, dom.tabPatches, etc.
 			if ($li.hasClass('disabled')) return true;
 			var s = this.state.panelStates[panelStateKey];
 			var stateChanged = false;
@@ -50,7 +50,7 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 	};
 
 	dom.chatWindow.find('ul.nav-tabs a').click(makeTabHandler('chat'));
-	dom.presetsLib.find('ul.nav-tabs a').click(makeTabHandler('presets'));
+	dom.patchesLib.find('ul.nav-tabs a').click(makeTabHandler('patches'));
 	dom.propertiesPanel.find('ul.nav-tabs a').click(makeTabHandler('properties'));
 
 	if (dom.assetsLib) dom.assetsLib.find('ul.nav-tabs a').click(makeTabHandler('assets'));
@@ -69,11 +69,11 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 	};
 	dom.chatToggleButton.click(makeCollapseHandler('chat'));
 	dom.assetsToggle.click(makeCollapseHandler('assets'));
-	dom.presetsToggle.click(makeCollapseHandler('presets'));
+	dom.patchesToggle.click(makeCollapseHandler('patches'));
 	dom.propertiesToggle.click(makeCollapseHandler('properties'));
 
 	dom.assetsClose.click(this.closePanelAssets.bind(this));
-	dom.presetsClose.click(this.closePanelPresets.bind(this));
+	dom.patchesClose.click(this.closePanelPatches.bind(this));
 	dom.chatClose.click(this.closePanelChat.bind(this));
 	dom.propertiesClose.click(this.closePanelProperties.bind(this));
 
@@ -87,7 +87,7 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 	// drag handlers, for when the panels are dragged
 	dom.propertiesPanel.on(uiEvent.moved, function(){  updatePanelState('properties', dom.propertiesPanel)   });
 	dom.assetsLib.on(uiEvent.moved, function(){  updatePanelState('assets', dom.assetsLib)   });
-	dom.presetsLib.on(uiEvent.moved, function(){ updatePanelState('presets', dom.presetsLib) });
+	dom.patchesLib.on(uiEvent.moved, function(){ updatePanelState('patches', dom.patchesLib) });
 	dom.chatWindow
 		.on(uiEvent.moved, function() {
 			updatePanelState('chat', dom.chatWindow)
@@ -128,7 +128,7 @@ VizorUI.prototype.init = function(e2) {	// normally the global E2 object
 	dom.propertiesToggle = $('#properties-toggle', dom.propertiesPanel)
 
 	this.state.panelStates.assets = VizorUI.getDomPanelState(dom.assetsLib);
-	this.state.panelStates.presets = VizorUI.getDomPanelState(dom.presetsLib);
+	this.state.panelStates.patches = VizorUI.getDomPanelState(dom.patchesLib);
 	this.state.panelStates.chat = VizorUI.getDomPanelState(dom.chatWindow);
 	this.state.panelStates.properties = VizorUI.getDomPanelState(dom.propertiesPanel);
 
@@ -142,9 +142,9 @@ VizorUI.prototype.init = function(e2) {	// normally the global E2 object
 
 
 
-	var presetsTabs = jQuery('#presets-lib div.block-header ul.nav-tabs li');
-	dom.tabPresets = presetsTabs.find("a[href='#presets']").parent();
-	dom.tabObjects = presetsTabs.find("a[href='#objects']").parent();
+	var patchesTabs = jQuery('#patches-lib div.block-header ul.nav-tabs li');
+	dom.tabPatches = patchesTabs.find("a[href='#patches']").parent();
+	dom.tabObjects = patchesTabs.find("a[href='#objects']").parent();
 
 
 	var propertiesTabs = jQuery('#properties-panel div.block-header ul.nav-tabs li');
@@ -155,7 +155,7 @@ VizorUI.prototype.init = function(e2) {	// normally the global E2 object
 	shaderBlock.movable()
 
 	// drag dragging handlers
-	dom.presetsLib.movable();
+	dom.patchesLib.movable();
 	dom.assetsLib.movable();
 	dom.propertiesPanel.movable();
 
@@ -243,22 +243,22 @@ VizorUI.prototype.setPageTitle = function() {
 /***** EVENT HANDLERS *****/
 
 VizorUI.prototype.onSearchResultsChange = function($libContainer) {
-  var presetsPanel = E2.dom.presetsLib;
-  var $activeLib = $libContainer || presetsPanel.find('.tab-pane.active');
+  var patchesPanel = E2.dom.patchesLib;
+  var $activeLib = $libContainer || patchesPanel.find('.tab-pane.active');
   var resultsCount = $('.result.table tbody', $activeLib).children().length;
-	var $list = $activeLib.find('.preset-list-container');
+	var $list = $activeLib.find('.patch-list-container');
 	var maxHeight = $list.css('maxHeight');
 	if (resultsCount>0) {
-		presetsPanel.removeClass('collapsed');
+		patchesPanel.removeClass('collapsed');
 		$list.show();
 		var resultsHeight = $('.result.table', $activeLib).outerHeight(true);
 		var newHeight = resultsHeight;
 		newHeight = ( newHeight >= maxHeight ) ? (maxHeight) : (newHeight);
-		presetsPanel.height('auto');
+		patchesPanel.height('auto');
 		$list.height(newHeight);
 	}
 	 else {
-		presetsPanel.height('auto');
+		patchesPanel.height('auto');
 		$list.height(maxHeight);
 	}
 };
@@ -275,8 +275,8 @@ VizorUI.prototype.onBtnChatClicked = function(e) {
 	return false;
 }
 
-VizorUI.prototype.onBtnPresetsClicked = function() {
-	this.state.visibility.panel_presets = !this.state.visibility.panel_presets;
+VizorUI.prototype.onBtnPatchesClicked = function() {
+	this.state.visibility.panel_patches = !this.state.visibility.panel_patches;
 	return false;
 }
 
@@ -360,15 +360,15 @@ VizorUI.prototype.closePanelAssets = function() {
 	return false;
 }
 
-VizorUI.prototype.closePanelPresets = function() {
-	this.state.visibility.panel_presets = false;
+VizorUI.prototype.closePanelPatches = function() {
+	this.state.visibility.panel_patches = false;
 	return false;
 }
 
 VizorUI.prototype.onTreeClicked = function(e) {	// currently unused
-	var s = this.state.panelStates.presets || {};
+	var s = this.state.panelStates.patches || {};
 	s.selectedTab = '#graph';
-	this.state.panelStates.presets = s;
+	this.state.panelStates.patches = s;
 	if (e) {
 		e.preventDefault();
 		e.stopPropagation();
@@ -389,8 +389,8 @@ VizorUI.prototype.onLibSearchClicked = function(e) {
 VizorUI.prototype.isPanelChatVisible = function() {
 	return this.state.visibility.panel_chat
 }
-VizorUI.prototype.isPanelPresetsVisible = function() {
-	return this.state.visibility.panel_presets
+VizorUI.prototype.isPanelPatchesVisible = function() {
+	return this.state.visibility.panel_patches
 }
 VizorUI.prototype.isPanelAssetsVisible = function() {
 	return this.state.visibility.panel_assets
@@ -405,29 +405,29 @@ VizorUI.prototype.togglePanelChatCollapsed = function() {
 VizorUI.prototype.togglePanelAssetsCollapsed = function() {
 	this.dom.assetsToggle.trigger('click');
 }
-VizorUI.prototype.togglePanelPresetsCollapsed = function() {
-	this.dom.presetsToggle.trigger('click');
+VizorUI.prototype.togglePanelPatchesCollapsed = function() {
+	this.dom.patchesToggle.trigger('click');
 }
 VizorUI.prototype.togglePanelPropertiesCollapsed = function() {
 	this.dom.propertiesToggle.trigger('click');
 }
 
-VizorUI.prototype.openPresetSaveDialog = function(serializedGraph) {
+VizorUI.prototype.openPatchSaveDialog = function(serializedGraph) {
 
 	var that = this;	// e2.app
 	var ui = E2.ui;
 
-	var presetDialog = function() {
+	var patchDialog = function() {
 
 		var username = E2.models.user.get('username');
-		var presetsPath = '/'+username+'/presets/'
+		var patchesPath = '/'+username+'/patches/'
 
 		ui.updateProgressBar(65);
 
-		$.get(presetsPath, function(files) {
+		$.get(patchesPath, function(files) {
 			var fsc = new FileSelectControl()
 			.frame('save-frame')
-			.template('preset')
+			.template('patch')
 			.buttons({
 				'Cancel': function() {
 					ui.updateProgressBar(100);
@@ -435,7 +435,7 @@ VizorUI.prototype.openPresetSaveDialog = function(serializedGraph) {
 				'Save': function(name) {
 					if (!name)
 					{
-						bootbox.alert('Please enter a name for the preset');
+						bootbox.alert('Please enter a name for the patch');
 						return false;
 					}
 
@@ -443,7 +443,7 @@ VizorUI.prototype.openPresetSaveDialog = function(serializedGraph) {
 
 					$.ajax({
 						type: 'POST',
-						url: presetsPath,
+						url: patchesPath,
 						data: {
 							name: name,
 							graph: serializedGraph
@@ -451,8 +451,8 @@ VizorUI.prototype.openPresetSaveDialog = function(serializedGraph) {
 						dataType: 'json',
 						success: function() {
 							ui.updateProgressBar(100);
-							E2.track({ event: 'presetSaved' })
-							that.presetManager.refresh()
+							E2.track({ event: 'patchSaved' })
+							that.patchManager.refresh()
 						},
 						error: function(x, t, err) {
 							ui.updateProgressBar(100);
@@ -480,10 +480,10 @@ VizorUI.prototype.openPresetSaveDialog = function(serializedGraph) {
 	};
 
 	if (!VizorUI.userIsLoggedIn()) {
-		return VizorUI.openLoginModal().then(presetDialog);
+		return VizorUI.openLoginModal().then(patchDialog);
 	}
 
-	return presetDialog();
+	return patchDialog();
 };
 
 VizorUI.prototype.setModeBuild = function() {
@@ -497,20 +497,27 @@ VizorUI.prototype.setModeProgram = function() {
 
 VizorUI.prototype.buildBreadcrumb = function(graph, beforeRender) {
 	var b = new UIbreadcrumb()
-	function buildBreadcrumb(parentEl, graph, add_handler) {
+	
+	function processGraph(parentEl, graph, add_handler) {
 		var title = graph.tree_node.title || graph.tree_node.id
 		if (add_handler) {
-			b.prepend(title, null, function() { graph.tree_node.activate() })
+			b.prepend(title, null, function() {
+				E2.app.setActiveGraph(graph)
+			})
 		} else {
 			b.prepend(title, null)
 		}
 		if (graph.parent_graph)
-			buildBreadcrumb(parentEl, graph.parent_graph, true)
+			processGraph(parentEl, graph.parent_graph, true)
 	}
-	buildBreadcrumb(this.dom.breadcrumb, graph, false)
 
-	if (typeof beforeRender === 'function') beforeRender(b);
+	processGraph(this.dom.breadcrumb, graph, false)
+
+	if (typeof beforeRender === 'function') 
+		beforeRender(b);
+
 	b.render(this.dom.breadcrumb)
+
 	return b;
 }
 

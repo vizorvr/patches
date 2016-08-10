@@ -1,32 +1,30 @@
-var User = require('../models/user');
-var when = require('when');
+var User = require('../models/user')
+var when = require('when')
+var _ = require('lodash')
 
 function AssetService(assetModel) {
-	this._model = assetModel;
-};
+	this._model = assetModel
+}
 
-AssetService.prototype.list = function()
-{
-	return this.find();
-};
+AssetService.prototype.list = function() {
+	return this.find()
+}
 
-AssetService.prototype.find = function(q)
-{
-	var dfd = when.defer();
+AssetService.prototype.find = function(q) {
+	var dfd = when.defer()
 	this._model
 		.find(q)
 		.sort('-updatedAt')
-		.populate('_creator')
 		.exec(function(err, list)
 	{
 		if (err)
-			return dfd.reject(err);
+			return dfd.reject(err)
 		
-		dfd.resolve(list);
-	});
+		dfd.resolve(list)
+	})
 
-	return dfd.promise;
-};
+	return dfd.promise
+}
 
 AssetService.prototype.findByCreatorName = function(username) {
 	var that = this
@@ -51,55 +49,50 @@ AssetService.prototype.findByCreatorId = function(userId) {
 	})
 }
 
-AssetService.prototype.canWrite = function(user, path)
-{
+AssetService.prototype.canWrite = function(user, path) {
 	return this.findByPath(path)
-	.then(function(asset)
-	{
+	.then(function(asset) {
 		if (!asset)
-			return true;
+			return true
 
-		var creator = asset._creator;
+		var creator = asset._creator
 
 		if (creator._id)
-			creator = creator._id;
+			creator = creator._id
 
 		return !asset ||
-			creator.toString() === user.id.toString();
-	});
-};
+			creator.toString() === user.id.toString()
+	})
+}
 
-AssetService.prototype.canWriteAnonymous = function(path)
-{
+AssetService.prototype.canWriteAnonymous = function(path) {
 	return this.findByPath(path)
-	.then(function(asset)
-	{
+	.then(function(asset) {
 		// Asset is null, doesn't exist, we can write
 		if (!asset) {
-			return true;
+			return true
 		}
 
 		// Asset already found, can't overwrite
-		return false;
-	});
-};
+		return false
+	})
+}
 
-AssetService.prototype.findOne = function(q)
-{
-	var dfd = when.defer();
+AssetService.prototype.findOne = function(q) {
+	var dfd = when.defer()
 	this._model
 		.findOne(q)
-		.populate('_creator')
+		.populate('_creator', 'username profile')
 		.exec(function(err, item)
 	{
 		if (err)
-			return dfd.reject(err);
+			return dfd.reject(err)
 		
-		dfd.resolve(item);
-	});
+		dfd.resolve(item)
+	})
 
-	return dfd.promise;
-};
+	return dfd.promise
+}
 
 AssetService.prototype.findByTagAndUserId = function(tag, userId) {
 	return this.find({
@@ -113,40 +106,34 @@ AssetService.prototype.findByPath = function(path) {
 }
 
 AssetService.prototype.save = function(data, user) {
-	var that = this;
+	var that = this
 
 	return this.findByPath(data.path)
 	.then(function(asset) {
-		if (!asset)
-			asset = new that._model(data);
+		if (!asset) {
+			asset = new that._model(data)
+			asset._creator = user.id
+		}
 
-		asset._creator = user.id;
-		asset.updatedAt = Date.now();
+		// update model with stuff from data
+		_.assign(asset, data)
 
-		if (data.tags)
-			asset.tags = data.tags
+		asset.updatedAt = Date.now()
 
-		if (data.previewUrlSmall)
-			asset.previewUrlSmall = data.previewUrlSmall
-
-		if (data.previewUrlLarge)
-			asset.previewUrlLarge = data.previewUrlLarge
-
-		if (data.stat)
-			asset.stat = data.stat
-
-		var dfd = when.defer();
+		var dfd = when.defer()
 
 		asset.save(function(err) {
-			if (err)
-				return dfd.reject(err);
+			if (err) {
+				console.error(err)
+				return dfd.reject(err)
+			}
 
-			dfd.resolve(asset);
-		});
+			dfd.resolve(asset)
+		})
 
-		return dfd.promise;
-	});
-};
+		return dfd.promise
+	})
+}
 
-module.exports = AssetService;
+module.exports = AssetService
 

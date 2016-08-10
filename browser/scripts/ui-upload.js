@@ -66,7 +66,7 @@ function uploadFile(file) {
 // Traverse the pasted nodes and perform any fixup (fix
 function postPasteFixup(nodes, fixupCallback) {
 	function fixupNode(node) {
-		if (node.plugin.id === "graph") {
+		if (E2.GRAPH_NODES.indexOf(node.plugin.id) > -1) {
 			for (var i = 0, len = node.plugin.graph.nodes.length; i < len; ++i) {
 				fixupNode(node.plugin.graph.nodes[i])
 			}
@@ -147,17 +147,17 @@ function instantiateTemplateForUpload(uploaded, position) {
 			return instantiatePluginForUpload(uploaded, position)
 			break;
 		case 'video':
-			templateName = 'video_plane.preset.hbs'
+			templateName = 'video_plane.patch.hbs'
 			break;
 	}
 
 	$.get('/patchTemplates/'+templateName)
 	.done(function(templateSource) {
 		var template = Handlebars.compile(templateSource)
-		var preset = template({ url: uploaded.url })
+		var patch = template({ url: uploaded.url })
 
 		try {
-			preset = JSON.parse(preset)
+			patch = JSON.parse(patch)
 		} catch(err) {
 			return dfd.reject(err)
 		}
@@ -165,13 +165,13 @@ function instantiateTemplateForUpload(uploaded, position) {
 		E2.app.undoManager.begin('Drag & Drop')
 
 		var copyBuffer = E2.app.fillCopyBuffer(
-			preset.root.nodes,
-			preset.root.conns,
+			patch.root.nodes,
+			patch.root.conns,
 			0,
 			0)
 
 		E2.track({
-			event: 'presetAdded', 
+			event: 'patchAdded', 
 			name: templateName,
 			fromUpload: true
 		})

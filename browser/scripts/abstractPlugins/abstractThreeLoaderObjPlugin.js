@@ -57,7 +57,6 @@ AbstractThreeLoaderObjPlugin.prototype.onObjLoaded = function(geoms, mats) {
 }
 
 AbstractThreeLoaderObjPlugin.prototype.state_changed = function(ui) {
-	console.log('state_changed', this.state)
 	if (!this.state.url)
 		return
 

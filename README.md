@@ -1,7 +1,7 @@
 # Vizor
 ====
 
-Vizor is a visual programming environment for WebGL, WebVR and other HTML5 APIs. It features live preview, data flow visualization, network communication, publishing, unlimited undo, and a catalog of presets that can be used as modular building blocks. Complex logic can be nested in subgraphs and they can be rendered directly to a specific render target, or simply used as a texture. Loops are modeled as nested graphs that are evaluated once per loop iteration.
+Vizor is a visual programming environment for WebGL, WebVR and other HTML5 APIs. It features live preview, data flow visualization, network communication, publishing, unlimited undo, and a catalog of ready-made patches that can be used as modular building blocks. Complex logic can be nested in subgraphs and they can be rendered directly to a specific render target, or simply used as a texture. Loops are modeled as nested graphs that are evaluated once per loop iteration.
 
 **Try the cloud version of Vizor now at [vizor.io](http://vizor.io).**
 

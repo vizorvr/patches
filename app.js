@@ -414,9 +414,9 @@ function setupModelRoutes(mongoConnection) {
 		.catch(next);
 	});
 
-	// allow strong caching for editor-*.min.js
+	// allow strong caching for bundles etc.
 	app.get([
-		'/dist/editor-*.min.js',
+		'/dist/*',
 		'/vendor/*',
 		'/images/*',
 		'/fonts/*',
@@ -429,14 +429,14 @@ function setupModelRoutes(mongoConnection) {
 	// minimal caching for frequently updating things
 	app.use([
 		'/style/*',
-		'/dist/player.min.js',
 		'/plugins/plugins.json',
-		'/presets/presets.json'
+		'/vizor/patches', // system patch list
 		],
 		function(req, res, next) {
-		res.setHeader('Cache-Control', 'public, must-revalidate, max-age=300');
-		next();
-	});
+			res.setHeader('Cache-Control', 'public, must-revalidate, max-age=300');
+			next();
+		}
+	);
 
 	if (!releaseMode) {
 		app.use(function(req, res, next) {

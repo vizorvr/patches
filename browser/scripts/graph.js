@@ -20,6 +20,17 @@ function Graph(core, parent_graph, uid) {
 
 Graph.prototype = Object.create(EventEmitter.prototype)
 
+Graph.prototype.isEntityPatch = function() {
+	if (!this.plugin)
+		return false
+
+	if (this.plugin.id === 'entity')
+		return true
+
+	var node = this.plugin.node
+	return node.isEntityPatch()
+}
+
 Graph.prototype.get_node_uid = function() {
 	return E2.core.get_uid()
 }
@@ -460,7 +471,7 @@ Graph.prototype.findNodeByPlugin = function(name) {
 	})
 
 	if (!node)
-		msg('ERROR: Failed to resolve node by plugin ('+name+') in graph(' + this.uid + ')')
+		console.warn('Could not find node by plugin ('+name+') in graph(' + this.uid + ')')
 
 	return node
 }
