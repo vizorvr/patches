@@ -219,6 +219,8 @@ exports.reset = function() {
 		keyup:function(){},
 		mousemove:function(){},
 		outerHeight:function(){},
+		ready: function() {},
+		ajaxError: function() {},
 		'0': {
 			getContext: function() {
 				return {

@@ -18,6 +18,29 @@ Loader.prototype.progressHandler = function(xhr) {
 	this.emit('progress', xhr.loaded / xhr.total)
 }
 
+Loader.prototype.assetExists = function(url) {
+	var dfd = when.defer()
+
+	url = '/stat' + url
+	var http = new XMLHttpRequest()
+	http.addEventListener('abort', function() {
+		dfd.resolve(false)
+	})
+	http.addEventListener('error', function(err) {
+		console.error(err.stack)
+		dfd.reject(err)
+	})
+	http.onreadystatechange = function() {
+		if (this.readyState === 4)
+			dfd.resolve(this.status !== 404)
+	}
+	
+	http.open('GET', url)
+	http.send()
+
+	return dfd.promise
+}
+
 E2.Loader = Loader
 E2.Loaders = {}
 

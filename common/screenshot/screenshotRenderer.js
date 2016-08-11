@@ -15,18 +15,11 @@ function ScreenshotRenderer(scene, camera) {
 	this.renderer = E2.core.renderer
 }
 
-ScreenshotRenderer.prototype.capture = function(width, height) {
-	if (!this.camera) {
-		// return a dark gray texture as default
-		return "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAA" +
-		"mkwkpAAAAJklEQVQImS3IMQEAMBCEMHhV598YXZoxbkOt4AQiES6RyOR+EvkARQ0MsXQ" +
-		"l4RoAAAAASUVORK5CYII="
-	}
-
+ScreenshotRenderer.prototype.captureBytes = function(width, height) {
 	var texture = new THREE.WebGLRenderTarget(width * 2, height * 2, {
 		minFilter: THREE.LinearFilter,
 		magFilter: THREE.NearestFilter,
-		format: THREE.RGBFormat } );
+		format: THREE.RGBAFormat } );
 
 	this.camera.aspect = width / height
 	this.camera.updateProjectionMatrix()
@@ -40,7 +33,7 @@ ScreenshotRenderer.prototype.capture = function(width, height) {
 	this.renderer.shadowMap.enabled = true
 
 	this.renderer.clear()
-	this.renderer.render(this.scene, this.camera, texture)
+	this.renderer.render(this.scene, this.camera, texture, true)
 
 	var doubleResImgData = new Uint8Array(width * 2 * height * 2 * 4)
 
@@ -64,19 +57,37 @@ ScreenshotRenderer.prototype.capture = function(width, height) {
 		}
 	}
 
-	var canvas = document.createElement('canvas');
-	canvas.width = width;
-	canvas.height = height;
-	var context = canvas.getContext('2d');
-
-	// Copy the pixels to a 2D canvas
-	var imageData = context.createImageData(width, height);
-	imageData.data.set(imgData);
-	context.putImageData(imageData, 0, 0);
-
 	this.renderer.setRenderTarget(null)
-
 	this.renderer.setPixelRatio(oldPixelRatio)
 
+	return imgData
+}
+
+ScreenshotRenderer.prototype.capture = function(width, height) {
+	if (!this.camera) {
+		// return a dark gray texture as default
+		return "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAA" +
+		"mkwkpAAAAJklEQVQImS3IMQEAMBCEMHhV598YXZoxbkOt4AQiES6RyOR+EvkARQ0MsXQ" +
+		"l4RoAAAAASUVORK5CYII="
+	}
+
+	// capture the scene into an Uint8Array
+	var imageArray = this.captureBytes(width, height)
+
+	// draw it into a canvas element
+	var canvas = document.createElement('canvas')
+	canvas.width = width
+	canvas.height = height
+	var context = canvas.getContext('2d')
+
+	// Copy the pixels to a 2D canvas
+	var imageData = context.createImageData(width, height)
+	imageData.data.set(imageArray)
+	context.putImageData(imageData, 0, 0)
+
 	return canvas.toDataURL()
+}
+
+if (typeof(exports) !== 'undefined') {
+	module.exports = ScreenshotRenderer
 }

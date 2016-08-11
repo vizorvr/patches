@@ -40,8 +40,9 @@ ModelLoader.prototype.loadObj = function(url) {
 	var that = this
 	var mtlUrl = url.replace('.obj', '.mtl')
 
-	$.get('/stat' + mtlUrl, function(data) {
-		if (data.error === undefined) {
+	this.assetExists(mtlUrl)
+	.then(function(exists) {
+		if (exists) {
 			// .mtl exists on server, load .obj and .mtl
 			var mtlLoader = new THREE.MTLLoader()
 			mtlLoader.setPath('')
