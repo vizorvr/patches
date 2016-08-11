@@ -57,7 +57,6 @@ body.bHome #contentwrap {
 		  text-decoration: none;
 		  text-transform: uppercase;
 		  letter-spacing: 2px;
-		  font-size: 16px;
 		  color: #9e9e9e;
 		  &:hover {
 			.selectedcolor
@@ -120,7 +119,6 @@ body.bHome.layoutMobile #contentwrap {
 	  &.links {
 		a {
 		  letter-spacing: 1.75px;
-		  font-size: 14px;
 		  &+a {
 			margin-left: 1rem;
 		  }
@@ -189,7 +187,7 @@ body.bHome #contentwrap {
 	border-top: 1px solid #3b3b3b;
 	>div {
 	  margin: 10px auto;
-	  width: @max-width-desktop;
+	  max-width: @max-width-desktop;
 	}
 	div.side-by-side {
 	  display: -webkit-flex;
@@ -208,9 +206,15 @@ body.bHome #contentwrap {
 	  flex: 0 0 100%;
 	  font-weight: 300;
 	  margin: 30px auto;
-	  width: @max-width-desktop;
+	  max-width: @max-width-desktop;
 	}
   }
+}
+
+body.bHome #contentwrap {
+	.in article.graph.small:not(:first-of-type) {
+	  margin-left: 15px;
+	}
 }
 
 body.bHome.layoutTablet.deviceMobile.landscape #contentwrap {
@@ -227,6 +231,7 @@ body.bHome.layoutTablet.deviceMobile.landscape #contentwrap {
 	}
   }
 }
+
 
 
 body.bHome.layoutMobile #contentwrap {
@@ -285,20 +290,12 @@ body.bHome #contentwrap {
   font-size: 11pt;
   color: #f7f7f7;
 
-  section div.in {
-	padding: 5px 0;
-  }
-
   .mobileonly, .launch-button.mobileonly {
 	display: none;
   }
 
   p {
 	margin-bottom: 1.5em;
-  }
-  button.nofx {
-	padding:0;
-	border: 0;
   }
 
   form input {
@@ -465,22 +462,7 @@ body.bHome #contentwrap {
 	  bottom: 12px;
   }
 
-  .overlay {
-	position: absolute;
-	padding: 0;
-	margin:0;
-	top:0;
-	bottom:0;
-	left:0;
-	right:0;
-	width: 100%;
-	height: 100%;
-	background: @bgcolor-overlay;
-	z-index: 100;
-  }
 
-
-  
   #brandBottom {
 	font-weight: 300;
 	color: #c3c3c3;
@@ -553,14 +535,9 @@ body.bHome #contentwrap {
 
 
 	section {
-	  //padding: 60px 0;
 	  font-size: 1.25rem;
 	  h2 {
 		margin-bottom: 50px;
-	  }
-	  div.in {
-		padding-left: 5%;
-		padding-right: 5%;
 	  }
 	}
 
@@ -1052,23 +1029,25 @@ body.bHome #contentwrap {
 
 } // body.bHome
 
-body.bHome.bIndex #contentwrap header {
+body.bHome:not(.bAbout) #contentwrap header {
   position: absolute;
   top:0;
   left:0;
   right:0;
-  z-index: 10;
+  z-index: 100;
 }
 
-
-
-body.bHome.layoutTablet #contentwrap {
+body.bMain.layoutTablet #contentwrap {
   margin: 0 auto;
 
-  section>div.in, #featuredVR>div, #featuredVR>h2, header>nav {
-	  width: 705px;
-	  max-width: 99%;
+  #featuredVR>div, #featuredVR>h2 {
+	margin-left: auto;
+	margin-right: auto;
   }
+
+}
+
+body.bHome.layoutTablet #contentwrap {
 
   section#getstarted {
 	position: relative;
@@ -1210,6 +1189,9 @@ body.bAbout #contentwrap {
 	  flex: 1;
 	  text-align: center;
 	  margin-top: 50px;
+	  a {
+		color: white;
+	  }
 	  a.svg {
 		display: block;
 		font-size: 19px;

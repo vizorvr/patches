@@ -7,12 +7,16 @@
         data-profile="{{profile.username}}">
 
 {{#if heading}}
-    <h4 style="margin-left:10px">{{heading}}</h4>
+    <h4>{{heading}}</h4>
 {{/if}}
 
 
 {{#if withNew}}
-    {{> assets/newCard assetType='graph' assetTypeText='project' path='/edit' iconRef='card-new-project-2'}}
+    {{#if newAssetTypeText }}
+        {{> assets/newCard assetType='graph' assetTypeText=newAssetTypeText path='/edit' iconRef='card-new-project-2'}}
+    {{else}}
+        {{> assets/newCard assetType='graph' assetTypeText='project' path='/edit' iconRef='card-new-project-2'}}
+    {{/if}}
 {{/if}}
 
 {{#each list}}

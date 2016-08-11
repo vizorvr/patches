@@ -1,17 +1,20 @@
 {{!-- test for owner with #eq visitor.username this.owner --}}
 {{!-- also this.private (true|false) --}}
-
 {{#*inline 'action'}}
     {{!-- context graph --}}
     {{#if svg}}
-        <button class="btn svg action {{#if main}}mainaction{{/if}} {{act}} {{class}}" href="{{path}}" data-action="{{act}}" data-svgref="{{svg}}">
+        <{{#eq tag 'a'}}a href="{{path}}"{{else}}button{{/eq}}
+            class="btn svg action {{#if main}}mainaction{{/if}} {{act}} {{class}}" data-action="{{act}}" data-svgref="{{svg}}">
             <svg />
     {{else}}
-        <button class="btn action {{#if main}}mainaction{{/if}} {{act}} {{class}}" href="{{path}}" data-action="{{act}}">
+        <{{#eq tag 'a'}}a href="{{path}}"{{else}}button{{/eq}}
+            class="btn action {{#if main}}mainaction{{/if}} {{act}} {{class}}" data-action="{{act}}">
     {{/if}}
             <span>{{#if text}}{{text}}{{else}}{{act}}{{/if}}</span>
-        </button>
+        </{{#eq tag 'a'}}a{{else}}button{{/eq}}>
 {{/inline}}
+{{#*inline 'actionLink'}}{{> action . tag='a'}}{{/inline}}
+{{#*inline 'actionButton'}}{{> action . tag='button'}}{{/inline}}
 
 {{#unless (equals withJSON false)}}
     {{> assets/graphCardJS . }}
@@ -30,7 +33,7 @@
         {{#if this.owner}}
             {{#not-eq visitor.username this.owner}}
             <p class="description user">
-                <a style="margin-right:0.5em;color:#666;" href="/{{owner}}">@{{owner}}</a>
+                <a style="margin-right:0.5em;color:#666;" href="/{{owner}}">{{owner}}</a>
             </p>
             {{/not-eq}}
         {{/if}}
@@ -40,7 +43,7 @@
 	{{#if previewUrlLarge}}
 	 <div class="image" style="background-image: url('{{previewUrlLarge}}');">
     {{else if previewUrlSmall}}
-     <div class="image" style="background-image: url('{{previewUrlSmall}}');">
+     <div class="image fromsmall" style="background-image: url('{{previewUrlSmall}}');">
     {{else}}
      <div class="image noimage">
 	{{/if}}
@@ -56,16 +59,16 @@
                 {{!-- view --}}
                 {{#unless (equals withActionView false) }}
                     {{#eq visitor.username this.owner}}
-                        {{> action main=true act='view' text='View' svg='eye-21x13' }}
+                        {{> actionLink main=true act='view' text='View' svg='eye-21x13' }}
                     {{else}}
-                        {{> action main=true act='view' text='View' svg='eye-21x13' class='expand' }}
+                        {{> actionLink main=true act='view' text='View' svg='eye-21x13' class='expand' }}
                     {{/eq}}
                 {{/unless}}
 
                 {{!-- edit --}}
                 {{#unless (equals withActionEdit false) }}
                     {{#eq visitor.username this.owner}}
-                        {{> action main=true act='edit' text='Edit' svg='player-icon-edit' path=(concat path '/edit') }}
+                        {{> actionLink main=true act='edit' text='Edit' svg='player-icon-edit' path=(concat path '/edit') class='nomobile' }}
                     {{/eq}}
                 {{/unless}}
 

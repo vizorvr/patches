@@ -42,6 +42,16 @@
 				E2.models.user.set(response.data)
 		})
 
+		var forgotPasswordLinks = document.querySelectorAll('form a.forgotPassword')
+		Array.prototype.forEach.call(forgotPasswordLinks, function(link) {
+			link.addEventListener('click', function(e){
+				e.preventDefault()
+				e.stopPropagation()
+				if (E2 && E2.controllers && E2.controllers.account)
+					E2.controllers.account.openForgotPasswordModal()
+				return false
+			})
+		})
 
 		var publicPrivateLabel = document.getElementById('publishPublicPrivateLabel')
 		var publicPrivateCheckbox = document.getElementById('publishDefaultPublicToggle')

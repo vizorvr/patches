@@ -159,12 +159,10 @@ function GraphController(s, gfs, mongoConnection) {
 GraphController.prototype = Object.create(AssetController.prototype)
 
 GraphController.prototype.publicRankedIndex = function(req, res, next) {
-	this._service.publicRankedList()
+	this._service.publicRankedList(0, 100)
 	.then(function(list) {
-		list.map(function(graph) {
-			graph = prettyPrintGraphInfo(graph)
-			graph.prettyName = makeCardName(graph.prettyName)
-		})
+
+		list = prettyPrintList(list)
 
 		if (req.xhr) {
 			return res.json(helper.responseStatusSuccess('OK', list))

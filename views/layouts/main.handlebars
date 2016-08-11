@@ -110,13 +110,11 @@
         (header: null    = default header)
     --}}
     {{#not-eq meta.header false}}
-        <header><div class="header-overlay"></div>
-            {{#if meta.header}}
-               {{#with meta}}{{> (lookup . 'header') .. }}{{/with}}
-            {{else}}
-                {{> srv/navbar}}
-            {{/if}}
-        </header>
+        {{#if meta.header}}
+           {{#with meta}}{{> (lookup . 'header') .. }}{{/with}}
+        {{else}}
+            {{> srv/navbar}}
+        {{/if}}
     {{/not-eq}}
 
 	{{> flash}}

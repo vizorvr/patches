@@ -4,12 +4,12 @@
         {{#if text}}{{text}}{{else}}{{act}}{{/if}}</button>
 {{/inline}}
 
-<div class="actions flexcenter">
+<div class="actions">
     {{>action act='share' text='Share' icon='icon-ca-share'}}
 
 	{{#if allowAllActions }}
         {{> controls/toggle name='private' value=1 checked=private
-            class='small monochrome'
+            class='small monochrome nomobile'
             withLabel=false id=(concat 'graph_' _id '_public')
             tooltip=(byindex private 'Make private' 'Make public')
             markup=(unescape 'data-action="toggleprivate"')
@@ -21,6 +21,6 @@
         download
         move
         --}}
-        {{>action act='delete' text='Delete' class='warn' icon='icon-ca-delete'}}
+        {{>action act='delete' text='Delete' class='warn nomobile' icon='icon-ca-delete'}}
 	{{/if}}
 </div>

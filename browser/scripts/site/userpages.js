@@ -17,15 +17,20 @@ var userpagesUI = new function() {
 	this.init = function () {
 		document.addEventListener(assetUIEvent.graphOpen, this.handleGraphOpen);
 
-		jQuery('#contentcontainer .asset.card').each(function () {
-			var $card = jQuery(this)
-			VizorUI.setupAssetCard($card)
-		})
+		jQuery('#contentcontainer .asset.card')
+			.not('.new')
+			.each(function () {
+				var $card = jQuery(this)
+				VizorUI.setupAssetCard($card)
+				if (siteUI.isTouchCapable()) {
+					var overlayDiv = this.querySelector('div.overlay')
+					overlayDiv.addEventListener('click', VizorUI.touchCardOverlay, true)	// unbound, this=div
+				}
+			})
 
 		document.addEventListener(assetUIEvent.graphShare, VizorUI.actionGraphShare)
 		document.addEventListener(assetUIEvent.graphDelete, VizorUI.actionGraphDelete)
 		document.addEventListener(assetUIEvent.graphTogglePrivate, VizorUI.actionGraphTogglePrivate)
-		
 
 		document.addEventListener('changed:profile', this.onProfileChanged.bind(this))
 		document.addEventListener('changed:graph', this.onGraphCardChanged.bind(this))
