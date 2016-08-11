@@ -401,7 +401,7 @@ var siteUI = new function() {
 
 		var devicePixelRatio = window.devicePixelRatio || 1
 
-		var isBrowser = E2.util.isBrowser
+		var isBrowser = VizorUI.isBrowser
 		$body
 			.toggleClass('uaSafari', isBrowser.Safari())
 			.toggleClass('uaFirefox', isBrowser.Firefox())
@@ -438,7 +438,7 @@ var siteUI = new function() {
 			}
 		}
 
-		if (E2.util.isMobile.Android())
+		if (VizorUI.isMobile.Android())
 			setTimeout(tagLandscapeOrPortrait, 300)
 		else
 			tagLandscapeOrPortrait()
@@ -448,7 +448,7 @@ var siteUI = new function() {
 
 	// check if orientation resembles portrait
 	this.isPortraitLike = function() {
-		if (E2.util.isMobile.Android()) {
+		if (VizorUI.isMobile.Android()) {
 			// http://stackoverflow.com/questions/30753522/chrome-43-window-size-bug-after-full-screen
 			// https://www.sencha.com/forum/showthread.php?303224-Wrong-orientation-for-Galaxy-Tab-devices
 			return window.innerWidth <= window.innerHeight
@@ -953,7 +953,5 @@ VizorUI.renderGraphTile = function(tileData, withActions, withAllActions) {
 jQuery('document').ready(function(){
 	if (!window)
 		return
-	window.VizorUI.isMobile = E2.util.isMobile
-	window.VizorUI.isBrowser = E2.util.isBrowser
 	siteUI.init()
 })
