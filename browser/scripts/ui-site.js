@@ -721,7 +721,10 @@ VizorUI.isMobile = {
 		return navigator.userAgent.match(/IEMobile/i) || navigator.userAgent.match(/WPDesktop/i);
 	},
 	any: function() {
-		return E2.util.isMobile();
+		if (E2 && E2.util)
+			return E2.util.isMobile.any()
+		else
+			return VizorUI.isMobile.iOS || VizorUI.isMobile.Android
 	}
 }
 

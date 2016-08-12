@@ -16,8 +16,12 @@
         {{/if}}
 
         {{#if _creator}}
-            window.Vizor.pageObjects.profiles['{{_creator}}'] = {{{json profile}}}
+            window.Vizor.pageObjects.profiles['{{_creator}}'] = {}
+            {{#if profile}}
+                window.Vizor.pageObjects.profiles['{{_creator}}'] = {{{json profile}}}
+            {{/if}}
             window.Vizor.pageObjects.profiles['{{_creator}}']['_id'] = j._creator
         {{/if}}
+
     })();
 </scr{{undefined}}ipt>
