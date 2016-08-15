@@ -25,11 +25,13 @@
 		<p class="description updatedAt">{{formatDate updatedAt}}</p>
 	</div>
 
-		{{#if previewUrlLarge}}
-		 <div class="image" style="background-image: url('{{previewUrlLarge}}');">
-        {{else}}
-         <div class="image noimage">
-		{{/if}}
+	{{#if previewUrlLarge}}
+	 <div class="image" style="background-image: url('{{previewUrlLarge}}');">
+    {{else if previewUrlSmall}}
+     <div class="image" style="background-image: url('{{previewUrlSmall}}');">
+    {{else}}
+     <div class="image noimage">
+	{{/if}}
 
 		<div class="overlay flexcenter noselect_all">
             {{#if withActions}}
