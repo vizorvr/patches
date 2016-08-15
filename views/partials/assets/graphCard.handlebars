@@ -3,26 +3,38 @@
 
 {{#*inline 'action'}}
     {{!-- context graph --}}
-    <a class="btn action {{#if main}}mainaction{{/if}} {{act}} svg {{class}}" data-action="{{act}}" href="{{path}}" data-svgref="{{svg}}">
-        <svg />
-        <span>{{#if text}}{{text}}{{else}}{{act}}{{/if}}</span>
-    </a>
+    {{#if svg}}
+        <button class="btn svg action {{#if main}}mainaction{{/if}} {{act}} {{class}}" href="{{path}}" data-action="{{act}}" data-svgref="{{svg}}">
+            <svg />
+    {{else}}
+        <button class="btn action {{#if main}}mainaction{{/if}} {{act}} {{class}}" href="{{path}}" data-action="{{act}}">
+    {{/if}}
+            <span>{{#if text}}{{text}}{{else}}{{act}}{{/if}}</span>
+        </button>
 {{/inline}}
 
-{{> assets/graphCardJS . }}
+{{#unless (equals withJSON false)}}
+    {{> assets/graphCardJS . }}
+{{/unless}}
 
-<article class="graph asset card noselect" data-objectid="{{_id}}" data-sortid="{{updatedTS}}" data-url="/{{owner}}/{{name}}" data-asset-type="graph">
+<article class="graph asset card noselect" data-objectid="{{_id}}" data-sortid="{{updatedTS}}" data-path="{{path}}" data-url="/{{owner}}/{{name}}" data-asset-type="graph">
 
 	<div class="meta scrollbar">
 		<h4 class="editable" data-svgref="icon-ca-rename">
-            <a href="{{path}}">{{prettyName}}</a>
+            {{#unless (equals withLinks false)}}
+                <a href="{{path}}">{{prettyName}}</a>
+            {{else}}
+                {{prettyName}}
+            {{/unless}}
         </h4>
-        {{#not-eq visitor.username this.owner}}
-		<p class="description user">
-            <a style="margin-right:0.5em;color:#666;" href="/{{owner}}">@{{owner}}</a>
-        </p>
-        {{/not-eq}}
-		<p class="description updatedAt">{{formatDate updatedAt}}</p>
+        {{#if this.owner}}
+            {{#not-eq visitor.username this.owner}}
+            <p class="description user">
+                <a style="margin-right:0.5em;color:#666;" href="/{{owner}}">@{{owner}}</a>
+            </p>
+            {{/not-eq}}
+        {{/if}}
+        {{#if updatedAt}}<p class="description updatedAt">{{formatDate updatedAt}}</p>{{/if}}
 	</div>
 
 	{{#if previewUrlLarge}}
@@ -41,27 +53,35 @@
             {{/if}}
 
             <div class="mainActionsWrap">
+                {{!-- view --}}
+                {{#unless (equals withActionView false) }}
+                    {{#eq visitor.username this.owner}}
+                        {{> action main=true act='view' text='View' svg='eye-21x13' }}
+                    {{else}}
+                        {{> action main=true act='view' text='View' svg='eye-21x13' class='expand' }}
+                    {{/eq}}
+                {{/unless}}
 
+                {{!-- edit --}}
+                {{#unless (equals withActionEdit false) }}
+                    {{#eq visitor.username this.owner}}
+                        {{> action main=true act='edit' text='Edit' svg='player-icon-edit' path=(concat path '/edit') }}
+                    {{/eq}}
+                {{/unless}}
 
-            {{#eq visitor.username this.owner}}
-                {{> action main=true act='view' text='View' svg='eye-21x13' }}
-                {{> action main=true text='Edit' act='edit' svg='player-icon-edit' path=(concat path '/edit') }}
-            {{else}}
-                {{> action main=true act='view' text='View' svg='eye-21x13' class='expand' }}
-                {{!-- in case this ever gets listed --}}
-                {{!--
-                {{#not-eq this.private true}}
-                    {{> action main=true text='Edit' act='edit' svg='player-icon-edit' path=(concat path '/edit') }}
-                {{/not-eq}}
-                --}}
-            {{/eq}}
+                {{!-- welcome dialog --}}
+                {{#if withActionChoose }}
+                    {{> action main=true act='choose' text='Open' class='expand' }}
+                {{/if}}
             </div>
 
             <p class="meta">
-                <span class="stat size">{{size}}</span>
+                {{#if size}}<span class="stat size">{{size}}</span>{{/if}}
+                {{#if views}}
                 <span class="stat views">
                     <svg style="fill:#afbfdf; width:16px; height:10px; "><use xlink:href="#eye-16x10"></use></svg>
                     {{views}} <span>views</span></span>
+                {{/if}}
             </p>
 		</div>
 	</div>

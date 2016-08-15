@@ -873,6 +873,7 @@ VizorUI.setupAssetCard = function($card) {
 		var detail = {
 			id: 	$card.data('objectid'),
 			url: 	$card.data('url'),
+			path: 	$card.data('path'),
 			type: 	$card.data('asset-type'),
 			action:	$this.data('action'),
 			triggeredByEl: e.currentTarget
@@ -883,9 +884,9 @@ VizorUI.setupAssetCard = function($card) {
 		return true
 	}
 
-	VizorUI.replaceSVGButtons($card);
+	VizorUI.replaceSVGButtons($card)
 
-	jQuery('button', $card).off('.assetUI');	// remove just us from all buttons
+	jQuery('button', $card).off('.assetUI')		// remove just us from all buttons
 
 	jQuery('button.action', $card).on('click.assetUI', dispatchAction)
 	jQuery('input[type=checkbox]', $card).on('change.assetUI', dispatchAction)

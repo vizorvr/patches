@@ -80,13 +80,15 @@ var uiViewCam = {
 	birdsEye	: 'birdsEye'
 };
 
-var uiEvent = { // emitted by ui (E2.ui) unless comments state otherwise
+if (typeof uiEvent === 'undefined')
+	var uiEvent = {}
+
+_.assign(uiEvent, { // emitted by ui (E2.ui) unless comments state otherwise
 	initialised		: 'uiInitialised',
 	moved			: 'uiMoved',			// panels via movable.js
 	resized			: 'uiResized',			// panels via draggable.js
 	stateChanged	: 'uiStateChanged'
-}
-
+})
 
 var VizorUI = function() {			// becomes E2.ui
 	EventEmitter.apply(this, arguments)

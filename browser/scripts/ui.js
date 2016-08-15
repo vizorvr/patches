@@ -17,6 +17,8 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 	dom.btnEditorCam.click(this.enterEditorView.bind(this));
 	dom.btnVRCam.click(this.enterVRView.bind(this));
 
+	dom.btnHelp = document.getElementById('btn-help')
+	dom.btnHelp.addEventListener('click', this.onBtnHelpClicked.bind(this))
 
 	var setModeBuild = this.setModeBuild.bind(this),
 	setModeProgram = this.setModeProgram.bind(this)
@@ -263,6 +265,11 @@ VizorUI.prototype.onSearchResultsChange = function($libContainer) {
 	}
 };
 
+VizorUI.prototype.onBtnHelpClicked = function(e) {
+	e.preventDefault()
+	e.stopPropagation()
+	return E2.app.openStartDialog(true)
+}
 
 VizorUI.prototype.onBtnHideAllClicked = function(e) {
 	e.preventDefault();
@@ -725,9 +732,6 @@ VizorUI.prototype.viewSource = function() {
 
 
 VizorUI.prototype.showStartDialog = function(forceShow) {
-	var dfd = when.defer()
-	var selectedTemplateUrl = null
-
 	// keep track of how many times the dialog has been seen
 	// do not show dialog if user logged in and shown more than twice
 	// do not show if user not logged in and shown more than five times
@@ -750,72 +754,21 @@ VizorUI.prototype.showStartDialog = function(forceShow) {
 	var showDialog = true
 	if (!forceShow) {
 		times++
-		if (times > 3 || numPublished > 0)
+		if (times > 1 || numPublished > 0)
 			showDialog = false
 	}
 
 	// return early in case of not showing dialog
 	if (!showDialog) {
-		dfd.resolve(selectedTemplateUrl)
-		return dfd.promise
+		return Promise.resolve()
 	}
 
 	var d = new Date()
 	d.setTime(d.getTime() + (3 * 86400 * 1000))	// 3 days
 	Cookies.set(cookieName, {seen: times}, {expires: d})
 
-	var welcomeModal = VizorUI.modalOpen(
-		E2.views.patch_editor.intro({user:E2.models.user.toJSON()}),
-		null,
-		'nopad welcome editorIntro'
-	)
+	return VizorUI.showHelpScreen()
 
-	welcomeModal.on('hidden.bs.modal', function(){
-		VizorUI.checkCompatibleBrowser()
-		dfd.resolve(selectedTemplateUrl)
-	})
-
-	var $slides = jQuery('.minislides', welcomeModal)
-	new Minislides($slides[0], {nextOn:'a.slide-next, img', nextOnSelf:true})
-
-	jQuery('a.modal-close', $slides).on('click', function(e){
-		e.preventDefault();
-		e.stopPropagation();
-		VizorUI.modalClose(welcomeModal);
-		return false;
-	})
-
-	jQuery('a.view-create360', $slides).on('click', function(e) {
-		e.preventDefault();
-		e.stopPropagation();
-		VizorUI.modalClose(welcomeModal);
-		selectedTemplateUrl = '/data/graphs/create-360.json'
-		return false;
-	})
-
-	jQuery('a.view-example', $slides).on('click', function(e) {
-		e.preventDefault();
-		e.stopPropagation();
-		VizorUI.modalClose(welcomeModal);
-		selectedTemplateUrl = '/data/graphs/example.json'
-		return false;
-	})
-
-	jQuery('a.sign-in', $slides).on('click', function(e){
-		e.preventDefault();
-		e.stopPropagation();
-		E2.controllers.account.openLoginModal()
-		return false;
-	})
-
-	jQuery('a.sign-up', $slides).on('click', function(e){
-		e.preventDefault();
-		e.stopPropagation();
-		E2.controllers.account.openSignupModal()
-		return false;
-	})
-
-	return dfd.promise
 }
 
 
@@ -924,14 +877,6 @@ VizorUI.openEditorHelp = function() {
 	}
 	var html = E2.views.patch_editor.help_shortcuts(viewData);
 	var m = VizorUI.modalOpen(html, 'Keyboard Shortcuts', 'mHelp mShortcuts')
-
-	jQuery('#showStartDialogAgain', m).on('click', function(e) {
-		VizorUI.modalClose(m)
-		E2.app.openStartDialog(true)
-		e.stopPropagation()
-		e.preventDefault()
-		return false
-	})
 
 	return m
 }

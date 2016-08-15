@@ -5,9 +5,9 @@
 <script>
     (function() {
         var j = {{{json this}}}
-        delete j.withActions
-        delete j.allowAllActions
-        delete j.profile
+
+        var deletes = ['profile','withActions', 'allowAllActions', 'withLinks', 'withActionEdit', 'withActionView', 'withActionChoose']
+        deletes.forEach(function(d){delete j[d]})
 
         {{#if _id}}
             window.Vizor.pageObjects.graphs['{{_id}}'] = j
