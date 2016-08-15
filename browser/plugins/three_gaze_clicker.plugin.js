@@ -6,14 +6,18 @@
 		this.core = core
 
 		this.iconDistance = 0.030
+		this.iconDepth = -1.0
+		this.iconSize = 0.1
 
 		this.input_slots = [
 			{name: 'camera', dt: core.datatypes.CAMERA},
 			{name: 'scene', dt: core.datatypes.SCENE},
 			{name: 'delay', dt: core.datatypes.FLOAT, def: 1.0},
 			{name: 'show icon', dt: core.datatypes.BOOL, def: true},
-			{name: 'eye distance', dt: core.datatypes.FLOAT, def: this.iconDistance,
-			 desc: 'Eye Distance for Gaze Clicker icon in VR'}
+			{name: 'icon depth', dt: core.datatypes.FLOAT, def: this.iconDepth,
+				desc: 'Gaze Cursor icon distance from camera'},
+			{name: 'icon size', dt: core.datatypes.FLOAT, def: this.iconSize,
+				desc: 'Gaze Cursor icon size'}
 		]
 
 		this.output_slots = [
@@ -55,9 +59,18 @@
 			break
 		}
 
-		// 'debug' option to move the gaze clicker eye distance
-		if (slot.name === 'eye distance') {
-			this.iconDistance = data
+		if (slot.name === 'icon depth') {
+			this.iconDepth = data
+
+			if (this.scene.children[1].children.indexOf(this.object3d) >= 0) {
+				this.scene.children[1].remove(this.object3d)
+			}
+			this.object3d = undefined
+		}
+
+		if (slot.name === 'icon size') {
+			this.iconSize = data
+
 			if (this.scene.children[1].children.indexOf(this.object3d) >= 0) {
 				this.scene.children[1].remove(this.object3d)
 			}
@@ -135,8 +148,8 @@
 
 			var i, j
 
-			var clickerDepth = -0.0111 // slightly farther away than camera near plane to prevent z fighting
-			var clickerRadius = 0.0008
+			var clickerDepth = parent.iconDepth // slightly farther away than camera near plane to prevent z fighting
+			var clickerRadius = parent.iconSize
 
 			for (j = 0; j < that.segments + 1; j++) {
 				for (i = 0; i < radialMarkers.length; i++) {
@@ -176,34 +189,13 @@
 	ThreeGazeClicker.prototype.get_mesh = function() {
 		if (!this.object3d) {
 			this.geometry = new this.GeometryGenerator(this)
-			this.material = new THREE.MeshBasicMaterial({color:0xffffff})
-
-			var group = new THREE.Group()
-			group.matrixAutoUpdate = false
+			this.material = new THREE.MeshBasicMaterial({color:0xffffff, depthFunc: THREE.AlwaysDepth})
 
 			// mono eye icon
 			var monoEyeIcon = new THREE.Mesh(this.geometry, this.material)
 			monoEyeIcon.matrixAutoUpdate = false
-			monoEyeIcon.layers.set(3)
-			group.add(monoEyeIcon)
 
-			// left eye icon
-			var leftEyeIcon = new THREE.Mesh(this.geometry, this.material)
-			leftEyeIcon.layers.set(1)
-			leftEyeIcon.position.x = -this.iconDistance
-			leftEyeIcon.updateMatrix()
-			leftEyeIcon.updateMatrixWorld()
-			group.add(leftEyeIcon)
-
-			// right eye icon
-			var rightEyeIcon = new THREE.Mesh(this.geometry, this.material)
-			rightEyeIcon.layers.set(2)
-			rightEyeIcon.position.x = this.iconDistance
-			rightEyeIcon.updateMatrix()
-			rightEyeIcon.updateMatrixWorld()
-			group.add(rightEyeIcon)
-
-			this.object3d = group
+			this.object3d = monoEyeIcon
 		}
 
 		return this.object3d
