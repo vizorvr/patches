@@ -116,7 +116,7 @@
 					}
 				}
 				else {
-					if (parent.children.length === 1 && parent.children[0].uid === data.uid) {
+					if (parent.children.length === 1 && parent.children[0].uuid === data.uuid) {
 						// nothing to do
 						return
 					}
