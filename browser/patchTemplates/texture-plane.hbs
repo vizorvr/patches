@@ -1,233 +1,225 @@
 {
-    "abs_t": 124.095,
-    "active_graph": "root",
-    "graph_uid": "TXDgBc0JJtS3",
-    "root": {
-        "uid": "root",
-        "parent_uid": -1,
-        "open": true,
-        "nodes": [
-            {
-                "plugin": "graph",
-                "x": 50,
-                "y": 501,
-                "uid": "lSaWUPbjt5on",
-                "state": {
-                    "always_update": true,
-                    "input_sids": {},
-                    "output_sids": {
-                        "aDPpmJxeYrvd": "mh0rTKkFm0nD"
-                    }
-                },
-                "title": "Texture on a Plane",
-                "graph": {
-                    "uid": "nQMH4yQ6MgdG",
-                    "parent_uid": "root",
-                    "open": true,
-                    "nodes": [
-                        {
-                            "plugin": "three_mesh",
-                            "x": 1002,
-                            "y": 194,
-                            "uid": "P6Etq7Awqeli",
-                            "state": {
-                                "position": {
-                                    "x": 0,
-                                    "y": 0.5,
-                                    "z": 0
-                                },
-                                "scale": {
-                                    "x": 1,
-                                    "y": 1,
-                                    "z": 1
-                                },
-                                "quaternion": {
-                                    "_x": 0,
-                                    "_y": 0,
-                                    "_z": 0,
-                                    "_w": 1
-                                }
-                            }
-                        },
-                        {
-                            "plugin": "output_proxy",
-                            "x": 1233,
-                            "y": 197,
-                            "uid": "aDPpmJxeYrvd",
-                            "title": "object3d",
-                            "dyn_in": [
-                                {
-                                    "name": "output",
-                                    "dt": 21,
-                                    "def": null,
-                                    "uid": "bEdPpC9C6Rh1",
-                                    "dynamic": true,
-                                    "type": 0,
-                                    "index": 0,
-                                    "is_connected": true,
-                                    "connected": true
-                                }
-                            ]
-                        },
-                        {
-                            "plugin": "three_geometry_plane",
-                            "x": 627,
-                            "y": 97,
-                            "uid": "xeLvzijpadE6"
-                        },
-                        {
-                            "plugin": "three_material",
-                            "x": 634,
-                            "y": 277,
-                            "uid": "RkRPeA8c0KZg",
-                            "open": false
-                        },
-                        {
-                            "plugin": "url_texture_generator",
-                            "x": 329,
-                            "y": 282,
-                            "uid": "ft7D2KfJixmo",
-                            "state": {
-                                "url": "{{url}}"
-                            }
-                        },
-                        {
-                            "plugin": "const_float_generator",
-                            "x": 404,
-                            "y": 124,
-                            "uid": "ZuRQbYI3DQjB",
-                            "state": {
-                                "val": 1
-                            },
-                            "title": "Width & Height"
-                        },
-                        {
-                            "plugin": "const_float_generator",
-                            "x": 402,
-                            "y": 442,
-                            "uid": "dPw7g3tZqn1u",
-                            "state": {
-                                "val": 2
-                            },
-                            "title": "Sides"
-                        },
-                        {
-                            "plugin": "vector",
-                            "x": 762,
-                            "y": 337,
-                            "uid": "jyuUsyRpaRbo",
-                            "open": false,
-                            "title": "Position Vector"
-                        },
-                        {
-                            "plugin": "const_float_generator",
-                            "x": 639,
-                            "y": 339,
-                            "uid": "5WDYLQCFTuZN",
-                            "state": {
-                                "val": 0.5
-                            },
-                            "title": "Y"
-                        }
-                    ],
-                    "conns": [
-                        {
-                            "src_nuid": "P6Etq7Awqeli",
-                            "dst_nuid": "aDPpmJxeYrvd",
-                            "src_slot": 0,
-                            "dst_slot": 0,
-                            "uid": "MpWiwxN76xak",
-                            "src_connected": true,
-                            "dst_connected": true,
-                            "dst_dyn": true
-                        },
-                        {
-                            "src_nuid": "xeLvzijpadE6",
-                            "dst_nuid": "P6Etq7Awqeli",
-                            "src_slot": 0,
-                            "dst_slot": 1,
-                            "uid": "X7VxXu21TVo6",
-                            "src_connected": true,
-                            "dst_connected": true
-                        },
-                        {
-                            "src_nuid": "RkRPeA8c0KZg",
-                            "dst_nuid": "P6Etq7Awqeli",
-                            "src_slot": 0,
-                            "dst_slot": 2,
-                            "uid": "f9aGv5XSujSw",
-                            "src_connected": true,
-                            "dst_connected": true
-                        },
-                        {
-                            "src_nuid": "ft7D2KfJixmo",
-                            "dst_nuid": "RkRPeA8c0KZg",
-                            "src_slot": 0,
-                            "dst_slot": 0,
-                            "uid": "TsEIhffs6qaj",
-                            "src_connected": true,
-                            "dst_connected": true
-                        },
-                        {
-                            "src_nuid": "ZuRQbYI3DQjB",
-                            "dst_nuid": "xeLvzijpadE6",
-                            "src_slot": 0,
-                            "dst_slot": 1,
-                            "uid": "OnAuEC4QwK8m",
-                            "src_connected": true,
-                            "dst_connected": true
-                        },
-                        {
-                            "src_nuid": "ZuRQbYI3DQjB",
-                            "dst_nuid": "xeLvzijpadE6",
-                            "src_slot": 0,
-                            "dst_slot": 0,
-                            "uid": "vaonuZUykmiW",
-                            "src_connected": true,
-                            "dst_connected": true
-                        },
-                        {
-                            "src_nuid": "dPw7g3tZqn1u",
-                            "dst_nuid": "RkRPeA8c0KZg",
-                            "src_slot": 0,
-                            "dst_slot": 8,
-                            "uid": "NR8Qk6Y3YxLa",
-                            "src_connected": true,
-                            "dst_connected": true
-                        },
-                        {
-                            "src_nuid": "jyuUsyRpaRbo",
-                            "dst_nuid": "P6Etq7Awqeli",
-                            "src_slot": 0,
-                            "dst_slot": 3,
-                            "uid": "ayzVrzOk35Zx",
-                            "src_connected": true,
-                            "dst_connected": true
-                        },
-                        {
-                            "src_nuid": "5WDYLQCFTuZN",
-                            "dst_nuid": "jyuUsyRpaRbo",
-                            "src_slot": 0,
-                            "dst_slot": 1,
-                            "uid": "PZx8jE8uwdwj",
-                            "src_connected": true,
-                            "dst_connected": true
-                        }
-                    ]
-                },
-                "dyn_out": [
+    "nodes": [
+        {
+            "plugin": "graph",
+            "x": 50,
+            "y": 501,
+            "uid": "lSaWUPbjt5on",
+            "state": {
+                "always_update": true,
+                "input_sids": {},
+                "output_sids": {
+                    "aDPpmJxeYrvd": "mh0rTKkFm0nD"
+                }
+            },
+            "title": "Texture on a Plane",
+            "graph": {
+                "uid": "nQMH4yQ6MgdG",
+                "parent_uid": "root",
+                "open": true,
+                "nodes": [
                     {
-                        "name": "object3d",
-                        "dt": 21,
-                        "index": 0,
-                        "uid": "mh0rTKkFm0nD",
-                        "dynamic": true,
-                        "type": 1,
-                        "is_connected": true
+                        "plugin": "three_mesh",
+                        "x": 1002,
+                        "y": 194,
+                        "uid": "P6Etq7Awqeli",
+                        "state": {
+                            "position": {
+                                "x": 0,
+                                "y": 0.5,
+                                "z": 0
+                            },
+                            "scale": {
+                                "x": 1,
+                                "y": 1,
+                                "z": 1
+                            },
+                            "quaternion": {
+                                "_x": 0,
+                                "_y": 0,
+                                "_z": 0,
+                                "_w": 1
+                            }
+                        }
+                    },
+                    {
+                        "plugin": "output_proxy",
+                        "x": 1233,
+                        "y": 197,
+                        "uid": "aDPpmJxeYrvd",
+                        "title": "object3d",
+                        "dyn_in": [
+                            {
+                                "name": "output",
+                                "dt": 21,
+                                "def": null,
+                                "uid": "bEdPpC9C6Rh1",
+                                "dynamic": true,
+                                "type": 0,
+                                "index": 0,
+                                "is_connected": true,
+                                "connected": true
+                            }
+                        ]
+                    },
+                    {
+                        "plugin": "three_geometry_plane",
+                        "x": 627,
+                        "y": 97,
+                        "uid": "xeLvzijpadE6"
+                    },
+                    {
+                        "plugin": "three_material",
+                        "x": 634,
+                        "y": 277,
+                        "uid": "RkRPeA8c0KZg",
+                        "open": false
+                    },
+                    {
+                        "plugin": "url_texture_generator",
+                        "x": 329,
+                        "y": 282,
+                        "uid": "ft7D2KfJixmo",
+                        "state": {
+                            "url": "{{url}}"
+                        }
+                    },
+                    {
+                        "plugin": "const_float_generator",
+                        "x": 404,
+                        "y": 124,
+                        "uid": "ZuRQbYI3DQjB",
+                        "state": {
+                            "val": 1
+                        },
+                        "title": "Width & Height"
+                    },
+                    {
+                        "plugin": "const_float_generator",
+                        "x": 402,
+                        "y": 442,
+                        "uid": "dPw7g3tZqn1u",
+                        "state": {
+                            "val": 2
+                        },
+                        "title": "Sides"
+                    },
+                    {
+                        "plugin": "vector",
+                        "x": 762,
+                        "y": 337,
+                        "uid": "jyuUsyRpaRbo",
+                        "open": false,
+                        "title": "Position Vector"
+                    },
+                    {
+                        "plugin": "const_float_generator",
+                        "x": 639,
+                        "y": 339,
+                        "uid": "5WDYLQCFTuZN",
+                        "state": {
+                            "val": 0.5
+                        },
+                        "title": "Y"
+                    }
+                ],
+                "conns": [
+                    {
+                        "src_nuid": "P6Etq7Awqeli",
+                        "dst_nuid": "aDPpmJxeYrvd",
+                        "src_slot": 0,
+                        "dst_slot": 0,
+                        "uid": "MpWiwxN76xak",
+                        "src_connected": true,
+                        "dst_connected": true,
+                        "dst_dyn": true
+                    },
+                    {
+                        "src_nuid": "xeLvzijpadE6",
+                        "dst_nuid": "P6Etq7Awqeli",
+                        "src_slot": 0,
+                        "dst_slot": 1,
+                        "uid": "X7VxXu21TVo6",
+                        "src_connected": true,
+                        "dst_connected": true
+                    },
+                    {
+                        "src_nuid": "RkRPeA8c0KZg",
+                        "dst_nuid": "P6Etq7Awqeli",
+                        "src_slot": 0,
+                        "dst_slot": 2,
+                        "uid": "f9aGv5XSujSw",
+                        "src_connected": true,
+                        "dst_connected": true
+                    },
+                    {
+                        "src_nuid": "ft7D2KfJixmo",
+                        "dst_nuid": "RkRPeA8c0KZg",
+                        "src_slot": 0,
+                        "dst_slot": 0,
+                        "uid": "TsEIhffs6qaj",
+                        "src_connected": true,
+                        "dst_connected": true
+                    },
+                    {
+                        "src_nuid": "ZuRQbYI3DQjB",
+                        "dst_nuid": "xeLvzijpadE6",
+                        "src_slot": 0,
+                        "dst_slot": 1,
+                        "uid": "OnAuEC4QwK8m",
+                        "src_connected": true,
+                        "dst_connected": true
+                    },
+                    {
+                        "src_nuid": "ZuRQbYI3DQjB",
+                        "dst_nuid": "xeLvzijpadE6",
+                        "src_slot": 0,
+                        "dst_slot": 0,
+                        "uid": "vaonuZUykmiW",
+                        "src_connected": true,
+                        "dst_connected": true
+                    },
+                    {
+                        "src_nuid": "dPw7g3tZqn1u",
+                        "dst_nuid": "RkRPeA8c0KZg",
+                        "src_slot": 0,
+                        "dst_slot": 8,
+                        "uid": "NR8Qk6Y3YxLa",
+                        "src_connected": true,
+                        "dst_connected": true
+                    },
+                    {
+                        "src_nuid": "jyuUsyRpaRbo",
+                        "dst_nuid": "P6Etq7Awqeli",
+                        "src_slot": 0,
+                        "dst_slot": 3,
+                        "uid": "ayzVrzOk35Zx",
+                        "src_connected": true,
+                        "dst_connected": true
+                    },
+                    {
+                        "src_nuid": "5WDYLQCFTuZN",
+                        "dst_nuid": "jyuUsyRpaRbo",
+                        "src_slot": 0,
+                        "dst_slot": 1,
+                        "uid": "PZx8jE8uwdwj",
+                        "src_connected": true,
+                        "dst_connected": true
                     }
                 ]
-            }
-        ],
-        "conns": []
-    }
+            },
+            "dyn_out": [
+                {
+                    "name": "object3d",
+                    "dt": 21,
+                    "index": 0,
+                    "uid": "mh0rTKkFm0nD",
+                    "dynamic": true,
+                    "type": 1,
+                    "is_connected": true
+                }
+            ]
+        }
+    ],
+    "conns": []
 }

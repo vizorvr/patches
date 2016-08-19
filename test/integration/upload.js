@@ -98,45 +98,6 @@ describe('Upload', function() {
 		});
 	});
 
-	describe('Scene', function() {
-		it('should upload correctly', function(done) {
-			var scene = makePath('scene', ''+testId);
-			var original = scene+'.zip';
-			var stream = fs.createReadStream(__dirname+'/../fixtures/scene.zip');
-			stream.path = original
-
-			agent
-			.post('/upload/scene')
-			.attach('file', stream, original)
-			.expect(200)
-			.end(function(err, res) {
-				if (err) return done(err);
-				var json = res.body;
-				delete json._creator;
-				delete json._id;
-				delete json.createdAt;
-				delete json.updatedAt;
-				json.files = json.files.sort()
-
-				files = [
-					scene+'/scene.json',
-					scene+'/scene_Cube_n0.png',
-					scene+'/scene_Cube_t00.png',
-					scene+'/scene_Cube_v0.png',
-					scene+'/skybox_1.jpg',
-					scene+'/skybox_2.jpg',
-					scene+'/skybox_3.jpg',
-					scene+'/skybox_not.jpg'
-					].sort()
-
-				expect({"__v":0,"path":scene,"url":'/data'+scene+'/scene.json',"tags":[],
-					files: files
-				}).to.deep.equal(json);
-				done(err);
-			});
-		});
-	});
-
 	describe('Audio', function() {
 		it('should upload correctly', function(done) {
 			var audio = makePath('audio', testId+'.ogg');

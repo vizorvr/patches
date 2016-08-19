@@ -45,7 +45,7 @@ ModelLoader.prototype.loadObj = function(url) {
 			// .mtl exists on server, load .obj and .mtl
 			var mtlLoader = new THREE.MTLLoader()
 			mtlLoader.setPath('')
-			mtlLoader.setBaseUrl(mtlUrl.substring(0,mtlUrl.lastIndexOf('/')+1))
+			mtlLoader.setBaseUrl(mtlUrl.substring(0, mtlUrl.lastIndexOf('/')+1))
 			mtlLoader.load(mtlUrl, function(materials) {
 				var objLoader = new THREE.OBJLoader()
 				objLoader.setMaterials(materials)

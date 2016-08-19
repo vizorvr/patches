@@ -115,7 +115,7 @@ AssetService.prototype.save = function(data, user) {
 			asset._creator = user.id
 		}
 
-		// update model with stuff from data
+		// update model with everything from data
 		_.assign(asset, data)
 
 		asset.updatedAt = Date.now()

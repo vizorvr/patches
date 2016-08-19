@@ -4,7 +4,7 @@
 
 		this.core = core
 
-		this.desc = '3D Object/Scene loader. Loads .obj and THREE.js .json object hierarchies.'
+		this.desc = '3D Object/Scene loader. Loads .obj, THREE.js .json, and .glTF object hierarchies.'
 
 		this.urlDirty = true
 
