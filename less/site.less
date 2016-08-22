@@ -38,7 +38,10 @@
 @card-asset-height	:  255px;
 
 @card-asset-width-mobile	:  308px;
-@card-asset-height-mobile	:  274px;
+@card-asset-height-mobile	:  284px;
+
+@card-asset-width-mobile-se	:  278px;
+@card-asset-height-mobile-se:  284px;
 
 // BOX-SIZING IS BORDER BOX!
 
@@ -618,6 +621,10 @@ body.layoutMobile {
   section.list article.card.asset {
 	width: @card-asset-width-mobile;
 	height: @card-asset-height-mobile;
+	@media screen and (device-width: @device-width-iPhoneSE) {
+		width: @card-asset-width-mobile-se;
+		height: @card-asset-height-mobile-se;
+	}
 	margin: 0 auto 20px auto;
 	div.image {
 	  height: 200px;
@@ -637,7 +644,7 @@ body.bUserpage p.more {
   text-align: right;
   padding: 10px 12px;
   a {
-	color: #00b3ee;
+	color: @color-action;
   }
 }
 article.asset.card {
@@ -674,6 +681,21 @@ article.asset.card {
 			}
 		  }
 		}
+	}
+
+	div.image {
+	  background-color: #1e1269;
+	}
+
+	h4 {
+	  a {
+		color: @color-action;
+	  }
+	}
+
+  	&.private {
+	  div.image {background-color: #24405F}
+	  h4 a {color: #333;}
 	}
 
   	body:not(.layoutMobile) & div.overlay div.actions {
@@ -794,6 +816,7 @@ article.asset.card {
 		  width: 0;
 		  overflow: hidden;
 		}
+
 		&:hover {
 		  width: 6.75em;
 		  transition: width 0.1s ease-in;
@@ -1798,6 +1821,9 @@ body.bMain.bProfile #contentwrap #contentcontainer {
 	  }
 	}
 	@media all and (max-width: @threshold-mobile) {
+	  input, textarea {
+		max-width: 98%;
+	  }
 	  input + button {
 		margin-top: 10px;
 	  }
@@ -1810,9 +1836,6 @@ body.bMain.bProfile #contentwrap #contentcontainer {
 	  }
 	  meter {
 		width: 250px;
-	  }
-	  textarea {
-		max-width: 98%;
 	  }
 	}
   } // /form

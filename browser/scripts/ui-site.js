@@ -182,6 +182,7 @@ var siteUI = new function() {
 		else if (jQuery('body.bHome.bAbout').length > 0) {
 			that.initAbout()
 		}
+		VizorUI.replaceSVGButtons($('footer'))
 		// auto popovers
 		$('[data-toggle="popover"]').popover()
 

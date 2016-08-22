@@ -1,0 +1,171 @@
+#brandBottom {
+  font-weight: 300;
+  color: #c3c3c3;
+  text-align: center;
+  span {
+	display: block;
+	margin-bottom: 20px;
+  }
+}
+
+#contentwrap+footer {
+  margin-top:50px;
+}
+
+body.bMain footer {
+  background: @bgcolor-home-footer;
+  //padding: 50px 0;
+  font-size: 120%;
+  padding: 90px 0;
+
+  .flexcolumns {
+	max-width: 700px;
+	width: 67%;
+	float: right;
+  }
+  li {
+	margin-bottom: 0.5em;
+  }
+
+  a {
+	color: rgba(255,255,255,0.7);
+	&:hover {
+	  color: rgba(255,255,255,1);
+	}
+  }
+
+  nav {
+	text-align: center;
+	&.links {
+	  a {
+		text-decoration: none;
+		text-transform: uppercase;
+		letter-spacing: 2px;
+		color: #9e9e9e;
+		&:hover {
+		  .selectedcolor
+		}
+		&+a {
+		  margin-left: 1em;
+		}
+	  }
+	}
+	a.btn {
+	  width: 28px;
+	  padding: 2px 4px 6px 4px;
+	  &+a.btn {
+		margin-left: 38px;
+	  }
+	  background: none;
+	  border: 0;
+	  >svg {
+		vertical-align: middle;
+	  }
+	  &:hover {
+		border: 0;
+	  }
+	  &:active {
+		background: none;
+	  }
+	  &.email svg {
+		width: 20px;  height: 16px;
+	  }
+	  &.twitter svg {
+		width: 23px;  height: 18px;
+	  }
+	  &.facebook svg {
+		width: 13px;  height: 24px;
+	  }
+	  &.github svg {
+		width: 23px;  height: 20px;
+	  }
+	  &.angellist svg {
+		width: 14px;  height: 20px;
+	  }
+	  &.svg svg {
+		fill: #c3c3c3;
+		stroke: none;
+	  }
+	  &.svg:hover svg {
+		fill: #5199d2;
+	  }
+	}
+
+  }
+
+  h6#footerBrand {
+	float:left;
+	margin-top:0;
+  }
+
+
+}
+
+
+@media screen and (max-width: (@threshold-mobile - 1)) {
+  footer {
+	@hpf-left-pad: 45px;
+	padding-top: 10px;
+	font-size: 120%;
+	nav.links {
+	  a {
+		letter-spacing: 1.75px;
+		&+a {
+		  margin-left: 1rem;
+		}
+	  }
+	}
+	>.in {
+	  max-width: 100%;
+	}
+	h6#footerBrand {
+	  float: none;
+	  margin-left: @hpf-left-pad;
+	  margin-bottom: 2rem;
+	}
+	div.flexcolumns {
+	  padding-left: @hpf-left-pad;
+	  border-top: 1px solid #000;
+	  margin-left: 0;
+	  width: 100%;
+	  float: none;
+	  flex-wrap: wrap;
+	  padding-top: 20px;
+	  ul {
+		-webkit-flex-basis: 100%;
+		flex-basis: 100%;
+	  }
+	}
+  }
+}
+
+@media all and (min-width: @threshold-mobile) and (max-width: (@threshold-tablet - 1) ) {
+  footer>div.in {
+	padding-left: 5%;
+	padding-right: 5%;
+  }
+  footer {
+	font-size: 1.6rem;
+
+	li {
+	  margin-bottom: 1em;
+	}
+  }
+}
+
+@media all and (min-width: @threshold-tablet) {
+  footer {
+	padding: 70px 0;
+  }
+  footer>div.in {
+	padding-left: 20px;
+	padding-right: 20px;
+  }
+}
+
+
+@media all and (min-width: (@max-width-desktop + 80)) {
+  footer>.in {
+	  max-width: @max-width-desktop + 40;
+  }
+}

@@ -201,6 +201,7 @@ GraphController.prototype._userOwnIndex = function(user, req, res, next) {
 			withProjectListFilter : true,
 			meta : {
 				header: 'srv/userpage/userpageHeader',
+				footer: 'srv/home/_footer',
 				title: 'Your Files',
 				scripts: [
 					helper.metaScript('site/userpages.js')

@@ -20,10 +20,11 @@
     {{> assets/graphCardJS . }}
 {{/unless}}
 
-<article class="graph asset card noselect" data-objectid="{{_id}}" data-sortid="{{updatedTS}}" data-path="{{path}}" data-url="/{{owner}}/{{name}}" data-asset-type="graph">
+<article class="graph asset card {{#if private}}private{{/if}} noselect"
+         data-objectid="{{_id}}" data-sortid="{{updatedTS}}" data-path="{{path}}" data-url="/{{owner}}/{{name}}" data-asset-type="graph">
 
 	<div class="meta scrollbar">
-		<h4 class="editable" data-svgref="icon-ca-rename">
+		<h4>
             {{#unless (equals withLinks false)}}
                 <a href="{{path}}">{{prettyName}}</a>
             {{else}}

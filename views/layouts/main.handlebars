@@ -100,7 +100,7 @@
     <script>{{> mixpanel}}</script>
 </head>
 
-<body class="bMain {{meta.bodyclass}} {{extraClasses}}">
+<body id="top_" class="bMain {{meta.bodyclass}} {{extraClasses}}">
 	{{> srv/gtm}}
 	{{> srv/siteSvgSprite }}
 
@@ -108,6 +108,10 @@
         header: false   = noheader
         header: any     = custom header
         (header: null    = default header)
+
+        footer: false, null = nofooter
+        footer: any = custom footer
+
     --}}
     {{#not-eq meta.header false}}
         {{#if meta.header}}
@@ -128,6 +132,14 @@
 	<div id="contentwrap">{{!-- main. for server-rendered html --}}
           {{{body}}}
     </div>
+
+    {{#not-eq meta.footer false}}
+        {{#if meta.footer}}
+           {{#with meta}}{{> (lookup . 'footer') .. }}{{/with}}
+        {{else}}
+
+        {{/if}}
+    {{/not-eq}}
 
 </body>
 </html>

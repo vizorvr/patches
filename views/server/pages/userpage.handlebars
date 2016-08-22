@@ -9,23 +9,19 @@
 {{/inline}}
 
 <div id="contentcontainer" class="in">
-    {{#not-eq profile.username user.username}}
-        <h2 class="nomobile"><span>{{profile.username}}'s Files</span></h2>
-    {{/not-eq}}
-
     {{#if graphs}}
         {{>browse/graphList . list=graphs class='public'}}
     {{else}}
         {{#if isSummaryPage}}
             {{!-- front page (summary) --}}
             {{>browse/graphList . list=publicGraphs
-                heading='Public projects' class='public'
+                class='public'
                 withNew=(equals profile.username user.username)
                 newAssetTypeText='public project'
                 withMoreLink=publicHasMoreLink moreLinkText='All public projects' moreLinkHref='?public=1'
             }}
             {{>browse/graphList . list=privateGraphs
-                heading='Private projects' class='private'
+                class='private'
                 withNew=(equals profile.username user.username)
                 newAssetTypeText='private project'
                 withMoreLink=privateHasMoreLink moreLinkText='All private projects' moreLinkHref='?public=0'
@@ -38,7 +34,7 @@
             {{!-- filtered public/private lists --}}
             {{#if publicGraphs}}
                 {{>browse/graphList . list=publicGraphs
-                    heading='Public projects' class='public'
+                    class='public'
                     withNew=(equals profile.username user.username)
                     newAssetTypeText='public project'
                 }}
@@ -46,7 +42,7 @@
 
             {{#if privateGraphs}}
                 {{>browse/graphList . list=privateGraphs
-                    heading='Private projects' class='private'
+                    class='private'
                     withNew=(equals profile.username user.username)
                     newAssetTypeText='private project'
                 }}
