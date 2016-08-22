@@ -499,11 +499,11 @@ body.bMain {
 	}
   }
 
-  section {
+  section:not(.list) {
 	margin-top: 30px;
 	margin-bottom:30px;
   }
-  body>section:first-child {margin-top:0}
+  body>section:first-child:not(.list) {margin-top:0}
   #contentcontainer>section:first-child {margin-top:0}
   #contentcontainer>nav+section {margin-top:0}
 
@@ -553,8 +553,16 @@ button.svg, a.btn.svg {
 
 
 section.list {
+
   article.card {
 	margin:@margin-asset-card @margin-asset-card-h;
+  }
+  body.bGraphlistSummary:not(.noProjects) &+section.list:before {
+	content: "";
+	display: block;
+	height: 25px;
+	margin: 0 10px;
+	border-top: 1px solid #aaa;
   }
   body.bGraphlistSummary:not(.noProjects) &.assets[data-numitems="0"],
   body.bGraphlistSummary.noProjects &.assets[data-numitems="0"]+section
@@ -580,6 +588,8 @@ body.bUserpage p.explain.emptylist {
   section.list {
 	margin-left: -@margin-asset-card-h;
 	margin-right: -@margin-asset-card-h;
+	margin-top: 25px;
+	margin-bottom: 25px;
 	>h4:first-child {
 	  margin-left: @margin-asset-card-h;
 	}
@@ -651,6 +661,24 @@ article.asset.card {
   	background: white;
   	border-radius: 4px;
   	position:relative;
+
+  	// order here is important
+  	div.image:not(.noimage) {
+	  background-color: #1e1269;
+	}
+  	h4 a {
+	  color: @color-action;
+	}
+  	&.private {
+	  div.image:not(.noimage) {background-color: #24405F}
+	  h4 a {color: #333;}
+	  &.new {
+		div.image {
+		  background: #0597cd;
+		}
+	  }
+	}
+
 	&.new {
 		div.image {
 		  background: #0597cd;
@@ -683,20 +711,6 @@ article.asset.card {
 		}
 	}
 
-	div.image:not(.noimage) {
-	  background-color: #1e1269;
-	}
-
-	h4 {
-	  a {
-		color: @color-action;
-	  }
-	}
-
-  	&.private {
-	  div.image:not(.noimage) {background-color: #24405F}
-	  h4 a {color: #333;}
-	}
 
   	body:not(.layoutMobile) & div.overlay div.actions {
 	  left: 44%;
@@ -944,6 +958,10 @@ body.bUserpage {
 	li {
 	  display: inline-block;
 	}
+  }
+
+  &.bMain #contentcontainer section.list:first-of-type {
+	margin-top: 25px;
   }
 }
 
