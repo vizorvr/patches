@@ -310,6 +310,7 @@ GraphController.prototype._userPublicIndex = function(user, req, res, next) {
 				withProjectListFilter : false,
 				meta : {
 					header: 'srv/userpage/userpageHeader',
+					footer: 'srv/home/_footer',
 					title: username+'\'s Files',
 					bodyclass: 'bUserpage',
 					scripts : [

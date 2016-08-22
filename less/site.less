@@ -683,7 +683,7 @@ article.asset.card {
 		}
 	}
 
-	div.image {
+	div.image:not(.noimage) {
 	  background-color: #1e1269;
 	}
 
@@ -694,7 +694,7 @@ article.asset.card {
 	}
 
   	&.private {
-	  div.image {background-color: #24405F}
+	  div.image:not(.noimage) {background-color: #24405F}
 	  h4 a {color: #333;}
 	}
 
