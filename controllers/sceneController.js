@@ -3,6 +3,7 @@ var AssetController = require('./assetController')
 var SceneProcessor = require('../lib/sceneProcessor')
 var fs = require('fs')
 var fsPath = require('path')
+var slugify = require('../models/asset-helper').slugify
 
 var allowedExtensions = ['.zip', '.obj', '.js', '.json', '.gltf', '.fbx', '.dae']
 
@@ -22,9 +23,8 @@ SceneController.prototype.canWriteUpload = function(req, res, next) {
 
 	var file = req.files.file
 	var folder = '/' + req.user.username + '/assets/scene'
-
-	// remove .zip from scene name
-	var dest = folder + '/'+ fsPath.basename(file.name, fsPath.extname(file.name))
+	var extless = fsPath.basename(file.name, fsPath.extname(file.name))
+	var dest = folder + '/' + slugify(extless)
 
 	that._service.canWrite(req.user, dest)
 	.then(function(can) {
@@ -40,11 +40,8 @@ SceneController.prototype.canWriteUpload = function(req, res, next) {
 
 SceneController.prototype.upload = function(req, res, next) {
 	var that = this
-
 	var file = req.files.file
-	var folder = '/' + req.user.username + '/assets/scene'
-	var dest = folder + '/'+ fsPath.basename(file.name, fsPath.extname(file.name))
-
+	var sceneRoot = '/' + req.user.username + '/assets/scene'
 	var ext = fsPath.extname(file.name.toLowerCase())
 
 	if (allowedExtensions.indexOf(ext) === -1) {
@@ -53,7 +50,7 @@ SceneController.prototype.upload = function(req, res, next) {
 	}
 
 	new SceneProcessor(this._fs)
-		.handleUpload(file, dest)
+		.handleUpload(file, sceneRoot)
 		.then(function(info) {
 			fs.unlink(file.path)
 
@@ -63,6 +60,7 @@ SceneController.prototype.upload = function(req, res, next) {
 			})
 		})
 		.catch(function(err) {
+			console.error(err, err.stack)
 			fs.unlink(file.path)
 			next(err)
 		})

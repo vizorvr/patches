@@ -1,16 +1,52 @@
-{{!--
-<div class="secondarynav">
-	<div class="in">
-		{{> srv/userpage/nav }}
-	</div>
-</div>
---}}
-<div id="contentcontainer" class="in">
-<h2 class="decorative"><span>{{profile.username}}'s Files</span></h2>
+{{#*inline 'userEmpty'}}
+    <p class="explain emptylist">
+        {{#eq profile.username user.username}}
+            This is where your projects will be listed.
+        {{else}}
+            {{profile.username}} has not saved any projects yet.
+        {{/eq}}
+    </p>
+{{/inline}}
 
-<section class="list assets clearfix noselect">
-	{{#each graphs}}
-		{{> assets/graphCard profile=../profile}}
-	{{/each}}
-</section>
+<div id="contentcontainer" class="in">
+    {{#if graphs}}
+        {{>browse/graphList . list=graphs class='public'}}
+    {{else}}
+        {{#if isSummaryPage}}
+            {{!-- front page (summary) --}}
+            {{>browse/graphList . list=publicGraphs
+                class='public'
+                withNew=(equals profile.username user.username)
+                newAssetTypeText='Public Project'
+                withMoreLink=publicHasMoreLink moreLinkText='All public projects' moreLinkHref='?public=1'
+            }}
+            {{>browse/graphList . list=privateGraphs
+                class='private'
+                withNew=(equals profile.username user.username)
+                newAssetTypeText='Private Project'
+                withMoreLink=privateHasMoreLink moreLinkText='All private projects' moreLinkHref='?public=0'
+            }}
+        {{else}}
+            {{#unless (or publicGraphs privateGraphs)}}
+                {{>userEmpty}}
+            {{/unless}}
+
+            {{!-- filtered public/private lists --}}
+            {{#if publicGraphs}}
+                {{>browse/graphList . list=publicGraphs
+                    class='public'
+                    withNew=(equals profile.username user.username)
+                    newAssetTypeText='Public Project'
+                }}
+            {{/if}}
+
+            {{#if privateGraphs}}
+                {{>browse/graphList . list=privateGraphs
+                    class='private'
+                    withNew=(equals profile.username user.username)
+                    newAssetTypeText='Private Project'
+                }}
+            {{/if}}
+        {{/if}}
+    {{/if}}
 </div>

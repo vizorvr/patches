@@ -1,0 +1,57 @@
+{{!-- used more than once on same page, mind id-s --}}
+<div class="searchbox">
+	<svg class="icon-search"><use xlink:href="#icon-search"></use></svg>
+	<input
+		id="search_{{controlId}}"
+		class="form-control"
+		type="text"
+		placeholder="{{searchPlaceholderText}}"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+        spellcheck="false"
+		onfocus="this.placeholder = ''" 
+		onblur="this.placeholder = '{{searchPlaceholderText}}'"/>
+</div>
+
+<div class="patch-list-container">
+	<div class="patch-list-content scrollbar">
+		<div class="patch-result patch-list-contained-box"></div>
+
+		<div class="panel-group selectControl patch-list-contained-box" id="{{controlId}}">
+			{{#each categories}}
+			<div class="panel panel-default">
+
+				<div class="panel-heading collapsed"
+					data-toggle="collapse"
+					data-category="{{@key}}"
+					data-parent="#{{../controlId}}"
+					href="#cscat{{../controlId}}-{{@index}}">
+						{{@key}}
+				</div>
+			
+				<div id="cscat{{../controlId}}-{{@index}}"
+					class="panel-collapse collapse">
+
+					<div class="panel-body">
+						<ul>
+							{{#each this}}
+							<li 
+								data-category="{{category}}"
+								data-path="{{path}}"
+								data-type="{{type}}"
+							>
+							<div class="score"></div>
+							<span class="title">{{title}}</span>
+							</li>
+							{{/each}}
+						</ul>
+					</div>
+				</div>
+			</div>
+			{{/each}}
+
+		</div>
+	</div>
+
+</div>

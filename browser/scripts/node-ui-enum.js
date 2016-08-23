@@ -40,6 +40,8 @@ var uiNodeCategoryMap = {};
 		'graph': 			c.compound,
 		'loop': 			c.compound,
 		'array_function': 	c.compound,
+		'entity': 			c.compound,
+		'entity_component': c.compound,
 
 		'three_scene' : 				c.environment,
 		'three_environment_settings' : 	c.environment,

@@ -3,6 +3,7 @@ var fs = require('fs')
 var when = require('when')
 var GraphAnalyser = require('../../common/graphAnalyser').GraphAnalyser
 
+var componentJson = fs.readFileSync(__dirname+'/../fixtures/component-rotation-y.json')
 var graphJson = fs.readFileSync(__dirname+'/../fixtures/loaders.json')
 
 describe('Graph analysis', function() {
@@ -30,6 +31,14 @@ describe('Graph analysis', function() {
 		ga.analyseJson(graphJson)
 		.then(function(stat) {
 			assert.equal(stat.hasAudio, true)
+			done()
+		})
+	})
+
+	it('finds component', function(done) {
+		ga.analyseJson(componentJson)
+		.then(function(stat) {
+			assert.equal(stat.type, 'entity_component')
 			done()
 		})
 	})

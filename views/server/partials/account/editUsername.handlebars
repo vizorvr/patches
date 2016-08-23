@@ -1,0 +1,19 @@
+{{!-- context is (user) profile --}}
+<form id="editUsernameForm" action="/account/profile" class="panel" method="POST">
+    <input type="hidden" name="_csrf" value={{_csrf}}>
+    {{#with profile}}<fieldset>
+        <div class="form-input" id="f_username">
+            <input type="url" id="usernameinput" name="username" placeholder="username" value="{{username}}" />
+            <button class="" type="submit" data-svgref="icon-go">Update</button>
+            <p class="explain">
+                Usernames must be all lowercase.
+                They cannot be longer than 21 characters and can only contain letters, numbers, periods, hyphens, and underscores.
+                Most people choose to use their first name, last name, nickname, or some combination of those with initials.
+            </p>
+            <p class="explain">
+                <b>Note:</b> this will change the addresses (URLs) of all your published projects.
+            </p>
+            {{!-- <span class="message"></span> --}}
+        </div>
+    </fieldset>{{/with}}
+</form>

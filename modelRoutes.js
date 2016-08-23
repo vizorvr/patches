@@ -31,7 +31,7 @@ function modelRoutes(
 	var GraphController = require('./controllers/graphController');
 	var ImageController = require('./controllers/imageController');
 	var SceneController = require('./controllers/sceneController');
-	var PresetController = require('./controllers/presetController');
+	var PatchController = require('./controllers/patchController');
 
 	var AssetService = require('./services/assetService');
 	var GraphService = require('./services/graphService');
@@ -72,8 +72,8 @@ function modelRoutes(
 		gfs
 	);
 
-	var presetController = new PresetController(
-		new AssetService(require('./models/preset')),
+	var patchController = new PatchController(
+		new AssetService(require('./models/patch')),
 		gfs
 	);
 
@@ -92,7 +92,7 @@ function modelRoutes(
 		video: videoController,
 		json: jsonController,
 
-		preset: presetController
+		patch: patchController
 	}
 
 	function getController(req, res, next) {
@@ -242,12 +242,13 @@ function modelRoutes(
 	})
 
 	// -----
-	// Preset routes
-	app.get('/:username/presets', function(req, res, next) {
-		presetController.findByCreatorName(req, res, next);
+	// User Patch routes
+	app.get('/:username/patches', function(req, res, next) {
+		patchController.findByCreatorName(req, res, next);
 	})
-	app.post('/:username/presets', function(req, res, next) {
-		presetController.save(req, res, next);
+
+	app.post('/:username/patches', function(req, res, next) {
+		patchController.save(req, res, next);
 	})
 
 	// -----
@@ -290,9 +291,17 @@ function modelRoutes(
 
 	// GET /fthr/dunes-world -- PLAYER
 	app.get('/:username/:graph', function(req, res, next) {
-		req.params.path = '/'+req.params.username+'/'+req.params.graph;
-		graphController.graphLanding(req, res, next);
-	});
+		req.params.path = '/'+req.params.username+'/'+req.params.graph
+		graphController.graphLanding(req, res, next)
+	})
+
+	// POST /fthr/dunes-world -- USERPAGE
+	app.post('/:username/:graph',
+		passportConf.isAuthenticated,
+		function(req, res, next) {
+			req.params.path = '/'+req.params.username+'/'+req.params.graph
+			graphController.graphModify(req, res, next)
+		})
 
 	// DELETE /fthr/dunes-world
 	app.delete('/:username/:graph', 

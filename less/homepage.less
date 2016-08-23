@@ -1,56 +1,9 @@
-@bgcolor-home-button: darken(@bg-bright, 5%);
-@bgcolor-overlay: rgba(0,0,0,0.9);
 
-@color-formcontrol-home: #eee;
-@bordercolor-formcontrol-home: #aaa;
-
-@bgcolor-home-section1: rgb(47,146,238);
-@bgcolor-home-section2: rgb(28,128,221);
-@bgcolor-home-section3: rgb(20,114,201);
-@bgcolor-home-section4: rgb(15,97,173);
-@bgcolor-home-section5: rgb(5,73,140);
-@bgcolor-home-section6: rgb(38,44,61);
-
-@bgcolor-home-intro:		@bgcolor-home-section1;
-@bgcolor-home-whyusevizor:	@bgcolor-home-section2;
-@bgcolor-home-howitworks:	@bgcolor-home-section3;
-@bgcolor-home-meettheteam:	@bgcolor-home-section4;
-@bgcolor-home-getstarted:	@bgcolor-home-section5;
-@bgcolor-home-footer:		#171717;
-
-@color-placeholder-home:	rgba(200,200,200,1);
-@color-placeholder-home-dim:	rgba(150,150,150,0.5);
-
-@btn-border-radius-small: 6px;
-
-@x-pad-col : 60px;
-
-@threshold-mobile: 550px;
-@threshold-tablet: 1025px;
-
-@letter-spacing-home:	0.1pt;
-@letter-spacing-home-normal: 0.5px;
-
-@max-width-desktop: 960px;
-@max-width-tablet: 96%;
-@max-width-phone: 98%;
 
 
 body.bHome {
   margin:0 !important;
   padding:0 !important;
-  a {
-	color: white;
-  }
-  header button, header form button, header a.btn {
-	border: 1px solid #fff;
-	background: none;
-	vertical-align: middle;
-	line-height: 1em;
-	&:hover {
-	  border-color: #fff;
-	}
-  }
 }
 
 // mind the fonts on non-retina Safari
@@ -68,7 +21,7 @@ body.bHome.uaSafari[data-dpr="1"] {
 		font-weight: 700;
 	  }
 	  a {
-		font-weight: 600;
+		font-weight: 500;
 	  }
 	}
   }
@@ -89,89 +42,18 @@ body.bHome.bAbout #contentwrap a.navAbout {
 }
 
 body.bHome #contentwrap {
+  header {
+	height: 100px;
+  }
+
   a.cta:hover, a.cta:active {
 	color: inherit;
   }
-  footer {
-	nav {
-	  text-align: center;
-	  &.links {
-		a {
-		  text-decoration: none;
-		  text-transform: uppercase;
-		  letter-spacing: 2px;
-		  font-size: 16px;
-		  color: #9e9e9e;
-		  &:hover {
-			.selectedcolor
-		  }
-		  &+a {
-			margin-left: 1em;
-		  }
-		}
-	  }
-	  a.btn {
-		width: 28px;
-		padding: 2px 4px 6px 4px;
-		&+a.btn {
-		  margin-left: 38px;
-		}
-		background: none;
-		border: 0;
-		>svg {
-		  vertical-align: middle;
-		}
-		&:hover {
-		  border: 0;
-		}
-		&:active {
-		  background: none;
-		}
-		&.email svg {
-		  width: 20px;  height: 16px;
-		}
-		&.twitter svg {
-		  width: 23px;  height: 18px;
-		}
-		&.facebook svg {
-		  width: 13px;  height: 24px;
-		}
-		&.github svg {
-		  width: 23px;  height: 20px;
-		}
-		&.angellist svg {
-		  width: 14px;  height: 20px;
-		}
-		&.svg svg {
-		  fill: #c3c3c3;
-		  stroke: none;
-		}
-		&.svg:hover svg {
-		  fill: #5199d2;
-		}
-	  }
 
-	}
-  }
 }
 
 
 
-body.bHome.layoutMobile #contentwrap {
-  footer {
-	nav {
-	  &.links {
-		a {
-		  letter-spacing: 1.75px;
-		  font-size: 14px;
-		  &+a {
-			margin-left: 1rem;
-		  }
-		}
-	  }
-	}
-  }
-}
 
 body.bHome.deviceDesktop.layoutDesktop #contentwrap #getstarted #herotext>div a:hover {
   margin:0 1px;
@@ -179,7 +61,7 @@ body.bHome.deviceDesktop.layoutDesktop #contentwrap #getstarted #herotext>div a:
 }
 
 body.bHome.layoutTablet[data-dpr="1"] #contentwrap section#getstarted #herotext a.cta {
-  font-weight: 600;
+  font-weight: 500;
 }
 
 body.bHome #contentwrap {
@@ -232,7 +114,7 @@ body.bHome #contentwrap {
 	border-top: 1px solid #3b3b3b;
 	>div {
 	  margin: 10px auto;
-	  width: 950px;
+	  max-width: @max-width-desktop;
 	}
 	div.side-by-side {
 	  display: -webkit-flex;
@@ -251,9 +133,15 @@ body.bHome #contentwrap {
 	  flex: 0 0 100%;
 	  font-weight: 300;
 	  margin: 30px auto;
-	  width: 950px;
+	  max-width: @max-width-desktop;
 	}
   }
+}
+
+body.bHome #contentwrap {
+	.in article.graph.small:not(:first-of-type) {
+	  margin-left: 15px;
+	}
 }
 
 body.bHome.layoutTablet.deviceMobile.landscape #contentwrap {
@@ -272,11 +160,12 @@ body.bHome.layoutTablet.deviceMobile.landscape #contentwrap {
 }
 
 
+
 body.bHome.layoutMobile #contentwrap {
 	article.graph.small {
 	  	width: 375px;
-	  	max-width: 99%;
 	  	height: 216px;
+	  	max-width: 99%;
 		max-height: none;
 	}
   #featuredVR {
@@ -312,13 +201,6 @@ body.bHome.layoutMobile #contentwrap {
   }
 }
 
-body.bHome.layoutTablet #contentwrap header {
-  height: 60px;
-  nav {
-	padding: 15px 0 5px 0;
-	border-bottom: 0;
-  }
-}
 
 body.bHome.layoutTablet #contentwrap #featuredVR {
   div.side-by-side {
@@ -335,20 +217,12 @@ body.bHome #contentwrap {
   font-size: 11pt;
   color: #f7f7f7;
 
-  section div.in {
-	padding: 5px 0;
-  }
-
   .mobileonly, .launch-button.mobileonly {
 	display: none;
   }
 
   p {
 	margin-bottom: 1.5em;
-  }
-  button.nofx {
-	padding:0;
-	border: 0;
   }
 
   form input {
@@ -367,75 +241,9 @@ body.bHome #contentwrap {
 	  }
   }
 
-  header {
-	margin:0;
-	padding: 0;
-	height: 100px;
-	width: 100%;
 
-	nav {
-	  border-bottom: 1px solid #fff;
-	  padding: 20px 0px 10px 0px;
-	  margin-top:0;
-	}
-	nav>* {margin:0; padding:0;}
-
-	ul {	// top right links
-	  font-size: 100%;
-	  //letter-spacing: @letter-spacing-home;
-	  display: -webkit-flex;
-	  -webkit-justify-content: space-between;
-	  -webkit-align-items: center;
-	  -webkit-align-content: stretch;
-	  display: flex;
-	  justify-content: space-between;
-	  align-items: center;
-	  align-content: stretch;
-	  padding-left: 0;
-	  text-align: center;
-	  li {
-		-webkit-flex: 1;
-		flex: 1;
-		margin-left: 0;
-		padding-left: 0;
-		&.wider {
-		  -webkit-flex: 1.2;
-		  flex: 1.2;
-		}
-	  }
-	  li:last-of-type {
-		text-align: right;
-	  }
-	  li:first-of-type {
-		flex-shrink: 1;
-		flex-grow: 0.7;
-	  }
-	}
-	button.sign-btn, a.btn.sign-btn {
-	  width: auto;
-	  padding: 5px 15px;
-	  border-radius: @btn-border-radius-small;
-	  font-weight: @font-weight-home;
-	}
-	button+button, button+a.btn {margin-left:1em;}
-
-  }
   font-weight: @font-weight-home;
 
-  footer {
-	padding: 50px 0;
-	font-size: 120%;
-	h6#footerBrand {
-	  float:left;
-	  margin-top:0;
-	}
-	a {
-	  color: rgba(255,255,255,0.7);
-	  &:hover {
-	  	color: rgba(255,255,255,1);
-	  }
-	}
-  }
 
   section div.in form fieldset {
 	>div.form-input {
@@ -465,7 +273,7 @@ body.bHome #contentwrap {
 	margin:0;
   }
 
-  footer { background: @bgcolor-home-footer }
+
 
   .modal-footer {
 	padding-left: 0;
@@ -567,122 +375,6 @@ body.bHome #contentwrap {
 	  bottom: 12px;
   }
 
-  .overlay {
-	position: absolute;
-	padding: 0;
-	margin:0;
-	top:0;
-	bottom:0;
-	left:0;
-	right:0;
-	width: 100%;
-	height: 100%;
-	background: @bgcolor-overlay;
-	z-index: 100;
-  }
-
-  #brandTop {
-	svg {
-	  width: 100%;
-	  height: 100%;
-	}
-  }
-  
-  #brandBottom {
-	font-weight: 300;
-	color: #c3c3c3;
-	text-align: center;
-	span {
-	  display: block;
-	  margin-bottom: 20px;
-	}
-  }
-
-  footer {
-	padding: 90px 0;
-  }
-
-  #mobilemenu {
-	background: @bgcolor-home-footer;
-
-	#brandTop {
-	  margin:18px auto 0 auto;
-	}
-
-	section>h2:first-child {
-	  margin: 16px auto 0 auto;
-	  padding:0 !important;
-	}
-
-	div#menuContainer {
-	  position:absolute;
-	  top: 80px;
-	  bottom:50px;
-	  left:0;
-	  right:0;
-	  width:100%;
-	  border-top: 1px solid rgba(255,255,255,0.1);
-	  border-bottom: 1px solid rgba(255,255,255,0.1);
-	}
-	ul:first-of-type {
-	  float:left;
-	}
-	ul:last-of-type {
-	  float: right;
-	  border-left: 1px solid rgba(255,255,255,0.1);
-	}
-	ul {
-	  width: 50%;
-	  height: 100%;
-	  padding-left: 0;
-	  margin-left: 0;
-	  li {
-		height: 16.65%;
-		display: -webkit-flex;
-		-webkit-justify-content: space-between;
-		-webkit-position:relative;
-		display: flex;
-		justify-content:stretch;
-		position:relative;
-		a {
-		  letter-spacing: 1.75px;
-		  font-size: 16px;
-		  text-transform:uppercase;
-		  color: #c3c3c3;
-		  margin: auto 0;
-		  width: 100%;
-		  min-height: 2.5em;
-		  line-height: 2.5em;
-		  padding: 0 25px;
-		  font-weight: 300;
-		  &:hover {
-			text-decoration: none;
-		  }
-		}
-	  }
-	  li+li {
-		border-top: 1px solid rgba(255,255,255,0.1);
-	  }
-	}
-  } // /#mobileMenu
-
-  footer  {
-	.flexcolumns {
-	  max-width: 700px;
-	  width: 67%;
-	  float: right;
-	}
-	li {
-	  margin-bottom: 0.5em;
-	}
-  }
-
-
-  #brandTop {
-	float:left;
-	width: 70px;
-	height: 28px;
-  }
 
 
   h3.readmore a {
@@ -694,15 +386,9 @@ body.bHome #contentwrap {
 
 
   @media all and (min-width: (@max-width-desktop + 80)) {
-	div.in, footer>.in {
+	div.in {
 		max-width: @max-width-desktop + 40;
   	}
-	nav.in {
-	  max-width: @max-width-desktop - 5;
-	  margin-left: auto !important;
-	  margin-right: auto !important;
-	}
-
   }
 
   .tabletonly {display: none}
@@ -727,12 +413,6 @@ body.bHome #contentwrap {
 	}
 	*/
 
-	header {
-	  nav li {
-		letter-spacing: 0.25px;
-	  }
-	}
-
 	-webkit-font-smoothing: subpixel-antialiased;
 
 	.notablet {
@@ -740,32 +420,17 @@ body.bHome #contentwrap {
 	}
 
 
-	header nav {
-	  padding: 20px 0;
-	  ul {
-		width: 350px;
-		float: right;
-		font-size: 1.4rem;
-	  }
-	}
+
 
 
 	section {
-	  //padding: 60px 0;
 	  font-size: 1.25rem;
 	  h2 {
 		margin-bottom: 50px;
 	  }
-	  div.in {
-		padding-left: 5%;
-		padding-right: 5%;
-	  }
 	}
 
-	footer>div.in {
-	  padding-left: 5%;
-	  padding-right: 5%;
-	}
+
 
 	section#createandsharevr img,
 	section#whyusevizor .in >img
@@ -881,17 +546,9 @@ body.bHome #contentwrap {
 
 
 
-	header nav {
-	  max-width: 90%;
-	}
 
-	footer {
-	  font-size: 1.6rem;
 
-	  li {
-		margin-bottom: 1em;
-	  }
-	}
+
 
 
 
@@ -914,15 +571,6 @@ body.bHome #contentwrap {
 	  z-index: 1000;
 	}
 	*/
-
-	#brandTop {
-	  margin:-4px auto 0 auto;
-	  width: 80px;
-	  height: 30px;
-	}
-	header nav {
-	  border-bottom: 0;
-	}
 
 	section#getstarted {
 	  height: 420px;
@@ -1036,9 +684,6 @@ body.bHome #contentwrap {
 	  }
 	}
 
-	#brandTop {
-	 float:none;
-  	}
 
 
 	.mobileonly, .launch-button.mobileonly {
@@ -1108,36 +753,7 @@ body.bHome #contentwrap {
 	  }
 	}
 
-	footer {
-	  @hpf-left-pad: 45px;
-	  padding-top: 10px;
-	  font-size: 120%;
-	  >.in {
-		max-width: 100%;
-	  }
-	  h6#footerBrand {
-		float: none;
-		margin-left: @hpf-left-pad;
-		margin-bottom: 2rem;
-	  }
-	  div.flexcolumns {
-		padding-left: @hpf-left-pad;
-		border-top: 1px solid #000;
-		margin-left: 0px;
-		width: 100%;
-		float: none;
-		flex-wrap: wrap;
-		padding-top: 20px;
-		ul {
-		  -webkit-flex-basis: 100%;
-		  flex-basis: 100%;
-		}
-	  }
-	  li {
 
-	  }
-
-	}
 
   } // END MOBILE
 
@@ -1166,15 +782,6 @@ body.bHome #contentwrap {
 	  display: none !important;
 	}
 
-	#brandTop {
-	  margin-left: 0;
-	}
-
-	header nav ul {
-	  width: 442px;
-	  padding-left: 0;
-	  float:right;
-	}
 
 	section#createandsharevr {
 	  img {
@@ -1199,13 +806,9 @@ body.bHome #contentwrap {
 		}
 	  }
 	}
-	section>div.in, footer>div.in {
+	section>div.in {
 	  padding-left: 20px;
 	  padding-right: 20px;
-	}
-	nav.in {
-	  margin-left: 20px;
-	  margin-right: 20px;
 	}
 
 	section#whyusevizor {
@@ -1270,30 +873,30 @@ body.bHome #contentwrap {
 	  padding: 34px 0px 28px;
 	}
 
-	footer {
-	  padding: 70px 0;
-	}
+
   } // END DESKTOP
 
 } // body.bHome
 
-body.bHome.bIndex #contentwrap header {
+body.bHome:not(.bAbout) #contentwrap header {
   position: absolute;
   top:0;
   left:0;
   right:0;
-  z-index: 10;
+  z-index: 100;
 }
 
-
-
-body.bHome.layoutTablet #contentwrap {
+body.bMain.layoutTablet #contentwrap {
   margin: 0 auto;
 
-  section>div.in, #featuredVR>div, #featuredVR>h2, header>nav {
-	  width: 705px;
-	  max-width: 99%;
+  #featuredVR>div, #featuredVR>h2 {
+	margin-left: auto;
+	margin-right: auto;
   }
+
+}
+
+body.bHome.layoutTablet #contentwrap {
 
   section#getstarted {
 	position: relative;
@@ -1435,6 +1038,9 @@ body.bAbout #contentwrap {
 	  flex: 1;
 	  text-align: center;
 	  margin-top: 50px;
+	  a {
+		color: white;
+	  }
 	  a.svg {
 		display: block;
 		font-size: 19px;

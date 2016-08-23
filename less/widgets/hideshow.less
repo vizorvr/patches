@@ -1,0 +1,24 @@
+*[data-hideshow='hide']:not([data-hideshow-target])
+{
+  display: none;
+}
+
+*[data-hideshow='show']:not([data-hideshow-target])
+{
+  display: block;
+}
+
+*.hideshow-inline[data-hideshow='show']:not([data-hideshow-target])
+{
+  display: inline;
+}
+
+*.hideshow-inline-block[data-hideshow='show']:not([data-hideshow-target])
+{
+  display: inline-block;
+}
+
+*.hideshow-flex[data-hideshow='show']:not([data-hideshow-target])
+{
+  display: flex;
+}

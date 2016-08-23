@@ -2,6 +2,10 @@
 
 body.bEditor {
 
+  #top-header-logo a:hover svg {
+	fill: white;
+  }
+
   &.inVR {
 	#editor-header, #progressbar, #info-pane, #editor-footer, #drag-overlay, >div.popover {
 	  display: none;
@@ -36,6 +40,7 @@ body.bEditor {
 	top: @height-editor-header;
 	bottom: @height-editor-footer;
 	overflow: hidden;
+	z-index: 2;
   }
 
   #canvas_parent {
@@ -498,4 +503,3 @@ div.modal.modal_publish .modal-content {
 	}
   }
 }
-

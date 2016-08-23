@@ -1,3 +1,22 @@
+{{#*inline 'teamMember'}}
+<div class="team-member">
+	<div class="member-pic">
+		<img src="/images/home/{{image}}" alt="{{name}}'s photo" />
+		{{#if link}}
+			<div class="pic-rollover">
+				{{#if linkIcon}}
+					<svg class="icon"><use xlink:href="#{{linkIcon}}"></use></svg>
+				{{else}}
+					<svg class="icon"><use xlink:href="#icon-www"></use></svg>
+				{{/if}}
+			</div>
+		{{/if}}
+	</div>
+	<h4><a href="{{link}}" target="_blank" title="View info" class="person-name profile-link">{{name}}</a></h4>
+	<span class="person-position">{{position}}</span>
+</div>
+{{/inline}}
+
 <section id="vizorteam" class="about-team">
 	<div class="in">
 		<h2>Meet the Team</h2>
@@ -6,76 +25,24 @@
             and team members in England and Australia.
         </p>
 		<div class="team-container">
-			<div class="team-member">
-				<div class="member-pic">
-					<img src="/images/home/antti.jpg" alt="Antti's photo" />
-					<div class="pic-rollover">
-						<svg class="icon"><use xlink:href="#icon-linkedin"></use></svg>
-					</div>
-				</div>
-				<h4><a href="https://fi.linkedin.com/in/anttijadertpolm" target="_blank" title="View info" class="person-name profile-link">Antti Jäderholm</a></h4>
-				<span class="person-position">CEO</span>
-			</div>
-            <div class="team-member">
-				<div class="member-pic">
-					<img src="/images/home/annarosa.jpg" alt="Anna Rosa's photo" />
-					<div class="pic-rollover">
-						<svg class="icon"><use xlink:href="#icon-linkedin"></use></svg>
-					</div>
-				</div>
-				<h4><a href="https://linkedin.com/in/annarosa" target="_blank" title="View info" class="person-name profile-link">Anna Rosa Lappalainen</a></h4>
-				<span class="person-position">COO</span>
-			</div>
-			<div class="team-member">
-				<div class="member-pic">
-					<img src="/images/home/jaakko.jpg" alt="Jaakko's photo" />
-					<div class="pic-rollover">
-						<svg class="icon"><use xlink:href="#icon-linkedin"></use></svg>
-					</div>
-				</div>
-				<h4><a href="http://linkedin.com/in/kschzt" target="_blank" title="View info" class="person-name profile-link">Jaakko Manninen</a></h4>
-				<span class="person-position">CTO</span>
-			</div>
-			<div class="team-member">
-				<div class="member-pic">
-					<img src="/images/home/kaarlo.jpg" alt="Kaarlo's photo" />
-					<div class="pic-rollover">
-						<svg class="icon"><use xlink:href="#icon-linkedin"></use></svg>
-					</div>
-				</div>
-				<h4><a href="http://linkedin.com/in/kaarlo" target="_blank" title="View info" class="person-name profile-link">Kaarlo Kananen</a></h4>
-				<span class="person-position">VP Product Development</span>
-			</div>
-			<div class="team-member">
-				<div class="member-pic">
-					<img src="/images/home/matt.jpg" alt="Matt's photo" />
-					<div class="pic-rollover">
-						<svg class="icon"><use xlink:href="#icon-www"></use></svg>
-					</div>
-				</div>
-				<h4><a href="http://www.idealogue.io/" target="_blank" title="View info" class="person-name profile-link">Matt Innes</a></h4>
-				<span class="person-position">Creative Director</span>
-			</div>
-			<div class="team-member">
-				<div class="member-pic">
-					<img src="/images/home/georgi.jpg" alt="Georgi's photo" />
-					<div class="pic-rollover">
-						<svg class="icon"><use xlink:href="#icon-linkedin"></use></svg>
-					</div>
-				</div>
-				<h4><a href="http://linkedin.com/in/gmarinov" target="_blank" title="View info" class="person-name profile-link">Georgi Marinov</a></h4>
-				<span class="person-position">Frontend Lead</span>
-			</div>
-            <div class="team-member">
-				<div class="member-pic">
-					<img src="/images/home/amiee.jpg" alt="Amiee's photo" />
-					<div class="pic-rollover">
-						<svg class="icon"><use xlink:href="#icon-twitter"></use></svg>
-					</div>
-				</div>
-				<h4><a href="http://twitter.com/Vizor_VR" target="_blank" title="View info" class="person-name profile-link">Amiee Hibbert</a></h4>
-				<span class="person-position">Community Manager</span>
-			</div>
+			{{>teamMember name='Kaarlo Kananen' image='kaarlo.jpg' position='CEO'
+				link='https://www.linkedin.com/in/kaarlo' linkIcon='icon-linkedin'}}
+
+			{{>teamMember name='Antti Jäderholm' image='antti.jpg' position='CPO'
+				link='https://fi.linkedin.com/in/anttijadertpolm' linkIcon='icon-linkedin' }}
+
+			{{>teamMember name='Anna Rosa Lappalainen' image='annarosa.jpg' position='COO'
+				link='https://www.linkedin.com/in/annarosa' linkIcon='icon-linkedin'}}
+
+			{{>teamMember name='Jaakko Manninen' image='jaakko.jpg' position='CTO'
+				link='https://www.linkedin.com/in/kschzt' linkIcon='icon-linkedin'}}
+
+			{{>teamMember name='Matt Innes' image='matt.jpg' position='Creative Director'
+				link='http://www.idealogue.io/' linkIcon='icon-www'}}
+
+			{{>teamMember name='Georgi Marinov' image='georgi.jpg' position='Frontend Lead'
+				link='https://www.linkedin.com/in/gmarinov' linkIcon='icon-linkedin'}}
+
 		</div>
 	</div>
 </section>

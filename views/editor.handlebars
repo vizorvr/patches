@@ -4,11 +4,19 @@
 		<div style="padding-top: 4px;">This page requires javascript in order to display properly. If you're running a script blocker - such as NoScript - please whitelist this page. If you have disabled javascript in your browser, please enable it and reload (F5).</div>
 	</div>
 </noscript>
+{{> srv/siteSvgSprite}}
 {{> srv/editorSvgSprite}}
 <header id="editor-header" class="clearfix">
 	<div class="editor-header clearfix">
 		<div id="top-header-logo">
-			<svg class="vizor-top-logo"><use xlink:href="#vizor-top-logo"></use></svg>
+			<a
+                {{#if user.username}}
+                    href="/{{user.username}}" title="Back to your profile page"
+                {{else}}
+                    href="/" title="Back to the homepage"
+                {{/if}}
+
+            ><svg class="vizor-top-logo"><use xlink:href="#vizor-top-logo"></use></svg></a>
 		</div>
 		<div class="menu-bar">
 			<div class="buttons button-group" id="grpFileIO" >
@@ -37,7 +45,7 @@
 
 			<div class="buttons button-group" id="grpToggles">
                 <button class="svg btn" id="btn-inspector" data-svgref="icon-inspector"><svg /> Inspector</button>
-				<button class="btn svg" id="btn-presets" data-svgref="icon-presets"><svg /> Patches</button>
+				<button class="btn svg" id="btn-patches" data-svgref="icon-patches"><svg /> Patches</button>
 				{{!-- <button class="btn svg" id="btn-graph" data-svgref="icon-graph"><svg /> Graph</button>
 					#676 <button class="btn" id="btn-assets" data-svgref="icon-assets"><svg /> Assets</button> --}}
 				<button class="btn svg" id="btn-chat-display" data-svgref="icon-chat"><svg /> Chat</button>
@@ -48,7 +56,10 @@
 
 			<div class="buttons button-group" id="grpElse">
 				<button class="btn svg" id="btn-publish" data-svgref="icon-publish"><svg /> Publish</button>
-				<div id="account" class="button">{{!-- account-controller populates this --}}</div>
+				<button class="btn svg" id="btn-help" data-svgref="icon-button-help"><svg /> Help</button>
+				<div id="account" class="button">
+                    {{>userpulldown user}}
+                </div>
 			</div>
 		</div>
 	</div>
@@ -58,7 +69,11 @@
 			<button id="programModeBtn" class="svg" data-svgref="icon-mode-patch"><svg />Program</button>
 		</div>
 		<div id="graphNameLabel" class="auto-editable">
-			(untitled)
+			{{#if graph}}
+                {{graph.name}}
+            {{else}}
+                (untitled)
+			{{/if}}
 		</div>
 		<div id="graphSizeLabel"></div>
 		<div id="breadcrumb"></div>
@@ -103,22 +118,22 @@
 		<div class="tab-content"></div>
 </div>
 
-<div class="presets-block vp-library floating-box uiopen" id="presets-lib">
+<div class="patches-block vp-library floating-box uiopen" id="patches-lib">
 		<div class="block-header">
-			<button class="toggle-button" id="presets-toggle" type="button">
+			<button class="toggle-button" id="patches-toggle" type="button">
 				<svg class="icon-arrow-vertical"><use xlink:href="#icon-arrow-vertical"></use></svg>
 			</button>
 			<ul class="nav nav-tabs">
 				<li><a href="#objects">Objects</a></li>
-				<li><a href="#presets">Patches</a></li>
+				<li><a href="#patches">Patches</a></li>
 				{{!-- <li><a href="#graph">Tree</a></li> --}}
 			</ul>
-			<button class="close-button" id="presets-close" type="button">
+			<button class="close-button" id="patches-close" type="button">
 				<svg class="icon-assets-close"><use xlink:href="#icon-close"></use></svg>
 			</button>
 		</div>
 		<div class="tab-content">
-			<div class="tab-pane active" id="presets">
+			<div class="tab-pane active" id="patches">
 			</div>
 			<div class="tab-pane" id="objects">
 			</div>
@@ -215,14 +230,6 @@
 			</button>
 		</li>
 
-		{{!-- #694
-		<li>
-			<button class="btn" id="btn-v3" data-toggle="popover" data-placement="top" title="View 3">
-				<svg class="icon-vr"><use xlink:href="#icon-view-3"></use></svg>
-			</button>
-		</li>
-		--}}
-
 	</ul>
 </footer>
 <div id="drag-overlay">
@@ -244,6 +251,7 @@
 	boot.hasEdits = {{hasEdits}}
 
 	window.Vizor = {
+        pageObjects: {graphs:{}, profiles:{}},
 		hideWebVRButton: true,
 		isEditor: true,
 		releaseMode: {{releaseMode}},
@@ -252,11 +260,7 @@
 	}
 
 	{{#if graph}}
-		boot.graph = {
-			path: '{{graph.path}}',
-			url: '{{graph.url}}'
-		}
-
+        boot.graph = {{{json graph}}}
 		boot.graphUrl = boot.graph.url
 	{{/if}}
 
@@ -272,19 +276,7 @@
 		}
 
 		{{#if user.username}}
-			E2.models.user.set({
-				id: '{{user._id}}',
-				name: '{{user.name}}',
-				username: '{{user.username}}',
-				email: '{{user.email}}',
-				avatar: '{{user.avatar}}',
-				gravatar: '{{{user.gravatar}}}',
-				stats: {
-					views: {{user.stats.views}},
-					projects: {{user.stats.projects}}
-				}
-			})
-
+            E2.models.user.set({{{json user}}})
 			mixpanel.identify('{{user.username}}')
 		{{/if}}
 

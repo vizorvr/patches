@@ -34,7 +34,7 @@ global.Node.prototype.destroy_ui = function(){}
 global.Registers = function() {
 	this.serialise = function(){}
 }
-global.PresetManager = function() {}
+global.PatchManager = function() {}
 require('../../scripts/commands/graphEditCommands')
 global.UndoManager = require('../../scripts/commands/undoManager.js')
 global.GraphApi = require('../../scripts/graphApi.js')

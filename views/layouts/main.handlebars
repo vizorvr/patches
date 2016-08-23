@@ -57,7 +57,11 @@
 	<script src="/scripts/account-controller.js"></script>
 	<script src="/scripts/ui/uiDragAwareHelper.js"></script>
 	<script src="/scripts/ui-minislides.js"></script>
+	<script src="/scripts/ui/pageStore.js"></script>
 	<script src="/scripts/ui-site.js"></script>
+	<script src="/scripts/ui/xhrForm.js"></script>
+	<script src="/scripts/ui/ui-cards.js"></script>
+	<script type="text/javascript" src="/scripts/ui/tabbed.js"></script>
 
     <!-- end bundler -->
 
@@ -66,50 +70,56 @@
 	{{/each}}{{/if}}
 
 	<script>
-		window.Vizor = {
-			hideWebVRButton: true,
-			autoplay: true
-		}
+        window.Vizor = {
+            pageObjects: {graphs:{}, profiles:{}},
+            hideWebVRButton: true,
+            autoplay: true
+        }
 
 		jQuery(document).ready(function(){
 			(function(){
 				{{{templateCache}}}
 			}).apply(window)
 
-			if (typeof E2.models === 'undefined') 
+
+			if (typeof E2.models === 'undefined')
 				E2.models = {}
 
 			if (typeof E2.controllers === 'undefined')
 				E2.controllers = {}
 
-			E2.models.user = new User({})
-
-			if ('{{user.username}}' !== '') {
-				E2.models.user.set( {
-					id: '{{user._id}}',
-					name: '{{user.name}}',
-					username: '{{user.username}}',
-					gravatar: '{{{user.gravatar}}}',
-					email: '{{user.email}}'
-				})
-			}
+            E2.models.user = new User({})
+            {{#if user.username}}
+                E2.models.user.set({{{json user}}})
+            {{/if}}
 
 			E2.controllers.account = new AccountController()
-		})
+		});
     </script>
 
     <script>{{> mixpanel}}</script>
 </head>
 
-<body class="bMain {{meta.bodyclass}} {{extraClasses}}">
+<body id="top_" class="bMain {{meta.bodyclass}} {{extraClasses}}">
 	{{> srv/gtm}}
 	{{> srv/siteSvgSprite }}
 
-	{{#unless meta.noheader}}
-    <header>
-		{{> navbar}}
-    </header>
-	{{/unless}}
+    {{!--
+        header: false   = noheader
+        header: any     = custom header
+        (header: null    = default header)
+
+        footer: false, null = nofooter
+        footer: any = custom footer
+
+    --}}
+    {{#not-eq meta.header false}}
+        {{#if meta.header}}
+           {{#with meta}}{{> (lookup . 'header') .. }}{{/with}}
+        {{else}}
+            {{> srv/navbar}}
+        {{/if}}
+    {{/not-eq}}
 
 	{{> flash}}
 
@@ -123,15 +133,13 @@
           {{{body}}}
     </div>
 
-	{{!-- future use
+    {{#not-eq meta.footer false}}
+        {{#if meta.footer}}
+           {{#with meta}}{{> (lookup . 'footer') .. }}{{/with}}
+        {{else}}
 
-	{{#unless meta.nofooter}}
-    <footer>
-        {{ > footer }}
-    </footer>
-    {{/unless}}
-
-    --}}
+        {{/if}}
+    {{/not-eq}}
 
 </body>
 </html>

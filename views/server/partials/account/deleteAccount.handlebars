@@ -1,0 +1,14 @@
+<!-- Delete Account Form -->
+  <form action="/account/delete" method="POST">
+      {{!-- keep p.explain first for css --}}
+      <p class="explain">Note: You do not need to delete your account if you just want to change your
+          email address or username. <br />
+          Please keep in mind that deleting your account is irreversible. It will also sign you out.</p>
+      <button type="submit" class="btn svg warn action delete requireconfirm" data-svgref="icon-go"
+              data-confirmtext="Are you sure you wish to delete your account? This is IRREVERSIBLE!"
+              onclick="return confirm('Are you sure you wish to delete your account? This is IRREVERSIBLE!');">
+        Delete my account
+      </button>
+      <input type="hidden" name="_csrf" value={{_csrf}}>
+  </form>
+  <!-- / Delete Account form -->

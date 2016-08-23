@@ -1,74 +1,9 @@
 (function() {
+
 var GraphPlugin = E2.plugins.graph = function(core) {
-	SubGraphPlugin.apply(this, arguments)
-
-	this.desc = 'Encapsulate a nested graph into- and out of which arbitrary data can be routed and the encapsulated logic. Add input / output proxies inside the graph to feed data in / out of the graph.'
-	
-	this.input_slots = []
-	
-	this.output_slots = []
-	
-	this.state = {
-		always_update:  true,
-		input_sids:     {},
-		output_sids:    {}
-	}
-		
-	this.is_reset = true
-
+	AbstractGraphPlugin.apply(this, arguments)
 }
 
-GraphPlugin.prototype = Object.create(SubGraphPlugin.prototype)
-GraphPlugin.prototype.constructor = GraphPlugin
-
-GraphPlugin.prototype.getInspectorProperties = function() {
-	return {
-		always_update : {
-			dt : E2.dt.BOOL,
-			label : 'Always update'
-		}
-	}
-}
-
-GraphPlugin.prototype.drilldown = function() {
-	return NodeUI.drilldown(this);
-}
-
-GraphPlugin.prototype.update_input = function(slot, data) {
-	if (slot.uid === undefined) {
-		console.log('graph.plugin undefined uid')
-	} else {
-		this.input_nodes[slot.uid].plugin.input_updated(data)
-	}
-}
-
-GraphPlugin.prototype.update_state = function(updateContext) {
-	this.updated = false
-	this.updated_sids.length = 0
-
-	if(this.graph) {
-		if(this.graph.update(updateContext) && this.graph === E2.app.player.core.active_graph)
-			E2.app.updateCanvas(false)
-	}
-}
-
-GraphPlugin.prototype.state_changed = function(ui) {
-	var core = this.core
-	var node = this.parent_node
-	var self = this
-	
-	// Only rebuild the node lists during post-load patch up of the graph, 
-	// during which 'ui' will be null. Otherwise the lists would have been rebuilt 
-	// every time we switch to the graph containing this node in the editor.
-	if (ui) {
-		// Decorate the auto generated dom base element with an
-		// additional class to allow custom styling.
-		node.ui.dom.addClass('graph')
-		return
-	}
-	
-	this.setupProxies()
-}
-
+GraphPlugin.prototype = Object.create(AbstractGraphPlugin.prototype)
 
 })()

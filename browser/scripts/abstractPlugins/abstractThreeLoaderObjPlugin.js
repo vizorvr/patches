@@ -35,16 +35,16 @@ AbstractThreeLoaderObjPlugin.prototype.onObjLoaded = function(geoms, mats) {
 
 	for (var i = 0; i < this.geometries.length; ++i) {
 		var bufferGeometryHasVtxNormals =
-				this.geometries[i] instanceof THREE.BufferGeometry &&
-				this.geometries[i].getAttribute('normal') !== undefined
+			this.geometries[i] instanceof THREE.BufferGeometry &&
+			this.geometries[i].getAttribute('normal') !== undefined
 
 		var normalGeometryHasFaceNormals =
-				(this.geometries[i].faces && this.geometries[i].faces.length > 0 &&
-				this.geometries[i].faces[0].normal.lengthSq() !== 0)
+			(this.geometries[i].faces && this.geometries[i].faces.length > 0 &&
+			this.geometries[i].faces[0].normal.lengthSq() !== 0)
 
 		var normalGeometryHasVtxNormals =
-				(this.geometries[i].faces && this.geometries[i].faces.length > 0 &&
-				this.geometries[i].faces[0].vertexNormals.length > 0)
+			(this.geometries[i].faces && this.geometries[i].faces.length > 0 &&
+			this.geometries[i].faces[0].vertexNormals.length > 0)
 		
 		if (!bufferGeometryHasVtxNormals && !normalGeometryHasFaceNormals && !normalGeometryHasVtxNormals) {
 			this.geometries[i].computeVertexNormals(true)
@@ -57,7 +57,6 @@ AbstractThreeLoaderObjPlugin.prototype.onObjLoaded = function(geoms, mats) {
 }
 
 AbstractThreeLoaderObjPlugin.prototype.state_changed = function(ui) {
-	console.log('state_changed', this.state)
 	if (!this.state.url)
 		return
 
