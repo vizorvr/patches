@@ -1023,33 +1023,45 @@ button.svg>svg, a.btn.svg>svg {
 body.layoutMobile .nomobile,
 body.layoutTablet .notablet,
 body.layoutDesktop .nodesktop {
-  display: none;
+  display: none !important;
+}
+
+// prevent flash of device-specific content
+@media screen and (min-width: @threshold-mobile) {
+  .mobileonly {
+	display: none !important;
+  }
+}
+@media screen and (max-width: @threshold-mobile) {
+  .nomobile {
+	display: none !important;
+  }
 }
 
 body.deviceMobile .noDeviceMobile,
 body.deviceTablet .noDeviceTablet,
 body.deviceDesktop .noDeviceDesktop {
-  display: none;
+  display: none !important;
 }
 
 body {
   &.layoutTablet, &.layoutDesktop {
-	.mobileonly { display: none}
+	.mobileonly { display: none !important;}
   }
   &.layoutTablet, &.layoutMobile {
-	.desktoponly {display: none}
+	.desktoponly {display: none !important;}
   }
   &.layoutDesktop, &.layoutMobile {
-	.tabletonly { display: none}
+	.tabletonly { display: none !important;}
   }
   &.deviceTablet, &.deviceDesktop {
-	.mobileDeviceOnly { display: none}
+	.mobileDeviceOnly { display: none !important;}
   }
   &.deviceTablet, &.deviceMobile {
-	.desktopDeviceOnly {display: none}
+	.desktopDeviceOnly {display: none !important;}
   }
   &.deviceDesktop, &.deviceMobile {
-	.tabletDeviceOnly { display: none}
+	.tabletDeviceOnly { display: none !important;}
   }
   &.hasHMD {
 	#entervr {

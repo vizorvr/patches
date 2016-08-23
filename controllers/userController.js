@@ -261,6 +261,7 @@ exports.getAccount = function(req, res) {
 					title: 'Account Management',
 					bodyclass: 'bProfile',
 					header: 'srv/userpage/userpageHeader',
+					footer: 'srv/home/_footer',
 					scripts: [
 						helper.metaScript('site/accountpages.js')
 					]

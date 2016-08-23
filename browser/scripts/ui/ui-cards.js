@@ -96,3 +96,27 @@ VizorUI.findAssetCards = function(id) {
 VizorUI.findProfileCards = function(id) {
 	return document.querySelectorAll("div.user-profile[data-objectid='"+id+"']")
 }
+
+// only bound if device is touch-capable
+VizorUI.touchCardOverlay = function(e) {
+	/* @var this HTMLElement div */
+	var el = e.target
+	var that = this
+	// if focussed but the click is on something inside, then let it through
+	if (this.classList.contains('focus')) {
+		if ((el.tagName !== 'DIV') || !el.classList.contains('overlay')) {
+			return true
+		}
+	} else {
+		// stop this click occasionally going to child elements on mobile
+		e.stopPropagation()
+		e.preventDefault()
+	}
+
+	var focussed = document.querySelectorAll('article.card div.overlay.focus')
+	Array.prototype.forEach.call(focussed, function(overlay){
+		if (overlay !== that)
+			overlay.classList.remove('focus')
+	})
+	this.classList.toggle('focus')
+}

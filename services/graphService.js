@@ -41,13 +41,21 @@ GraphService.prototype.listWithPreviews = function() {
 	return dfd.promise
 }
 
-GraphService.prototype.publicRankedList = function() {
+GraphService.prototype.publicRankedList = function(offset, limit) {
 	var dfd = when.defer()
 
-	this._model
+	var query = this._model
 		.find({ private: false, deleted: false })
-		.select('_creator private owner name previewUrlSmall updatedAt stat')
-		.sort('-rank')
+		.sort({'rank': -1, 'updatedAt': -1})
+
+	if (offset)
+		query.skip(offset)
+
+	if (limit)
+	 	query.limit(limit)
+
+	query
+		.select('_creator private owner name previewUrlSmall updatedAt stat rank')
 		.exec(function(err, list)
 	{
 		if (err)

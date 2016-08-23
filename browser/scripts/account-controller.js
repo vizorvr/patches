@@ -192,7 +192,19 @@ AccountController.prototype.openForgotPasswordModal = function(dfd) {
 		event: 'forgotDialogOpened'
 	})
 
-	var $modal = VizorUI.modalOpen(forgotTemplate({modal:true}), 'Forgot password', 'nopad mForgotpassword');
+
+	var data = {
+		modal:true,
+		loggedIn: false,
+		email: ''
+	}
+
+	var user = E2.models.user.toJSON()
+	data.loggedIn = (typeof user.username !== 'undefined') && (user.username !== '')
+	if ((typeof user.email !== 'undefined') && (user.email !== ''))
+		data.email = user.email
+
+	var $modal = VizorUI.modalOpen(forgotTemplate(data), 'Forgot password', 'nopad mForgotpassword');
 	this._bindModalLinks($modal, dfd);
 	var $form = $('#forgotPasswordForm');
 	VizorUI.setupXHRForm($form, function(response) {

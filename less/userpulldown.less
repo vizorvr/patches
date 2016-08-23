@@ -23,6 +23,7 @@
   transform: rotateZ(45deg);
 }
 
+
 #userpulldowncontainer {
   position: absolute;
   right: 0;
@@ -56,11 +57,11 @@
 
 .top-userpic {
     display: inline-block;
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
     position: relative;
     img {
-        width: 24px;
+        width: 22px;
         height: auto;
         margin: -12px 0  0 -12px;
         position: absolute;
@@ -72,9 +73,9 @@
     }
 }
 
-
 header nav li.account {
   z-index: 100;
+  position: relative;
   .top-userpic {
 	margin-top:0;
   }
@@ -103,11 +104,13 @@ body.bEditor {
 
 body.bMain {
   #userpulldowncontainer {
-    top: 55px;
+    top: 100%; // start from around bottom of container
+    margin-top:10px;
   }
   #btn-account-top {
     padding-top:0;
     padding-bottom: 0;
+    padding-right: 0;
   }
   header nav li.account {
     min-width: 72px;

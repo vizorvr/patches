@@ -170,7 +170,10 @@ var siteUI = new function() {
 
 
 	this.init = function() {
+
 		that.tagBodyClass()
+		setTimeout(that.tagBodyClass.bind(that), 50)	// Safari
+
 		that.attach()
 
 		if (jQuery('body.bHome.bIndex').length > 0) {
@@ -179,9 +182,56 @@ var siteUI = new function() {
 		else if (jQuery('body.bHome.bAbout').length > 0) {
 			that.initAbout()
 		}
+		VizorUI.replaceSVGButtons($('footer'))
 		// auto popovers
 		$('[data-toggle="popover"]').popover()
 
+		jQuery('button#mobileMenuOpenButton').on('mousedown touchdown', function(e){
+			e.preventDefault();
+			e.stopPropagation();
+			var $contentWrap = jQuery('div#contentwrap')
+			var $mobileMenu = jQuery(E2.views.partials.homeMobileMenu())
+				.appendTo('div#contentwrap');
+			var menuHeight = $mobileMenu.outerHeight();
+
+			var $body = jQuery('body');
+			var css = {height:menuHeight, overflow:'hidden'};
+			$body.css(css);
+			$body.scrollTop(0);
+			$contentWrap.css(css);
+
+			var dismissMenu = function() {
+				var css = {height:'', overflow:'initial'}
+				$body.css(css);
+				$contentWrap.css(css);
+				jQuery('#mobilemenu')
+					.fadeOut('fast', function(){
+						jQuery(this).remove();
+					});
+
+				return true;
+			}
+			jQuery('button#mobileMenuCloseButton', $mobileMenu).on('mousedown touchdown', function(e){
+				e.preventDefault();
+				e.stopPropagation();
+				window.removeEventListener('resize', dismissMenu)
+				if (that.hasOrientationChange) window.removeEventListener('orientationchange', dismissMenu)
+				dismissMenu();
+				return false;
+			});
+
+			if (that.hasOrientationChange)
+				window.addEventListener('orientationchange', dismissMenu)
+			window.addEventListener('resize', dismissMenu)
+
+			$mobileMenu.fadeIn('fast');
+			jQuery('a', $mobileMenu).on('mousedown touchdown', dismissMenu)
+			VizorUI.enableScrollToLinks($mobileMenu);
+
+			return false;
+		});
+
+		
 	}
 
 	this.initCollapsible = function($container) {
@@ -254,51 +304,6 @@ var siteUI = new function() {
 			var teamY = $window.height();
 			$("html, body").animate({scrollTop: teamY}, 500);
 			e.preventDefault();
-			return false;
-		});
-
-		jQuery('button#mobileMenuOpenButton').on('mousedown touchdown', function(e){
-			e.preventDefault();
-			e.stopPropagation();
-			var $contentWrap = jQuery('div#contentwrap')
-			var $mobileMenu = jQuery(E2.views.partials.homeMobileMenu())
-				.appendTo('div#contentwrap');
-			var menuHeight = $mobileMenu.outerHeight();
-
-			var $body = jQuery('body');
-			var css = {height:menuHeight, overflow:'hidden'};
-			$body.css(css);
-			$body.scrollTop(0);
-			$contentWrap.css(css);
-
-			var dismissMenu = function() {
-				var css = {height:'', overflow:'initial'}
-				$body.css(css);
-				$contentWrap.css(css);
-				jQuery('#mobilemenu')
-					.fadeOut('fast', function(){
-						jQuery(this).remove();
-					});
-
-				return true;
-			}
-			jQuery('button#mobileMenuCloseButton', $mobileMenu).on('mousedown touchdown', function(e){
-				e.preventDefault();
-				e.stopPropagation();
-				window.removeEventListener('resize', dismissMenu)
-				if (that.hasOrientationChange) window.removeEventListener('orientationchange', dismissMenu)
-				dismissMenu();
-				return false;
-			});
-
-			if (that.hasOrientationChange)
-				window.addEventListener('orientationchange', dismissMenu)
-			window.addEventListener('resize', dismissMenu)
-
-			$mobileMenu.fadeIn('fast');
-			jQuery('a', $mobileMenu).on('mousedown touchdown', dismissMenu)
-			VizorUI.enableScrollToLinks($mobileMenu);
-
 			return false;
 		});
 
@@ -416,6 +421,7 @@ var siteUI = new function() {
 			.toggleClass('inVR', !!that.isInVR())
 
 		$body.attr('data-dpr', devicePixelRatio)
+		$body.attr('data-touchcapable', that.isTouchCapable() ? 'true' : 'false')
 
 		var l = that.getLayoutMode();
 		if (l !== that.lastLayout) {
@@ -721,7 +727,7 @@ VizorUI.isMobile = {
 		return navigator.userAgent.match(/IEMobile/i) || navigator.userAgent.match(/WPDesktop/i);
 	},
 	any: function() {
-		if (E2 && E2.util)
+		if (E2 && E2.util && E2.util.isMobile && E2.util.isMobile.any)	// legacy graphs
 			return E2.util.isMobile.any()
 		else
 			return VizorUI.isMobile.iOS || VizorUI.isMobile.Android
@@ -829,12 +835,7 @@ VizorUI.hideshow = function(triggerEl) {
 
 	var initialState = triggerEl.dataset['hideshow']
 	triggerEl.hideshow = {
-		set : function(state) {
-			this.visible = (state === 'show')
-		},
-		toggle : function() {
-			this.visible = !this.visible
-		},
+		// *etters
 		get default() {
 			return initialState
 		},
@@ -850,12 +851,20 @@ VizorUI.hideshow = function(triggerEl) {
 			target.dispatchEvent(new CustomEvent('hideshow:changed', {detail:{visible: this.visible, trigger: triggerEl}}))
 			return !!v
 		},
+		// methods
+		set : function(state) {
+			this.visible = (state === 'show')
+		},
+		toggle : function() {
+			this.visible = !this.visible
+		},
 		_listener : function(e) {
 			e.preventDefault()
 			e.currentTarget.hideshow.toggle()
 		}
 	}
 
+	triggerEl.hideshow.target.style.display = null;	// allow style="display:none" to avoid flashes
 	triggerEl.hideshow.set(initialState)
 	triggerEl.addEventListener('click', triggerEl.hideshow._listener)
 }

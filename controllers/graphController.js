@@ -159,12 +159,10 @@ function GraphController(s, gfs, mongoConnection) {
 GraphController.prototype = Object.create(AssetController.prototype)
 
 GraphController.prototype.publicRankedIndex = function(req, res, next) {
-	this._service.publicRankedList()
+	this._service.publicRankedList(0, 100)
 	.then(function(list) {
-		list.map(function(graph) {
-			graph = prettyPrintGraphInfo(graph)
-			graph.prettyName = makeCardName(graph.prettyName)
-		})
+
+		list = prettyPrintList(list)
 
 		if (req.xhr) {
 			return res.json(helper.responseStatusSuccess('OK', list))
@@ -203,6 +201,7 @@ GraphController.prototype._userOwnIndex = function(user, req, res, next) {
 			withProjectListFilter : true,
 			meta : {
 				header: 'srv/userpage/userpageHeader',
+				footer: 'srv/home/_footer',
 				title: 'Your Files',
 				scripts: [
 					helper.metaScript('site/userpages.js')
@@ -311,6 +310,7 @@ GraphController.prototype._userPublicIndex = function(user, req, res, next) {
 				withProjectListFilter : false,
 				meta : {
 					header: 'srv/userpage/userpageHeader',
+					footer: 'srv/home/_footer',
 					title: username+'\'s Files',
 					bodyclass: 'bUserpage',
 					scripts : [

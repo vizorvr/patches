@@ -17,11 +17,11 @@
 
 
     {{#eq profile.username user.username}}{{!-- looking at own page --}}
-        <div class="in">
+        <div class="in self">
             <nav id='userpageNav' class='secondary'>
                 <ul>
-                    <li id='nProjectsLi'><span><a href="/{{profile.username}}">Projects</a></span></li>
-                    <li id='nAccountSettingsLi'><span><a href="/account">Account Settings</a></span></li>
+                    <li id='nProjectsLi'><a href="/{{profile.username}}">Projects</a></li>
+                    <li id='nAccountSettingsLi'><a href="/account">Account Settings</a></li>
                 </ul>
             </nav>
             {{#if withProjectListFilter}}

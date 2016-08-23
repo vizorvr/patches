@@ -1,33 +1,31 @@
-{{!-- include this within a <header></header> tag --}}
-<nav class="primary clearfix in" style="position:relative">
+<header  class="default"><!-- div class="header-overlay"></div --><nav class="primary clearfix in" style="position:relative">
     <h1 id="brandTop" class="brandTop">
         <a href="/" class="nofx"><span>Vizor</span>
-        <svg style="fill:#fff;">
-            <use xlink:href="#vizor-top-logo" />
-        </svg></a>
+        <svg class="mobileonly" style="fill:#fff;"><use xlink:href="#vizor-mark" /></svg>
+        <svg class="nomobile" style="fill:#fff;"><use xlink:href="#vizor-top-logo" /></svg></a>
     </h1>
-    <div class="nomobile">
-        <ul>
-            <li id="navAbout"><a href="/about">About</a></li>
-            <li id="navTutorials"><a href="//blog.vizor.io">Tutorials</a></li>
-            {{#if user.username}}
-                <li class="account">
-                {{>userpulldown user}}
-                </li>
-            {{else}}
-                <li class="signin nomobile">
-                    <a id="homeSignin" href="/login" class="sign-btn">Sign in</a>
-                </li>
-                <li class="signup nomobile">
-                    <a id="homeSignup" class="sign-btn btn" href="/signup">Sign up</a>
-                </li>
 
-            {{/if}}
-        </ul>
-    </div>
+    <ul class="nomobile">
+        <li id="navAbout"><a href="/about">About</a></li>
+        <li id="navTutorials"><a href="//blog.vizor.io">Tutorials</a></li>
+        {{#if user.username}}
+            <li class="account">
+            {{>userpulldown user}}
+            </li>
+        {{else}}
+            <li class="signin nomobile">
+                <a id="homeSignin" href="/login" class="sign-btn">Sign in</a>
+            </li>
+            <li class="signup nomobile">
+                <a id="homeSignup" class="sign-btn btn" href="/signup">Sign up</a>
+            </li>
+
+        {{/if}}
+    </ul>
+
     <div class="mobileonly" style="position:absolute; top:16px; right: 10px; width: 30px; height: 30px;">
         <button class="nofx" id="mobileMenuOpenButton">
             <img src="/images/home/xmenu.png" width="22" height="32" alt="" />
         </button>
     </div>
-</nav>
+</nav></header>
