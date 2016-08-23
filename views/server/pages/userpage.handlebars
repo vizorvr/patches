@@ -17,13 +17,13 @@
             {{>browse/graphList . list=publicGraphs
                 class='public'
                 withNew=(equals profile.username user.username)
-                newAssetTypeText='public project'
+                newAssetTypeText='Public Project'
                 withMoreLink=publicHasMoreLink moreLinkText='All public projects' moreLinkHref='?public=1'
             }}
             {{>browse/graphList . list=privateGraphs
                 class='private'
                 withNew=(equals profile.username user.username)
-                newAssetTypeText='private project'
+                newAssetTypeText='Private Project'
                 withMoreLink=privateHasMoreLink moreLinkText='All private projects' moreLinkHref='?public=0'
             }}
         {{else}}
@@ -36,7 +36,7 @@
                 {{>browse/graphList . list=publicGraphs
                     class='public'
                     withNew=(equals profile.username user.username)
-                    newAssetTypeText='public project'
+                    newAssetTypeText='Public Project'
                 }}
             {{/if}}
 
@@ -44,7 +44,7 @@
                 {{>browse/graphList . list=privateGraphs
                     class='private'
                     withNew=(equals profile.username user.username)
-                    newAssetTypeText='private project'
+                    newAssetTypeText='Private Project'
                 }}
             {{/if}}
         {{/if}}
