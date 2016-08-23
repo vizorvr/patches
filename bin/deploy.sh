@@ -44,7 +44,7 @@ echo ----------------------------------------
 # start container
 d run -d --name $FQDN \
      -e "FQDN=$FQDN" \
-     -e "MANDRILL=$MANDRILL" \
+     -e "KEY_SPARKPOST=$KEY_SPARKPOST" \
      -e "NODE_ENV=$NODE_ENV" \
      -e "NEWRELIC=$NEWRELIC" \
      -e "SESSION_SECRET=$SESSION_SECRET" \
