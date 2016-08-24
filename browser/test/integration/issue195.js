@@ -36,10 +36,9 @@ describe('Redo complex connection', function() {
 
 	it('can redo connection after destructive edits in subgraph, issue #195', function() {
 		app.setupStoreListeners()
-		app.clipboard = JSON.stringify(source)
 
 		// add VR clean template
-		app.onPaste()
+		app.pasteObject(source)
 		
 		var rootGraph = E2.core.active_graph
 		rootGraph.create_ui = function(){}

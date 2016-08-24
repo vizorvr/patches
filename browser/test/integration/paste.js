@@ -184,8 +184,7 @@ describe('Paste', function() {
 		it('adds the nodes and connections to the selection', function() {
 			app.setupStoreListeners()
 			var ag = core.active_graph
-			app.clipboard = JSON.stringify(source)
-			app.onPaste()
+			app.pasteObject(source)
 			assert.equal(app.selectedConnections.length, 5)
 			assert.equal(app.selectedNodes.length, 8)
 		})

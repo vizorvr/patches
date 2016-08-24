@@ -19,7 +19,7 @@ module.exports = function () {
             this.browser
             .execute(function() {
                 E2.app.onCopy()
-                E2.app.onPaste()
+                E2.app.pasteFromClipboard()
             })
             .call(done)
         })

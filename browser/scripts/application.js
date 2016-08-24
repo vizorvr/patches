@@ -990,11 +990,16 @@ Application.prototype.onCut = function(e) {
 	}
 }
 
-Application.prototype.onPaste = function(json) {
-	this.clearSelection()
+Application.prototype.pasteFromClipboard = function() {
+	return this.pasteJson(this.clipboard)
+}
 
-	json = json || this.clipboard
-	var doc = JSON.parse(json)
+Application.prototype.pasteJson = function(json) {
+	return this.pasteObject(JSON.parse(json))
+}
+
+Application.prototype.pasteObject = function(doc) {
+	this.clearSelection()
 
 	if (doc.root)
 		doc = doc.root
@@ -1022,6 +1027,9 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 
 Application.prototype.pasteInGraph = function(targetGraph, srcDoc, offsetX, offsetY) {
 	this.undoManager.begin('Paste')
+
+	offsetX = offsetX || 0
+	offsetY = offsetY || 0
 
 	var createdNodes = []
 	var createdConnections = []
@@ -1959,7 +1967,7 @@ Application.prototype.setupEditorBindings = function() {
 			return true
 
 		var data = e.clipboardData.getData('text/plain')
-		that.onPaste(data)
+		that.pasteJson(data)
 		e.preventDefault()
 	}, false)
 
@@ -2047,7 +2055,7 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 		if (that.isWorldEditorActive()) {
 			that.worldEditor.onPatchDropped(patchMeta, json, targetObject3d)
 		} else {
-			that.onPaste(json)
+			that.pasteJson(json)
 		}
 	})
 
