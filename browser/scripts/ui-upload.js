@@ -121,39 +121,38 @@ function instantiatePluginForUpload(uploaded, position) {
 }
 
 function instantiateTemplateForUpload(asset, position) {
-	var templateName
 	var dfd = when.defer()
 
-	var fixupCallback = function() {}
-	var templateData = {}
+	var templateName
+	var templateData = _.clone(asset)
+
+	function fixupCallback(node) {
+		if (node.plugin.id === 'three_mesh') {
+			node.plugin.postLoadCallback = new TexturePlacementHelper()
+		}
+
+		if (node.plugin.id === 'three_loader_scene') {
+			node.plugin.postLoadCallback = new ObjectPlacementHelper()
+		}
+	}
 
 	console.info('instantiating template for asset', asset)
+
+	if (!templateData.name) {
+		templateData.name = asset.path
+			.substring(asset.path.lastIndexOf('/') + 1)
+	}
 	
 	// add to scene if graph not visible
 	switch(asset.modelName) {
 		case 'image':
 			templateName = 'texture-plane.hbs'
-			fixupCallback = function(node) {
-				if (node.plugin.id === 'three_mesh') {
-					node.plugin.postLoadCallback = new TexturePlacementHelper()
-				}
-			}
 			break;
 		case 'scene':
 			templateName = 'scene.hbs'
-
-			fixupCallback = function(node) {
-				if (node.plugin.id === 'three_loader_scene') 
-					node.plugin.postLoadCallback = new ObjectPlacementHelper()
-			}
-	
-			templateData = _.clone(asset)
-	
-			if (asset.templates)
-				templateData.templateUrl = asset.templates[0]
 			break;
 		case 'audio':
-			return instantiatePluginForUpload(asset, position)
+			templateName = 'audio.hbs'
 			break;
 		case 'video':
 			templateName = 'video_plane.patch.hbs'
@@ -163,7 +162,7 @@ function instantiateTemplateForUpload(asset, position) {
 	$.get('/patchTemplates/'+templateName)
 	.done(function(templateSource) {
 		var template = Handlebars.compile(templateSource)
-		var patch = template({ url: uploaded.url })
+		var patch = template(templateData)
 
 		try {
 			patch = JSON.parse(patch)
@@ -173,22 +172,18 @@ function instantiateTemplateForUpload(asset, position) {
 
 		E2.app.undoManager.begin('Drag & Drop Upload')
 
-		var copyBuffer = E2.app.fillCopyBuffer(
-			patch.root.nodes,
-			patch.root.conns,
-			0,
-			0)
-
 		E2.track({
 			event: 'patchAdded', 
 			name: templateName,
 			fromUpload: true
 		})
 
-		// paste. auto-connecting to the scene will be handled inside paste
-		// by the world editor
-		var pasted = E2.app.onPaste(copyBuffer)
+		var pasted = E2.app.pasteInGraph(E2.core.root_graph, patch, position[0], position[1])
 		postPasteFixup(pasted.nodes, fixupCallback)
+
+		if (E2.app.isWorldEditorActive() && asset.modelName !== 'audio') {
+			E2.app.worldEditor.onEntityDropped(pasted.nodes[0])
+		}
 
 		E2.app.undoManager.end()
 
