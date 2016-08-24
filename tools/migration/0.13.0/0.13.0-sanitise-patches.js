@@ -105,7 +105,10 @@ function writePatch(patch) {
 		var url = gfs.url(gridFsPath)
 
 		Patch.findOne({ _id: patch._id })
-		.then(function(patchModel) {
+		.exec(function(err, patchModel) {
+			if (err)
+				return dfd.reject(err)
+
 			var patchModelData = {
 				category: patch.category,
 				path: patch.path,

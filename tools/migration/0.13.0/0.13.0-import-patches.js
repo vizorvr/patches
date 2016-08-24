@@ -78,7 +78,10 @@ function writePatch(vizorUserId, patch) {
 		var url = gfs.url(gridFsPath)
 
 		Patch.findOne({ path: patch.path })
-		.then(function(found) {
+		.exec(function(err, found) {
+			if (err)
+				return dfd.reject(err)
+
 			var patchModelData = {
 				_creator: vizorUserId,
 				category: patch.category,
