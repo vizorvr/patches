@@ -94,9 +94,7 @@
 			this.object3d.gazeClickers = {}
 
 		this.object3d.gazeClickers[this.node.uid] = true
-
-		this.object3d.gazeClickerCount = 
-			Object.keys(this.object3d.gazeClickers).length
+		this.object3d.gazeClickerCount = Object.keys(this.object3d.gazeClickers).length
 
 		var obj = this.object3d
 		while(obj) {
@@ -105,6 +103,10 @@
 			obj.gazeClickerCount++
 			obj = obj.parent
 		}
+
+		this.targetNode.plugin.updated = true
+
+		E2.app.player.scene.hasClickableObjects = true
 
 		E2.core.runtimeEvents.on('gazeOut:'+this.object3d.uuid, this.boundOnGazeOut)
 		E2.core.runtimeEvents.on('gazeIn:'+this.object3d.uuid, this.boundOnGazeIn)
@@ -117,8 +119,7 @@
 
 		delete this.object3d.gazeClickers[this.node.uid]
 
-		this.object3d.gazeClickerCount = 
-			Object.keys(this.object3d.gazeClickers).length
+		this.object3d.gazeClickerCount = Object.keys(this.object3d.gazeClickers).length
 
 		var obj = this.object3d.parent
 		while(obj) {
