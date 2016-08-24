@@ -1013,12 +1013,14 @@ Application.prototype.pasteObject = function(doc) {
 	var ox = Math.max(this.mousePosition[0] - cp.position().left + sx, 100)
 	var oy = Math.max(this.mousePosition[1] - cp.position().top + sy, 100)
 
-	var pasted = this.paste(doc, ox, oy)
-
-	pasted.nodes.map(this.markNodeAsSelected.bind(this))
-	pasted.connections.map(this.markConnectionAsSelected.bind(this))
-
-	return pasted
+	if (this.isWorldEditorActive()) {
+		return this.worldEditor.paste(doc, ox, oy)
+	} else {
+		var pasted = this.paste(doc, ox, oy)
+		pasted.nodes.map(this.markNodeAsSelected.bind(this))
+		pasted.connections.map(this.markConnectionAsSelected.bind(this))
+		return pasted
+	}
 }
 
 Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
@@ -2053,7 +2055,7 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 	this.patchManager = new PatchManager()
 	this.patchManager.on('open', function(patchMeta, json, targetObject3d) {
 		if (that.isWorldEditorActive()) {
-			that.worldEditor.onPatchDropped(patchMeta, json, targetObject3d)
+			that.worldEditor.onPatchDropped(patchMeta, JSON.parse(json), targetObject3d)
 		} else {
 			that.pasteJson(json)
 		}
