@@ -1,0 +1,93 @@
+{
+    "nodes": [{
+        "plugin": "graph",
+        "x": 691,
+        "y": 874,
+        "uid": "L76H5Gvb5fXN",
+        "state": {
+            "always_update": true,
+            "input_sids": {},
+            "output_sids": {}
+        },
+        "title": "{{name}}",
+        "graph": {
+            "uid": "L24mFTGX3vQS",
+            "parent_uid": "root",
+            "open": true,
+            "nodes": [{
+                "plugin": "audio_source_player",
+                "x": 1188,
+                "y": 94,
+                "uid": "AEtyS7yXsWGf"
+            }, {
+                "plugin": "audio_buffer_source_modulator",
+                "x": 853,
+                "y": 139,
+                "uid": "sEfEATyGM7Df"
+            }, {
+                "plugin": "toggle_button",
+                "x": 537,
+                "y": 360,
+                "uid": "Cxvgc66nBF6Y",
+                "state": {
+                    "enabled": false
+                },
+                "title": "Loop"
+            }, {
+                "plugin": "annotation",
+                "x": 1162,
+                "y": 176,
+                "uid": "htXMzL88a8EZ",
+                "state": {
+                    "text": "Here we use WebAudio to play sound. Please note different browsers treat .MP3 and .OGG files differently.",
+                    "width": 150,
+                    "height": 70
+                }
+            }, {
+                "plugin": "url_audio_buffer_generator",
+                "x": 485,
+                "y": 164,
+                "uid": "nfpDHJd4Ehg8",
+                "state": {
+                    "url": "{{url}}"
+                },
+                "title": "Load audio file"
+            }, {
+                "plugin": "toggle_button",
+                "x": 537,
+                "y": 269,
+                "uid": "FmpwrDgExqBZ",
+                "state": {
+                    "enabled": true
+                },
+                "title": "Play"
+            }],
+            "conns": [{
+                "src_nuid": "Cxvgc66nBF6Y",
+                "dst_nuid": "sEfEATyGM7Df",
+                "src_slot": "bool",
+                "dst_slot": "loop",
+                "uid": "U64Qcq7KyAV4"
+            }, {
+                "src_nuid": "sEfEATyGM7Df",
+                "dst_nuid": "AEtyS7yXsWGf",
+                "src_slot": "source",
+                "dst_slot": "source",
+                "uid": "EtUCEKPAJVQv"
+            }, {
+                "src_nuid": "nfpDHJd4Ehg8",
+                "dst_nuid": "sEfEATyGM7Df",
+                "src_slot": "buffer",
+                "dst_slot": "buffer",
+                "uid": "EjYPeP9HBqeB"
+            }, {
+                "src_nuid": "FmpwrDgExqBZ",
+                "dst_nuid": "sEfEATyGM7Df",
+                "src_slot": "bool",
+                "dst_slot": "play",
+                "uid": "gukdZxYgWtmX"
+            }]
+        }
+    }],
+    "conns": []
+}

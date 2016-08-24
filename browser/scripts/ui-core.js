@@ -761,7 +761,7 @@ VizorUI.prototype.onKeyDown = function(e) {
 		case uiKeys.paste:
 			if (VizorUI.isBrowser.Chrome())
 				return;
-			E2.app.onPaste();
+			E2.app.pasteFromClipboard();
 			e.preventDefault();
 			e.stopPropagation();
 			break;
