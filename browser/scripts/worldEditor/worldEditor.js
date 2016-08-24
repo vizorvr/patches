@@ -241,10 +241,12 @@ WorldEditor.prototype.setSelection = function(selected) {
 			this.selectedEntityNode = this.selectedEntityPatch.plugin.node
 			this.cameraSelector.transformControls.attach(obj)
 			this.selectionTree.add(this.cameraSelector.transformControls)
-	
+
 			// set the active graph to the entity selected
-			if (E2.app.isWorldEditorActive())
+			if (E2.app.isWorldEditorActive()) {
 				E2.app.onGraphSelected(this.selectedEntityPatch)
+				E2.app.markNodeAsSelected(this.selectedEntityNode)
+			}
 
 			anySelected = true
 			// only attach to first valid item
@@ -375,7 +377,12 @@ WorldEditor.prototype.selectMeshAndDependencies = function(meshNode, sceneNode, 
 	}
 }
 
-WorldEditor.prototype.onPatchDropped = function(patchMeta, json, targetObject3d) {
+WorldEditor.prototype.paste = function(doc, x, y) {
+	doc = doc.root ? doc.root : doc
+	return this.onPatchDropped({ type: doc.nodes[0].plugin }, doc)
+}
+
+WorldEditor.prototype.onPatchDropped = function(patchMeta, patch, targetObject3d) {
 	var sceneNode = this.currentGroup || this.scene.backReference.parentNode
 	var leftFromSceneNode = 300
 
@@ -383,7 +390,6 @@ WorldEditor.prototype.onPatchDropped = function(patchMeta, json, targetObject3d)
 	if (!this.scene && !this.currentGroup)
 		return;
 
-	var patch = JSON.parse(json)
 	patch = patch.root ? patch.root : patch
 
 	var targetPatch = E2.core.root_graph
@@ -429,6 +435,8 @@ WorldEditor.prototype.onPatchDropped = function(patchMeta, json, targetObject3d)
 	}
 
 	E2.app.undoManager.end()
+
+	return dropped
 }
 
 WorldEditor.prototype.onEntityDropped = function(dropNode) {
