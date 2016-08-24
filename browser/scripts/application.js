@@ -2066,7 +2066,15 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 	this.patchManager = new PatchManager()
 	this.patchManager.on('open', function(patchMeta, json, targetObject3d) {
 		if (that.isWorldEditorActive()) {
-			that.worldEditor.onPatchDropped(patchMeta, JSON.parse(json), targetObject3d)
+			var doc
+
+			try {
+				doc = JSON.parse(json)
+			} catch(e) {
+				return;
+			}
+
+			that.worldEditor.onPatchDropped(patchMeta, doc, targetObject3d)
 		} else {
 			that.pasteJson(json)
 		}
