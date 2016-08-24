@@ -991,7 +991,7 @@ Application.prototype.onCut = function(e) {
 }
 
 Application.prototype.pasteFromClipboard = function() {
-	return this.pasteObject(this.clipboard)
+	return this.pasteJson(this.clipboard)
 }
 
 Application.prototype.pasteJson = function(json) {
