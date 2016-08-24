@@ -102,9 +102,11 @@ Chat.prototype.setupInput = function() {
 	var $i = this.$input
 
 	$i.on('keyup', function(e) {
-		var val = $i.val().trim()
+		if (e.keyCode !== 13)
+			return true
 
-		if (e.keyCode === 13 && val.length) {
+		var val = $i.val().trim()
+		if (val.length) {
 			E2.app.dispatcher.dispatch({
 				actionType: 'uiChatMessageAdded',
 				date: Date.now(),
