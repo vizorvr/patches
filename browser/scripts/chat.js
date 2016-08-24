@@ -102,7 +102,7 @@ Chat.prototype.setupInput = function() {
 	var $i = this.$input
 
 	$i.on('keyup', function(e) {
-		var val = $i.val()
+		var val = $i.val().trim()
 
 		if (e.keyCode === 13 && val.length) {
 			E2.app.dispatcher.dispatch({
