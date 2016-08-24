@@ -920,7 +920,6 @@ Node.isGraphPlugin = function(pluginId) {
 	return (E2.GRAPH_NODES.indexOf(pluginId) > -1)
 }
 
-
 function LinkedSlotGroup(core, parent_node, inputs, outputs) {
 	this.core = core;
 	this.node = parent_node;

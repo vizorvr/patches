@@ -995,7 +995,18 @@ Application.prototype.pasteFromClipboard = function() {
 }
 
 Application.prototype.pasteJson = function(json) {
-	return this.pasteObject(JSON.parse(json))
+	if (!json)
+		return;
+
+	var doc
+
+	try {
+		doc = JSON.parse(json)
+	} catch(e) {
+		return;
+	}
+
+	return this.pasteObject(doc)
 }
 
 Application.prototype.pasteObject = function(doc) {
