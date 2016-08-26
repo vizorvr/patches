@@ -175,6 +175,7 @@
         "Camera Forward Vector": "camera_forward_vector"
     },
 
+    "AUDIO": {
         "Audio player": "audio_player",
         "Audio source player": "audio_source_player",
         "Analyse": "audio_analyse_modulator",
