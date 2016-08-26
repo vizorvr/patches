@@ -10,8 +10,11 @@ const preprocess = require('gulp-preprocess')
 const pushPlayerToGrid = require('./tools/pushPlayerToGrid')
 
 var paths = {
-	less: './less/build.less',
-	less360: './less/build_threesixty.less',
+	less : {
+		editor: './less/build_editor.less',
+		site: 	'./less/build_site.less',
+		site360: './less/build_site360.less',
+	},
 	js: {
 		plugins: './browser/plugins/*.plugin.js',
 		engine: [
@@ -30,12 +33,14 @@ var paths = {
 			'./browser/scripts/plugin.js',
 			'./browser/scripts/subGraphPlugin.js',
 			'./browser/scripts/threeObject3dPlugin.js',
-			'./browser/scripts/abstractObjectGazePlugin.js',
-			'./browser/scripts/abstractThreeLoaderObjPlugin.js',
-			'./browser/scripts/abstractThreeMaterialPlugin.js',
-			'./browser/scripts/abstractThreeMeshPlugin.js',
-			'./browser/scripts/abstractArrayBlendModulatorPlugin.js',
-			'./browser/scripts/abstractAnimateValueOnTriggerPlugin.js',
+			'./browser/scripts/abstractPlugins/abstractGraphPlugin.js',
+			'./browser/scripts/abstractPlugins/abstractTextAreaPlugin.js',
+			'./browser/scripts/abstractPlugins/abstractObjectGazePlugin.js',
+			'./browser/scripts/abstractPlugins/abstractThreeLoaderObjPlugin.js',
+			'./browser/scripts/abstractPlugins/abstractThreeMaterialPlugin.js',
+			'./browser/scripts/abstractPlugins/abstractThreeMeshPlugin.js',
+			'./browser/scripts/abstractPlugins/abstractArrayBlendModulatorPlugin.js',
+			'./browser/scripts/abstractPlugins/abstractAnimateValueOnTriggerPlugin.js',
 	
 			'./browser/scripts/blendFunctions.js',
 
@@ -45,6 +50,8 @@ var paths = {
 			'./browser/scripts/worldEditor/worldEditorCameraSelector.js',
 			'./browser/scripts/worldEditor/worldEditorOriginGrid.js',
 			'./browser/scripts/worldEditor/worldEditorRadialHelper.js',
+
+			'./browser/scripts/worldEditor/objectPlacementHelper.js',
 
 			'./browser/scripts/screenshot/ScreenshotRenderer.js',
 
@@ -72,13 +79,19 @@ var paths = {
 			'./browser/vendor/three/MorphAnimMesh.js',
 			'./browser/vendor/three/Font.js',
 			'./browser/vendor/three/FontLoader.js',
-		
+
+			'./browser/vendor/three/loaders/FBXLoader.js',
+			'./browser/vendor/three/loaders/ColladaLoader2.js',
+			'./browser/vendor/three/loaders/gltf/glTF-parser.js',
+			'./browser/vendor/three/loaders/gltf/glTFAnimation.js',
+			'./browser/vendor/three/loaders/gltf/glTFLoader.js',
+			'./browser/vendor/three/loaders/gltf/glTFLoaderUtils.js',
+			'./browser/vendor/three/loaders/gltf/glTFShaders.js',
+			'./browser/vendor/three/loaders/gltf/glTFUtilities.js',
+
 			'./browser/vendor/spite/THREE.MeshLine.js',
 
-			'./browser/vendor/borismus/webvr-polyfill.js',
-			'./browser/vendor/borismus/webvr-manager.js',
-			'./browser/scripts/hardware.js',
-			'./browser/scripts/webVRAdapter.js',
+			'./browser/scripts/glTFUtils.js',
 
 			'./browser/scripts/noise.js',
 			'./browser/vendor/random.min.js',
@@ -87,7 +100,9 @@ var paths = {
 
 			'./browser/scripts/textureCache.js',
 
-			'./browser/scripts/plugin-manager-bundled.js'
+			'./browser/scripts/plugin-manager-bundled.js',
+		
+			'./browser/vendor/toji/webgl-utils/src/wglu-stats.js'
 		],
 
 		player: [
@@ -112,13 +127,16 @@ gulp.task('clean:js:engine', function(cb) {
 	del('./browser/dist/engine.js', cb)
 })
 
-gulp.task('clean:less360', function(cb)
-{
-	del('./browser/style/threesixty.css', cb);
+gulp.task('clean:less:site360', function(cb)  {
+	del('./browser/style/site360.css', cb);
 });
 
-gulp.task('clean:less', function(cb) {
-	del('./browser/style/less.css', cb)
+gulp.task('clean:less:site', function(cb) {
+	del('./browser/style/site.css', cb)
+})
+
+gulp.task('clean:less:editor', function(cb) {
+	del('./browser/style/editor.css', cb)
 })
 
 gulp.task('clean:js', ['clean:js:player', 'clean:js:engine'])
@@ -158,44 +176,51 @@ gulp.task('push', ['js:player'], function(done) {
 
 gulp.task('js', ['js:player'])
 
-gulp.task('less', ['clean:less'], function() {
-	gulp.src(paths.less)
+gulp.task('less:site', ['clean:less:site'], function() {
+	gulp.src(paths.less.site)
     .pipe(less({
 		paths: [ path.join(__dirname, 'less') ]
     }).on('error', errorHandler))
-	.pipe(concat('less.css'))
+	.pipe(concat('site.css'))
     .pipe(gulp.dest(path.join(__dirname, 'browser', 'style')))
 	.on('error', errorHandler)
 })
 
-gulp.task('less360', ['clean:less360'], function() {
-	gulp.src(paths.less360)
+gulp.task('less:editor', ['clean:less:editor'], function() {
+	gulp.src(paths.less.editor)
     .pipe(less({
 		paths: [ path.join(__dirname, 'less') ]
     }).on('error', errorHandler))
-	.pipe(concat('threesixty.css'))
+	.pipe(concat('editor.css'))
+    .pipe(gulp.dest(path.join(__dirname, 'browser', 'style')))
+	.on('error', errorHandler)
+})
+
+gulp.task('less:site360', ['clean:less:site360'], function() {
+	gulp.src(paths.less.site360)
+    .pipe(less({
+		paths: [ path.join(__dirname, 'less') ]
+    }).on('error', errorHandler))
+	.pipe(concat('site360.css'))
     .pipe(gulp.dest(path.join(__dirname, 'browser', 'style')))
 	.on('error', errorHandler)
 });
 
 gulp.task('watch', ['default'], function() {
-	gulp.watch('less/**/*', ['less', 'less360']);
+	gulp.watch('less/**/*', ['less:site', 'less:editor', 'less:site360']);
 	gulp.watch(paths.js.player.concat(paths.js.engine), ['js:player', 'push'])
 })
 
-gulp.task('watch:less360', function() {
-	gulp.watch('less/threesixty.less', ['less360']);
-});
 
 gulp.task('watch:less', function() {
-	gulp.watch('less/**/*', ['less'])
+	gulp.watch('less/**/*', ['less:site', 'less:editor', 'less:site360']);
 })
 
 gulp.task('watch:player', function() {
 	gulp.watch(paths.js.player.concat(paths.js.engine), ['js:player', 'push'])
 })
 
-gulp.task('golive', ['less', 'less360', 'js'])
+gulp.task('golive', ['less:site', 'less:editor', 'less:site360', 'js'])
 
-gulp.task('default', ['less', 'less360', 'js', 'push'])
+gulp.task('default', ['less:site', 'less:editor', 'less:site360', 'js', 'push'])
 

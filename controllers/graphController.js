@@ -3,7 +3,9 @@ var Graph = require('../models/graph')
 var AssetController = require('./assetController')
 var fsPath = require('path')
 var assetHelper = require('../models/asset-helper')
-var templateCache = new(require('../lib/templateCache'))
+
+var templateCache = require('../lib/templateCache').templateCache
+
 var helper = require('./controllerHelpers')
 var isStringEmpty = require('../lib/stringUtil').isStringEmpty
 var PreviewImageProcessor = require('../lib/previewImageProcessor');
@@ -23,10 +25,30 @@ var hashids = new Hashids(secrets.sessionSecret)
 var fs = require('fs')
 var packageJson = JSON.parse(fs.readFileSync(__dirname+'/../package.json'))
 
-function render404(res) {
-	res.status(404).render('error', {
-		message: 'Not found'
+
+
+function renderError(status, res, message) {
+	res.status(status).render('error', {
+		message: message || 'Not found'
 	})
+}
+
+function visitorIsUser(req, user) {
+	if (!(req && req.user && user))
+		return false
+	var myUid = user._id
+	var theirUid = req.user._id
+	return myUid && theirUid && (myUid.toString() === theirUid.toString())
+}
+
+function ownsGraph(user, graph) {
+	return user && graph && user.username && graph.owner && (user.username === graph.owner)
+}
+
+function isGraphOwner(user, graph) {
+	return user && (user.isAdmin ||
+		((user.id === graph._creator.id) ||
+		(user.id === graph._creator.toString())))
 }
 
 function makeHashid(serial) {
@@ -91,14 +113,31 @@ function prettyPrintGraphInfo(graph) {
 	return graph
 }
 
+function prettyPrintList(list) {
+	if (!list || !list.length)
+		return list
+	return list.map(function(graph) {
+		return prettyPrintGraphInfo(graph.toJSON())
+	})
+}
+
 function makeGraphSummary(req,graph) {
 	graph = prettyPrintGraphInfo(graph)
 	return {
+		id:				graph.id,
 		graphMinUrl: 	graph.url,
 		graphName: 		graph.prettyName,
 		previewImage: 	'http://' + req.headers.host + graph.previewUrlLarge,
 		playerVersion: 	graph.version,
-		stat:			graph.stat
+		stat:			graph.stat,
+		hasAudio:		graph.hasAudio,
+		views: 			graph.views,
+		createdAt:		graph.createdAt,
+		updatedAt:		graph.updatedAt,
+		createdTS:		graph.createdTS,
+		updatedTS:		graph.updatedTS,
+		private: 		graph.private,
+		editable: 		graph.editable
 	}
 }
 
@@ -120,12 +159,10 @@ function GraphController(s, gfs, mongoConnection) {
 GraphController.prototype = Object.create(AssetController.prototype)
 
 GraphController.prototype.publicRankedIndex = function(req, res, next) {
-	this._service.publicRankedList()
+	this._service.publicRankedList(0, 100)
 	.then(function(list) {
-		list.map(function(graph) {
-			graph = prettyPrintGraphInfo(graph)
-			graph.prettyName = makeCardName(graph.prettyName)
-		})
+
+		list = prettyPrintList(list)
 
 		if (req.xhr) {
 			return res.json(helper.responseStatusSuccess('OK', list))
@@ -135,7 +172,9 @@ GraphController.prototype.publicRankedIndex = function(req, res, next) {
 			meta : {
 				title: 'Vizor - Browse',
 				bodyclass: 'bBrowse',
-				scripts : ['site/userpages.js']
+				scripts : [
+					helper.metaScript('site/userpages.js')
+				]
 			},
 			graphs: list
 		})
@@ -143,17 +182,110 @@ GraphController.prototype.publicRankedIndex = function(req, res, next) {
 	.catch(next)
 }
 
-// GET /fthr
-GraphController.prototype.userIndex = function(req, res, next) {
-	var username = req.params.model
-
+// GET /fthr?public=1|0
+GraphController.prototype._userOwnIndex = function(user, req, res, next) {
 	var that = this
+	var username = user.username
+	// the user wants to see only their private graphs
+	var wantPrivate = undefined
+	if (typeof req.query.public !== 'undefined') {
+		wantPrivate = (req.query.public === '0')
+	}
 
-	User.findOne({ username: username }, function(err, user) {
-		if (err)
-			return next(err)
+	function render(publicList, privateList, profile, data) {
+		data = _.extend({
+			bodyclass: '',
+			publicHasMoreLink: false,
+			privateHasMoreLink: false,
+			isSummaryPage: false,
+			withProjectListFilter : true,
+			meta : {
+				header: 'srv/userpage/userpageHeader',
+				footer: 'srv/home/_footer',
+				title: 'Your Files',
+				scripts: [
+					helper.metaScript('site/userpages.js')
+				]
+			}
+		}, data)
 
-		that._service.userGraphs(username)
+		// format
+		data.publicGraphs = publicList || []
+		data.privateGraphs = privateList || []
+		data.profile = profile
+
+		// allow the 'create' card to appear if both lists are empty. see css.
+		var noProjectsClass = (data.publicGraphs.length + data.privateGraphs.length > 0) ? '' : 'noProjects '
+		data.meta.bodyclass = ('bUserpage ' + noProjectsClass + data.bodyclass).trim()
+		delete data.bodyclass
+
+		if (req.xhr) {
+			return res.status(200).json(
+				helper.responseStatusSuccess('OK', data))
+		}
+
+		res.render('server/pages/userpage', data)
+	}
+
+	var profile = user.toJSON()
+
+	var maxNumOnFront = 7	// allow for "create new" card
+	var data = {
+		publicHasMoreLink : false,
+		privateHasMoreLink : false
+	}
+	// front page, two lists
+	if (wantPrivate === undefined) {
+		data.isSummaryPage = true
+		data.bodyclass = 'bGraphlistSummary'
+		var publicList, privateList
+		that._service.userGraphsWithPrivacy(username, 0, maxNumOnFront+1, false)
+			.then(function(list){
+				if (list && (list.length >= maxNumOnFront)) {
+					data.publicHasMoreLink = true
+					list.pop()
+				}
+				publicList = prettyPrintList(list)
+				return that._service.userGraphsWithPrivacy(username, 0, maxNumOnFront+1, true)
+			})
+			.then(function(list) {
+				if (list && (list.length >= maxNumOnFront)) {
+					data.privateHasMoreLink = true
+					list.pop()
+				}
+				privateList = prettyPrintList(list)
+
+				render(publicList, privateList, profile, data)
+			})
+	} else {
+		// "Public" or "Private" lists
+		data.isSummaryPage = false
+		that._service.userGraphsWithPrivacy(username, null, null, wantPrivate)
+			.then(function(list){
+				data.bodyclass = (wantPrivate) ? 'bGraphlistPrivate' : 'bGraphlistPublic'
+				list = prettyPrintList(list)
+
+
+				if (wantPrivate)
+					render(null, list, profile, data)
+				else
+					render(list, null, profile, data)
+			})
+	}
+
+}
+
+GraphController.prototype._userPublicIndex = function(user, req, res, next) {
+	var that = this
+	var username = (user) ? user.username : null
+	var graphs
+
+	if (req.user && req.user.isAdmin)
+		graphs = that._service.userGraphs(username)
+	else
+		graphs = that._service.userGraphsWithPrivacy(username)
+
+	graphs
 		.then(function(list) {
 			// no files found, but if there is a user
 			// then show empty userpage
@@ -161,51 +293,65 @@ GraphController.prototype.userIndex = function(req, res, next) {
 				return next()
 			}
 
-			list = list.map(function(graph) {
-				return prettyPrintGraphInfo(graph.toJSON())
-			})
+			list = prettyPrintList(list)
 
 			var data = {
-				profile: {
-					username: username
-				},
+				profile: user ? user.toPublicJSON() : {},
 				graphs: list || []
 			}
 
 			if (req.xhr) {
 				return res.status(200).json(
-					helper.responseStatusSuccess("OK", data))
+					helper.responseStatusSuccess('OK', data))
 			}
 
 			_.extend(data, {
+				isSummaryPage: false,
+				withProjectListFilter : false,
 				meta : {
+					header: 'srv/userpage/userpageHeader',
+					footer: 'srv/home/_footer',
 					title: username+'\'s Files',
 					bodyclass: 'bUserpage',
-					scripts : ['site/userpages.js']
+					scripts : [
+						helper.metaScript('site/userpages.js')
+					]
 				}
-			});
+			})
 
 			res.render('server/pages/userpage', data);
 		});
+}
+
+
+// GET /fthr
+GraphController.prototype.userIndex = function(req, res, next) {
+	var username = req.params.model
+
+	var that = this
+	User.findOne({ username: username }, function(err, user) {
+		if (err)
+			return next(err)
+
+		if (visitorIsUser(req, user))
+			return that._userOwnIndex(user, req, res, next)
+		else
+			return that._userPublicIndex(user, req, res, next)
 	})
 }
 
 // GET /graph
-GraphController.prototype.index = function(req, res) {
+GraphController.prototype.adminIndex = function(req, res) {
 	var user = req.user
+
 	this._service.listWithPreviews()
 	.then(function(list) {
 		if (req.xhr || req.path.slice(-5) === '.json')
 			return res.json(list);
 
-		list = list.map(function(graph) {
-			return prettyPrintGraphInfo(graph.toJSON())
-		})
+		list = prettyPrintList(list)
 
 		var data = {
-			profile: {
-				username: user.username
-			},
 			graphs: list
 		}
 
@@ -213,17 +359,19 @@ GraphController.prototype.index = function(req, res) {
 			meta : {
 				title: 'Graphs',
 				bodyclass: 'bGraphs',
-				scripts : ['site/userpages.js']
+				scripts: [
+					helper.metaScript('site/userpages.js')
+				]
 			}
 		});
 
 		res.render('graph/index', data);
-	});
+	})
 }
 
 function renderEditor(res, graph, hasEdits) {
 	var releaseMode = process.env.NODE_ENV === 'production'
-	var layout = releaseMode ? 'editor-prod' : 'editor'
+	var layout = releaseMode ? 'editor-bundled' : 'editor'
 	
 	res.header('Cache-control', 'no-cache, must-revalidate, max-age=0')
 
@@ -235,7 +383,7 @@ function renderEditor(res, graph, hasEdits) {
 			releaseMode: releaseMode,
 			webSocketHost: process.env.WSS_HOST || '',
 			useSecureWebSocket: releaseMode || !!process.env.WSS_SECURE || false
-		});
+		})
 	}
 
 	if (!releaseMode) {
@@ -260,10 +408,9 @@ GraphController.prototype.edit = function(req, res, next) {
 
 	this._service.findByPath(req.params.path)
 	.then(function(graph) {
-		if (graph && graph.editable === false) {
-			if (!req.user || req.user.id !== graph._creator.id) {
-				return render404(res)
-			}
+		if (graph && (graph.editable === false || graph.private === true)) {
+			if (!isGraphOwner(req.user, graph))
+				return renderError(404, res)
 		}
 
 		EditLog.hasEditsByName(that.redisClient, req.params.path.substring(1))
@@ -286,14 +433,20 @@ GraphController.prototype.latest = function(req, res) {
 function renderPlayer(graph, req, res, options) {
 	graph.increaseViewCount()
 
+	if (graph._creator)
+		graph._creator.increaseViewCount()
+
 	var graphJson = prettyPrintGraphInfo(graph.toJSON())
 
 	// which version of player to use?
 	var version = graphJson.version || packageJson.version
 	version = version.split('.').slice(0,2).join('.')
 
+	var releaseMode = process.env.NODE_ENV === 'production'
+	var layout = releaseMode ? 'player-bundled' : 'player'
+
 	res.render('graph/show', {
-		layout: res.locals.layout || 'player',
+		layout: res.locals.layout || layout,
 		playerVersion: version,
 		autoplay: !!(options && options.autoplay),
 		noHeader: options.noHeader || false,
@@ -313,7 +466,7 @@ function renderPlayer(graph, req, res, options) {
 GraphController.prototype.embed = function(req, res, next) {
 	this._service.findByPath(req.params.path)
 	.then(function(graph) {
-		if (!graph)
+		if (!graph || graph.deleted)
 			return next()
 
 		var autoplay = false
@@ -332,31 +485,88 @@ GraphController.prototype.embed = function(req, res, next) {
 	}).catch(next)
 }
 
-
 // GET /fthr/dunes-world
 // GET /fthr/dunes-world?summmary=1
 GraphController.prototype.graphLanding = function(req, res, next) {
 	var wantSummary = req.query.summary || false
 
+	req.params.path = req.params.path.toLowerCase()
+
+	function notFound() {
+		res.status(404).json(helper.responseStatusError('not found'))
+	}
+
 	this._service.findByPath(req.params.path)
 	.then(function(graph) {
+		if (!graph || graph.deleted)
+			return notFound()
 
 		if (wantSummary) {
-			if (!graph)
-					return res.status(404).json(helper.responseStatusError('not found'))
-
-			var data = makeGraphSummary(req,graph.toJSON())
-			return res.json(helper.responseStatusSuccess('found', data))
+			var data = makeGraphSummary(req, graph.toJSON())
+			return res.json(helper.responseStatusSuccess('OK', data))
 		}
-
-		if (!graph)
-			return next()
 		
 		return renderPlayer(graph, req, res, {
 			autoplay: true
 		})
 	}).catch(next)
 }
+
+// POST /fthr/dunes-world
+GraphController.prototype.graphModify = function(req, res, next) {
+
+	var that = this
+	// if want XHR return json
+	// else redirect to GET URL
+
+	req.params.path = req.params.path.toLowerCase()
+	var wantXhr = req.xhr
+
+	function notFound() {
+		res.status(404).json(helper.responseStatusError('not found'))
+	}
+
+	this._service.findByPath(req.params.path)
+	.then(function(graph) {
+		if (!graph || graph.deleted)
+			return notFound()
+
+		if (!(req.user && ownsGraph(req.user, graph)))
+			return notFound()
+
+		switch (req.body.private) {
+			case 'true':
+				graph.private = true
+				break
+			case 'false':
+				graph.private = false
+				break
+		}
+
+		var opts = {
+			version: graph.version,
+			updatedAt: graph.updatedAt
+		}
+		
+		that._service.save(graph, req.user, opts)
+			.then(function(savedGraph, err){
+				if (err) {
+					res.status(500).json(helper.responseStatusError('could not save graph', err))
+				}
+
+				var data = makeGraphSummary(req, savedGraph.toJSON())
+				if (wantXhr)
+					return res.json(helper.responseStatusSuccess('OK', data))
+				// else
+				return res.redirect(req.params.path)
+			})
+
+
+
+	}).catch(next)
+}
+
+
 
 // GET /fthr/dunes-world/graph.json
 GraphController.prototype.stream = function(req, res, next) {
@@ -366,19 +576,17 @@ GraphController.prototype.stream = function(req, res, next) {
 	.then(function(item) {
 		that._fs.createReadStream(item.url)
 		.pipe(res)
-		.on('error', next);
+		.on('error', next)
 	})
-	.catch(next);
-};
-
-GraphController.prototype._makePath = function(req, path)
-{
-	return '/' + req.user.username
-		+ '/' + assetHelper.slugify(fsPath.basename(path, fsPath.extname(path)));
+	.catch(next)
 }
 
-GraphController.prototype.canWriteUpload = function(req, res, next)
-{
+GraphController.prototype._makePath = function(req, path) {
+	return '/' + req.user.username
+		+ '/' + assetHelper.slugify(fsPath.basename(path, fsPath.extname(path)))
+}
+
+GraphController.prototype.canWriteUpload = function(req, res, next) {
 	var that = this;
 
 	if (!req.files)
@@ -439,56 +647,50 @@ GraphController.prototype.upload = function(req, res, next) {
 	});
 };
 
-// POST /graph
-GraphController.prototype.saveAnonymous = function(req, res, next) {
+// POST /graph/delete
+GraphController.prototype.delete = function(req, res, next) {
 	var that = this
-	var anonReq = { user: { username: 'v' } }
+	var path = this._makePath(req, req.params.path)
 
-	return this.graphAnalyser.analyseJson(req.body.graph)
-	.then(function(analysis) {
-		if (!analysis.numNodes) {
-			return res.status(400)
-				.json({ message: 'Invalid data' })
+	this._service.canWrite(req.user, path)
+	.then(function(can) {
+		if (!can) {
+			return res.status(403).json({
+				message: 'Sorry, permission denied'
+			})
 		}
 
-		return that.serialNumber.next('anonymousGraph')
-		.then(function(serial) {
-			var uid = makeHashid(serial)
-			var path = that._makePath(anonReq, uid)
+		that._service.findByPath(path)
+		.then(function(graph) {
+			if (!graph || graph.deleted) {
+				return res.status(404).json(helper.responseStatusError('not found'))
+			}
 
-			var gridFsGraphPath = '/graph'+path+'.json'
-			var gridFsOriginalImagePath = '/previews'+path+'-preview-original.png'
+			graph.deleted = true
 
-			return that._fs.writeString(gridFsGraphPath, req.body.graph)
-			.then(function() {
-				var url = that._fs.url(gridFsGraphPath);
-
-				var model = {
-					path: path,
-					url: url,
-					hasAudio: false,
-					stat: {
-						size: analysis.size,
-						numAssets: analysis.numAssets
-					}
-				}
-
-				return that._service.save(model, anonReq.user)
-				.then(function(asset) {
-					res.json(asset)
-				})
+			return that._service.save(graph, req.user)
+			.then(function(asset) {
+				req.user.decreaseProjectsCount()
+				res.json(asset)
+			})
+			.catch(function(err) {
+				next(err)
 			})
 		})
 	})
 	.catch(next)
 }
 
-// POST /graph
-GraphController.prototype.save = function(req, res, next) {
-	var that = this;
-	var path = this._makePath(req, req.body.path);
-	var wantsPrivate = !req.body.isPublic 	// !!req.body.private
+GraphController.prototype._save = function(path, user, req, res, next) {
+	var that = this
+
+	var wantsPrivate = !req.body.isPublic
 	var gridFsGraphPath = '/graph'+path+'.json';
+
+	if (user.isAnonymous) {
+		wantsPrivate = false
+		req.body.editable = true
+	}
 
 	var gridFsOriginalImagePath = '/previews'+path+'-preview-original.png'
 
@@ -504,6 +706,68 @@ GraphController.prototype.save = function(req, res, next) {
 
 	var tags = that._parseTags(req.body.tags);
 
+	return that._fs.writeString(gridFsGraphPath, req.body.graph)
+	.then(function() {
+		if (!req.body.previewImage) {
+			return
+		}
+
+		// save original image (if we ever need to batch process any of these)
+		return that._fs.writeString(gridFsOriginalImagePath, req.body.previewImage.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+		.then(function() {
+			// create preview images
+			return that.previewImageProcessor.process(path, req.body.previewImage, previewImageSpecs)
+			.then(function(processedImages) {
+				if (processedImages && processedImages.length === 2) {
+					// write small image
+					return that._fs.writeString(previewImageSpecs[0].gridFsPath, processedImages[0], 'base64')
+					.then(function() {
+						// write large image
+						that._fs.writeString(previewImageSpecs[1].gridFsPath, processedImages[1], 'base64')
+					})
+				}
+			})
+		})
+	})
+	.then(function() {
+		return that.graphAnalyser.analyseJson(req.body.graph)
+	})
+	.then(function(analysis) {
+		var url = that._fs.url(gridFsGraphPath);
+		var previewUrlSmall = that._fs.url(previewImageSpecs[0].gridFsPath)
+		var previewUrlLarge = that._fs.url(previewImageSpecs[1].gridFsPath)
+
+		var model = {
+			path: path,
+			tags: tags,
+			url: url,
+			private: wantsPrivate,
+			hasAudio: !!analysis.hasAudio,
+			editable: req.body.editable === false ? false : true,
+			stat: {
+				size: analysis.size,
+				numAssets: analysis.numAssets
+			},
+			previewUrlSmall: previewUrlSmall,
+			previewUrlLarge: previewUrlLarge
+		}
+
+		return that._service.save(model, user)
+		.then(function(asset) {
+			res.json(asset)
+		})
+		.catch(function(err) {
+			next(err)
+		})
+	})
+
+}
+
+// POST /graph
+GraphController.prototype.save = function(req, res, next) {
+	var that = this;
+	var path = this._makePath(req, req.body.path);
+
 	this._service.canWrite(req.user, path)
 	.then(function(can) {
 		if (!can) {
@@ -511,59 +775,34 @@ GraphController.prototype.save = function(req, res, next) {
 				.json({ message: 'Sorry, permission denied' })
 		}
 
-		return that._fs.writeString(gridFsGraphPath, req.body.graph)
-		.then(function() {
-			if (!req.body.previewImage) {
-				return
-			}
+		return that._save(path, req.user, req, res, next)
+	})
+	.catch(next)
+}
 
-			// save original image (if we ever need to batch process any of these)
-			return that._fs.writeString(gridFsOriginalImagePath, req.body.previewImage.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-			.then(function() {
-				// create preview images
-				return that.previewImageProcessor.process(path, req.body.previewImage, previewImageSpecs)
-				.then(function(processedImages) {
-					if (processedImages && processedImages.length === 2) {
-						// write small image
-						return that._fs.writeString(previewImageSpecs[0].gridFsPath, processedImages[0], 'base64')
-						.then(function() {
-							// write large image
-							that._fs.writeString(previewImageSpecs[1].gridFsPath, processedImages[1], 'base64')
-						})
-					}
-				})
-			})
-		})
-		.then(function() {
-			return that.graphAnalyser.analyseJson(req.body.graph)
-		})
-		.then(function(analysis) {
-			var url = that._fs.url(gridFsGraphPath);
-			var previewUrlSmall = that._fs.url(previewImageSpecs[0].gridFsPath)
-			var previewUrlLarge = that._fs.url(previewImageSpecs[1].gridFsPath)
+// POST /graph
+GraphController.prototype.saveAnonymous = function(req, res, next) {
+	var that = this
+	var anonReq = { user: { username: 'v', isAnonymous: true } }
 
-			var model = {
-				path: path,
-				tags: tags,
-				url: url,
-				private: wantsPrivate,
-				hasAudio: !!analysis.hasAudio,
-				editable: req.body.editable === false ? false : true,
-				stat: {
-					size: analysis.size,
-					numAssets: analysis.numAssets
-				},
-				previewUrlSmall: previewUrlSmall,
-				previewUrlLarge: previewUrlLarge
-			}
+	if (!req.body)
+		return renderError(400, res)
 
-			return that._service.save(model, req.user)
-			.then(function(asset) {
-				res.json(asset)
-			})
-			.catch(function(err) {
-				next(err)
-			})
+	return this.graphAnalyser.analyseJson(req.body.graph)
+	.then(function(analysis) {
+		if (!analysis.numNodes) {
+			return res.status(400)
+				.json({ message: 'Invalid data' })
+		}
+
+		return that.serialNumber.next('anonymousGraph')
+		.then(function(serial) {
+			var uid = makeHashid(serial)
+			var path = that._makePath(anonReq, uid)
+
+			req.body.path = path
+
+			return that._save(path, anonReq.user, req, res, next)
 		})
 	})
 	.catch(next)

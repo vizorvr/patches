@@ -18,28 +18,29 @@ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMA
 WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
+if (typeof(E2) === 'undefined')
+	E2 = {}
+
+if (typeof(module) !== 'undefined') {
+	var EventEmitter = require('events').EventEmitter
+}
 
 var URL_DATA = '/data/'
 var URL_GRAPHS = '/graph/'
 var URL_GRAPH_FILES = URL_DATA+'graph/'
 
-var E2 = {}
-
 // disable DPDB (device database) fetching for WebVR boilerplate because
 // the list in the device database doesn't have Samsung S6 on the list.
-window.WebVRConfig = window.WebVRConfig || {}
-window.WebVRConfig.NO_DPDB_FETCH = true
-//window.WebVRConfig.ENABLE_DEPRECATED_API = true
+if (typeof(window) !== 'undefined') {
+	window.E2 = E2 // global scope so plugins can access it
 
-// These can be used to force VR on desktop
-//window.WebVRConfig.FORCE_ENABLE_VR = true
-//window.WebVRConfig.FORCE_DISTORTION = true
-
-if (typeof(window) !== 'undefined')
-	window.E2 = E2; // global scope so plugins can access it
-
-if (typeof(global) !== 'undefined')
-	global.E2 = E2;
+	window.WebVRConfig = window.WebVRConfig || {}
+	window.WebVRConfig.NO_DPDB_FETCH = true
+	//window.WebVRConfig.ENABLE_DEPRECATED_API = true
+	// These can be used to force VR on desktop
+	//window.WebVRConfig.FORCE_ENABLE_VR = true
+	//window.WebVRConfig.FORCE_DISTORTION = true
+}
 
 E2.app = null;
 E2.ui = null;	// app sets this to a VizorUI instance
@@ -49,7 +50,59 @@ E2.slot_type = { input: 0, output: 1 };
 E2.erase_color = '#ff3b3b';
 E2.COLOR_COMPATIBLE_SLOT = '#080';
 
-E2.GRAPH_NODES = ['graph', 'loop', 'array_function'];
+E2.WORLD_PATCHES = [
+	'entity', 'entity_component'
+]
+
+E2.GRAPH_NODES = [
+	'graph', 'loop', 
+	'entity', 'entity_component',
+	'array_function', 'spawner'
+]
+
+E2.LOADING_NODES = {
+	'three_loader_model': 'model',
+	'three_loader_scene': 'scene',
+	'url_texture_generator': 'texture',
+	'url_stereo_cubemap_generator': 'image',
+	'url_stereo_latlongmap_generator': 'image',
+	'url_audio_buffer_generator': 'audiobuffer',
+	// 'url_audio_generator': 'audio',
+	// 'url_json_generator': 'json',
+	// 'url_video_generator': 'video'
+}
+
+E2.dt = {
+	FLOAT: { id: 0, name: 'Float' },
+	SHADER: { id: 1, name: 'Shader' },
+	TEXTURE: { id: 2, name: 'Texture' },
+	COLOR: { id: 3, name: 'Color' },
+	MATRIX: { id: 4, name: 'Matrix' },
+	VECTOR: { id: 5, name: 'Vector' },
+	CAMERA: { id: 6, name: 'Camera' },
+	BOOL: { id: 7, name: 'Boolean' },
+	ANY: { id: 8, name: 'Arbitrary' },
+	MESH: { id: 9, name: 'Mesh' },
+	AUDIO: { id: 10, name: 'Audio' },
+	SCENE: { id: 11, name: 'Scene' },
+	MATERIAL: { id: 12, name: 'Material' },
+	LIGHT: { id: 13, name: 'Light' },
+	DELEGATE: { id: 14, name: 'Delegate' },
+	TEXT: { id: 15, name: 'Text' },
+	VIDEO: { id: 16, name: 'Video' },
+	ARRAY: { id: 17, name: 'Typed Array' },
+	OBJECT: { id: 18, name: 'Object' },
+
+	GEOMETRY: { id: 19, name: 'Geometry' },
+	QUATERNION: { id: 20, name: 'Quaternion' },
+	OBJECT3D: { id: 21, name: 'Object3D' },
+	
+	VECTOR4: { id: 22, name: 'Vector 4' },
+
+	ENVIRONMENTSETTINGS: { id: 23, name: 'Environment Settings' },
+
+	CUBETEXTURE: { id: 24, name: 'CubeTexture' },
+}
 
 E2.uid = function() {
 	var keys = 'abcdefghjkmnpqrstuvwxyz23456789ABCDEFGHJKLMNPQRSTUVWXYZ'
@@ -70,38 +123,8 @@ function Core() {
 	EventEmitter.apply(this, arguments)
 
 	E2.core = this
-	
-	E2.dt = this.datatypes = {
-		FLOAT: { id: 0, name: 'Float' },
-		SHADER: { id: 1, name: 'Shader' },
-		TEXTURE: { id: 2, name: 'Texture' },
-		COLOR: { id: 3, name: 'Color' },
-		MATRIX: { id: 4, name: 'Matrix' },
-		VECTOR: { id: 5, name: 'Vector' },
-		CAMERA: { id: 6, name: 'Camera' },
-		BOOL: { id: 7, name: 'Boolean' },
-		ANY: { id: 8, name: 'Arbitrary' },
-		MESH: { id: 9, name: 'Mesh' },
-		AUDIO: { id: 10, name: 'Audio' },
-		SCENE: { id: 11, name: 'Scene' },
-		MATERIAL: { id: 12, name: 'Material' },
-		LIGHT: { id: 13, name: 'Light' },
-		DELEGATE: { id: 14, name: 'Delegate' },
-		TEXT: { id: 15, name: 'Text' },
-		VIDEO: { id: 16, name: 'Video' },
-		ARRAY: { id: 17, name: 'Typed Array' },
-		OBJECT: { id: 18, name: 'Object' },
 
-		GEOMETRY: { id: 19, name: 'Geometry' },
-		QUATERNION: { id: 20, name: 'Quaternion' },
-		OBJECT3D: { id: 21, name: 'Object3D' },
-		
-		VECTOR4: { id: 22, name: 'Vector 4' },
-
-		ENVIRONMENTSETTINGS: { id: 23, name: 'Environment Settings' },
-
-		CUBETEXTURE: { id: 24, name: 'CubeTexture' },
-	}
+	this.datatypes = E2.dt
 
 	this.renderer = { // compat for old plugins
 		matrix_identity: new THREE.Matrix4().identity(),
@@ -122,7 +145,8 @@ function Core() {
 
 	// relay events from AssetLoader
 	this.assetLoader.on('progress', function(pct) {
-		console.log('core progress', pct)
+		if (pct % 10 === 0)
+			console.log('core progress', pct)
 		E2.core.emit('progress', pct)
 	})
 
@@ -154,17 +178,27 @@ function Core() {
 		
 		this.resolve_dt[dt.id] = dt;
 	}
-	
-	// HTML5 audio context initialisation
-	if(window.AudioContext)
-		this.audioContext = new AudioContext();
-	else if(window.webkitAudioContext)
-		this.audioContext = new webkitAudioContext();
-	else
-		msg('NOTE: This host has no AudioContext support.');
+
+	if (Vizor.isEditor || Vizor.hasAudio)
+		this.createAudioContext()
 }
 
 Core.prototype = Object.create(EventEmitter.prototype)
+
+Core.prototype.createAudioContext = function() {
+	if (this.audioContext)
+		return this.audioContext
+
+	// HTML5 audio context initialisation
+	if (window.AudioContext)
+		this.audioContext = new AudioContext()
+	else if (window.webkitAudioContext)
+		this.audioContext = new webkitAudioContext()
+	else
+		msg('NOTE: This host has no AudioContext support.')
+
+	return this.audioContext
+}
 
 Core.prototype.get_uid = function() {
 	return E2.uid()
@@ -286,7 +320,7 @@ Core.prototype.deserialiseObject = function(d) {
 	this.delta_t = 0.0;
 	this.graph_uid = '' + d.graph_uid;
 
-	this.active_graph.destroy_ui();
+	this.active_graph.destroy_ui()
 	
 	this.graphs = [];
 	
@@ -368,4 +402,5 @@ Core.prototype.onPluginsLoaded = function() {
 
 if (typeof(module) !== 'undefined') {
 	module.exports = Core
+	module.exports.E2 = E2
 }

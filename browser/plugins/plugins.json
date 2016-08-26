@@ -61,14 +61,17 @@
         "Or": "or_modulator",
         "Xor": "xor_modulator",
         "Switch": "switch_modulator",
-        "Array Revolver Switch": "array_switch_modulator",
+        "Index Revolver Switch": "array_switch_modulator",
+        "Trigger Revolver Switch": "trigger_revolver",
         "Boolean toggle Modulator": "toggle_modulator",
         "Trigger On Change": "change_trigger"
     },
 
     "LOAD CONTENT": {
         "Texture": "url_texture_generator",
+        "Cubemap": "url_cubemap_generator",
         "Stereo Cubemap": "url_stereo_cubemap_generator",
+        "Stereo Lat Long Map": "url_stereo_latlongmap_generator",
         "3D model": "three_loader_model",
         "Array": "url_array_generator",
         "Audio file loader": "url_audio_generator",
@@ -84,7 +87,6 @@
         "Render To Texture": "three_webgl_texture_renderer",
         "Scene": "three_scene",
         "Environment Settings": "three_environment_settings"
-
     },
 
     "3D GEOMETRY AND MESH TOOLS": {
@@ -143,17 +145,25 @@
         "Object Gaze Clicked": "on_three_object_gaze_clicked"
     },
 
-
     "STATE AND STRUCTURE": {
+        "Annotation": "annotation",
+
+        "Is In VR": "is_in_vr",
+
         "Read Variable": "variable_local_read",
         "Write Variable": "variable_local_write",
+        "Write Variable on Trigger": "variable_local_write_conditional",
+
         "Input proxy": "input_proxy",
         "Output proxy": "output_proxy",
+
         "Nested Patch": "graph",
+
+        "Entity": "entity",
+        "Entity Component": "entity_component",
+
         "Loop": "loop",
-        "Array Function": "array_function",
-        "Annotation": "annotation",
-        "Is In VR": "is_in_vr"
+        "Array Function": "array_function"
     },
 
     "CAMERAS": {
@@ -165,8 +175,6 @@
         "Camera Forward Vector": "camera_forward_vector"
     },
 
-
-    "AUDIO": {
         "Audio player": "audio_player",
         "Audio source player": "audio_source_player",
         "Analyse": "audio_analyse_modulator",
@@ -196,6 +204,7 @@
 
     "GRAPH CONTROL": {
         "Stop playback": "stop_emitter",
+        "Navigate to URL on Trigger": "open_url_on_trigger",
         "Load File on Trigger": "load_graph_on_trigger",
         "Initialise": "initialise_generator"
     },
@@ -208,9 +217,9 @@
         "Mouse buttons": "mouse_button_generator",
         "Mouse position": "mouse_position_generator",
         "Mouse wheel": "mouse_wheel_generator",
-        "Game pad": "gamepad_generator"
+        "XBOX 360 Gamepad": "gamepad_generator",
+        "HTC Vive Controller": "vive_controller"
     },
-
 
     "TEXT TOOLS": {
         "Experimental: Text Geometry": "three_text_geometry",
@@ -277,18 +286,19 @@
     },
 
     "VECTOR MATH": {
-        "Add Vector": "vector_add",
+        "Add Vectors": "vector_add",
+        "Subtract Vectors": "vector_subtract",
+        "Multiply Vectors": "vector_multiply",
+        "Magnitude/Length": "vector_magnitude",
+        "Distance of Vectors": "vector_distance",
         "Cross": "vector_cross",
         "Dot": "vector_dot",
-        "Magnitude": "vector_magnitude",
-        "Multiply vector": "vector_multiply",
         "Normalize": "vector_normalize",
         "Scale": "vector_scale",
         "Transform": "vector_transform",
         "Add Vectors Conditionally": "add_on_trigger_vector3",
         "Rotation from Direction": "rotation_from_direction"
     },
-
 
     "OSCILLATORS": {
         "Cosine": "cosine_modulator",
@@ -300,13 +310,11 @@
         "Out Tweens": "tween_out_modulator"
     },
 
-
-    "EVENT EMITTER": {
+    "EVENTS": {
         "Emit Single Runtime Event": "runtime_event_write",
         "Emit Continuous Runtime Events": "runtime_event_write_continuous",
         "On Runtime Event": "runtime_event_read"
     },
-
 
     "VIDEO": {
         "Duration": "video_get_duration_modulator",
@@ -319,6 +327,13 @@
         "Animate Vector3 on Trigger": "animate_vector3_on_trigger",
         "Animate Between Input Floats": "array_blend_modulator_float",
         "Animate Between Input Vector3s": "array_blend_modulator_vector3"
+    },
+
+    "EXPERIMENTAL": {
+        "Radial Point Geometry": "radial_point_geometry",
+        "Cubemap Assembler": "cubemap_assembler",
+        "Stereo Cube Map (old)": "stereo_cube_map",
+        "Photosphere Orientation": "photosphere_orientation_reader"
     }
 
 }

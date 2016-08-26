@@ -90,8 +90,6 @@ DocumentationController.prototype.getPluginDocumentation = function(req, res, ne
 
 	var docPath = './documentation/browser/plugins/' + pluginName + ".md"
 
-	console.log('fetching docs for ', docPath)
-
 	var that = this
 
 	fs.stat(docPath, function(err, exists) {

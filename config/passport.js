@@ -40,27 +40,23 @@ passport.use(new LocalStrategy({ usernameField: 'email' }, function(email, passw
 }))
 
 // Login Required middleware.
-exports.isAuthenticated = function(req, res, next)
-{
+exports.isAuthenticated = function(req, res, next) {
 	if (req.isAuthenticated())
-		return next();
+		return next()
 
 	if (req.xhr)
-		return next(error401());
+		return next(error401())
 
-	res.redirect('/login');
-};
+	res.redirect('/login')
+}
 
 // Authorization Required middleware.
-exports.isAuthorized = function(req, res, next)
-{
+exports.isAuthorized = function(req, res, next) {
 	var provider = req.path.split('/').slice(-1)[0];
 
-	if (_.find(req.user.tokens, { kind: provider }))
-	{
-		next();
-	} else
-	{
-		res.redirect('/auth/' + provider);
+	if (_.find(req.user.tokens, { kind: provider })) {
+		next()
+	} else {
+		res.redirect('/auth/' + provider)
 	}
-};
+}

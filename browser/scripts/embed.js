@@ -41,17 +41,17 @@
 
 	var n = script.parentNode, r = n.getBoundingClientRect()
 	var aspect = 16 / 9
+	var desiredAspect = script.attributes.getNamedItem('data-aspect')
+	if (desiredAspect) {
+		desiredAspect = parseFloat(desiredAspect.value)
+		if (!isNaN(desiredAspect))
+			aspect = desiredAspect
+	}
 
-	var iframeWidth = r.width
+	var iframeWidth = r.width * 0.995
 	var iframeHeight = iframeWidth / aspect
 	var iframeId = _id + 'i'
 
-	document.write('<iframe id="'+iframeId+'" src="'+url+
-		'" width="99.5%" height="' + iframeHeight +
-		'" frameborder="0" style="box-sizing:border-box;" allowfullscreen></iframe>')
-
-	iframeElement = document.getElementById(iframeId)
-	iframeWindow = document.getElementById(iframeId).contentWindow
 
 	window.addEventListener('orientationchange', function() {
 		iframeWindow.postMessage({ orientation: window.orientation }, '*')
@@ -59,18 +59,34 @@
     }, false)
 
 	var resizeIframe = function() {
-		var currentWidth = iframeElement.getBoundingClientRect().width
+		var d = iframeElement.style.display
+		iframeElement.style.display = 'none'
+		var currentWidth = iframeElement.parentNode.getBoundingClientRect().width * 0.995
 		if (currentWidth !== iframeWidth) {
-			iframeHeight = currentWidth / aspect
-			iframeElement.height = iframeHeight
 			iframeWidth = currentWidth
+			iframeHeight = iframeWidth / aspect
+			iframeElement.width = iframeWidth
+			iframeElement.height = iframeHeight
 		}
+		iframeElement.style.display = d
 		return true
 	}
 
-	window.addEventListener('orientationchange', resizeIframe, true)
-	window.addEventListener('resize', resizeIframe, true)
+	document.write('<iframe id="'+iframeId+'" src="'+url+
+		'" width="'+ iframeWidth +'" height="' + iframeHeight +
+		'" frameborder="0" style="box-sizing:border-box;" allowfullscreen></iframe>')
 
+	iframeElement = document.getElementById(iframeId)
+	iframeWindow = document.getElementById(iframeId).contentWindow
+
+	resizeIframe()
+	
+	// fix resizing issues with android
+	// android issues orientationchange->resize, ios issues resize->orientationchange
+	window.addEventListener('orientationchange', function(){
+		setTimeout(resizeIframe, 500)
+	}, true)
+	window.addEventListener('resize', resizeIframe)
 	window.addEventListener('devicemotion', function(deviceMotion) {
 		iframeWindow.postMessage({
 			devicemotion: {
@@ -93,4 +109,5 @@
 	window._v_urls = window._v_urls || []
 	window._v_urls.push(url)
 
+	window.addEventListener('load', resizeIframe)
 })()

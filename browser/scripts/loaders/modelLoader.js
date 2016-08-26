@@ -6,14 +6,17 @@ if (typeof(module) !== 'undefined')
 function ModelLoader(url) {
 	E2.Loader.apply(this, arguments)
 
-	var extname = url.substring(url.lastIndexOf('.'))
+	var extname = url.substring(url.lastIndexOf('.')).toLowerCase()
 	switch(extname) {
 		case '.obj':
 			this.loadObj(url)
 			break;
 		case '.js':
 		case '.json':
-			this.loadJson(url)
+		case '.dae':
+		case '.fbx':
+		case '.gltf':
+			this.loadObject3D(url)
 			break;
 		default:
 			msg('ERROR: Don`t know how to load', url, extname)
@@ -23,7 +26,7 @@ function ModelLoader(url) {
 
 ModelLoader.prototype = Object.create(E2.Loader.prototype)
 
-ModelLoader.prototype.loadJson = function(url) {
+ModelLoader.prototype.loadObject3D = function(url) {
 	var loader = new THREE.JSONLoader()
 	loader.crossOrigin = 'Anonymous'
 	loader.load(url,
@@ -42,7 +45,7 @@ ModelLoader.prototype.loadObj = function(url) {
 			// .mtl exists on server, load .obj and .mtl
 			var mtlLoader = new THREE.MTLLoader()
 			mtlLoader.setPath('')
-			mtlLoader.setBaseUrl(mtlUrl.substring(0,mtlUrl.lastIndexOf('/')+1))
+			mtlLoader.setBaseUrl(mtlUrl.substring(0, mtlUrl.lastIndexOf('/')+1))
 			mtlLoader.load(mtlUrl, function(materials) {
 				var objLoader = new THREE.OBJLoader()
 				objLoader.setMaterials(materials)

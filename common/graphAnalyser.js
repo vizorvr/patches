@@ -3,15 +3,11 @@
 var isNode = typeof(process) !== 'undefined'
 var when = isNode ? require('when') : window.when
 
-var loadingPlugins = [
-	'three_loader_model',
-	'three_loader_scene',
-	'url_texture_generator',
-	'url_audio_buffer_generator',
-	'url_audio_generator',
-	'url_json_generator',
-	'url_video_generator',
-]
+if (isNode) {
+	E2 = require('../browser/scripts/core').E2
+}
+
+var loadingPlugins = Object.keys(E2.LOADING_NODES)
 
 var audioPlugins = [
 	'url_audio_buffer_generator',
@@ -19,6 +15,8 @@ var audioPlugins = [
 ]
 
 function GraphAnalyser(gfs) {
+	if (!gfs)
+		throw new Error('GraphAnalyser needs a GridFS instance.')
 	this._fs = gfs
 }
 
@@ -31,10 +29,44 @@ GraphAnalyser.prototype.parseAssets = function(graph) {
 		size: 0,
 		numAssets: 0,
 		numNodes: 0,
-		hasAudio: false
+		hasAudio: false,
+		type: 'patch'
 	}
 
-	function findInGraph(subgraph) {
+	function readRoot(graph) {
+		if (!graph.nodes || !graph.nodes.length)
+			return console.error('No nodes to GraphAnalyser.parseAssets')
+
+		var patchNode = graph.nodes[0]
+		var patchNodeId = patchNode.plugin
+		var isPatchNode = (E2.GRAPH_NODES.indexOf(patchNodeId) > -1)
+
+		if (!isPatchNode)
+			return;
+
+		var patchStrongType = 'patch'
+
+		// catch single-node patches with matching outputs
+		if (graph.nodes.length === 1 && patchNode.dyn_out) {
+			// maybe entity / other typed patch
+			var soloOutName = patchNode.dyn_out[0].name
+			switch(soloOutName) {
+				case 'object3d':
+					patchStrongType = 'entity'
+					break;
+				case 'position':
+				case 'rotation':
+				case 'scale':
+				case 'material':
+					patchStrongType = 'entity_component'
+					break;
+			}
+		}
+
+		stat.type = patchStrongType
+	}
+
+	function walkGraph(subgraph) {
 		if (!subgraph.nodes)
 			return when.resolve()
 
@@ -43,8 +75,8 @@ GraphAnalyser.prototype.parseAssets = function(graph) {
 
 			stat.numNodes++
 
-			if (id === 'graph')
-				return findInGraph(node.graph || node.plugin.graph)
+			if (E2.GRAPH_NODES.indexOf(id) > -1)
+				return walkGraph(node.graph || node.plugin.graph)
 
 			if (loadingPlugins.indexOf(id) === -1)
 				return
@@ -61,10 +93,10 @@ GraphAnalyser.prototype.parseAssets = function(graph) {
 			if (isNode)
 				aurl = aurl.replace(/^\/data/, '')
 
+			stat.numAssets++;
+
 			return that._fs.stat(aurl)
 			.then(function(assetStat) {
-				stat.numAssets++
-
 				if (!assetStat) // not found
 					return;
 
@@ -72,8 +104,10 @@ GraphAnalyser.prototype.parseAssets = function(graph) {
 			})
 		})
 	}
-
-	return findInGraph(graph)
+	
+	readRoot(graph)
+	
+	return walkGraph(graph)
 	.then(function() {
 		return stat
 	})
@@ -85,7 +119,7 @@ GraphAnalyser.prototype.analyseJson = function(graphJson) {
 	try {
 		graph = JSON.parse(graphJson)
 	} catch(e) {
-		console.error('PARSE ERROR', e.stack, graphJson)
+		console.error('PARSE ERROR', e.stack)
 		return e
 	}
 	

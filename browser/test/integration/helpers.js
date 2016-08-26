@@ -29,8 +29,8 @@ exports.slot = function slot(index, type, dt) {
 exports.mockE2Classes = function() {
 	global.AssetLoader = function AssetLoader() {
 		EventEmitter.call(this)
-		this.defaultTexture = {}
-		this.loadingTexture = {}
+		this.defaultTexture = { clone: function() {} }
+		this.loadingTexture = { clone: function() {} }
 	}
 
 	global.AssetLoader.prototype = Object.create(EventEmitter.prototype)
@@ -54,14 +54,14 @@ exports.mockE2Classes = function() {
 		return when.resolve({ size: 0, numAssets: 0 })
 	}
 
+	global.E2.track = function() {}
+
 	global.E2.GridFsClient = function() {}
 
 	global.E2.EnvironmentSettings = function(){}
 
 	global.E2.EnvironmentSettings = function(){}
 	global.E2.Noise = function() {this.noise2D = function(){}}
-
-	global.mixpanel = { track: function() {}}
 }
 
 function Color() {}
@@ -99,10 +99,9 @@ var setupWebVRAdapter = exports.setupWebVRAdapter = function() {
 		this.emit(this.events.modeChanged, mode, oldMode)
 	}
 	vw.setDomElementDimensions = mock
-
 }
+
 exports.reset = function() {
-	global.E2 = {}
 	global.window = global
 
 	global.window.screen = {width: 1280, height: 720}
@@ -144,7 +143,10 @@ exports.reset = function() {
 	}
 
 	global.navigator = {
-		userAgent: 'node'
+		userAgent: 'node',
+		getGamepads: function() {
+			return []
+		}
 	}
 
 	global.WebVRConfig = {
@@ -158,8 +160,20 @@ exports.reset = function() {
 		this.send = function() {}
 	}
 
+	exports.runScript(browserPath+'vendor/borismus/webvr-polyfill.js')
+	exports.runScript(browserPath+'vendor/borismus/webvr-manager.js')
+
 	exports.runScript(browserPath+'dist/engine.js')
 	exports.mockE2Classes()
+
+	global._webVRPolyfill = {
+		getVRDisplays: function() { return when.resolve([]) },
+	}
+	global.hardware = {
+		hasVRDisplays: function() { return when.resolve(true) },
+	}
+
+	global.VizorWebVRAdapter = require(browserPath+'scripts/webVRAdapter.js')
 
 	var Application = require(browserPath+'scripts/application.js')
 	
@@ -206,7 +220,14 @@ exports.reset = function() {
 		mousemove:function(){},
 		outerHeight:function(){},
 		'0': {
-			getContext: function(){}
+			getContext: function() {
+				return {
+					clearRect: function() { return 0 },
+					measureText: function() { return 0 },
+					strokeText: function() { return 0 },
+					fillText: function() { return 0 },
+				}
+			}
 		}
 	}}
 
@@ -226,7 +247,23 @@ exports.reset = function() {
 		'0': {
 			clientWidth:1,
 			clientHeight:1,
-			addEventListener: function() {}
+			addEventListener: function() {},
+			getContext: function() {
+				return {
+					createShader: function() {},
+					deleteShader: function() {},
+					compileShader: function() {},
+					shaderSource: function() {},
+					attachShader: function() {},
+					bindAttribLocation: function() {},
+					bindBuffer: function() {},
+					bufferData: function() {},
+					getProgramParameter: function() {},
+					createBuffer: function() {},
+					linkProgram: function() {},
+					createProgram: function() {}
+				}
+			}
 		}
 	}
 
@@ -245,22 +282,30 @@ exports.reset = function() {
 	}
 
 	global.E2.app.worldEditor = {
+		clearSelection: function() {},
 		isActive: function() {
 			return false
 		}
 	}
 
-	global.E2.app.player = { core: E2.core }
+	global.E2.app.player = {
+		core: E2.core,
+		state: {}
+	}
 
 	E2.core.active_graph = new Graph(E2.core, null, {})
 	E2.core.root_graph = E2.core.active_graph
 	E2.core.graphs = [ E2.core.active_graph ]
 	
 	E2.core.renderer = {
+		render: function() {},
+		clear: function() {},
 		setPixelRatio: function() {},
 		domElement: {parentElement:{style:{}}},
 		setSize: function(){},
+		setSizeNoResize: function(){},
 		setClearColor: function() {},
+		shadowMap: {},
 		getSize: function() {return {width: 1, height: 1}}
 	}
 
@@ -314,7 +359,7 @@ exports.setupGlobals = function() {
 	}
 
 	global.TextureCache = function() {}
-	global.PresetManager = function() {}
+	global.PatchManager = function() {}
 	
 	require(requireRoot+'/scripts/commands/graphEditCommands')
 	exports.runScript(requireRoot+'scripts/commands/graphEditCommands.js')
@@ -329,6 +374,9 @@ exports.setupGlobals = function() {
 	}
 
 	E2.ui = {
+		isInProgramMode: function() {
+			return false
+		},
 		buildBreadcrumb: function() {},
 		state: {},
 		showStartDialog: function() {return when.resolve()}

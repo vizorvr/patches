@@ -4,7 +4,6 @@ var reset = require('./helpers').reset;
 var loadPlugin = require('./helpers').loadPlugin;
 var fs = require('fs');
 var when = require('when');
-
 var pluginPath = __dirname+'/../../plugins/'
 
 describe('loadAllPlugins', function() {

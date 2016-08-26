@@ -9,15 +9,16 @@ window.playVizorFile = function playVizorFile() {
 function onCoreReady() {
 	var $canvas = $('canvas[data-graph-url]')
 	var autoplay = (window.Vizor) ? window.Vizor.autoplay : true
+	var url = $canvas.data('graph-url')
 
-	// E2.app.player.stop()
 	E2.app.player.on_update()
 
-	if (typeof mixpanel !== 'undefined')
-		mixpanel.track('Player Opened')
+	E2.track({
+		event: 'playerOpened',
+		path: url
+	})
 
 	if (autoplay) {
-		var url = $canvas.data('graph-url')
 		E2.app.player.loadAndPlay(url, autoplay)
 	}
 
@@ -25,8 +26,7 @@ function onCoreReady() {
 }
 
 $(document).ready(function()  {
-	hardware.detect()
-	CreatePlayer([hardware.hmd, hardware.sensor], onCoreReady)
+	CreatePlayer(onCoreReady)
 })
 
 // postMessage API for setting variables in embedded files
@@ -38,8 +38,8 @@ window.addEventListener('message', function(e) {
 	switch(e.data.command) {
 		case 'getVariable':
 			send({
-			name: e.data.name, 
-			value: E2.app.player.getVariableValue(e.data.name)
+				name: e.data.name, 
+				value: E2.app.player.getVariableValue(e.data.name)
 			})
 			break;
 

@@ -1,0 +1,355 @@
+{
+
+    "EXAMPLES": {
+        "Rotating box": {
+            "name": "_example-rotating-cube"
+        },
+        "Gaze click: Button shows a screen": {
+            "name": "_example-gaze-button"
+        },
+        "Gaze click: switch object position": {
+            "name": "_example-switch-box-position-on-gaze-click"
+        },
+        "Inputs to Array": {
+            "name": "_example-inputs-to-array"
+        },
+        "Spawn particles from mesh": {
+            "name": "_example-particle-spawn-from-mesh"
+        }
+    },
+
+    "COMPONENTS: Wobble": {
+        "Wobble on Y axis": {
+            "name": "components/wobble-y-axis",
+            "type": "entity_component"
+        }
+    },
+
+    "COMPONENTS: Rotation": {
+        "Rotation on Y axis": {
+            "name": "components/rotation-y-axis",
+            "type": "entity_component"
+        },
+        "Rotation on all axes": {
+            "name": "components/rotation-all-axes",
+            "type": "entity_component"
+        }
+    },
+
+    "OBJECTS: BASIC": {
+        "3D model": {
+            "name": "_add-3d-model",
+            "type": "entity"
+        },
+        "Box": {
+            "name": "_add-box",
+            "type": "entity"
+        },
+        "360 photo": {
+            "name": "_add-360-photo",
+            "type": "entity"
+        },
+        "Sphere": {
+            "name": "_add-sphere",
+            "type": "entity"
+        },
+        "Dodecahedron": {
+            "name": "_add-dodecahedron",
+            "type": "entity"
+        },
+        "Plane": {
+            "name": "_add-plane-no-shading",
+            "type": "entity"
+        },
+        "Cylinder": {
+            "name": "_add-cylinder",
+            "type": "entity"
+        },
+        "Torus": {
+            "name": "_add-torus",
+            "type": "entity"
+        },
+        "Ring": {
+            "name": "_add-ring",
+            "type": "entity"
+        },
+        "Sky sphere": {
+            "name": "_add-sky-sphere",
+            "type": "entity"
+        },
+        "Floor": {
+            "name": "_add-floor",
+            "type": "entity"
+        },
+        "Room": {
+            "name": "_add-room",
+            "type": "entity"
+        },
+        "Text": {
+            "name": "_add-text",
+            "type": "entity"
+        },
+        "Stereo Cubemap": {
+            "name": "_add_stereo_cubemap",
+            "type": "entity"
+        }
+    },
+
+    "OBJECTS: ISLAND": {
+        "Base Rock": {
+            "name": "_add_object_preset_island-valley-baserock",
+            "type": "entity"
+        },
+        "Leaf Tree": {
+            "name": "_add_object_preset_island-leaftreea",
+            "type": "entity"
+        },
+        "Palm Tree": {
+            "name": "_add_object_preset_island-palmtree",
+            "type": "entity"
+        },
+        "Low Stone A": {
+            "name": "_add_object_preset_island-stone-a",
+            "type": "entity"
+        },
+        "Low Stone B": {
+            "name": "_add_object_preset_island-stone-c",
+            "type": "entity"
+        },
+        "High Stone A": {
+            "name": "_add_object_preset_island-stone-b",
+            "type": "entity"
+        },
+        "High Stone B": {
+            "name": "_add_object_preset_island-stone-d",
+            "type": "entity"
+        }
+    },
+
+    "OBJECTS: MOUNTAIN": {
+        "Mountain": {
+            "name": "_add_object_preset_Mountain_02",
+            "type": "entity"
+        },
+        "Pine Tree": {
+            "name": "_add_object_preset_Mountain_PineTree_02",
+            "type": "entity"
+        },
+        "Bush": {
+            "name": "_add_object_preset_Mountain_bush_01",
+            "type": "entity"
+        },
+        "Crystal": {
+            "name": "_add_object_preset_Mountain_crystal_01",
+            "type": "entity"
+        },
+        "Green": {
+            "name": "_add_object_preset_Mountain_green_01",
+            "type": "entity"
+        },
+        "Plump Tree": {
+            "name": "_add_object_preset_Mountain_plumptree_01",
+            "type": "entity"
+        },
+        "Plump Tree 2": {
+            "name": "_add_object_preset_Mountain_plumptree_02",
+            "type": "entity"
+        },
+        "Rocks": {
+            "name": "_add_object_preset_Mountain_rocks_01",
+            "type": "entity"
+        },
+        "Telescope": {
+            "name": "_add_object_preset_Mountain_scope_01",
+            "type": "entity"
+        },
+        "Shroom": {
+            "name": "_add_object_preset_Mountain_shroom_01",
+            "type": "entity"
+        },
+        "Small Base": {
+            "name": "_add_object_preset_Mountain_small_base_01",
+            "type": "entity"
+        },
+        "Small Base 2": {
+            "name": "_add_object_preset_Mountain_small_base_02",
+            "type": "entity"
+        },
+        "Water": {
+            "name": "_add_object_preset_Mountain_water_02",
+            "type": "entity"
+        }
+    },
+
+    "OBJECTS: LAB": {
+        "Lab": {
+            "name": "_add_object_preset_Labv9",
+            "type": "entity"
+        },
+        "Genius": {
+            "name": "_add_object_preset_Labv4-Genius_02",
+            "type": "entity"
+        },
+        "Happy Dude": {
+            "name": "_add_object_preset_Labv4_Happy_02",
+            "type": "entity"
+        },
+        "Ceiling Lights": {
+            "name": "_add_object_preset_Labv8lights",
+            "type": "entity"
+        },
+        "Television": {
+            "name": "_add_object_preset_LabvTV",
+            "type": "entity"
+        },
+        "Boom Box": {
+            "name": "_add_object_preset_Labvboombox",
+            "type": "entity"
+        },
+        "Box": {
+            "name": "_add_object_preset_Labvbox",
+            "type": "entity"
+        },
+        "Desk": {
+            "name": "_add_object_preset_Labvdesk",
+            "type": "entity"
+        },
+        "Glasses": {
+            "name": "_add_object_preset_Labvglasses",
+            "type": "entity"
+        },
+        "Globe": {
+            "name": "_add_object_preset_Labvglobe",
+            "type": "entity"
+        },
+        "Light": {
+            "name": "_add_object_preset_Labvlight2",
+            "type": "entity"
+        },
+        "Mic": {
+            "name": "_add_object_preset_Labvmic",
+            "type": "entity"
+        },
+        "Rocket": {
+            "name": "_add_object_preset_Labvrocket",
+            "type": "entity"
+        },
+        "Stool": {
+            "name": "_add_object_preset_Labvstool",
+            "type": "entity"
+        },
+        "Trash": {
+            "name": "_add_object_preset_Labvtrash",
+            "type": "entity"
+        },
+        "Wrench": {
+            "name": "_add_object_preset_Labvwrench",
+            "type": "entity"
+        },
+        "Zapper": {
+            "name": "_add_object_preset_Labvzapper",
+            "type": "entity"
+        }
+    },
+
+
+    "LIGHTS": {
+        "Point light": {
+            "name": "_add-point-light",
+            "type": "entity"
+        }
+    },
+
+    "PARTICLES": {
+        "Particle emitter": {
+            "name": "_add-particle-emitter",
+            "type": "entity"
+        },
+        "Geometry as particles": {
+            "name": "_add-particle-geometry",
+            "type": "entity"
+        }
+    },
+
+    "INTERACTION": {
+        "Increment / Decrement Value on Trigger": {
+            "name": "_increment_or_decrement_on_trigger"
+        },
+        "WASD+ZC Keyboard Movement": {
+            "name": "wasdzc-keyboard-movement"
+        },
+        "HTC Vive Controllers": {
+            "name": "vive-hands"
+        }
+    },
+
+    "MUSIC AND SOUND": {
+        "Play music or sound": {
+            "name": "_audio-player"
+        },
+        "Play music + FFT output": {
+            "name": "_audio-player-and-fft"
+        }
+    },
+
+    "TIME & ANIMATION ": {
+        "Basic clock": {
+            "name": "_basic-clock"
+        },
+        "Animate on Trigger": {
+            "name": "_animate-on-trigger"
+        },
+        "Oscillate between 2 values": {
+            "name": "_oscillate-between-2-values"
+        },
+        "Oscillate 2 values with in tween": {
+            "name": "_oscillate-with-in-tween"
+        },
+        "Oscillate 2 values with out tween": {
+            "name": "_oscillate-with-out-tween"
+        },
+        "Oscillate with a sawtooth": {
+            "name": "_oscillate-sawtooth"
+        },
+        "Oscillate with a triangle": {
+            "name": "time_oscillate_with_triangle"
+        },
+        "Stopwatch": {
+            "name": "_stopwatch"
+        },
+        "Timer from 0 to 1": {
+            "name": "time_timer_from_0_to_1"
+        },
+        "Timer from 1 to 0": {
+            "name": "time_timer_from_1_to_0"
+        },
+        "Circular motion to XYZ": {
+            "name": "time_circular_motion_to_xyz"
+        },
+        "Shaky random between 0 & 1": {
+            "name": "time_shaky_random"
+        },
+        "Random with speed": {
+            "name": "util_random_with_speed"
+        },
+        "Move in a circle and turn": {
+            "name": "_animation-move-in-a-circle-and-turn"
+        }
+    },
+
+    "UTILS": {
+        "4 step stepsequencer": {
+            "name": "util_4_step_stepsequencer"
+        },
+        "1 step stepsequencer": {
+            "name": "util_1_step_stepsequencer"
+        },
+        "9 step stepsequencer": {
+            "name": "util_9_step_stepsequencer"
+        },
+        "Display number": {
+            "name": "_util-display-number",
+            "type": "patch"
+        }
+    }
+}

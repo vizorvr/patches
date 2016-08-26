@@ -13,15 +13,22 @@
 		this.updated = true
 		this.node.queued_update = 1
 
-		mixpanel.track('Gaze Clicked', {
+		E2.track({
+			event: 'gazeClicked',
 			item: this.targetNode.uid
 		})
 	}
 
+	OnThreeObjectGazeClicked.prototype.onGazeIn = function() {
+		this.focused = true
+	}
+
 	OnThreeObjectGazeClicked.prototype.onGazeOut = function() {
-		this.triggerState = false
-		this.updated = true
-		this.node.queued_update = 1
+		if (this.triggerState) {
+			this.triggerState = false
+			this.updated = true
+			this.node.queued_update = 1
+		}
 	}
 
 	OnThreeObjectGazeClicked.prototype.update_state = function() {

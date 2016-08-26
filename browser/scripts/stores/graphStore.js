@@ -29,6 +29,69 @@ function GraphStore() {
 GraphStore.prototype = Object.create(Store.prototype)
 
 GraphStore.prototype._setupListeners = function() {
+	var that = this
+
+	function applyActionToGraph(graph, payload) {
+		switch(payload.actionType) {
+			case 'uiGraphTreeReordered':
+				that._uiGraphTreeReordered(
+					graph,
+					payload.original,
+					payload.sibling,
+					payload.insertAfter)
+				break;
+			case 'uiNodeOpenStateChanged':
+				var node = graph.findNodeByUid(payload.nodeUid)
+				node.setOpenState(payload.isOpen)
+				break;
+			case 'uiNodeAdded':
+				that._uiNodeAdded(graph, payload.node, payload.info)
+				break;
+			case 'uiNodeRemoved':
+				that._uiNodeRemoved(graph, payload.nodeUid)
+				break;
+			case 'uiSlotAdded':
+				that._uiSlotAdded(graph, payload.nodeUid, payload.slot)
+				break;
+			case 'uiSlotRemoved':
+				that._uiSlotRemoved(graph, payload.nodeUid, payload.slotUid)
+				break;
+			case 'uiNodeRenamed':
+				that._uiNodeRenamed(graph, payload.nodeUid, payload.title)
+				break;
+			case 'uiConnected':
+				that._uiConnected(graph, payload.connection)
+				break;
+			case 'uiDisconnected':
+				that._uiDisconnected(graph, payload.connectionUid)
+				break;
+			case 'uiNodesMoved':
+				that._uiNodesMoved(graph, payload.nodeUids, payload.delta)
+				break;
+			case 'uiPluginTransientStateChanged':
+				that._uiPluginTransientStateChanged(
+					graph,
+					payload.nodeUid,
+					payload.key,
+					payload.value)
+				break;
+			case 'uiPluginStateChanged':
+				that._uiPluginStateChanged(
+					graph,
+					payload.nodeUid,
+					payload.key,
+					payload.value)
+				break;
+			case 'uiSlotValueChanged':
+				that._uiSlotValueChanged(
+					graph,
+					payload.nodeUid,
+					payload.slotName,
+					payload.value)
+				break;
+		}
+	}
+
 	E2.core.on('vizorFileLoaded', this._calculateGraphSize.bind(this))
 
 	E2.app.dispatcher.register(function receiveFromDispatcher(payload) {
@@ -42,64 +105,13 @@ GraphStore.prototype._setupListeners = function() {
 		if (!graph)
 			return console.error('No graph found for payload guid ', payload.graphUid)
 
-		switch(payload.actionType) {
-			case 'uiGraphTreeReordered':
-				this._uiGraphTreeReordered(
-					graph,
-					payload.original,
-					payload.sibling,
-					payload.insertAfter)
-				break;
-			case 'uiNodeOpenStateChanged':
-				var node = graph.findNodeByUid(payload.nodeUid)
-				node.setOpenState(payload.isOpen)
-				break;
-			case 'uiNodeAdded':
-				this._uiNodeAdded(graph, payload.node, payload.info)
-				break;
-			case 'uiNodeRemoved':
-				this._uiNodeRemoved(graph, payload.nodeUid)
-				break;
-			case 'uiSlotAdded':
-				this._uiSlotAdded(graph, payload.nodeUid, payload.slot)
-				break;
-			case 'uiSlotRemoved':
-				this._uiSlotRemoved(graph, payload.nodeUid, payload.slotUid)
-				break;
-			case 'uiNodeRenamed':
-				this._uiNodeRenamed(graph, payload.nodeUid, payload.title)
-				break;
-			case 'uiConnected':
-				this._uiConnected(graph, payload.connection)
-				break;
-			case 'uiDisconnected':
-				this._uiDisconnected(graph, payload.connectionUid)
-				break;
-			case 'uiNodesMoved':
-				this._uiNodesMoved(graph, payload.nodeUids, payload.delta)
-				break;
-			case 'uiPluginTransientStateChanged':
-				this._uiPluginTransientStateChanged(
-					graph,
-					payload.nodeUid,
-					payload.key,
-					payload.value)
-				break;
-			case 'uiPluginStateChanged':
-				this._uiPluginStateChanged(
-					graph,
-					payload.nodeUid,
-					payload.key,
-					payload.value)
-				break;
-			case 'uiSlotValueChanged':
-				this._uiSlotValueChanged(
-					graph,
-					payload.nodeUid,
-					payload.slotName,
-					payload.value)
-				break;
+		if (graph.hasCopies) {
+			graph.copies.map(function(graphCopy) {
+				applyActionToGraph(graphCopy, payload)
+			})
 		}
+
+		applyActionToGraph(graph, payload)
 	}.bind(this))
 }
 
@@ -244,7 +256,8 @@ GraphStore.prototype.assetsMayHaveChanged = function(node) {
 GraphStore.prototype._calculateGraphSize = function() {
 	var that = this
 
-	console.time('_calculateGraphSize')
+	if (!E2.core.root_graph || !E2.core.root_graph.nodes.length)
+		return when.resolve()
 
 	if (this._statDfd) {
 		return this._statDfd
@@ -256,7 +269,6 @@ GraphStore.prototype._calculateGraphSize = function() {
 	this._statDfd = new E2.GraphAnalyser(new E2.GridFsClient())
 		.analyseGraph(E2.core.root_graph)
 		.then(function(stat) {
-			console.timeEnd('_calculateGraphSize')
 			that.stat = stat
 			that.emit('changed:size', that.stat.size)
 		})
@@ -279,6 +291,8 @@ GraphStore.prototype._uiNodesMoved = function(graph, nodeUids, delta) {
 		connections,
 		delta.x,
 		delta.y)
+
+	this.emit('changed')
 }
 
 GraphStore.prototype._uiPluginTransientStateChanged = function(graph, nodeUid, key, value) {

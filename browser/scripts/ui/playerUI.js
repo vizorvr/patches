@@ -73,6 +73,8 @@ var VizorPlayerUI = function() {
 	var enforceStartMode = this.autoplay && !siteUI.isInIframe()
 	this.onPlayerStateChanged = function(newState, old) {
 		var s = E2.app.player.state
+		var $wrap = that.$wrap
+
 		that.$body
 			.toggleClass('playing', newState === s.PLAYING)
 			.toggleClass('paused', 	newState === s.PAUSED)
@@ -80,14 +82,32 @@ var VizorPlayerUI = function() {
 			.toggleClass('loading', newState === s.LOADING)
 
 		if (newState === s.PLAYING) {
+			that.selectStage('stage')
+			E2.core.webVRAdapter.resizeToTarget()
 			that.queueHeaderFadeOut()
 			if (Vizor.startMode && enforceStartMode) {
 				enforceStartMode = false
 				E2.core.webVRAdapter.setMode(Vizor.startMode)
 			}
+			var bgImage = $wrap[0].style.backgroundImage
+			if (bgImage) {
+				$wrap.attr('data-bgimage', bgImage)
+				$wrap[0].style.backgroundImage = ''
+			}
 		}
-		else
+		else {
 			that.headerFadeIn()
+			if (newState !== s.PAUSED) {
+				var bgImage = $wrap[0].style.backgroundImage
+				var storedImage = $wrap.attr('data-bgimage')
+				if (storedImage && !bgImage) {
+					$wrap[0].style.backgroundImage = storedImage
+				}
+				that.selectStage('none')
+			}
+		}
+
+
 	}
 
 	this.onPlayerLoaded = function() {
@@ -118,7 +138,9 @@ var VizorPlayerUI = function() {
 
 		function completeLoading() {
             that.selectStage('stage')
-            mixpanel.track('Player playing')
+			E2.track({
+				event: 'playerPlaying'
+			})
 
             if (!that.controlsBound) {
                 that.bindHeaderBehaviour()
@@ -174,13 +196,13 @@ var VizorPlayerUI = function() {
 
 	this.bindButtons = function() {
 		function enterFullscreen(e) {
-			mixpanel.track('Enter Fullscreen')
+			E2.track({ event: 'enterFullscreen' })
 			E2.core.webVRAdapter.enterFullscreen()
             siteUI.tagBodyClass()
         }
 
         function enterVR(e) {
-			mixpanel.track('Enter VR')
+			E2.track({ event: 'enterVR' })
 
             if (siteUI.isDeviceDesktop() && !E2.core.webVRAdapter.isVRCompatible()) {
                 // display "view in VR" sign
@@ -192,39 +214,20 @@ var VizorPlayerUI = function() {
         }
 
 		function share(e) {
-			mixpanel.track('Share Clicked')
-
 			e.preventDefault()
 			var data = {
 				origin	: Vizor.origin,
 				shareURL : Vizor.shareURL,
 				embedSrc : Vizor.embedSrc
 			}
-			var html = E2.views.partials.playerShareDialog(data)
 			that.suspendVRcamera()
 			that.headerFadeOut(200)
-			var modal = VizorUI.modalOpen(html, "Share this", 'player_share doselect_all', that.enableVRcamera)
-			modal
-				.find('textarea, input')
-				.on('mouseup touchup', function (e) {
-					e.currentTarget.select()
-					e.currentTarget.setSelectionRange(0, 9999)
-					e.preventDefault()
-					return true
-				})
-				.on('focus', function (e) {
-					e.preventDefault()
-					e.stopPropagation()
-					return false
-				})
-
-			siteUI.initCollapsible(modal)
+			VizorUI.graphShareDialog(data, {onEscape: that.enableVRcamera})
+			
 			return false
 		}
 
 		function edit(e) {
-			mixpanel.track('Edit Clicked')
-
 			var editUrl = '/' +
 				window.location.href
 				.split('?')[0]
@@ -251,7 +254,7 @@ var VizorPlayerUI = function() {
 		that.$canvas.on('mousedown touchstart', function() {
 			if (firstMouseDown) {
 				firstMouseDown = false
-				mixpanel.track('Mouse down')
+				E2.track({ event: 'mouseDownInPlayer' })
 			}
 		})
 	}
@@ -265,7 +268,7 @@ var VizorPlayerUI = function() {
 			if (['INPUT','TEXTAREA','BUTTON', 'SVG', 'USE'].indexOf(e.target.tagName) > -1 ) return true
 			if (siteUI.isInVR() || siteUI.isDragging) return true
 			if (siteUI.isModalOpen()) return true
-			if (window.Vizor && window.Vizor.disableHeaderClick) return true
+			if (window.Vizor && (window.Vizor.disableHeaderClick || window.Vizor.noHeader )) return true
 
 			if (!that.headerIsVisible) {
 				if (e.touches) {

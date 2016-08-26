@@ -6,12 +6,12 @@
 	{{#if meta.title}}
 		<title>{{meta.title}}</title>
 	{{else}}
-		<title>Vizor – Create and Share VR on the Web</title>
+		<title>Vizor – Explore, Create and Publish VR on the Web</title>
 	{{/if}}
     {{#if meta.keywords }}
         <meta name="keywords" content="{{meta.keywords}}" />
     {{else}}
-        <meta name="keywords" content="vizor, vr, webvr, virtual reality, webgl, visual programming, animation, world editor, 3d editor" />
+        <meta name="keywords" content="vizor, vr, virtual reality, webvr, animation, interactive, 3d editor, webgl, visual programming, world editor" />
     {{/if}}
     {{#if meta.description}}
         <meta name="description" content="{{meta.description}}" />
@@ -21,18 +21,17 @@
 
 	<meta id="viewportmeta" name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0, shrink-to-fit=no" />
     <!-- facebook -->
-    <meta name="og:description" content="Vizor is a platform for creating and sharing VR content on the web. All you need is a WebVR capable browser and a headset, although you can use Vizor without one. There is no need to download and install large native applications." />
-    <meta name="og:image" content="/images/vizor_social.jpg" />
+    <meta name="og:description" content="Explore, create and publish VR on the Web using Vizor. All you need is a WebVR capable browser and a headset, although you can use Vizor without one. Nothing to download or install." />
+    <meta name="og:image" content="/images/vizor_social.png" />
     <meta name="og:restrictions:age" content="13+" />
     <meta name="fb:profile_id" content="980737135276580" />
 
-    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400" />
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700" />
 	<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:200,300,400" />
-	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" />
 
-	{{{css 'less'}}}
-	{{{css 'icons/style'}}}
+	{{{css 'site'}}}
 
+    <!-- begin bundler -->
     <script src="/node_modules/jquery/dist/jquery.min.js"></script>
 	<script src="/node_modules/lodash/dist/lodash.min.js"></script>
 	<script src="/node_modules/moment/min/moment.min.js"></script>
@@ -47,60 +46,80 @@
 
     <script src="/node_modules/handlebars/dist/handlebars.min.js"></script>
 
+	<script src="/dist/player.min.js"></script>
+
+    <script src="/scripts/hardware.js"></script>
+    <script src="/vendor/borismus/webvr-polyfill.js"></script>
+    <script src="/vendor/borismus/webvr-manager.js"></script>
+    <script src="/scripts/webVRAdapter.js"></script>
+
 	<script src="/scripts/models.js"></script>
 	<script src="/scripts/account-controller.js"></script>
+	<script src="/scripts/ui/uiDragAwareHelper.js"></script>
+	<script src="/scripts/ui-minislides.js"></script>
+	<script src="/scripts/ui/pageStore.js"></script>
 	<script src="/scripts/ui-site.js"></script>
+	<script src="/scripts/ui/xhrForm.js"></script>
+	<script src="/scripts/ui/ui-cards.js"></script>
+	<script type="text/javascript" src="/scripts/ui/tabbed.js"></script>
+
+    <!-- end bundler -->
 
 	{{#if meta.scripts}}{{#each meta.scripts}}
-		<script type="text/javascript" src="/scripts/{{this}}"></script>
+		<script type="text/javascript" src="/meta-scripts/{{this}}"></script>
 	{{/each}}{{/if}}
 
-	<script src="/scripts/core.js"></script>
-	<script src="/scripts/application.js"></script>
-
 	<script>
+        window.Vizor = {
+            pageObjects: {graphs:{}, profiles:{}},
+            hideWebVRButton: true,
+            autoplay: true
+        }
+
 		jQuery(document).ready(function(){
 			(function(){
 				{{{templateCache}}}
-			}).apply(window);
+			}).apply(window)
 
-			window.Vizor = {
-				hideWebVRButton: true,
-				autoplay: true
-			};
 
-			if (typeof E2.models === 'undefined') E2.models = {};
-			if (typeof E2.controllers === 'undefined') E2.controllers = {};
+			if (typeof E2.models === 'undefined')
+				E2.models = {}
 
-			E2.models.user = new User({});
-			if ('{{user.username}}' !== '') {
-				E2.models.user.set( {
-					id: '{{user._id}}',
-					name: '{{user.name}}',
-					username: '{{user.username}}',
-					gravatar: '{{{user.gravatar}}}',
-					email: '{{user.email}}'
-				})
-			}
+			if (typeof E2.controllers === 'undefined')
+				E2.controllers = {}
 
-			E2.controllers.account = new AccountController();
+            E2.models.user = new User({})
+            {{#if user.username}}
+                E2.models.user.set({{{json user}}})
+            {{/if}}
+
+			E2.controllers.account = new AccountController()
 		});
     </script>
 
-	<script src="/scripts/player.min.js"></script>
-
-    <script>{{> ga}}</script>
     <script>{{> mixpanel}}</script>
 </head>
 
-<body class="bMain {{meta.bodyclass}} {{extraClasses}}">
-{{> srv/siteSvgSprite }}
+<body id="top_" class="bMain {{meta.bodyclass}} {{extraClasses}}">
+	{{> srv/gtm}}
+	{{> srv/siteSvgSprite }}
 
-	{{#unless meta.noheader}}
-    <header>
-		{{> navbar}}
-    </header>
-	{{/unless}}
+    {{!--
+        header: false   = noheader
+        header: any     = custom header
+        (header: null    = default header)
+
+        footer: false, null = nofooter
+        footer: any = custom footer
+
+    --}}
+    {{#not-eq meta.header false}}
+        {{#if meta.header}}
+           {{#with meta}}{{> (lookup . 'header') .. }}{{/with}}
+        {{else}}
+            {{> srv/navbar}}
+        {{/if}}
+    {{/not-eq}}
 
 	{{> flash}}
 
@@ -114,15 +133,13 @@
           {{{body}}}
     </div>
 
-	{{!-- future use
+    {{#not-eq meta.footer false}}
+        {{#if meta.footer}}
+           {{#with meta}}{{> (lookup . 'footer') .. }}{{/with}}
+        {{else}}
 
-	{{#unless meta.nofooter}}
-    <footer>
-        {{ > footer }}
-    </footer>
-    {{/unless}}
-
-    --}}
+        {{/if}}
+    {{/not-eq}}
 
 </body>
 </html>

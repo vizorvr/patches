@@ -8,6 +8,9 @@ var modelsByExtension = {
 	'.js': 'scene',
 	'.json': 'scene',
 	'.obj': 'scene',
+	'.gltf': 'scene',
+	'.fbx': 'scene',
+	'.dae': 'scene',
 	'.zip': 'scene'
 }
 
@@ -36,7 +39,8 @@ function uploadFile(file) {
 			return xhr
 		},
 		success: function(uploadedFile) {
-			mixpanel.track('Uploaded', {
+			E2.track({
+				event: 'uploaded', 
 				modelName: modelName,
 				path: uploadedFile.url
 			})
@@ -60,17 +64,17 @@ function uploadFile(file) {
 	return dfd.promise
 }
 
-function postPasteFixup(nodes) {
+// Traverse the pasted nodes and perform any fixup (fix
+function postPasteFixup(nodes, fixupCallback) {
 	function fixupNode(node) {
-		if (node.plugin.id === "graph") {
+		if (E2.GRAPH_NODES.indexOf(node.plugin.id) > -1) {
 			for (var i = 0, len = node.plugin.graph.nodes.length; i < len; ++i) {
 				fixupNode(node.plugin.graph.nodes[i])
 			}
 		}
 
-		if (node.plugin.id === 'three_loader_scene') {
-			node.plugin.requiresScaling = true
-		}
+		if (fixupCallback)
+			fixupCallback(node)
 	}
 
 	for (var i = 0, len = nodes.length; i < len; ++i) {
@@ -101,7 +105,8 @@ function instantiatePluginForUpload(uploaded, position) {
 	var node = E2.app.createPlugin(pluginId, position)
 	node.plugin.state.url = uploaded.url
 
-	mixpanel.track('Node Created', {
+	E2.track({
+		event: 'nodeAdded', 
 		id: pluginId,
 		fromUpload: true
 	})
@@ -115,12 +120,31 @@ function instantiatePluginForUpload(uploaded, position) {
 	return dfd.promise
 }
 
-function instantiateTemplateForUpload(uploaded, position) {
-	var templateName
+function instantiateTemplateForUpload(asset, position) {
 	var dfd = when.defer()
 
+	var templateName
+	var templateData = _.clone(asset)
+
+	function fixupCallback(node) {
+		if (node.plugin.id === 'three_mesh') {
+			node.plugin.postLoadCallback = new TexturePlacementHelper()
+		}
+
+		if (node.plugin.id === 'three_loader_scene') {
+			node.plugin.postLoadCallback = new ObjectPlacementHelper()
+		}
+	}
+
+	console.info('instantiating template for asset', asset)
+
+	if (!templateData.name) {
+		templateData.name = asset.path
+			.substring(asset.path.lastIndexOf('/') + 1)
+	}
+	
 	// add to scene if graph not visible
-	switch(uploaded.modelName) {
+	switch(asset.modelName) {
 		case 'image':
 			templateName = 'texture-plane.hbs'
 			break;
@@ -128,41 +152,38 @@ function instantiateTemplateForUpload(uploaded, position) {
 			templateName = 'scene.hbs'
 			break;
 		case 'audio':
-			return instantiatePluginForUpload(uploaded, position)
+			templateName = 'audio.hbs'
 			break;
 		case 'video':
-			templateName = 'video_plane.preset.hbs'
+			templateName = 'video_plane.patch.hbs'
 			break;
 	}
 
 	$.get('/patchTemplates/'+templateName)
 	.done(function(templateSource) {
 		var template = Handlebars.compile(templateSource)
-		var preset = template({ url: uploaded.url })
+		var patch = template(templateData)
 
 		try {
-			preset = JSON.parse(preset)
+			patch = JSON.parse(patch)
 		} catch(err) {
 			return dfd.reject(err)
 		}
 
-		E2.app.undoManager.begin('Drag & Drop')
+		E2.app.undoManager.begin('Drag & Drop Upload')
 
-		var copyBuffer = E2.app.fillCopyBuffer(
-			preset.root.nodes,
-			preset.root.conns,
-			0,
-			0)
-
-		mixpanel.track('Preset Added', {
+		E2.track({
+			event: 'patchAdded', 
 			name: templateName,
 			fromUpload: true
 		})
 
-		// paste. auto-connecting to the scene will be handled inside paste
-		// by the world editor
-		var pasted = E2.app.onPaste(copyBuffer)
-		postPasteFixup(pasted.nodes)
+		var pasted = E2.app.pasteInGraph(E2.core.root_graph, patch, position[0], position[1])
+		postPasteFixup(pasted.nodes, fixupCallback)
+
+		if (E2.app.isWorldEditorActive() && asset.modelName !== 'audio') {
+			E2.app.worldEditor.onEntityDropped(pasted.nodes[0])
+		}
 
 		E2.app.undoManager.end()
 

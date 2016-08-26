@@ -2,6 +2,10 @@
 
 body.bEditor {
 
+  #top-header-logo a:hover svg {
+	fill: white;
+  }
+
   &.inVR {
 	#editor-header, #progressbar, #info-pane, #editor-footer, #drag-overlay, >div.popover {
 	  display: none;
@@ -36,6 +40,7 @@ body.bEditor {
 	top: @height-editor-header;
 	bottom: @height-editor-footer;
 	overflow: hidden;
+	z-index: 2;
   }
 
   #canvas_parent {
@@ -50,7 +55,7 @@ body.bEditor {
 	opacity: 1;
   }
 
-  button.svg {	// default
+  button.svg, a.btn.svg {	// default
 	background: transparent;
 	color: #ccc;
 	svg {
@@ -283,6 +288,9 @@ body.bEditor {
   div.modal.mShortcuts {
 	@color-keyboard-shortcuts:  #afbfdf;
 	@color-divider-rule: rgb(34,39,54);
+	a {
+	  color: @color-keyboard-shortcuts;
+	}
 	abbr {text-decoration: none; border-bottom:0;}
 	.modal-dialog {
 	  width: 700px;
@@ -495,4 +503,3 @@ div.modal.modal_publish .modal-content {
 	}
   }
 }
-

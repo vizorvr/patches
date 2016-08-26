@@ -14,8 +14,6 @@ function WorldEditorCameraSelector(domElement) {
 		'-z': {position: new THREE.Vector3( 0, 0, 1) }
 	}
 
-	orthographicCamera.pos
-
 	var dummyEditorControls = {
 		center: new THREE.Vector3(),
 		enable: true
@@ -59,8 +57,7 @@ function WorldEditorCameraSelector(domElement) {
 		function mouseDown() {
 			this.editorControls.enabled = false
 			if (E2.ui.flags.pressedAlt) {
-				var doc = E2.app.serialiseSelection()
-				E2.app.onPaste(doc)
+				E2.app.pasteJson(E2.app.stringifySelection())
 			}
 		}
 
@@ -181,10 +178,10 @@ WorldEditorCameraSelector.prototype = {
 		}
 	},
 
-	update: function(transformMode, vrCamera) {
+	update: function(transformMode, vrCamera, localOrWorldSpace) {
 		// needs calling on every update otherwise the transform controls draw incorrectly
 		this.transformControls.setMode(transformMode)
-		this.transformControls.setSpace('local')
+		this.transformControls.setSpace(transformMode === 'scale' ? 'local' : localOrWorldSpace)
 		this.transformControls.updateTransformLock()
 
 		this.cameras[this.currentCameraId].camera.update();
@@ -192,7 +189,9 @@ WorldEditorCameraSelector.prototype = {
 		if (vrCamera && this.currentCameraId === 'vr') {
 			// keep the editor vr camera in sync with the current vr camera plugin
 			vrCamera.updateMatrixWorld()
-			this.cameras.vr.camera.camera.matrixWorld.copy(vrCamera.matrixWorld)
+
+			var threeCamera = this.cameras.vr.camera.camera
+			threeCamera.matrixWorld.copy(vrCamera.matrixWorld)
 		}
 	}
 }

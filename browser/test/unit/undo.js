@@ -139,11 +139,9 @@ describe('Undo', function() {
 			var redos = 0, undos = 0
 
 			function redo() {
-				console.log('redo')
 				redos++
 			}
 			function undo() {
-				console.log('undos')
 				undos++
 			}
 
@@ -167,6 +165,41 @@ describe('Undo', function() {
 
 			assert.ok(undos, 3)
 		})
+
+		it('handles multiple nested transactions', function() {
+			var redos = 0, undos = 0
+
+			function redo() {
+				redos++
+			}
+			function undo() {
+				undos++
+			}
+
+			undoManager.begin('Test')
+			var firstXa = undoManager._transaction
+			undoManager.begin('Test2')
+			undoManager.execute({ title: 'One.2', redo: redo, undo: undo })
+			undoManager.begin('Test3')
+			undoManager.execute({ title: 'One.3', redo: redo, undo: undo })
+			assert.equal(undoManager._nestedTransactions, 3)
+			assert.equal(undoManager._transaction, firstXa)
+			undoManager.execute({ title: 'Two', redo: redo, undo: undo })
+			undoManager.execute({ title: 'Three', redo: redo, undo: undo })
+			undoManager.end()
+			assert.equal(undoManager._nestedTransactions, 2)
+			undoManager.end()
+			assert.equal(undoManager._nestedTransactions, 1)
+			undoManager.end()
+			assert.equal(undoManager._nestedTransactions, 0)
+
+			assert.equal(redos, 4)
+			assert.equal(undoManager._transaction, null)
+
+			undoManager.undo()
+
+			assert.ok(undos, 4)
+		})	
 	})
 
 	describe('AddNode', function() {

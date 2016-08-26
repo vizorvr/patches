@@ -3,17 +3,10 @@
 if (typeof(module) !== 'undefined') {
 	EventEmitter = require('events').EventEmitter
 	when = require('when')
+	E2 = require('../core').E2
 }
 
-var loadingPlugins = {
-	'three_loader_model': 'model',
-	'three_loader_scene': 'scene',
-	'url_texture_generator': 'texture',
-	'url_audio_buffer_generator': 'audiobuffer',
-	// 'url_audio_generator': 'audio',
-	// 'url_json_generator': 'json',
-	// 'url_video_generator': 'video'
-}
+var loadingPlugins = E2.LOADING_NODES
 
 // ------------------------------------------------
 
@@ -158,7 +151,7 @@ AssetLoader.prototype.parse = function(graph) {
 			return
 
 		subgraph.nodes.map(function(node) {
-			if (node.plugin === 'graph')
+			if (E2.GRAPH_NODES.indexOf(node.plugin) > -1)
 				return findInGraph(node.graph)
 
 			var assetType = loadingPlugins[node.plugin]

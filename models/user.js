@@ -1,6 +1,7 @@
 var mongoose = require('mongoose')
 var bcrypt = require('bcrypt-nodejs')
 var crypto = require('crypto')
+var when = require('when')
 
 var userSchema = new mongoose.Schema({
 	name: { type: String, required: false, unique: false },
@@ -9,18 +10,25 @@ var userSchema = new mongoose.Schema({
 	password: String,
 
 	createdAt: { type: Date, default: Date.now },
-
-	facebook: String,
-	twitter: String,
-	google: String,
-	github: String,
-	instagram: String,
-	linkedin: String,
-	tokens: Array,
+	
+	isAdmin: { type: Boolean, default: false },
 
 	profile: {
+		website: {type: String, default: ''},	// minlength/maxlength in mongoose 4+
+		bio: {type: String, default: ''},
 		avatarOriginal: { type: String, default: '' },
-		avatarScaled: { type: String, default: '' }
+		avatarScaled: { type: String, default: '' },
+		headerOriginal: { type: String, default: '' },
+		headerScaled: { type: String, default: '' }
+	},
+
+	preferences : {
+		publishDefaultPublic : {type: Boolean, default: false}
+	},
+
+	stats: {
+		views: { type: Number, default: 0 },
+		projects: { type: Number, default: 0 },
 	},
 
 	resetPasswordToken: String,
@@ -52,11 +60,47 @@ userSchema.pre('save', function(next) {
 
 userSchema.methods.toJSON = function() {
 	return {
+		id : this._id,
 		username: this.username,
+		name: this.name,
 		email: this.email,
-		avatar: this.profile.avatarScaled,
+		createdAt: this.createdAt,
 		gravatar: this.gravatar,
-		name: this.name
+		profile: {
+			website: this.profile.website,
+			bio: this.profile.bio,
+			avatar: this.profile.avatarScaled,
+			header: this.profile.headerScaled
+		},
+		preferences: {
+			publishDefaultPublic: this.preferences.publishDefaultPublic
+		},
+		stats: {
+			views: this.stats.views || 0,
+			projects: this.stats.projects || 0
+		}
+	}
+}
+
+userSchema.methods.toPublicJSON = function() {
+	var avatar = this.profile.avatarScaled
+	if (!avatar)
+		avatar = this.gravatar
+
+	return {
+		id : this._id,
+		username: this.username,
+		name: this.name,
+		profile: {
+			avatar: avatar,
+			header: this.profile.headerScaled,
+			website: this.profile.website,
+			bio: this.profile.bio
+		},
+		stats: {
+			views: this.stats.views || 0,
+			projects: this.stats.projects || 0
+		}
 	}
 }
 
@@ -67,6 +111,62 @@ userSchema.methods.comparePassword = function(candidatePassword, cb) {
 
  		cb(null, isMatch)
 	})
+}
+
+userSchema.methods.setStats = function(stats) {
+	var dfd = when.defer()
+
+	// update graph views
+	this.update({ $set: { stats: stats } }, { w: 1 }, function(err) {
+		if (err)
+			return dfd.reject(err)
+
+		dfd.resolve() 
+	})
+	
+	return dfd.promise
+}
+
+userSchema.methods.increaseViewCount = function() {
+	var dfd = when.defer()
+
+	// update view count
+	this.update({ $inc: { 'stats.views': 1 } }, { w: 1 }, function(err) {
+		if (err)
+			return dfd.reject(err)
+
+		dfd.resolve() 
+	})
+	
+	return dfd.promise
+}
+
+userSchema.methods.increaseProjectsCount = function() {
+	var dfd = when.defer()
+
+	// update projects count
+	this.update({ $inc: { 'stats.projects': 1 } }, { w: 1 }, function(err) {
+		if (err)
+			return dfd.reject(err)
+
+		dfd.resolve() 
+	})
+	
+	return dfd.promise
+}
+
+userSchema.methods.decreaseProjectsCount = function() {
+	var dfd = when.defer()
+
+	// update projects count
+	this.update({ $inc: { 'stats.projects': -1 } }, { w: 1 }, function(err) {
+		if (err)
+			return dfd.reject(err)
+
+		dfd.resolve() 
+	})
+	
+	return dfd.promise
 }
 
 userSchema.virtual('gravatar').get(function(size) {

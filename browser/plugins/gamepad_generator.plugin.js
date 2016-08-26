@@ -1,22 +1,26 @@
-E2.p = E2.plugins["gamepad_generator"] = function(core, node)
-{
-	function createButton(name, isFloat)
-	{
+(function() {
+var GamePadGenerator = E2.plugins.gamepad_generator = function(core, node) {
+	function createButton(name, isFloat) {
 		return {
 			name: name,
 			dt: isFloat ? core.datatypes.FLOAT : core.datatypes.BOOL,
 			desc: name,
 			def: isFloat ? 0.0 : false
-		};
+		}
 	}
 
-	this._core = core;
+	this._core = core
 
-	this.desc = 'Buttons and axes from HTML5 standard gamepad (supports only Chrome and XBOX 360 controller atm).';
+	this.desc = 'Buttons and axes from HTML5 standard gamepad'
 
-	this.input_slots = [
-		 { name: 'pad number', dt: core.datatypes.FLOAT, desc: 'Gamepad number', def: 0 }
-	]
+	this.vibrate = false
+
+	this.input_slots = [{
+		name: 'pad number',
+		dt: core.datatypes.FLOAT,
+		desc: 'Gamepad number',
+		def: 0
+	}]
 
 	this.output_slots = [
 		createButton('button 0'),
@@ -40,56 +44,60 @@ E2.p = E2.plugins["gamepad_generator"] = function(core, node)
 		createButton('D-pad left'),
 		createButton('D-pad right'),
 
-		createButton('extra'), // 16; xbox 360 button
+		createButton('extra'), // 16 - xbox 360 button
 
 		createButton('left stick X', true),
 		createButton('left stick Y', true),
 		createButton('right stick X', true),
 		createButton('right stick Y', true)
-	];
+	]
 
-	this._gamepadIndex = 0;
-};
+	this._gamepadIndex = 0
+	this.always_update = true
+}
 
-E2.p.prototype.reset = function()
-{
-	this.updated = true;
-};
+GamePadGenerator.prototype.reset = function() {
+	this.updated = true
+}
 
-E2.p.prototype.update_input = function(slot, data)
-{
-	this._gamepadIndex = data;
-};	
+GamePadGenerator.prototype.update_input = function(slot, data) {
+	if (slot.name === 'pad number') {
+		this._gamepadIndex = data
+		return;
+	}
+}
 
-E2.p.prototype.update_output = function(slot)
-{
-	function buttonPressed(b)
-	{
+GamePadGenerator.prototype.update_state = function() {
+	this.gamepads = navigator.getGamepads()
+	var pad = this.gamepad = this.gamepads[this._gamepadIndex]
+
+	if (!pad) {
+		return;
+	}
+
+	this.updated = true
+}
+
+GamePadGenerator.prototype.update_output = function(slot) {
+	function buttonPressed(b) {
 		if (typeof(b) === 'object')
-			return b.pressed;
+			return b.pressed
 
-		return b === 1.0;
+		return b === 1.0
 	}
 
-	var gamepads = navigator.getGamepads();
-	if (!gamepads)
-		return 0.0;
+	if (!this.gamepad)
+		return 0.0
 
-	var pad = gamepads[this._gamepadIndex];
-	if (!pad)
-		return 0.0;
+	if (!this.gamepad.buttons[slot.index])
+		return null;
 
-	this.updated = true;
+	// float
+	if (this.output_slots[slot.index].dt.id === this._core.datatypes.FLOAT.id)
+		return this.gamepad.buttons[slot.index].value
 
-	if (slot.index < 17)
-	{
-		// float
-		if (this.output_slots[slot.index].dt.id === this._core.datatypes.FLOAT.id)
-			return pad.buttons[slot.index].value;
+	// bool
+	return buttonPressed(this.gamepad.buttons[slot.index])
+}
 
-		// bool
-		return buttonPressed(pad.buttons[slot.index]);
-	}
-
-	return pad.axes[slot.index - 17];
-};
+})()

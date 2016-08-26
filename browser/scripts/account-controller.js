@@ -1,35 +1,78 @@
-function AccountController(handlebars) {
+function AccountController() {
 	EventEmitter.call(this)
 
+	this._model = E2.models.user
 	this.dom = {
-		container : jQuery('#account')
-	};
+		accountDropdown : jQuery('#account'),
+		profilePanel: jQuery('#profileheader'),
+		userHeader: jQuery('body.bProfile header, body.bUserpage header')
+	}
 
-	this._handlebars = handlebars || window.Handlebars;
-	E2.models.user.on('change', this.renderLoginView.bind(this));
+	E2.models.user.on('change', this.renderLoginView.bind(this))
+	E2.models.user.on('change', this.renderProfileView.bind(this))
+	E2.models.user.on('change', this.renderHeaderView.bind(this))
 
-	this.renderLoginView(E2.models.user)
+	// bind dropdown
+	this._bindModalLinks(this.dom.accountDropdown)
+
 }
 
 AccountController.prototype = Object.create(EventEmitter.prototype)
 
-AccountController.prototype.renderLoginView = function(user) {
-	var viewTemplate = E2.views.partials.userpulldown
-	var html = viewTemplate({
-		user: user.toJSON()
-	})
+AccountController.prototype._renderView = function(user, view, container, cb) {
+	if (!container.length)
+		return
 
-	$('a, button', this.dom.container).off('.accountController');
-	this.dom.container.html(html);
+	var data = user.toJSON()
 
-	this._bindModalLinks(this.dom.container)
+	var html = view(data)
+
+	$('a, button', container).off('.accountController')
+	container.html(html)
+
+	if (cb)
+		cb(container, user)
+
 	this.emit('redrawn')
+}
+
+AccountController.prototype.renderLoginView = function(user) {
+	if (!this.dom.accountDropdown.length)
+		return
+
+	return this._renderView(user, 
+		E2.views.partials.userpulldown,
+		this.dom.accountDropdown,
+		this._bindModalLinks.bind(this)
+	)
+}
+
+AccountController.prototype.renderHeaderView = function(user) {
+	if (!this.dom.userHeader.length)
+		return
+
+	if (this.dom.userHeader.data('uid') !== user.id)
+		return
+
+	var profile = user.get('profile')
+
+	this.dom.userHeader.css({
+		'background-image': 'url('+(profile.header || '')+')'
+	})
+}
+
+AccountController.prototype.renderProfileView = function(user) {
+	if (!this.dom.profilePanel.length)
+		return
+	
+	return this._renderView(user, 
+		E2.views.partials.profile,
+		this.dom.profilePanel
+	)
 }
 
 AccountController.prototype._bindModalLinks = function(el, dfd) {
 	var that = this;
-
-	var $userPullDown = jQuery('#userPullDown', el);
 
 	$('a, button', el).off('.accountController');
 
@@ -54,41 +97,36 @@ AccountController.prototype._bindModalLinks = function(el, dfd) {
 		return false;
 	});
 
-	$('a.account', el).on('click.accountController', function(evt) {
-		evt.preventDefault();
-		VizorUI.modalClose();
-		that.openAccountModal(dfd);
-		if ($userPullDown.is(':visible'))
-			$userPullDown.hide();
-		return false;
-	});
+	if (el.length)
+		Array.prototype.forEach.call(el[0].querySelectorAll('[data-hideshow-target]'), VizorUI.hideshow)
 
-	$('#btn-account-top', el).on('click.accountController', function(evt){
-		evt.preventDefault();
-		VizorUI.modalClose();
-		$userPullDown.toggle();
-		return false;
-	});
 }
 
 AccountController.prototype.openLoginModal = function(dfd) {
 	dfd = dfd || when.defer();
 	var loginTemplate = E2.views.partials.account.login;
 
-	var $modal = VizorUI.modalOpen(loginTemplate(), 'Sign in', 'nopad mLogin');
+	var data = {profile:this._model.toJSON()}
+	var $modal = VizorUI.modalOpen(loginTemplate(data), 'Sign in', 'nopad mLogin');
 	this._bindModalLinks($modal, dfd);
 
 	var onSuccess = function(response) {
 		var user = response.data;
+
 		mixpanel.identify(user.username)
 		mixpanel.people.set({
 			"$name": user.name,
 			username: user.username,
 			"$email": user.email
 		})
-		mixpanel.track('SignIn/SignedIn')
-		E2.models.user.set(user);
-		bootbox.hideAll();
+
+		E2.track({
+			event: 'userSignedIn',
+			username: user.username
+		})
+
+		E2.models.user.set(user)
+		bootbox.hideAll()
 		dfd.resolve()
 	};
 
@@ -109,7 +147,9 @@ AccountController.prototype.openSignupModal = function(dfd) {
 	var dfd = dfd || when.defer();
 	var signupTemplate = E2.views.partials.account.signup();
 
-	mixpanel.track('SignUp/Open')
+	E2.track({
+		event: 'signInDialogOpened'
+	})
 
 	var $modal = VizorUI.modalOpen(signupTemplate, 'Sign up', 'nopad mSignup', true, {backdrop:null});
 
@@ -126,7 +166,11 @@ AccountController.prototype.openSignupModal = function(dfd) {
 			username: user.username,
 			"$email": user.email
 		})
-		mixpanel.track('SignUp/SignedUp')
+
+		E2.track({
+			event: 'userSignedUp',
+			username: user.username
+		})
 
 		E2.models.user.set(user);
 		VizorUI.modalClose();
@@ -144,15 +188,29 @@ AccountController.prototype.openForgotPasswordModal = function(dfd) {
 	dfd = dfd || when.defer();
 	var forgotTemplate = E2.views.partials.account.forgotpassword;
 	
-	mixpanel.track('Forgot/Open')
+	E2.track({
+		event: 'forgotDialogOpened'
+	})
 
-	var $modal = VizorUI.modalOpen(forgotTemplate({modal:true}), 'Forgot password', 'nopad mForgotpassword');
+
+	var data = {
+		modal:true,
+		loggedIn: false,
+		email: ''
+	}
+
+	var user = E2.models.user.toJSON()
+	data.loggedIn = (typeof user.username !== 'undefined') && (user.username !== '')
+	if ((typeof user.email !== 'undefined') && (user.email !== ''))
+		data.email = user.email
+
+	var $modal = VizorUI.modalOpen(forgotTemplate(data), 'Forgot password', 'nopad mForgotpassword');
 	this._bindModalLinks($modal, dfd);
 	var $form = $('#forgotPasswordForm');
-	VizorUI.setupXHRForm($form, function(response){
+	VizorUI.setupXHRForm($form, function(response) {
 		VizorUI.modalClose();
 		if (response.success) {
-			mixpanel.track('Forgot/PasswordReset')
+			E2.track({ event: 'forgotPasswordReset' })
 			VizorUI.modalAlert(response.message, 'Done');
 		}
 		dfd.resolve();
@@ -164,7 +222,7 @@ AccountController.prototype.openChangePasswordModal = function(dfd) {
 	dfd = dfd || when.defer();
 	var resetTemplate = E2.views.partials.account.changepassword({modal:true});
 	
-	mixpanel.track('ChangePassword/Open')
+	E2.track({ event: 'changePasswordDialogOpened' })
 
 	var $modal = VizorUI.modalOpen(resetTemplate, 'Change Password', 'nopad mChangepassword');
 	this._bindModalLinks($modal, dfd);
@@ -173,7 +231,7 @@ AccountController.prototype.openChangePasswordModal = function(dfd) {
 	var onSuccess = function(response) {
 		var user = response.data;
 		VizorUI.modalClose();
-		mixpanel.track('ChangePassword/Changed')
+		E2.track({ event: 'passwordChanged', username: user.username })
 		VizorUI.modalAlert('Password for ' + user.username + ' was changed.', 'Done');
 		dfd.resolve();
 	};
@@ -185,9 +243,13 @@ AccountController.prototype.openChangePasswordModal = function(dfd) {
 AccountController.prototype.openAccountModal = function(dfd) {
 	var that = this;
 	dfd = dfd || when.defer();
-	var accountTemplate = E2.views.partials.account.account({user: E2.models.user.toJSON(), modal:true});
+	var data = {
+		profile: this._model.toJSON(),
+		modal: true
+	}
+	var accountTemplate = E2.views.partials.account.account(data);
 
-	ga('send', 'event', 'account', 'open', 'accountModal');
+	E2.track({ event: 'accountDialogOpened' })
 
 	var $modal = VizorUI.modalOpen(accountTemplate, 'Account', 'nopad mAccountdetails', true)
 
@@ -197,18 +259,11 @@ AccountController.prototype.openAccountModal = function(dfd) {
 		that.openChangePasswordModal(dfd);
 	});
 
-	// #704
-	/*
-	jQuery('a#deleteAccountLink', $modal).on('click', function(evt) {
-		evt.preventDefault();
-		// ...
-	});
-	*/
 
 	var onSuccess = function(response) {
 		var user = response.data;
 		E2.models.user.set(user);
-		ga('send', 'event', 'account', 'accountUpdated', user.username);
+		E2.track({ event: 'accountUpdated', username: E2.models.user.get('username') })
 		VizorUI.modalClose();
 		VizorUI.modalAlert(response.message, 'Done');
 		dfd.resolve();

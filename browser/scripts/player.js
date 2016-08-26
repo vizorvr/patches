@@ -32,10 +32,6 @@ function Player() {
 	
 	this.core.active_graph = this.core.root_graph = new Graph(this.core, null, 'root')
 	this.core.graphs.push(this.core.root_graph)
-	
-	E2.core.on('ready', function() {
-		that.select_active_graph()
-	})
 }
 
 Player.prototype.play = function() {
@@ -45,6 +41,8 @@ Player.prototype.play = function() {
 	this.core.root_graph.play()
 	this.current_state = this.state.PLAYING
 	this.last_time = (new Date()).getTime()
+
+	this.first_frame = true
 
 	E2.core.emit('player:playing')
 
@@ -85,6 +83,11 @@ Player.prototype.stop = function() {
 Player.prototype.on_anim_frame = function() {
 	this.interval = requestAnimFrame(this.on_anim_frame.bind(this))
 	this.on_update()
+
+	if (this.first_frame) {
+		E2.core.emit('player:firstFramePlayed')
+		this.first_frame = false
+	}
 }
 
 Player.prototype.on_update = function() {
@@ -135,6 +138,9 @@ Player.prototype.load_from_object = function(obj, cb) {
 			if (cb)
 				cb(err)
 		})
+		.finally(function() {
+			E2.core.emit('assetsLoaded')
+		})
 }
 
 Player.prototype.load_from_url = function(url, cb) {
@@ -180,7 +186,7 @@ Player.prototype.loadAndPlay = function(url, forcePlay) {
 	// if there's an existing anim frame request, cancel it
 	// so that nothing gets rendered until we ask to play() again after
 	// loading
-	if(this.interval !== null) {
+	if (this.interval !== null) {
 		cancelAnimFrame(this.interval)
 		this.interval = null
 	}
@@ -190,12 +196,10 @@ Player.prototype.loadAndPlay = function(url, forcePlay) {
 		// so as this is called on touchstart,
 		// create a dummy audio source and play it
 		var audioSource = E2.core.audioContext.createBufferSource()
-		audioSource.start()//noteOn(0)
+		audioSource.start()
 	}
 
 	E2.app.player.load_from_url(url, function(err) {
-		E2.core.emit('assetsLoaded')
-
 		if (!err || forcePlay === true)
 			E2.app.player.play()
 
@@ -208,7 +212,14 @@ Player.prototype.loadAndPlay = function(url, forcePlay) {
 	return dfd.promise
 }
 
-function CreatePlayer(vr_devices, cb) {
+Player.prototype.getScreenshot = function(width, height) {
+	width = width || 1280
+	height = height || 720
+	var ssr = new ScreenshotRenderer(this.scene, this.camera.vrControlCamera)
+	return ssr.capture(width, height)
+}
+
+function CreatePlayer(cb) {
 	$(document).ajaxError(function(e, jqxhr, settings, ex) {
 		if(typeof(ex) === 'string') {
 			console.log(ex)
@@ -229,12 +240,16 @@ function CreatePlayer(vr_devices, cb) {
 		console.log(m)
 	})
 	
-	E2.core = new Core(vr_devices)
+	E2.core = new Core()
 	
 	E2.dom.webgl_canvas = $('#webgl-canvas')
+	if (E2.dom.webgl_canvas.length < 1)
+		return
+
+	E2.core = new Core()
 
 	E2.app = {}
-	E2.app.player = new Player(vr_devices, E2.dom.webgl_canvas, null)
+	E2.app.player = new Player()
 	E2.app.worldEditor = {
 		update: function() {},
 		isActive: function() {
@@ -250,7 +265,7 @@ function CreatePlayer(vr_devices, cb) {
 
 	// Shared gl context for three
 	var gl_attributes = {
-		alpha: false,
+		alpha: true,
 		depth: true,
 		stencil: true,
 		antialias: false,

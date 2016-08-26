@@ -1,23 +1,34 @@
-{{#if user.username }}
+{{!-- context is (user) profile --}}
+{{#if username }}
+    <button id="btn-account-top" data-hideshow-target="userpulldowncontainer">
+        <span class="top-userpic">
+            <img class="user avatar"
+                {{#if profile.avatarScaled}}
+                    src="{{profile.avatarScaled}}"
+                {{else if profile.avatar}}
+                    src="{{profile.avatar}}"
+                {{else}}
+                    src="{{gravatar}}"
+                {{/if}}
+            />
+        </span>
+        <span id="userpulldownUsername">{{username}}</span>
+    </button>
 
-<button class="nofx smalltext" id="btn-account-top">
-	<span class="top-userpic">
-		<img class="gravatar-in-form" src="{{user.gravatar}}" id="top-userpic" />
-	</span>
-	<span id="userpulldownUsername">{{user.username}}</span>
-</button>
+    <div id="userpulldowncontainer" style="display: none">
+        <ul id="userPullDown">
+            <li id="dropdownMyFilesLi">
+                <a href="/{{username}}">My Files</a>
+            </li>
+            <li>
+                <a class="account" href="/account">Account Details</a>
+            </li>
+            <li>
+                <a href="/logout">Sign out</a>
+            </li>
+        </ul>
+    </div>
 
-<ul class="dropdown dropdown-menu" role="menu" id="userPullDown">
-    <li id="dropdownMyFilesLi">
-		<a href="/{{user.username}}">My Files</a>
-	</li>
-	<li>
-		<a class="account" href="/account">Account Details</a>
-	</li>
-	<li>
-		<a href="/logout">Sign out</a>
-	</li>
-</ul>
 
 {{else}}
 

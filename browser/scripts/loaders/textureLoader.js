@@ -6,12 +6,14 @@ function TextureLoader() {
 
 TextureLoader.prototype = Object.create(E2.Loaders.ImageLoader.prototype)
 
-TextureLoader.prototype.onImageLoaded = function(img) {
+TextureLoader.prototype.onImageLoaded = function(img, metadata) {
 	var texture = new THREE.Texture()
 	texture.wrapS = THREE.RepeatWrapping
 	texture.wrapT = THREE.RepeatWrapping
 	texture.image = img
 	texture.needsUpdate = true
+
+	texture.vizorMetadata = metadata
 
 	this.emit('loaded', texture)
 }

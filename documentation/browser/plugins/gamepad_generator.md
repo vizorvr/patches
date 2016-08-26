@@ -1,7 +1,7 @@
-#Game pad
+#XBOX 360 Gamepad
 
 ##Description
-Buttons and axes from HTML5 standard gamepad (supports only Chrome and XBOX 360 controller atm).
+Buttons and axes from HTML5 standard gamepad
 
 ##Inputs
 ###pad number

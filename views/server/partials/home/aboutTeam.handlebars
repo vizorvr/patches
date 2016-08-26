@@ -1,0 +1,48 @@
+{{#*inline 'teamMember'}}
+<div class="team-member">
+	<div class="member-pic">
+		<img src="/images/home/{{image}}" alt="{{name}}'s photo" />
+		{{#if link}}
+			<div class="pic-rollover">
+				{{#if linkIcon}}
+					<svg class="icon"><use xlink:href="#{{linkIcon}}"></use></svg>
+				{{else}}
+					<svg class="icon"><use xlink:href="#icon-www"></use></svg>
+				{{/if}}
+			</div>
+		{{/if}}
+	</div>
+	<h4><a href="{{link}}" target="_blank" title="View info" class="person-name profile-link">{{name}}</a></h4>
+	<span class="person-position">{{position}}</span>
+</div>
+{{/inline}}
+
+<section id="vizorteam" class="about-team">
+	<div class="in">
+		<h2>Meet the Team</h2>
+        <p class="intro">
+            Vizor is produced by Pixelface Ltd, a distributed team with main offices in Helsinki, Finland,
+            and team members in England and Australia.
+        </p>
+		<div class="team-container">
+			{{>teamMember name='Kaarlo Kananen' image='kaarlo.jpg' position='CEO'
+				link='https://www.linkedin.com/in/kaarlo' linkIcon='icon-linkedin'}}
+
+			{{>teamMember name='Antti Jäderholm' image='antti.jpg' position='CPO'
+				link='https://fi.linkedin.com/in/anttijadertpolm' linkIcon='icon-linkedin' }}
+
+			{{>teamMember name='Anna Rosa Lappalainen' image='annarosa.jpg' position='COO'
+				link='https://www.linkedin.com/in/annarosa' linkIcon='icon-linkedin'}}
+
+			{{>teamMember name='Jaakko Manninen' image='jaakko.jpg' position='CTO'
+				link='https://www.linkedin.com/in/kschzt' linkIcon='icon-linkedin'}}
+
+			{{>teamMember name='Matt Innes' image='matt.jpg' position='Creative Director'
+				link='http://www.idealogue.io/' linkIcon='icon-www'}}
+
+			{{>teamMember name='Georgi Marinov' image='georgi.jpg' position='Frontend Lead'
+				link='https://www.linkedin.com/in/gmarinov' linkIcon='icon-linkedin'}}
+
+		</div>
+	</div>
+</section>

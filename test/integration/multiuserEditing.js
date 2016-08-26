@@ -20,7 +20,7 @@ global.window = {
 	location: { hostname: 'localhost', port: 8000 }
 }
 
-global.ga = function(){}
+global.ga = function() {}
 
 function rand() {
 	return Math.floor(Math.random() * 100000)
@@ -95,19 +95,7 @@ describe('Multiuser', function() {
 	var db
 
 	before(function(done) {
-		global.E2 = {
-			models: {
-				user: {
-					once: function(){}
-				}
-			},
-			app: {
-				growl: function() {}
-			},
-			core: {
-				active_graph: { uid: 'root' }
-			}
-		}
+		global.dataLayer = []
 
 		app.events.on('ready', function() {
 			db = new mongo.Db('mutest'+testId, 
@@ -127,7 +115,22 @@ describe('Multiuser', function() {
 		done()
 	})
 
-	beforeEach(function() {})
+	beforeEach(function() {
+		global.E2 = {
+			track: function() {},
+			models: {
+				user: {
+					once: function(){}
+				}
+			},
+			app: {
+				growl: function() {}
+			},
+			core: {
+				active_graph: { uid: 'root' }
+			}
+		}
+	})
 	afterEach(function() {
 		[s1, s2].map(function(s) {
 			if (s) {

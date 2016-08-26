@@ -6,7 +6,7 @@
 	{{#if meta.title}}
 		<title>{{meta.title}}</title>
 	{{else}}
-		<title>360vr.io - Threesixty VR</title>
+		<title>360.vizor.io - The easiest way to share your 360 photos</title>
 	{{/if}}
     {{#if meta.keywords }}
         <meta name="keywords" content="{{meta.keywords}}" />
@@ -16,48 +16,74 @@
     {{#if meta.description}}
         <meta name="description" content="{{meta.description}}" />
     {{else}}
-        <meta name="description" content="Vizor is a platform for creating and sharing VR content on the web. All you need is a WebVR capable browser and a headset, although you can use Vizor without one. There is no need to download and install large native applications." />
+        <meta name="description" content="Drag, drop, share. 360 photos made simple." />
     {{/if}}
 
     <meta id="viewportmeta" name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0, shrink-to-fit=no" />
     <!-- facebook -->
-    <meta name="og:description" content="Vizor is a platform for creating and sharing VR content on the web. All you need is a WebVR capable browser and a headset, although you can use Vizor without one. There is no need to download and install large native applications." />
-    <meta name="og:image" content="/images/vizor_social.jpg" />
+    <meta name="og:description" content="Drag, drop, share. 360 photos made simple." />
+
     <meta name="og:restrictions:age" content="13+" />
     <meta name="fb:profile_id" content="980737135276580" />
+
+    {{#if previewImage}}
+        <meta name="og:image" content="{{previewImage}}" />
+        <meta name="twitter:image" content="{{previewImage}}" />
+        <meta name="og:image:width" content="{{previewImageWidth}}" />
+        <meta name="og:image:height" content="{{previewImageHeight}}" />
+    {{else}}
+        <meta name="og:image" content="/images/vizor_social.jpg" />
+        <meta name="twitter:image" content="/images/vizor_social.jpg" />
+    {{/if}}
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@Vizor_VR" />
+    <meta name="twitter:description" content="Drag, drop, share. 360 photos made simple." />
 
     <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700,900" />
 	<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:200,300,400" />
 	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" />
 
-	{{{css 'threesixty'}}}
+	{{{css 'site360'}}}
 
+    <!-- begin bundler -->
     <script src="/node_modules/jquery/dist/jquery.min.js"></script>
     <script src="/node_modules/lodash/dist/lodash.min.js"></script>
-    <script src="/vendor/when.js"></script>
+    <script src="/node_modules/moment/min/moment.min.js"></script>
     <script src="/vendor/bootstrap-3.1.1-dist/js/bootstrap.min.js"></script>
 	<script src="/vendor/bootbox.min.js"></script>
     <script src="/node_modules/handlebars/dist/handlebars.min.js"></script>
 
-    <script src="/scripts/ui-site.js"></script>
+    <script src="/scripts/ui/pageStore.js"></script>
+    <script src="/vendor/when.js"></script>
+    <script src="/scripts/event-emitter.js"></script>
 
-    <script src="/data/dist/0.8/player.min.js"></script>
+    <script src="/scripts/ui-site.js"></script>
+    <script src="/scripts/ui/xhrForm.js"></script>
+    <script src="/scripts/util.js"></script>
+
+    <script src="/scripts/hardware.js"></script>
+    <script src="/vendor/borismus/webvr-polyfill.js"></script>
+    <script src="/vendor/borismus/webvr-manager.js"></script>
+    <script src="/scripts/webVRAdapter.js"></script>
+
+    <script src="/dist/player.min.js"></script>
+
+    <script src="/scripts/ui/playerUI.js"></script>
+
+    <script src="/scripts/threesixty.js"></script>
+    <!-- end bundler -->
+
     <script>
         (function() {
             {{{templateCache}}}
         }.apply(window))
     </script>
-
-    <script src="/scripts/ui/playerUI.js"></script>
-    <script src="/scripts/threesixty.js"></script>
-
-	<script>{{> mixpanel}}</script>
-    <script>{{> ga}}</script>
-
+    <script>{{> mixpanel}}</script>
 </head>
 
 <body class="{{meta.bodyclass}} {{extraClasses}} b360 bPlayer noselect_all" >
-
+    {{> srv/gtm}}
     {{> srv/siteSvgSprite}}
     {{> srv/editorSvgSprite}}
 

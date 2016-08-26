@@ -35,7 +35,11 @@
 				<dd>{{{focusChatPanel}}}</dd>
 
 				<dt>Search patches</dt>
-				<dd>{{{focusPresetSearch}}} / {{{focusPresetSearchAlt}}}</dd>
+				<dd>{{{focusPatchSearch}}} / {{{focusPatchSearchAlt}}}</dd>
+
+                <dt>Object inspector</dt>
+				<dd>{{{openInspector}}}</dd>
+
 			</dl>
 		</div>
 		<div class="col right">
@@ -62,6 +66,9 @@
 				<dt><abbr title="Toggle all build helper objects on/off">Toggle Helpers</abbr></dt>
 				<dd>{{{toggleEditorHelpers}}}</dd>
 
+                <dt><abbr title="Toggle local/global transform handles">Toggle Local Handles</abbr></dt>
+                <dd>{{{toggleWorldEditorLocalGlobalHandles}}}</dd>
+
 				<dt><abbr title="Align camera to primary axis. Holding shift will reverse camera direction.">Align Camera to Axis</abbr></dt>
 				<dd>{{{toggleWorldEditorXCamera}}} / {{{toggleWorldEditorYCamera}}} / {{{toggleWorldEditorZCamera}}}</dd>
 
@@ -72,9 +79,6 @@
 			<dl>
 				<dt>Handy patches</dt>
 				<dd><kbd>0</kbd> - <kbd>9</kbd></dd>
-
-				<dt>Inspect patches</dt>
-				<dd>{{{openInspector}}}</dd>
 
 				<dt>Go to parent graph</dt>
 				<dd>{{{gotoParentGraph}}}</dd>

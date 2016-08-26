@@ -4,7 +4,7 @@
 
 		this.core = core
 
-		this.desc = '3D Object/Scene loader. Loads .obj and THREE.js .json object hierarchies.'
+		this.desc = '3D Object/Scene loader. Loads .obj, THREE.js .json, and .glTF object hierarchies.'
 
 		this.urlDirty = true
 
@@ -25,11 +25,11 @@
 
 		this.hasAnimation = false
 
-		// a flag to indicate that the model should be scaled to unit size
-		// i.e. we want to scale every object to unit size on initial load
+		// a callback to be executed after object has loaded
+		// e.g. we want to scale every object to unit size on initial load
 		// but not when subsequently (re-)loaded, to not override user defiend
 		// scaling
-		this.requiresScaling = false
+		this.postLoadCallback = undefined
 	}
 
 	ThreeLoaderScenePlugin.prototype = Object.create(ThreeObject3DPlugin.prototype)
@@ -43,7 +43,7 @@
 
 		this.loadedUrl = url
 
-		this.object3d = this.defaultObject
+		this.setObject3D(this.defaultObject)
 		this.updated = true
 
 		this.loader = E2.core.assetLoader.loadAsset('scene', url)
@@ -51,6 +51,9 @@
 		this.loader
 		.then(function(asset) {
 			that.setObject3D(asset.clone())
+			
+			deepCopyglTFObject(asset, that.object3d)
+
 			that.postLoadFixUp()
 		})
 		.finally(function() {
@@ -88,7 +91,12 @@
 
 					that.updated = true
 				    
-					mixpanel.track('ThreeLoaderScenePlugin Model Changed')
+					E2.track({
+						event: 'assetChanged',
+						plugin: 'ThreeLoaderScenePlugin',
+						url: newValue
+					})
+
 				    E2.app.undoManager.end()
 			    })
 			})
@@ -127,10 +135,10 @@
 			scaleFactor /= zLen
 		}
 		// if none of the above match, there is no valid bounding volume (empty / corrupt model?)
-
+		
 		this.undoableSetState('scale', new THREE.Vector3(scaleFactor, scaleFactor, scaleFactor), new THREE.Vector3(this.state.scale.x, this.state.scale.y, this.state.scale.z))
 
-		this.requiresScaling = false
+		delete this.postLoadCallback
 	}
 
 	ThreeLoaderScenePlugin.prototype.postLoadFixUp = function() {
@@ -144,7 +152,7 @@
 		this.object3d.traverse(function(n) {
 			// filter lights and cameras out of the scene
 
-			if (n instanceof THREE.Light || n instanceof THREE.Camera) {
+			if (n instanceof THREE.Light || n instanceof THREE.Camera /*|| (n instanceof THREE.Object3D && (!n instanceof THREE.Bone) && n.children.length === 0 && !n.geometry)*/) {
 				removeObjects.push({parent: n.parent, object: n})
 			}
 
@@ -189,8 +197,8 @@
 
 			var doLoad = function() {
 				that.loadObject(that.state.url).then(function () {
-					if (that.requiresScaling) {
-						that.scaleToUnitSize()
+					if (that.postLoadCallback) {
+						that.postLoadCallback.execute(that)
 					}
 					// apply state to object3d
 					ThreeObject3DPlugin.prototype.update_state.apply(that, arguments)

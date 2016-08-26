@@ -14,11 +14,14 @@ var helper = require('./controllerHelpers')
  exports.getLogin = function(req, res) {
  	if (req.user)
  		return res.redirect('/')
+
  	res.render('server/pages/account/login', {
  		meta: {
+			bodyclass: 'bLogin',
 			title: 'Login',
-			noUserPanel: true,
-			scripts: ['site/accountpages.js']
+			scripts: [
+				helper.metaScript('site/accountpages.js')
+			]
 		}
  	})
  }
@@ -101,8 +104,9 @@ var helper = require('./controllerHelpers')
 		res.render('server/pages/account/signup', {
 			meta : {
 				title: 'Sign up to Vizor',
-				noUserPanel: true,
-				scripts: ['site/accountpages.js']
+				scripts: [
+					helper.metaScript('site/accountpages.js')
+				]
 			}
 		})
 	}
@@ -232,20 +236,19 @@ var helper = require('./controllerHelpers')
  }
 
 /**
- * GET /account/profile
- * simply redirect back
+ * GET /account
+ * redirect to /account/profile
  */
-exports.getAccountProfile = function(req, res) {
-	res.redirect('/account');
+exports.getAccount = function(req, res) {
+	res.redirect('/account/profile');
 }
 
 
 /**
- * GET /account
+ * GET /account/profile
  * Profile page.
  */
-
- exports.getAccount = function(req, res) {
+ exports.getAccountProfile = function(req, res) {
 	var wantJSON = req.xhr
 	User.findById(req.user.id, function(err, user) {
 		if (err) return next(err)
@@ -257,9 +260,13 @@ exports.getAccountProfile = function(req, res) {
 				meta: {
 					title: 'Account Management',
 					bodyclass: 'bProfile',
-					noUserPanel: true,
-					scripts: ['site/accountpages.js']
-				}
+					header: 'srv/userpage/userpageHeader',
+					footer: 'srv/home/_footer',
+					scripts: [
+						helper.metaScript('site/accountpages.js')
+					]
+				},
+				profile: user.toJSON()
 			}
 			res.render('server/pages/account/profile', data)
 		}
@@ -270,52 +277,132 @@ exports.getAccountProfile = function(req, res) {
  * POST /account/profile
  * Update profile information.
  */
-
  exports.postUpdateProfile = function(req, res, next) {
+
+	 // to add a key
+	 // 1.sanitize
+	 // 2. check for key in req.body
+	 // 	3. req.assert validation by key
+	 // 	4. add req.body.key to updateFields.key
+	 // 5. add key to copyKeysIfExist
+	 
+	var mustConfirmPassword = false
+
 	req.sanitize('name').trim()
 	req.sanitize('email').trim()
- 	req.assert('email', 'Email is not valid').isEmail()
- 	req.assert('name', 'Name is not valid').notEmpty()
+	req.sanitize('profile[website]').trim()
+	req.sanitize('profile[bio]').trim()
+
+	var updateFields = {
+		profile: {},
+		preferences: {}
+	}
+
+	if ('email' in req.body) {
+		mustConfirmPassword = true
+		req.assert('email', 'Email is not valid').isEmail()
+		updateFields.email = req.body.email
+	}
+
+	if('password' in req.body) {
+		mustConfirmPassword = true
+		req.assert('password', 'New password is not valid').isLength({min: 6})
+		updateFields.password = req.body.password
+	}
+
+	if ('name' in req.body) {
+		req.assert('name', 'Name is not valid').notEmpty()
+		updateFields.name = req.body.name.replace(/[<>\\\\'\"]+/gim, '')
+	}
+
+	if (req.body.profile) {
+		if ('website' in req.body.profile) {
+			// allow '' or valid URL only
+			if (req.body.profile.website !== '')
+				req.assert('profile[website]', 'Website is not valid').isURL({require_protocol:true})
+			updateFields.profile.website = req.body.profile.website
+		}
+
+		if ('bio' in req.body.profile) {
+			req.assert('profile[bio]', 'Bio must be shorter than 200 characters').isLength({min: 0, max: 200})
+			updateFields.profile.bio = req.body.profile.bio
+		}
+	}
+
+	 if (req.body.preferences) {
+		 if ('publishDefaultPublic' in req.body.preferences)
+			 updateFields.preferences.publishDefaultPublic = (req.body.preferences.publishDefaultPublic === '1')
+	 }
+
+	if (mustConfirmPassword)
+		req.assert('current_password', 'Your current password is required').notEmpty()
 
  	var errors = req.validationErrors()
- 	var wantJson = req.xhr || req.path.slice(-5) === '.json'
 
  	if (errors) {
- 		if (wantJson) {
- 			return res.status(400).json(
-				helper.responseStatusError('Failed validation', errors, {request:req.body})
-			)
- 		} else {
- 			req.flash('errors', helper.parseErrors(errors))
- 			return res.redirect('/account')
- 		}
+		delete req.body.password
+		delete req.body.current_password
+		return helper.respond(req, res, 400, 'Failed validation', errors, null, '/account/profile')
  	}
+
+	 function updateUser(user, updateFields) {
+		function copyKeysIfExist(keys, fromObj, toObj) {
+			keys.forEach(function(key){
+				if (key in fromObj)
+					toObj[key] = fromObj[key]
+			})
+		}
+		copyKeysIfExist(['email', 'password', 'name'], updateFields , user)
+		copyKeysIfExist(['website', 'bio'] , updateFields.profile, user.profile)
+		copyKeysIfExist(['publishDefaultPublic'] , updateFields.preferences, user.preferences)
+
+		function save() {
+			user.save(function(err) {
+				if (err)
+					return next(err)
+				return helper.respond(req, res, 200, 'Account details updated', user.toJSON(), null, '/account/profile')
+			})
+		}
+
+		// if updating email, then check that email does not exist already
+		if ('email' in updateFields) {
+			User.findOne({email: updateFields.email}, function(err, existingUser){
+				if (!existingUser) {
+					save()
+					return
+				}
+				// else
+				var error = helper.formatResponseError('email', req.body.email, 'Another account with that email already exists')
+
+				return helper.respond(req, res, 409, 'Duplicate email', error, null, '/account/profile')
+			})
+		} else
+			save()
+	 }
 
  	User.findById(req.user.id, function(err, user) {
  		if (err) return next(err)
 
- 		user.name = req.body.name.replace(/[<>\\\\'\"]+/gim, '')
- 		user.email = req.body.email
-
- 		user.save(function(err) {
- 			if (err)
- 				return next(err)
-
- 			if (wantJson)
-				return res.status(200).json(
-					helper.responseStatusSuccess('Account details updated', user.toJSON())
-				)
-	 		else
-				req.flash('success', {message:'Account details updated'});
-	 			res.redirect('/account')
- 		})
+		if (mustConfirmPassword)
+		 	user.comparePassword(req.body.current_password, function(err, isMatch) {
+				if (isMatch)
+					updateUser(user, updateFields)
+				else {
+					return helper.respond(req, res, 401, 'Unauthorised',
+						helper.formatResponseError('current_password', '', 'Current password does not match'),
+						null, '/account/profile')
+				}
+			})
+		else
+			updateUser(user, updateFields)
  	})
  }
 
 /**
  * POST /account/password
- * Update current password.
+ * Update current password. Used on resetting password from email link
  * @param password
+ * @see this.postUpdateProfile() for updating the password from the profile page
  */
 
  exports.postUpdatePassword = function(req, res, next) {
@@ -328,7 +415,7 @@ exports.getAccountProfile = function(req, res) {
  	if (errors) {
 		if (!wantJSON) {
 			req.flash('errors', helper.parseErrors(errors))
-			return res.redirect('/account')
+			return res.redirect('/account/profile')
 		} else {
 			return res.status(400).json(
 				helper.responseStatusError('Failed validation', errors)	// request intentionally not returned
@@ -349,7 +436,7 @@ exports.getAccountProfile = function(req, res) {
 				)
 			} else {
 				req.flash('success', { message: 'Password has been changed.' })
-				res.redirect('/account')
+				res.redirect('/account/profile')
 			}
  		})
  	})
@@ -387,7 +474,7 @@ exports.getAccountProfile = function(req, res) {
  		user.save(function(err) {
  			if (err) return next(err)
  			req.flash('info', { message: provider + ' account has been unlinked.' })
- 			res.redirect('/account')
+ 			res.redirect('/account/profile')
  		})
  	})
  }
@@ -410,7 +497,10 @@ exports.getAccountProfile = function(req, res) {
  			req.flash('errors', { message: 'Password reset token is invalid or has expired.' })
  			return res.redirect('/forgot')
  		}
- 		res.render('partials/account/changepassword', {
+ 		res.render('server/pages/account/setPassword', {
+			meta: {
+				bodyclass: 'bLogin'
+			},
  			title: 'Password Reset',
  			token: req.params.token
  		})
@@ -458,14 +548,16 @@ exports.getAccountProfile = function(req, res) {
  		},
  		function(user, done) {
  			var mail = {
- 				to: [ { email: user.email } ],
+ 				to: user.email,
  				from: 'info@vizor.io',
  				subject: 'Your Vizor password has been changed',
+ 				html: 'Hello,<br><br>' +
+	 				'This is a confirmation that the password for your account ' + user.email + ' has just been changed.<br><br>',
  				text: 'Hello,\n\n' +
- 				'This is a confirmation that the password for your account ' + user.email + ' has just been changed.\n'
+	 				'This is a confirmation that the password for your account ' + user.email + ' has just been changed.\n',
  			}
 
- 			mailer.send(mail.to, mail.subject, mail.text)
+ 			mailer.send(mail.to, mail.subject, mail.html, mail.text)
  			.then(function() {
  				req.flash('success', { message: 'Success! Your password has been changed.' })
  				done()
@@ -551,16 +643,20 @@ exports.getAccountProfile = function(req, res) {
  		},
  		function(token, user, done) {
  			var mail = {
- 				to: [ { email: user.email } ],
+ 				to: user.email,
  				from: 'info@vizor.io',
  				subject: 'Reset your password on Vizor',
+ 				html: 'You are receiving this email because you (or someone else) have requested the reset of the password for your account.<br/><br/>' +
+ 				'Please click on the following link, or paste this into your browser to complete the process:<br/><br/>' +
+ 				'http://' + req.headers.host + '/reset/' + token + '<br/><br/>' +
+ 				'If you did not request this, please ignore this email and your password will remain unchanged.<br/><br/>',
  				text: 'You are receiving this email because you (or someone else) have requested the reset of the password for your account.\n\n' +
  				'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
  				'http://' + req.headers.host + '/reset/' + token + '\n\n' +
  				'If you did not request this, please ignore this email and your password will remain unchanged.\n'
  			}
 
- 			mailer.send(mail.to, mail.subject, mail.text)
+ 			mailer.send(mail.to, mail.subject, mail.html, mail.text)
  			.then(function() {
 				if (!wantJSON) {
 					req.flash('info', {

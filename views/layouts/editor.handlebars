@@ -2,16 +2,16 @@
 <html lang="en" class="hVizor">
   <head id="head">
     <title>Vizor</title>
-    <link href="/style/less.css" rel="Stylesheet" type="text/css"/>
-    <link href="/style/tree.css" rel="Stylesheet" type="text/css"/>
-    <link href="/style/icons/style.css" rel="Stylesheet" type="text/css"/>
-    <link href="/vendor/font-awesome-4.2.0/css/font-awesome.min.css" rel="Stylesheet" type="text/css" />
+
+    {{{css 'editor'}}}
+	{{{css 'icons/style'}}}
+
+    <!--<link href="/vendor/font-awesome-4.2.0/css/font-awesome.min.css" rel="Stylesheet" type="text/css" />-->
     <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:400,700,300" type="text/css">
     <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Source+Code+Pro:300,400' rel='stylesheet' type='text/css'>
 
-    <script>{{> ga}}</script>
-
+    <!-- begin bundler -->
     <script type="text/javascript" src="/vendor/when.js"></script>
 
     <script type="text/javascript" src="/node_modules/jquery/dist/jquery.min.js"></script>
@@ -27,7 +27,7 @@
 
     <script type="text/javascript" src="/node_modules/handlebars/dist/handlebars.min.js"></script>
     <script type="text/javascript" src="/node_modules/moment/min/moment.min.js"></script>
-	
+
     <script type="text/javascript" src="/vendor/webgl-debug.js"></script>
 
     <script type="text/javascript" src="/scripts/event-emitter.js"></script>
@@ -42,7 +42,7 @@
     <script type="text/javascript" src="/scripts/collapsible-select-control.js"></script>
     <script type="text/javascript" src="/scripts/plugin-group.js"></script>
     <script type="text/javascript" src="/scripts/plugin-manager.js"></script>
-    <script type="text/javascript" src="/scripts/preset-manager.js"></script>
+    <script type="text/javascript" src="/scripts/patchManager.js"></script>
     <script type="text/javascript" src="/scripts/peopleManager.js"></script>
     <script type="text/javascript" src="/scripts/connection.js"></script>
     <script type="text/javascript" src="/scripts/graph.js"></script>
@@ -71,12 +71,16 @@
     <script type="text/javascript" src="/scripts/ui-core-statestore.js"></script>
 	<script type="text/javascript" src="/scripts/ui-core.js"></script>
     <script type="text/javascript" src="/scripts/ui-breadcrumb.js"></script>
-    <script type="text/javascript" src="/scripts/ui-site.js"></script>
+    <script type="text/javascript" src="/scripts/ui/tabbed.js"></script>
     <script type="text/javascript" src="/scripts/ui-minislides.js"></script>
     <script type="text/javascript" src="/scripts/ui.js"></script>
+    <script type="text/javascript" src="/scripts/ui/pageStore.js"></script>
+    <script type="text/javascript" src="/scripts/ui-site.js"></script>
+    <script type="text/javascript" src="/scripts/ui/xhrForm.js"></script>
     <script type="text/javascript" src="/scripts/ui/uiDragAwareHelper.js"></script>
     <script type="text/javascript" src="/scripts/ui/uiTextArea.js"></script>
     <script type="text/javascript" src="/scripts/ui-upload.js"></script>
+    <script type="text/javascript" src="/scripts/ui/ui-helpscreen.js"></script>
     <script type="text/javascript" src="/scripts/ui/uiDragToAdjust.js"></script>
     <script type="text/javascript" src="/scripts/ui/uiEnterValue.js"></script>
     <script type="text/javascript" src="/scripts/ui/uiAbstractProxy.js"></script>
@@ -120,6 +124,8 @@
 
     <script type="text/javascript" src="/scripts/datatypes/environmentSettings.js"></script>
 
+    <script type="text/javascript" src="/scripts/glTFUtils.js"></script>
+
     <script type="text/javascript" src="/vendor/flux.js"></script>
 
     <script type="text/javascript" src="/vendor/three/three.js"></script>
@@ -129,6 +135,14 @@
     <script type="text/javascript" src="/vendor/three/DDSLoader.js"></script>
     <script type="text/javascript" src="/vendor/three/SceneLoader.js"></script>
     <script type="text/javascript" src="/vendor/three/MorphAnimMesh.js"></script>
+    <script type="text/javascript" src="/vendor/three/loaders/FBXLoader.js"></script>
+    <script type="text/javascript" src="/vendor/three/loaders/ColladaLoader2.js"></script>
+    <script type="text/javascript" src="/vendor/three/loaders/gltf/glTF-parser.js"></script>
+    <script type="text/javascript" src="/vendor/three/loaders/gltf/glTFAnimation.js"></script>
+    <script type="text/javascript" src="/vendor/three/loaders/gltf/glTFLoader.js"></script>
+    <script type="text/javascript" src="/vendor/three/loaders/gltf/glTFLoaderUtils.js"></script>
+    <script type="text/javascript" src="/vendor/three/loaders/gltf/glTFShaders.js"></script>
+    <script type="text/javascript" src="/vendor/three/loaders/gltf/gltfUtilities.js"></script>
 
     <script type="text/javascript" src="/vendor/three/VREffect.js"></script>
     <script type="text/javascript" src="/vendor/three/CardboardEffect.js"></script>
@@ -153,12 +167,14 @@
 
     <script type="text/javascript" src="/scripts/threeObject3dPlugin.js"></script>
 
-    <script type="text/javascript" src="/scripts/abstractObjectGazePlugin.js"></script>
-    <script type="text/javascript" src="/scripts/abstractThreeLoaderObjPlugin.js"></script>
-    <script type="text/javascript" src="/scripts/abstractThreeMaterialPlugin.js"></script>
-    <script type="text/javascript" src="/scripts/abstractThreeMeshPlugin.js"></script>
-    <script type="text/javascript" src="/scripts/abstractArrayBlendModulatorPlugin.js"></script>
-    <script type="text/javascript" src="/scripts/abstractAnimateValueOnTriggerPlugin.js"></script>
+    <script type="text/javascript" src="/scripts/abstractPlugins/abstractGraphPlugin.js"></script>
+    <script type="text/javascript" src="/scripts/abstractPlugins/abstractTextAreaPlugin.js"></script>
+    <script type="text/javascript" src="/scripts/abstractPlugins/abstractObjectGazePlugin.js"></script>
+    <script type="text/javascript" src="/scripts/abstractPlugins/abstractThreeLoaderObjPlugin.js"></script>
+    <script type="text/javascript" src="/scripts/abstractPlugins/abstractThreeMaterialPlugin.js"></script>
+    <script type="text/javascript" src="/scripts/abstractPlugins/abstractThreeMeshPlugin.js"></script>
+    <script type="text/javascript" src="/scripts/abstractPlugins/abstractArrayBlendModulatorPlugin.js"></script>
+    <script type="text/javascript" src="/scripts/abstractPlugins/abstractAnimateValueOnTriggerPlugin.js"></script>
 
     <script type="text/javascript" src="/scripts/worldEditor/worldEditorPerspectiveCamera.js"></script>
     <script type="text/javascript" src="/scripts/worldEditor/worldEditorOrthographicCamera.js"></script>
@@ -173,19 +189,27 @@
     <script type="text/javascript" src="/scripts/worldEditor/hemisphereLightHelper.js"></script>
     <script type="text/javascript" src="/scripts/worldEditor/pointLightHelper.js"></script>
     <script type="text/javascript" src="/scripts/worldEditor/sceneLightingHelper.js"></script>
+    <script type="text/javascript" src="/scripts/worldEditor/boundingSphereHelper.js"></script>
+    <script type="text/javascript" src="/scripts/worldEditor/skeletonHelper.js"></script>
+    <script type="text/javascript" src="/scripts/worldEditor/boundingBoxHelper.js"></script>
+
+    <script type="text/javascript" src="/scripts/worldEditor/objectPlacementHelper.js"></script>
 
     <script type="text/javascript" src="/scripts/screenshot/ScreenshotRenderer.js"></script>
 
     <script type="text/javascript" src="/scripts/loaders/multiObjectLoader.js"></script>
 
-    <!-- next line replaced by build: -->
-    <!-- {{editor.min.js}} -->
+    <script type="text/javascript" src="/vendor/toji/webgl-utils/src/wglu-stats.js"></script>
+
+    <!-- end bundler -->
 
     <script>{{> mixpanel}}</script>
   </head>
 
 <body class="noselect bEditor {{extraClasses}}">
-  {{{body}}}
+    {{> srv/gtm}}
+
+    {{{body}}}
 
     <script>
         {{{templateCache}}}

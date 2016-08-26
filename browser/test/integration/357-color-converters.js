@@ -16,9 +16,8 @@ describe('Color converters', function() {
 
 	it('displays the right color', function() {
 		app.setupStoreListeners()
-		app.clipboard = JSON.stringify(source)
 
-		app.onPaste()
+		app.pasteObject(source)
 
 		E2.core.active_graph.update()
 		

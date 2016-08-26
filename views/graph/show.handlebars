@@ -41,6 +41,12 @@
                     {{else}}
                     {{/eq}}
                 </button>
+            {{else}}
+                {{!-- always display this button in 360vr.io, the UI will manage it --}}
+                {{#eq site "threesixty"}}
+                    <button id="edit" class="svg nopaused noDeviceMobile" data-svgref="player-icon-edit"><svg></svg>
+                        <span>Edit</span></button>
+                {{/eq}}
             {{/if}}
 
             {{#unless hideShareButton}}
@@ -66,6 +72,8 @@
     (function() {
         if (!window.Vizor) window.Vizor = {}
         Vizor.origin = window.location.origin
+
+        Vizor.isEditor = false
 
     {{#if graph.owner}}
         Vizor.shareURL = window.location.origin + '/{{graph.owner}}/{{graph.name}}'

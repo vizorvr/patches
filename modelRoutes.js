@@ -4,12 +4,18 @@ var path = require('path');
 var makeRandomString = require('./lib/stringUtil').makeRandomString
 
 var tempDir;
-temp.mkdir('uploads', function(err, dirPath)
-{
+temp.mkdir('uploads', function(err, dirPath) {
 	if (err)
 		throw err;
 	tempDir = dirPath;
 });
+
+function requireAdminUser(req, res, next) {
+	if (req.user && req.user.isAdmin)
+		return next()
+
+	res.sendStatus(401)
+}
 
 module.exports = 
 function modelRoutes(
@@ -25,7 +31,7 @@ function modelRoutes(
 	var GraphController = require('./controllers/graphController');
 	var ImageController = require('./controllers/imageController');
 	var SceneController = require('./controllers/sceneController');
-	var PresetController = require('./controllers/presetController');
+	var PatchController = require('./controllers/patchController');
 
 	var AssetService = require('./services/assetService');
 	var GraphService = require('./services/graphService');
@@ -66,8 +72,8 @@ function modelRoutes(
 		gfs
 	);
 
-	var presetController = new PresetController(
-		new AssetService(require('./models/preset')),
+	var patchController = new PatchController(
+		new AssetService(require('./models/patch')),
 		gfs
 	);
 
@@ -86,7 +92,7 @@ function modelRoutes(
 		video: videoController,
 		json: jsonController,
 
-		preset: presetController
+		patch: patchController
 	}
 
 	function getController(req, res, next) {
@@ -104,6 +110,18 @@ function modelRoutes(
 		next();
 	}
 
+	function expectUploadedFile(req, res, next) {
+		var file = req.files.file
+
+		if (!file) {
+			var e = new Error('Please upload an image')
+			e.status = 400
+			return next(e)
+		}
+
+		next()
+	}
+
 	// upload user profile avatar picture
 	app.post('/account/profile/avatar',
 		passportConf.isAuthenticated,
@@ -116,7 +134,23 @@ function modelRoutes(
 				return filename.replace(/\W+/g, '-');
 			}
 		}),
+		expectUploadedFile,
 		imageController.setUserAvatar.bind(imageController))
+
+	// upload user profile header picture
+	app.post('/account/profile/header',
+		passportConf.isAuthenticated,
+		multer({
+			dest: tempDir,
+			limits: {
+				fileSize: 1024 * 1024 * 8 // 8m
+			},
+			rename: function (fieldname, filename) {
+				return filename.replace(/\W+/g, '-');
+			}
+		}),
+		imageController.setUserHeader.bind(imageController))
+
 
 	// upload
 	app.post('/upload/:model',
@@ -131,6 +165,7 @@ function modelRoutes(
 				return filename.replace(/\W+/g, '-');
 			}
 		}),
+		expectUploadedFile,
 		function(req, res, next) {
 			// imageProcessor will checksum the file
 			if (req.params.model === 'image')
@@ -163,6 +198,7 @@ function modelRoutes(
 				return newName;
 			}
 		}),
+		expectUploadedFile,
 		function(req, res, next) {
 			// imageProcessor will checksum the file
 			if (req.params.model === 'image')
@@ -177,6 +213,15 @@ function modelRoutes(
 			req.controller.uploadAnonymous(req, res, next)
 		}
 	);
+
+	// -----
+	// Admin
+	app.get('/admin/list', 
+		requireAdminUser,
+		function(req, res, next) {
+			graphController.adminIndex(req, res, next)
+		}
+	)
 
 	// -----
 	// Edit Log routes
@@ -197,12 +242,13 @@ function modelRoutes(
 	})
 
 	// -----
-	// Preset routes
-	app.get('/:username/presets', function(req, res, next) {
-		presetController.findByCreatorName(req, res, next);
+	// User Patch routes
+	app.get('/:username/patches', function(req, res, next) {
+		patchController.findByCreatorName(req, res, next);
 	})
-	app.post('/:username/presets', function(req, res, next) {
-		presetController.save(req, res, next);
+
+	app.post('/:username/patches', function(req, res, next) {
+		patchController.save(req, res, next);
 	})
 
 	// -----
@@ -237,17 +283,33 @@ function modelRoutes(
 		graphController.edit(req, res, next);
 	});
 
-	// GET /fthr/dunes-world -- PLAYER
-	app.get('/:username/:graph', function(req, res, next) {
-		req.params.path = '/'+req.params.username+'/'+req.params.graph;
-		graphController.graphLanding(req, res, next);
-	});
-
 	// GET /fthr/dunes-world.json
 	app.get('/:username/:graph.json', function(req, res, next) {
 		req.params.path = '/'+req.params.username+'/'+req.params.graph.replace(/\.json$/g, '');
 		graphController.load(req, res, next);
 	});
+
+	// GET /fthr/dunes-world -- PLAYER
+	app.get('/:username/:graph', function(req, res, next) {
+		req.params.path = '/'+req.params.username+'/'+req.params.graph
+		graphController.graphLanding(req, res, next)
+	})
+
+	// POST /fthr/dunes-world -- USERPAGE
+	app.post('/:username/:graph',
+		passportConf.isAuthenticated,
+		function(req, res, next) {
+			req.params.path = '/'+req.params.username+'/'+req.params.graph
+			graphController.graphModify(req, res, next)
+		})
+
+	// DELETE /fthr/dunes-world
+	app.delete('/:username/:graph', 
+		passportConf.isAuthenticated,
+		function(req, res, next) {
+			req.params.path = '/'+req.params.username+'/'+req.params.graph
+			graphController.delete(req, res, next)
+		})
 
 	// GET /fthr/dunes-world/graph.json
 	app.get('/:username/:graph/graph.json', function(req, res, next) {
@@ -261,6 +323,13 @@ function modelRoutes(
 		documentationController.getPluginDocumentation(req, res, next);
 	});
 
+	// ----
+	// Metadata on images
+	app.get(/^\/meta\/data\/.*/, function(req, res, next) {
+		imageController.getMetadata(req, res, next);
+	})
+
+
 	// -----
 	// Generic model routes
 
@@ -270,13 +339,8 @@ function modelRoutes(
 	})
 
 	// discovery
-	app.get(['/browse', '/browse.json'], function(req, res, next) {
+	app.get(['/browse', '/graphs', '/browse.json'], function(req, res, next) {
 		graphController.publicRankedIndex(req, res, next)
-	})
-
-	// list
-	app.get(['/graph', '/graphs', '/graphs.json', '/graph.json'], function(req,res,next){
-		graphController.index(req, res, next)
 	})
 
 	// list own assets

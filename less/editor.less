@@ -49,7 +49,7 @@ div.graph-node .p_content .p_plugin div.uiTextArea {
     right 	: 0;	//	"
 	width: 12px;
 	height: 12px;
-	opacity: 0;
+	opacity: 0.1;
 	&:hover {
 	  cursor: nwse-resize;
 	}
@@ -317,6 +317,12 @@ div.graph-node {
 			  display:table-cell;
 			  width:100%;
 			}
+		    &.p_in label {
+			  padding: 5px 5px 5px 10px;
+			}
+			&.p_out label {
+			  padding: 5px 10px 5px 5px;
+			}
 		}
 
 	  	.p_slot.p_compatible {
@@ -424,7 +430,6 @@ div.graph-node.p_collapse div.p_content, div.graph-node.p_collapse div.p_plugin 
 	background: -o-linear-gradient(top,  #ff3b3b 1%,#df1b1b 100%); /* Opera 11.10+ */
 	background: -ms-linear-gradient(top,  #ff3b3b 1%,#df1b1b 100%); /* IE10+ */
 	background: linear-gradient(to bottom,  #ff3b3b 1%,#df1b1b 100%); /* W3C */
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ff3b3b', endColorstr='#df1b1b',GradientType=0 ); /* IE6-9 */
 }
 
 
@@ -530,8 +535,7 @@ div.graph-node.p_cat_compound {
   }
 }
 
-
-
+// regular inline cat_io nodes
 div.graph-node.p_cat_io .p_header
 {
   .p_ins .p_slot, .p_outs .p_slot, span {
@@ -540,10 +544,20 @@ div.graph-node.p_cat_io .p_header
   svg {
 	background: #EE5400;
   }
-
 }
 
+// two inputs on this node (not inline)
+div.graph-node.p_cat_io.p_id_variable_local_write_conditional {
+  background: #24A219;
+  .p_ins .p_slot, .p_outs .p_slot, span {
+	background: none;
+  }
+  svg {
+	background: none;
+  }
+}
 
+// specific inline nodes
 div.graph-node.p_cat_io.p_id_variable_local_read .p_header,
 div.graph-node.p_cat_io.p_id_variable_local_write .p_header
 {

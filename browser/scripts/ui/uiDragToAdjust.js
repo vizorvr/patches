@@ -15,6 +15,7 @@ var uiMakeDragToAdjust = function(domNode, onStart, onChange, onEnd, options) {
 		value : 0.5,	// default if no getValue()
 
 		allowTextInput : true,
+		allowTransientTextInput: false,
 		parseTextInput : null,
 		textInputParentNode : null,	// which node to attach the dynamic input control to
 
@@ -37,16 +38,22 @@ var uiMakeDragToAdjust = function(domNode, onStart, onChange, onEnd, options) {
 	onEnd = onEnd || function(){}
 
 	var value = getValue()
+	var prevValue = value
 
 	// helpers
 	var clamp = THREE.Math.clamp
 	var mapLinear = THREE.Math.mapLinear
 
-	var parseInputValue = (typeof o.parseTextInput === 'function') ? o.parseTextInput : function(inputValue) {
-		var v = parseFloat(inputValue)
-		if (isNaN(v)) return false
-		if (!isFinite(v)) return false
-		return clamp(v, o.min, o.max)
+	var parseInputValue
+	if (typeof o.parseTextInput === 'function')
+		parseInputValue = o.parseTextInput
+	else {
+		parseInputValue = function(inputValue, oldValue, isTransient) {
+			var v = parseFloat(inputValue)
+			if (isNaN(v)) return false
+			if (!isFinite(v)) return false
+			return clamp(v, o.min, o.max)
+		}
 	}
 
 	var numSteps = (o.max - o.min) / o.step
@@ -176,17 +183,29 @@ var uiMakeDragToAdjust = function(domNode, onStart, onChange, onEnd, options) {
 		}
 	}
 
-	function evChange(v) {
+	function textEntryChange(v) {
 		var oldValue = value
-		v = parseInputValue(v)
+		v = parseInputValue(v, oldValue, false)
 		if (v === false) v = oldValue
 		v = clamp(v, o.min, o.max)
 		if (oldValue !== v) {
 			value = v
 			normValue = mapLinear(value, o.min, o.max, 0, o.size)
 			onStart(oldValue)
-			onChange(value, oldValue)
+			onChange(value, oldValue, false)
 			onEnd(value)
+		}
+	}
+
+	function transientEntryChange(v) {
+		v = parseInputValue(v, prevValue, true)
+		if (v === false)
+			v = prevValue
+		v = clamp(v, o.min, o.max)
+		if (prevValue !== v) {
+			prevValue = v
+			normValue = mapLinear(v, o.min, o.max, 0, o.size)
+			onChange(v, prevValue, true)
 		}
 	}
 
@@ -194,7 +213,8 @@ var uiMakeDragToAdjust = function(domNode, onStart, onChange, onEnd, options) {
 		domNode.addEventListener('dblclick', function(e){
 			e.preventDefault();
 			e.stopPropagation();
-			uiEnterValueControl(domNode, o.textInputParentNode, evChange)
+			var evOpts = (o.allowTransientTextInput) ? {onTransientChange:transientEntryChange} : null
+			uiEnterValueControl(domNode, o.textInputParentNode, textEntryChange, evOpts)
 			return false
 		}, true);
 	}

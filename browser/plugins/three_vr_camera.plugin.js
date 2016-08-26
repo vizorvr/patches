@@ -1,40 +1,41 @@
 (function() {
 	var ThreeVRCameraPlugin = E2.plugins.three_vr_camera = function(core) {
+		var that = this
+
 		Plugin.apply(this, arguments)
 
 		this.desc = 'THREE.js VR Camera'
 		
-		this.defaultFOV = 90
-
-		// try to find out default fov from the device
-		if (window.HMDVRDevice && window.HMDVRDevice.getEyeParameters) {
-			var eyeParams = window.HMDVRDevice.getEyeParameters()
-
-			if (eyeParams.recommendedFieldOfView) {
-				this.defaultFOV = eyeParams.recommendedFieldOfView
-			}
-			else if (eyeParams.leftDegrees && eyeParams.rightDegrees) {
-				this.defaultFOV = eyeParams.leftDegrees + eyeParams.rightDegrees
-			}
-		}
+		this.findDefaultFov()
 
 		this.input_slots = [
 			{ name: 'position', dt: core.datatypes.VECTOR },
 			{ name: 'rotation', dt: core.datatypes.VECTOR },
 			{ name: 'fov', dt: core.datatypes.FLOAT, def: this.defaultFOV },
 			{ name: 'aspectRatio', dt: core.datatypes.FLOAT, def: 1.0},
-			{ name: 'near', dt: core.datatypes.FLOAT, def: 0.001 },
-			{ name: 'far', dt: core.datatypes.FLOAT, def: 1000.0 }
+			{ name: 'near', dt: core.datatypes.FLOAT, def: 0.01 },
+			{ name: 'far', dt: core.datatypes.FLOAT, def: 10000.0 },
+			{
+				name:   'lock transform',
+				dt:     core.datatypes.BOOL,
+				def:    false,
+				label:  'Lock transform',
+				desc:   'If enabled, the transform coming from the HMD is ignored'
+			}
 		]
 
 		this.output_slots = [
-			{name: 'camera',	dt: core.datatypes.CAMERA},
-			{name: 'position',	dt: core.datatypes.VECTOR},
-			{name: 'rotation',	dt: core.datatypes.VECTOR}
+			{ name: 'camera',	dt: core.datatypes.CAMERA },
+			{ name: 'offset',	dt: core.datatypes.VECTOR,
+			  desc: 'The position offset of the camera.' },
+			{ name: 'position',	dt: core.datatypes.VECTOR,
+			  desc: 'The current position of the headset.' },
+			{ name: 'rotation',	dt: core.datatypes.VECTOR }
 		]
 
 		this.always_update = true
 		this.dirty = false
+		this.locked = false
 
 		this.state = {
 			position: {x: 0, y: 0, z:0},
@@ -49,22 +50,54 @@
 
 		this.outputRotationEuler = new THREE.Euler()
 		this.outputPosition = new THREE.Vector3()
+
+		this.node.on('pluginStateChanged', function() {
+			that.offset.set(that.state.position.x, that.state.position.y, that.state.position.z)
+		})
+
+		E2.app.player.camera = this
 	}
 
 	ThreeVRCameraPlugin.prototype = Object.create(Plugin.prototype)
+
+	ThreeVRCameraPlugin.prototype.findDefaultFov = function() {
+		var that = this
+
+		this.defaultFOV = 90
+
+		if (!navigator.getVRDisplays)
+			return;
+
+		navigator.getVRDisplays()
+		.then(function(vrDisplays) {
+			var displays = vrDisplays.filter(function(display) {
+				return display instanceof VRDisplay &&
+					display.capabilities.canPresent
+			})
+
+			if (displays.length) {
+				var eyeParams = displays[0].getEyeParameters('left')
+				if (eyeParams)
+					that.defaultFOV = eyeParams.fieldOfView.leftDegrees + eyeParams.fieldOfView.rightDegrees;
+			}
+		})
+
+	}
 
 	ThreeVRCameraPlugin.prototype.reset = function() {
 		Plugin.prototype.reset.apply(this, arguments)
 
 		this.domElement = E2.dom.webgl_canvas[0]
 
-		if (!this.dolly) {
-
+		if (!this.dolly)
 			this.dolly = new THREE.PerspectiveCamera()
 
-		}
-
 		if (!this.vrControlCamera) {
+			// try to find out default fov from the device
+			// use hardware here for early detection
+			if (hardware.hmd) {
+			}
+
 			this.vrControlCamera = new THREE.PerspectiveCamera(
 				this.defaultFOV,
 				this.domElement.clientWidth / this.domElement.clientHeight,
@@ -88,6 +121,8 @@
 
 		this.object3d.position.set(this.state.position.x, this.state.position.y, this.state.position.z)
 		this.object3d.quaternion.set(this.state.quaternion._x, this.state.quaternion._y, this.state.quaternion._z, this.state.quaternion._w)
+
+		this.offset = new THREE.Vector3(this.state.position.x, this.state.position.y, this.state.position.z)
 	}
 
 	ThreeVRCameraPlugin.prototype.play = function() {
@@ -122,7 +157,8 @@
 		if (this.dirty)
 			this.vrControlCamera.updateProjectionMatrix()
 
-		this.controls.update(new THREE.Vector3(), new THREE.Quaternion())
+		if (!this.locked)
+			this.controls.update(new THREE.Vector3(), new THREE.Quaternion())
 
 		this.object3d.updateMatrixWorld()
 
@@ -159,6 +195,9 @@
 			this.vrControlCamera.far = data
 			this.dirty = true
 			break
+		case 6: // locked transforms
+			this.locked = data
+			break
 		default:
 			break
 		}
@@ -167,13 +206,14 @@
 	ThreeVRCameraPlugin.prototype.update_output = function(slot) {
 		if (slot.index === 0) { // camera
 			return this.vrControlCamera
-		}
-		else if (slot.index === 1) { // position
+		} else if (slot.index === 1) { // offset
+			return this.offset
+		} else if (slot.index === 2) { // position
 			this.outputPosition.copy(this.vrControlCamera.position)
 			this.outputPosition.applyMatrix4(this.vrControlCamera.matrixWorld)
 			return this.outputPosition
 		}
-		else if (slot.index === 2) { // rotation
+		else if (slot.index === 3) { // rotation
 			var tempQuaternion = this.vrControlCamera.quaternion.clone()
 			tempQuaternion.multiply(this.object3d.quaternion)
 			this.outputRotationEuler.setFromQuaternion(tempQuaternion, "YZX")

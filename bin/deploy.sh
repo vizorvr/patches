@@ -44,13 +44,13 @@ echo ----------------------------------------
 # start container
 d run -d --name $FQDN \
      -e "FQDN=$FQDN" \
-     -e "MANDRILL=$MANDRILL" \
+     -e "KEY_SPARKPOST=$KEY_SPARKPOST" \
      -e "NODE_ENV=$NODE_ENV" \
      -e "NEWRELIC=$NEWRELIC" \
      -e "SESSION_SECRET=$SESSION_SECRET" \
      -e "ENGI_BIND_PORT=$PORT" \
      -e "KEY_MIXPANEL=$KEY_MIXPANEL" \
-     -e "KEY_GA=$KEY_GA" \
+     -e "KEY_GTM=$KEY_GTM" \
      -e "WSS_HOST=$WSS_HOST" \
      -e "WSS_SECURE=$WSS_SECURE" \
      -p 127.0.0.1:$PORT:$PORT \

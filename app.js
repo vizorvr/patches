@@ -30,12 +30,11 @@ var expressValidator = require('express-validator');
 var exphbs  = require('express-handlebars');
 
 var diyHbsHelpers = require('diy-handlebars-helpers');
-var hbsHelpers = require('./utils/hbs-helpers');
-var TemplateCache = require('./lib/templateCache');
-var templateCache = new TemplateCache().compile();
+var hbsHelpers = require('./lib/hbs-helpers');
+var templateCache = require('./lib/templateCache').templateCache
 
 // Framework controllers (see below for asset controllers)
-var homeController = require('./controllers/home');
+var homeController = require('./controllers/homeController');
 var userController = require('./controllers/userController');
 
 // Threesixty site controller
@@ -66,22 +65,32 @@ var csrfExclude = [
 
 var app = express();
 
+// keep track of process startup time
+process.startTime = Date.now()
+
 app.events = new EventEmitter()
 
 // view engine setup
 app.set('views', fsPath.join(__dirname, 'views'));
+
+var releaseMode = process.env.NODE_ENV === 'production'
+
 var hbs = exphbs.create({
-	defaultLayout: 'main',
+	defaultLayout: releaseMode ? 'main-bundled' : 'main',
 	partialsDir: [
 		{dir:'views/partials'},
 		{dir:'views/server/partials', namespace: 'srv'}
 	],
 	helpers: _.extend(
-		hbsHelpers,
 		diyHbsHelpers,
+		hbsHelpers,
 		templateCache.helper()
 	)
 })
+
+templateCache.setHbs(hbs.handlebars)
+templateCache.compile()
+
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 
@@ -93,7 +102,7 @@ app.use(connectAssets({
 	helperContext: app.locals
 }));
 
-app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
+app.use(morgan(releaseMode ? 'combined' : 'dev'));
 app.use(bodyParser.json({
 	limit: 1024 * 1024 * 128
 }));
@@ -104,12 +113,16 @@ app.use(bodyParser.urlencoded( {
 app.use(expressValidator());
 app.use(methodOverride());
 
+// parse the domain out from the FQDN and use it as the cookie domain
+// this way 360.vizor.io and vizor.io will use the same cookie
+var fqdn = process.env.FQDN || ''
+var domainFromFqdn = fqdn.split('.').splice(-2).join('.')
 app.use(cookieParser());
 app.use(sessions({
 	cookieName: 'vs070',
 	requestKey: 'session',
 	cookie: {
-		domain: process.env.FQDN,
+		domain: domainFromFqdn,
 	},
 	secret: secrets.sessionSecret,
 	duration: week,
@@ -136,9 +149,9 @@ app.use(function(req, res, next) {
 		req.session.userId = req.user._id
 	}
 
-	res.locals.user = req.user;
-	res.locals.KEY_GA = process.env.KEY_GA;
-	res.locals.KEY_MIXPANEL = process.env.KEY_MIXPANEL;
+	res.locals.user = req.user 
+	res.locals.KEY_MIXPANEL = process.env.KEY_MIXPANEL
+	res.locals.KEY_GTM = process.env.KEY_GTM
 	next();
 });
 
@@ -276,6 +289,7 @@ switch (process.env.FQDN) {
 	default:
 		// default site
 		app.get('/', homeController.index);
+		app.get('/about', homeController.about);
 		app.get('/threesixty', threesixtyController.index);
 		app.get('/threesixty/featured', threesixtyController.featured);
 		break;
@@ -400,9 +414,9 @@ function setupModelRoutes(mongoConnection) {
 		.catch(next);
 	});
 
-	// allow strong caching for editor-*.min.js
+	// allow strong caching for bundles etc.
 	app.get([
-		'/dist/editor-*.min.js',
+		'/dist/*',
 		'/vendor/*',
 		'/images/*',
 		'/fonts/*',
@@ -415,25 +429,34 @@ function setupModelRoutes(mongoConnection) {
 	// minimal caching for frequently updating things
 	app.use([
 		'/style/*',
-		'/dist/player.min.js',
 		'/plugins/plugins.json',
-		'/presets/presets.json'
+		'/vizor/patches', // system patch list
 		],
 		function(req, res, next) {
-		res.setHeader('Cache-Control', 'public, must-revalidate, max-age=300');
-		next();
-	});
+			res.setHeader('Cache-Control', 'public, must-revalidate, max-age=300');
+			next();
+		}
+	);
 
-	if (process.env.NODE_ENV !== 'production') {
+	if (!releaseMode) {
 		app.use(function(req, res, next) {
 			res.setHeader('Cache-Control', 'no-cache')
 			next()
 		})
 	}
 
+	// drop the second parameter (timestamp) in meta-scripts
+	app.use('/meta-scripts', function(req, res, next) {
+		req.url = '/' + req.url.split('/').splice(2).join('/')
+		next()
+	}, express.static(
+		fsPath.join(__dirname, 'browser', 'scripts'), 
+		{ maxAge: week * 52 }
+	))
+
 	app.use(['/node_modules'],
 		express.static(fsPath.join(__dirname, 'node_modules'))
-	);
+	)
 
 	app.use(express.static(fsPath.join(__dirname, 'browser'),
 		{ maxAge: hour }))
@@ -481,10 +504,10 @@ function setupModelRoutes(mongoConnection) {
 		res.status(err.status || 500);
 
 		if (req.xhr)
-			return res.json({ message: err.message });
+			return res.json({ success: false, message: err.message });
 
 		res.render('error', {
-			layout: 'min',
+			layout: 'errorlayout',
 			message: err.message,
 			error: {}
 		});

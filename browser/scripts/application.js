@@ -105,27 +105,46 @@ Application.prototype.createPlugin = function(id, position) {
 
 		var node = new Node(activeGraph, id, position[0], position[1]);
 
-		if (name) { // is graph?
+		if (E2.GRAPH_NODES.indexOf(id) !== -1) { // is graph?
 			node.plugin.setGraph(new Graph(E2.core, activeGraph))
-			node.title = name
 			node.plugin.graph.plugin = node.plugin
 		}
+
+		if (name)
+			node.title = name
 
 		return node
 	}
 
-	var node
+	switch(id) {
+		case 'graph':
+			return _create('Nested Patch')
+		case 'loop':
+			return _create('Loop')
+		case 'array_function':
+			return _create('Array Function')
+		case 'spawner':
+			return _create('Spawner')
+		default:
+			return _create()
+	}
 
-	if (id === 'graph')
-		node = _create('Graph')
-	else if (id === 'loop')
-		node = _create('Loop')
-	else if (id === 'array_function')
-		node = _create('Array function')
-	else
-		node = _create(null)
+}
 
-	return node
+Application.prototype.setActiveGraph = function(graph) {
+	if (E2.core.active_graph === graph && graph.ui)
+		return;
+
+	E2.app.dispatcher.dispatch({
+		actionType: 'uiActiveGraphChanged',
+		activeGraphUid: graph.uid
+	})
+
+	this.onGraphSelected(graph)
+
+	if (graph.tree_node) {
+		graph.tree_node.activate()
+	}
 }
 
 Application.prototype.instantiatePlugin = function(id, position) {
@@ -134,7 +153,8 @@ Application.prototype.instantiatePlugin = function(id, position) {
 	var newY = Math.floor(position[1] + this.scrollOffset[1])
 	var node = this.createPlugin(id, [newX, newY])
 
-	mixpanel.track('Node Added', {
+	E2.track({
+		event: 'nodeAdded', 
 		id: id
 	})
 
@@ -475,7 +495,7 @@ Application.prototype.deleteSelectedNodes = function() {
 	this.deleteSelectedConnections()
 
 	hns.forEach(function(n) {
-		that.graphApi.removeNode(ag, n)
+		that.graphApi.removeNode(n.parent_graph, n)
 	})
 
 	this.undoManager.end('Delete nodes')
@@ -620,32 +640,6 @@ Application.prototype.onNodeDragStopped = function(node) {
 	})
 }
 
-Application.prototype.clearSelection = function() {
-	var sn = this.selectedNodes;
-	var sc = this.selectedConnections;
-
-	for(var i = 0, len = sn.length; i < len; i++) {
-		var nui = sn[i].ui;
-
-		if(nui) {
-			nui.setSelected(false);
-		}
-	}
-
-	for(var i = 0, len = sc.length; i < len; i++) {
-		var cui = sc[i].ui;
-
-		if(cui)
-			cui.selected = false;
-	}
-
-	this.selectedNodes = [];
-	this.selectedConnections = [];
-
-	E2.ui.state.selectedObjects = this.selectedNodes
-
-}
-
 Application.prototype.redrawConnection = function(connection) {	/* @TODO: rename this method */
 	var cn = connection
 	if (!cn.ui) {
@@ -686,8 +680,7 @@ Application.prototype.onCanvasMouseDown = function(e) {
 	this.updateCanvas(false)
 }
 
-Application.prototype.releaseSelection = function()
-{
+Application.prototype.releaseSelection = function() {
 	this.selection_start = null;
 	this.selection_end = null;
 	this.selection_last = null;
@@ -699,45 +692,37 @@ Application.prototype.releaseSelection = function()
 	this.selection_dom = null;
 }
 
-Application.prototype.onCanvasMouseUp = function(e)
-{
-	if(e.which === 2)
-	{
+Application.prototype.onCanvasMouseUp = function(e) {
+	if (e.which === 2) {
 		this.is_panning = false;
 		this.canvas[0].style.cursor = '';
 		e.preventDefault();
 		return;
 	}
 
-	if(!this.selection_start)
+	if (!this.selection_start)
 		return;
 
 	this.releaseSelection();
 
 	var nodes = this.selectedNodes;
 
-	if(nodes.length)
-	{
+	if (nodes.length) {
 		var sconns = this.selectedConnections;
 
-		var insert_all = function(clist)
-		{
-			for(var i = 0, len = clist.length; i < len; i++)
-			{
+		var insert_all = function(clist) {
+			for(var i = 0, len = clist.length; i < len; i++) {
 				var c = clist[i];
 				var found = false;
 
-				for(var ci = 0, cl = sconns.length; ci < cl; ci++)
-				{
-					if(c === sconns[ci])
-					{
+				for(var ci = 0, cl = sconns.length; ci < cl; ci++) {
+					if (c === sconns[ci]) {
 						found = true;
 						break;
 					}
 				}
 
-				if(!found)
-				{
+				if (!found) {
 					c.ui.selected = true;
 					sconns.push(c);
 				}
@@ -745,8 +730,7 @@ Application.prototype.onCanvasMouseUp = function(e)
 		}
 
 		// Select all pertinent connections
-		for(var i = 0, len = nodes.length; i < len; i++)
-		{
+		for(var i = 0, len = nodes.length; i < len; i++) {
 			var n = nodes[i];
 
 			insert_all(n.inputs);
@@ -916,15 +900,12 @@ Application.prototype.selectionToObject = function(nodes, conns, sx, sy) {
 
 		var b = [p.left, p.top, p.left + width, p.top + height];
 
-		if(dom)
-			n = n.serialise();
+		if (b[0] < x1) x1 = b[0];
+		if (b[1] < y1) y1 = b[1];
+		if (b[2] > x2) x2 = b[2];
+		if (b[3] > y2) y2 = b[3];
 
-		if(b[0] < x1) x1 = b[0];
-		if(b[1] < y1) y1 = b[1];
-		if(b[2] > x2) x2 = b[2];
-		if(b[3] > y2) y2 = b[3];
-
-		d.nodes.push(n);
+		d.nodes.push(n.serialise());
 	}
 
 	if (domHasValidDimensions) {
@@ -942,31 +923,38 @@ Application.prototype.selectionToObject = function(nodes, conns, sx, sy) {
 
 	for(var i = 0, len = conns.length; i < len; i++) {
 		var c = conns[i];
-		d.conns.push(c.ui ? c.serialise() : c);
+		d.conns.push(c.serialise())
 	}
 
-	return d;
+	return d
 }
 
-Application.prototype.fillCopyBuffer = function(nodes, conns, sx, sy) {
-	return JSON.stringify(this.selectionToObject(nodes, conns, sx, sy))
+Application.prototype.stringifyNodesAndConnections = function(nodes, conns, sx, sy) {
+	return JSON.stringify(
+		this.selectionToObject(nodes, conns, sx, sy)
+	)
 }
 
 Application.prototype.onDelete = function(e) {
-	if (!this.selectedNodes.length)
+	if (!this.isWorldEditorActive() && !this.selectedNodes.length)
 		return;
 
-	this.hoverNode = this.selectedNodes[0];
-
 	if (this.isWorldEditorActive()) {
+		var sn = this.worldEditor.selectedEntityNode
+		this.setActiveGraph(this.worldEditor.selectedEntityPatch.parent_graph)
+		this.selectedNodes = []
+		this.selectedConnections = sn.outputs.concat(sn.inputs)
+		this.markNodeAsSelected(sn)
 		this.worldEditor.onDelete(this.selectedNodes)
 	}
 
-	this.deleteSelectedNodes();
+	this.hoverNode = this.selectedNodes[0]
+
+	this.deleteSelectedNodes()
 }
 
-Application.prototype.serialiseSelection = function() {
-	return this.fillCopyBuffer(
+Application.prototype.stringifySelection = function() {
+	return this.stringifyNodesAndConnections(
 		this.selectedNodes,
 		this.selectedConnections,
 		this.scrollOffset[0],
@@ -983,7 +971,7 @@ Application.prototype.onCopy = function(e) {
 		return false
 	}
 
-	var data = this.serialiseSelection()
+	var data = this.stringifySelection()
 	
 	this.clipboard = data
 	
@@ -1002,16 +990,67 @@ Application.prototype.onCut = function(e) {
 	}
 }
 
+Application.prototype.pasteFromClipboard = function() {
+	return this.pasteJson(this.clipboard)
+}
+
+Application.prototype.pasteJson = function(json) {
+	return this.pasteObject(JSON.parse(json))
+}
+
+Application.prototype.pasteObject = function(doc) {
+	this.clearSelection()
+
+	if (doc.root)
+		doc = doc.root
+
+	var cp = E2.dom.canvases
+	var sx = this.scrollOffset[0]
+	var sy = this.scrollOffset[1]
+
+	// pasted node bbox: doc.x1, doc.y1 - doc.x2, doc.y2
+
+	var ox = Math.max(this.mousePosition[0] - cp.position().left + sx, 100)
+	var oy = Math.max(this.mousePosition[1] - cp.position().top + sy, 100)
+
+	var pasted = this.paste(doc, ox, oy)
+
+	pasted.nodes.map(this.markNodeAsSelected.bind(this))
+	pasted.connections.map(this.markConnectionAsSelected.bind(this))
+
+	return pasted
+}
+
 Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
+	return this.pasteInGraph(E2.core.active_graph, srcDoc, offsetX, offsetY)
+}
+
+Application.prototype.pasteInGraph = function(targetGraph, srcDoc, offsetX, offsetY) {
 	this.undoManager.begin('Paste')
 
-	var ag = E2.core.active_graph
+	offsetX = offsetX || 0
+	offsetY = offsetY || 0
+
 	var createdNodes = []
 	var createdConnections = []
 	var globalUidMap = {}
 
-	var docX1 = srcDoc.x1 || 0
-	var docY1 = srcDoc.y1 || 0
+	var leftEdgeFound
+	var topEdgeFound
+
+	// find top left edge offset in patch
+	for (var i=0; i < srcDoc.nodes.length; i++) {
+		var n = srcDoc.nodes[i]
+		if (!leftEdgeFound || n.x < leftEdgeFound)
+			leftEdgeFound = n.x
+		if (!topEdgeFound || n.y < topEdgeFound)
+			topEdgeFound = n.y
+	}
+
+	function placeDocNode(docNode) {
+		docNode.x = Math.floor((docNode.x - leftEdgeFound) + offsetX)
+		docNode.y = Math.floor((docNode.y - topEdgeFound) + offsetY)
+	}
 
 	function mapSlotIds(sids, localUidMap) {
 		var nsids = {}
@@ -1090,13 +1129,9 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 
 	for(var i = 0, len = doc.nodes.length; i < len; i++) {
 		var docNode = doc.nodes[i]
-
-		docNode.x = Math.floor((docNode.x - docX1) + offsetX)
-		docNode.y = Math.floor((docNode.y - docY1) + offsetY)
-
-		this.graphApi.addNode(ag, Node.hydrate(ag.uid, docNode))
-
-		createdNodes.push(ag.findNodeByUid(docNode.uid))
+		placeDocNode(docNode)
+		this.graphApi.addNode(targetGraph, Node.hydrate(targetGraph.uid, docNode))
+		createdNodes.push(targetGraph.findNodeByUid(docNode.uid))
 	}
 
 	for(i = 0, len = doc.conns.length; i < len; i++) {
@@ -1105,7 +1140,7 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 		if (!dc.dst_nuid || !dc.src_nuid)
 			continue;
 
-		var destNode = ag.findNodeByUid(dc.dst_nuid)
+		var destNode = targetGraph.findNodeByUid(dc.dst_nuid)
 		if (!destNode)
 			continue;
 
@@ -1130,18 +1165,17 @@ Application.prototype.paste = function(srcDoc, offsetX, offsetY) {
 			continue;
 		}
 
-		this.graphApi.connect(ag, Connection.hydrate(E2.core.active_graph, dc))
+		this.graphApi.connect(targetGraph, Connection.hydrate(targetGraph, dc))
 
-		createdConnections.push(ag.findConnectionByUid(dc.uid))
-	}
-
-	if (this.isWorldEditorActive()) {
-		this.worldEditor.onPaste(createdNodes)
+		createdConnections.push(targetGraph.findConnectionByUid(dc.uid))
 	}
 
 	this.undoManager.end()
 
-	return { nodes: createdNodes, connections: createdConnections }
+	return {
+		nodes: createdNodes,
+		connections: createdConnections 
+	}
 }
 
 Application.prototype.getNodeBoundingBox = function(node) {
@@ -1151,12 +1185,12 @@ Application.prototype.getNodeBoundingBox = function(node) {
 	var width = (dom ? dom.width() : 0)
 	var height = (dom ? dom.height() : 0)
 
-	// default width / height = 100 / 20 if the graph is not visible
+	// default width & height if the graph is not visible
 	if (width === 0)
-		width = 100
+		width = 200
 
 	if (height === 0)
-		height = 20
+		height = node.open ? 60 : 30
 
 	return {
 		x1: pos.left,
@@ -1166,21 +1200,37 @@ Application.prototype.getNodeBoundingBox = function(node) {
 	}
 }
 
-// find a space for doc in the currently active graph
+// find a space for doc in the graph
 // return a {x: ..., y: ...} object with coordinates
 // where the object will fit without overlapping with
 // any pre-existing nodes
-Application.prototype.findSpaceInGraphFor = function(doc) {
-	var activeGraph = E2.core.active_graph
-
+Application.prototype.findSpaceInGraphFor = function(activeGraph, desiredPlace, leftOfNode) {
 	// minimum spacing between nodes
-	var spacing = {x: 30, y: 20}
+	var spacing = { x: 20, y: 10 }
+	var box = {
+		x1: desiredPlace.x || 200,
+		y1: desiredPlace.y || 200,
+	}
+	box.x2 = box.x1 + 200
+	box.y2 = box.y1 + 30
 
 	// create sorted array of nodes in y
 	var sortedNodes = activeGraph.nodes.slice()
 	sortedNodes.sort(function(a, b) {
-		return a.y - b.y
+		var ay = a.y, by = b.y
+		if (a.open) ay += 30
+		if (b.open) by += 30
+		return ay - by
 	})
+
+	// filter out nodes not connected to leftOfNode
+	if (leftOfNode) {
+		sortedNodes = sortedNodes.filter(function(node) {
+			return node.outputs.some(function(connection) {
+				return connection.dst_node === leftOfNode
+			})
+		})
+	}
 
 	// find the initial set of bboxes that account for this operation -
 	// i.e. anything below the pasted node set
@@ -1189,7 +1239,7 @@ Application.prototype.findSpaceInGraphFor = function(doc) {
 	for(var i = 0; i < sortedNodes.length; ++i) {
 		var bbox = this.getNodeBoundingBox(sortedNodes[i])
 
-		if (bbox.y2 + spacing.y < doc.y1) {
+		if (bbox.y2 + spacing.y < box.y1) {
 			// ignore any nodes above our one, they don't matter
 			continue
 		}
@@ -1200,12 +1250,12 @@ Application.prototype.findSpaceInGraphFor = function(doc) {
 
 	// easy case, nothing overlaps
 	if (bboxes.length === 0) {
-		return {x: doc.x1, y: doc.y1}
+		return {x: box.x1, y: box.y1}
 	}
 
 	// easy case, the next node is outside our bbox vertically
-	if (bboxes[0].y1 > doc.y2 + spacing.y) {
-		return {x: doc.x1, y: doc.y1}
+	if (bboxes[0].y1 > box.y2 + spacing.y) {
+		return {x: box.x1, y: box.y1}
 	}
 
 	// scan the set of bboxes down to find space for our pasted node(s)
@@ -1227,9 +1277,12 @@ Application.prototype.findSpaceInGraphFor = function(doc) {
 				// move the candidate bbox down by offset = height of a node + spacing
 				// and recurse back into trying to match the new candidate area
 				var offset = graphNodeBboxes[i].y2 - pasteBbox.y1 + spacing.y
-
 				var newBboxes = graphNodeBboxes.splice(i + 1)
-				var newNodeBbox = {x1: pasteBbox.x1, y1: pasteBbox.y1 + offset, x2: pasteBbox.x2, y2: pasteBbox.y2 + offset}
+				var newNodeBbox = {
+					// line up left with box above
+					x1: graphNodeBboxes[i].x1, y1: pasteBbox.y1 + offset,
+					x2: graphNodeBboxes[i].x2, y2: pasteBbox.y2 + offset
+				}
 
 				return autoLayout(newNodeBbox, newBboxes)
 			}
@@ -1238,59 +1291,22 @@ Application.prototype.findSpaceInGraphFor = function(doc) {
 		return pasteBbox
 	}
 
-	var result = autoLayout(doc, bboxes)
+	box = autoLayout(box, bboxes)
 
-	return {x: result.x1, y: result.y1}
-}
-
-Application.prototype.onPaste = function(json, x, y) {
-	this.clearSelection()
-
-	json = json || this.clipboard
-
-	var doc = JSON.parse(json)
-
-	if (doc.root)
-		doc = doc.root
-
-	var cp = E2.dom.canvases
-	var sx = this.scrollOffset[0]
-	var sy = this.scrollOffset[1]
-
-	var ox
-	var oy
-
-	// pasted node bbox: doc.x1, doc.y1 - doc.x2, doc.y2
-
-	// calculate paste position
-	if (this.isWorldEditorActive()) {
-		var autoLayoutPosition = this.findSpaceInGraphFor(doc)
-		ox = autoLayoutPosition.x // doc.x1 // doc.nodes[0].x
-		oy = autoLayoutPosition.y // doc.y1 // doc.nodes[0].y
-	}
-	else {
-		ox = Math.max(this.mousePosition[0] - cp.position().left + sx, 100)
-		oy = Math.max(this.mousePosition[1] - cp.position().top + sy, 100)
-	}
-
-	var pasted = this.paste(doc, x || ox, y || oy)
-
-	pasted.nodes.map(this.markNodeAsSelected.bind(this))
-	pasted.connections.map(this.markConnectionAsSelected.bind(this))
-
-	return pasted
+	return { x: box.x1, y: box.y1 }
 }
 
 Application.prototype.markNodeAsSelected = function(node, addToSelection) {
-	if (node.ui) {
-		node.ui.setSelected(true);
-	}
+	if (node.ui)
+		node.ui.setSelected(true)
 
 	if (addToSelection !== false) {
 		this.selectedNodes.push(node)
 		E2.ui.state.selectedObjects = this.selectedNodes
 	}
 
+	if (!this.isWorldEditorActive() && node.isEntityPatch())
+		this.worldEditor.selectEntityPatch(node)
 }
 
 Application.prototype.deselectNode = function(node) {
@@ -1305,14 +1321,42 @@ Application.prototype.markConnectionAsSelected = function(conn) {
 	this.selectedConnections.push(conn)
 }
 
+Application.prototype.clearSelection = function() {
+	var sn = this.selectedNodes;
+	var sc = this.selectedConnections;
+
+	for(var i = 0, len = sn.length; i < len; i++) {
+		var nui = sn[i].ui;
+
+		if(nui) {
+			nui.setSelected(false);
+		}
+	}
+
+	for(var i = 0, len = sc.length; i < len; i++) {
+		var cui = sc[i].ui;
+
+		if(cui)
+			cui.selected = false;
+	}
+
+	this.clearNodeSelection()
+
+	this.worldEditor.clearSelection()
+}
+
+Application.prototype.clearNodeSelection = function() {
+	this.selectedNodes = []
+	this.selectedConnections = []
+	E2.ui.state.selectedObjects = this.selectedNodes
+}
+
 Application.prototype.selectAll = function() {
 	this.clearSelection()
 
 	var ag = E2.core.active_graph
-
 	ag.nodes.map(this.markNodeAsSelected.bind(this))
 	ag.connections.map(this.markConnectionAsSelected.bind(this))
-
 	this.updateCanvas(true)
 }
 
@@ -1416,16 +1460,7 @@ Application.prototype.toggleHelperObjects = function() {
 	}
 }
 
-Application.prototype.onKeyDown = function(e) {
-	return true;
-}
-
-
-Application.prototype.onKeyUp = function(e) {
-}
-
-Application.prototype.changeControlState = function()
-{
+Application.prototype.changeControlState = function() {
 	var s = this.player.state;
 	var cs = this.player.current_state;
 
@@ -1475,10 +1510,9 @@ Application.prototype.onOpenClicked = function() {
 			}, '', path + '/edit')
 
 			that.path = getChannelFromPath(window.location.pathname)
+			that.midPane.closeAll()
 
-			E2.app.midPane.closeAll()
-
-			E2.app.loadGraph('/data/graph'+path+'.json')
+			that.loadGraph('/data/graph'+path+'.json')
 		})
 }
 
@@ -1493,39 +1527,33 @@ Application.prototype.navigateToPublishedGraph = function(graphPath, cb) {
 	}
 
 	history.pushState({}, '', graphPath + '/edit')
-	return this.loadGraph(graphUrl, cb)
+	
+	this.loadGraph(graphUrl).then(cb)
 }
 
-Application.prototype.loadGraph = function(graphPath, cb) {
+Application.prototype.loadGraph = function(graphPath) {
 	var that = this
+	var dfd = when.defer()
 
-	E2.app.onStopClicked()
-	E2.app.player.on_update()
+	this.onStopClicked()
+	this.player.on_update()
 
-	E2.app.player.load_from_url(graphPath, function() {
-		that.setupEditorChannel().then(function() {
-			E2.core.rebuild_structure_tree()
-			E2.app.onGraphSelected(E2.core.active_graph)
-
-			E2.core.emit('vizorFileLoaded')
-
-			E2.app.player.play() // autoplay
-			E2.app.changeControlState()
-			
-			E2.ui.setPageTitle();
-
-			if (cb)
-				cb()
+	this.player.load_from_url(graphPath, function() {
+		that.setupEditorChannel()
+		.then(function() {
+			dfd.resolve()
 		})
 	})
+	
+	return dfd.promise
 }
 
-Application.prototype.onSaveAsPresetClicked = function() {
+Application.prototype.onSaveAsPatchClicked = function() {
 	var graph = this.selectionToObject(this.selectedNodes, this.selectedConnections)
-	this.openPresetSaveDialog(JSON.stringify({ root: graph }))
+	this.openPatchSaveDialog(JSON.stringify({ root: graph }))
 }
 
-Application.prototype.openPresetSaveDialog = null;	// ui replaces this
+Application.prototype.openPatchSaveDialog = null;	// ui replaces this
 
 
 Application.prototype.onPublishClicked = function() {
@@ -1538,7 +1566,10 @@ Application.prototype.onPublishClicked = function() {
 	E2.ui.openPublishGraphModal()
 	.then(function(path) {
 		window.onbeforeunload = null;	// override "you might be leaving work" prompt (release mode)
-		mixpanel.track('Published')
+		E2.track({ 
+			event: 'published',
+			path: path
+		})
 		window.location.href = path
 	})
 }
@@ -1584,7 +1615,11 @@ Application.prototype.openSaveACopyDialog = function() {
 					dataType: 'json',
 					success: function(saved) {
 						E2.ui.updateProgressBar(100);
-						mixpanel.track('Saved a Copy');
+						E2.track({
+							event: 'savedACopy',
+							original: path,
+							copy: saved.path
+						})
 						dfd.resolve(saved.path)
 					},
 					error: function(x, t, err) {
@@ -1618,52 +1653,7 @@ Application.prototype.openSaveACopyDialog = function() {
 }
 
 Application.prototype.growl = function(message, type, duration, user) {
-	type = type || 'info'
-	duration = 500 + (duration || 2000)			// account for reveal animations
-
-	var fromUser = _.extend({
-		username: '',
-		color: 'transparent',
-		firstLetter: '',
-		gravatar: ''
-	}, user)
-
-	if (fromUser.username) {
-		fromUser.firstLetter = fromUser.username.charAt(0)
-	}
-
-	var data = {
-		type: type,
-		fromUser: fromUser,
-		message: message
-	}
-
-	var $notificationArea = jQuery('#notifications-area')
-	if (!$notificationArea.length) {
-		$notificationArea = jQuery('<div id="notifications-area"></div>')
-		jQuery('body').append($notificationArea)
-	}
-
-	var $notification = jQuery(E2.views.partials.notification(data))
-
-	var remove = function () {
-		$notification.remove()
-		if (jQuery('>div', $notificationArea).length === 0) {
-			$notificationArea.remove()
-		}
-	}
-
-	var close = function() {
-		$notification.removeClass('notification-show').addClass('notification-hide')
-		setTimeout(remove, 1000)
-	}
-
-	$notificationArea.append($notification)
-	$notification.addClass('notification-show')
-
-	setTimeout(close, duration * $('.notification', $notificationArea).length)
-
-	return $notification
+	return VizorUI.growl(message, type, duration, user)
 }
 
 Application.prototype.setupStoreListeners = function() {
@@ -1742,6 +1732,11 @@ Application.prototype.setupStoreListeners = function() {
 
 Application.prototype.onGraphSelected = function(graph) {
 	var that = this
+
+	this.clearNodeSelection()
+
+	if (graph === E2.core.active_graph && graph.ui)
+		return;
 
 	E2.core.active_graph.destroy_ui()
 	E2.core.active_graph = graph
@@ -1890,7 +1885,7 @@ Application.prototype.setupPeopleEvents = function() {
 	})
 
 	this.peopleStore.on('activeGraphChanged', function(person) {
-		if (E2.app.channel.uid === person.uid) // it's for me
+		if (E2.app.channel.uid === person.uid) // it's me
 			return E2.app.onGraphSelected(Graph.lookup(person.activeGraphUid))
 
 		var $cursor = cursors[person.uid]
@@ -1909,22 +1904,19 @@ Application.prototype.onForkClicked = function() {
 	this.channel.fork()
 }
 
-Application.prototype.getScreenshot = function(width, height) {
-	width = width || 1280
-	height = height || 720
-	var ssr = new ScreenshotRenderer(this.worldEditor.scene, this.worldEditor.vrCamera)
-	return ssr.capture(width, height)
-}
-
-Application.prototype.start = function() {
+Application.prototype.setupEditorBindings = function() {
 	var that = this
+
+	if (Vizor.releaseMode) {
+		window.onbeforeunload = function() {
+			return "You might be leaving behind unsaved work. Are you sure you want to close the editor?";
+		}
+	}
 
 	E2.core.pluginManager.on('created', this.instantiatePlugin.bind(this))
 
 	document.addEventListener('mouseup', this.onMouseReleased.bind(this))
 	document.addEventListener('mousemove', this.onMouseMoved.bind(this))
-	document.body.addEventListener('keydown', this.onKeyDown.bind(this))
-	document.body.addEventListener('keyup', this.onKeyUp.bind(this))
 
 	E2.dom.canvas_parent[0].addEventListener('scroll', function() {
 		that.scrollOffset = [ E2.dom.canvas_parent.scrollLeft(), E2.dom.canvas_parent.scrollTop() ]
@@ -1975,7 +1967,7 @@ Application.prototype.start = function() {
 			return true
 
 		var data = e.clipboardData.getData('text/plain')
-		that.onPaste(data)
+		that.pasteJson(data)
 		e.preventDefault()
 	}, false)
 
@@ -1989,7 +1981,6 @@ Application.prototype.start = function() {
 		if (!$et.parents('.modal-dialog').length)
 			bootbox.hideAll()
 	})
-
 
 	$('button#fullscreen').click(function() {
 		E2.app.toggleFullscreen()
@@ -2029,11 +2020,10 @@ Application.prototype.start = function() {
 	E2.dom.viewSourceButton.click(E2.ui.viewSource);
 
 	E2.dom.saveACopy.click(E2.app.onSaveACopyClicked.bind(E2.app))
-	E2.dom.saveAsPreset.click(E2.app.onSaveAsPresetClicked.bind(E2.app))
+	E2.dom.saveAsPatch.click(E2.app.onSaveAsPatchClicked.bind(E2.app))
 	E2.dom.open.click(E2.app.onOpenClicked.bind(E2.app))
 	E2.dom.btnNew.click(E2.app.onNewClicked.bind(E2.app))
 	E2.dom.forkButton.click(E2.app.onForkClicked.bind(E2.app))
-
 
 	E2.dom.play.click(E2.app.onPlayClicked.bind(E2.app))
 	E2.dom.pause.click(E2.app.onPauseClicked.bind(E2.app))
@@ -2041,21 +2031,12 @@ Application.prototype.start = function() {
 
 	this.midPane = new E2.MidPane()
 
-	E2.ui.updateProgressBar(100);
-
-	E2.app.player.play() // autoplay
-	E2.app.changeControlState()
-
-
 	$('[data-toggle="popover"]').popover({
 			container: 'body',
 			trigger: 'hover',
 			animation: false
 	});
-	
-
 }
-
 
 /**
  * Called when Core has been initialized
@@ -2065,47 +2046,89 @@ Application.prototype.start = function() {
 Application.prototype.onCoreReady = function(loadGraphUrl) {
 	var that = this
 
-	E2.ui.init(E2);
+	E2.ui.init(E2)
 
-	this.presetManager = new PresetManager('/presets')
+	this.midPane = new E2.MidPane()
+
+	this.patchManager = new PatchManager()
+	this.patchManager.on('open', function(patchMeta, json, targetObject3d) {
+		if (that.isWorldEditorActive()) {
+			that.worldEditor.onPatchDropped(patchMeta, json, targetObject3d)
+		} else {
+			that.pasteJson(json)
+		}
+	})
 
 	that.setupPeopleEvents()
 	that.setupStoreListeners()
+	this.setupEditorBindings()
 
 	if (!loadGraphUrl && !boot.hasEdits) {
 		loadGraphUrl = '/data/graphs/default.json'
 		E2.app.snapshotPending = true
 	}
 
+	this.openStartDialog(false, loadGraphUrl)
+}
+
+Application.prototype.openStartDialog = function(forceShow, loadGraphUrl) {
+	var that = this
+
+	E2.ui.showStartDialog(forceShow)
+	.then(function(selectedGraphUrl) {
+		if (!selectedGraphUrl)
+			selectedGraphUrl = loadGraphUrl
+
+		that.startWithGraph(selectedGraphUrl)
+	})
+}
+
+Application.prototype.startWithGraph = function(selectedGraphUrl) {
+	var that = this
+
 	function start() {
 		E2.dom.canvas_parent.toggle(that.noodlesVisible)
-		
-		E2.app.start()
 
-		E2.app.onWindowResize()
-
-		if (Vizor.releaseMode) {
-			window.onbeforeunload = function() {
-				return "You might be leaving behind unsaved work. Are you sure you want to close the editor?";
-			}
-		}
+		that.startPlaying()
 	}
 
-	E2.ui.showStartDialog()
-	.then(function(selectedTemplateUrl) {
-		if (selectedTemplateUrl && boot.hasEdits) {
-			var path = that.path = E2.uid()
-			history.pushState({}, '', path)
-		}
+	if (!selectedGraphUrl)
+		return that.setupEditorChannel().then(start)
 
-		if (selectedTemplateUrl) {
-			E2.app.loadGraph(selectedTemplateUrl, start)
-		} else if (loadGraphUrl) {
-			E2.app.loadGraph(loadGraphUrl, start)
-		} else {
-			E2.app.setupEditorChannel().then(start)
-		}
-	})
+	// if we have edits coming in at boot,
+	// or we're already on a channel, 
+	// and switching to a new template, 
+	// create new url and snapshot it
+	if (boot.hasEdits || (this.channel && this.channel.isOnChannel)) {
+		var path = this.path = E2.uid()
+		boot = {}
+		history.pushState({}, '', path)
+		E2.app.snapshotPending = true
+	}
+
+	this.loadGraph(selectedGraphUrl).then(start)
+}
+
+Application.prototype.startPlaying = function() {
+	E2.core.rebuild_structure_tree()
+
+	this.setActiveGraph(E2.core.active_graph)
+
+	E2.core.emit('vizorFileLoaded')
+
+	this.player.play()
+
+	this.changeControlState()
+	this.onWindowResize()
+
+	E2.ui.setPageTitle()
+
+	if (window.location.hash[1] === '/') {
+		// path in graph
+		// only root supported
+		this.setActiveGraph(E2.core.root_graph)
+		E2.ui.state.mode = 'program'
+	}
 }
 
 Application.prototype.setupChat = function() {
@@ -2132,7 +2155,7 @@ Application.prototype.setupEditorChannel = function() {
 
 		var readableName = that.path 
 		that.channel.join(that.path, readableName, function() {
-			mixpanel.track('Editor Opened')
+			E2.track({ event: 'editorOpened', path: that.path })
 			dfd.resolve()
 		})
 	}
@@ -2150,7 +2173,7 @@ Application.prototype.setupEditorChannel = function() {
 	} else 
 		joinChannel()
 
-	E2.ui.setPageTitle();
+	E2.ui.setPageTitle()
 	
 	return dfd.promise
 }
@@ -2172,7 +2195,7 @@ Application.prototype.determineWebSocketEndpoint = function(path) {
 	return wsUrl
 }
 
-E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
+E2.InitialiseEngi = function(loadGraphUrl) {
 	E2.dom.editorHeader = $('.editor-header');
 
 	E2.dom.progressBar = $('#progressbar');
@@ -2181,7 +2204,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 
 	E2.dom.btnAssets = $('#btn-assets');
 	E2.dom.btnInspector = $('#btn-inspector');
-	E2.dom.btnPresets = $('#btn-presets');
+	E2.dom.btnPatches = $('#btn-patches');
 	E2.dom.btnSavePatch = $('#btn-save-patch');
 	
 	E2.dom.btnGraph = $('#btn-graph');
@@ -2204,8 +2227,8 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.assetsToggle = $('#assets-toggle');
 	E2.dom.assetsClose = $('#assets-close');
 	
-	E2.dom.presetsLib = $('#presets-lib');
-	E2.dom.presets_list = $('#presets');
+	E2.dom.patchesLib = $('#patches-lib');
+	E2.dom.patches_list = $('#patches');
 	E2.dom.objectsList = $('#objects');
 	
 	E2.dom.canvas_parent = $('#canvas_parent');
@@ -2224,8 +2247,8 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.chat = $('#chat');
 	
 	E2.dom.peopleTab = $('#peopleTab');
-	E2.dom.presetsToggle = $('#presets-toggle');
-	E2.dom.presetsClose = $('#presets-close');
+	E2.dom.patchesToggle = $('#patches-toggle');
+	E2.dom.patchesClose = $('#patches-close');
 	
 	E2.dom.dbg = $('#dbg');
 
@@ -2238,7 +2261,7 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 	E2.dom.forkButton = $('#fork-button');
 	E2.dom.viewSourceButton = $('#view-source');
 	E2.dom.saveACopy = $('.save-copy-button');
-	E2.dom.saveAsPreset = E2.dom.btnSavePatch;
+	E2.dom.saveAsPatch = E2.dom.btnSavePatch;
 	E2.dom.dl_graph = $('#dl-graph');
 	E2.dom.open = $('#open');
 	E2.dom.structure = $('#structure');
@@ -2290,11 +2313,11 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 		}
 	})
 
-	E2.core = new Core(vr_devices)
+	E2.core = new Core()
 	E2.app = new Application()
 	E2.ui = new VizorUI();
 
-	var player = new Player(vr_devices, E2.dom.webgl_canvas)
+	var player = new Player()
 
 	E2.treeView = E2.dom.structure.tree = new TreeView(
 		E2.dom.structure,
@@ -2302,6 +2325,9 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 		function() { // On item activation
 			E2.app.clearEditState()
 			E2.app.clearSelection()
+
+			if (E2.core.active_graph.isEntityPatch() &&  E2.ui.isInProgramMode())
+				E2.app.worldEditor.selectEntityPatch(E2.core.active_graph)
 		},
 		// on graph reorder
 		E2.app.graphApi.reorder.bind(E2.app.graphApi)
@@ -2319,8 +2345,8 @@ E2.InitialiseEngi = function(vr_devices, loadGraphUrl) {
 		preserveDrawingBuffer: true
 	}
 
+	E2.app.debugFpsDisplayVisible = false 
 	E2.app.worldEditor = new WorldEditor(E2.dom.webgl_canvas[0])
-
 
 	E2.core.glContext = E2.dom.webgl_canvas[0].getContext('webgl', gl_attributes) || E2.dom.webgl_canvas[0].getContext('experimental-webgl', gl_attributes)
 	E2.core.renderer = new THREE.WebGLRenderer({context: E2.core.glContext, canvas: E2.dom.webgl_canvas[0]})

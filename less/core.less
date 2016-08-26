@@ -4,6 +4,22 @@ html, body {
   padding: 0;
 }
 
+a::-moz-focus-inner {
+  border: 0px solid transparent;
+  outline: 0 !important;
+}
+body.uaFirefox a:active, body.uaFirefox a:focus {
+  outline: 0 !important;
+}
+
+span>svg {
+  vertical-align: middle;
+}
+
+:active {
+  box-shadow: none !important;
+}
+
 input, textarea, button {
   &:active, &:focus {
 	outline: 0 !important;
@@ -206,25 +222,7 @@ ul.iconic-nav>li.open>button span {
     color:  @editor-text-active;
 }
 
-.top-userpic {
-    display: block;
-    width: 24px;
-    height: 24px;
-    border-radius: 100%;
-    position: relative;
-    margin: 15px auto 6px;
-    overflow: hidden;
-    img {
-        width: 24px;
-        height: auto;
-        margin: -12px 0  0 -12px;
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        padding: 0;
-        border: 0 none;
-    }
-}
+
 
 
 #top-header-logo svg {
@@ -270,46 +268,6 @@ ul.iconic-nav>li.open>button span {
 	border-right: 10px solid #222;
 }
 
-ul.dropdown-menu {
-	padding: 0;
-	border-radius: 0 0 5px 5px;
-	margin: 0;
-	border: 0 none;
-	min-width: 130px;
-	background: @bg-light;
-	z-index: 42;
-	&#userPullDown {
-	    width: 130px;
-	    float: right;
-	    right: -40px;
-	    left: auto;
-	}
-}
-body.bEditor {
-  ul.dropdown-menu {
-  	top: @menu-bar-height;
-	overflow: hidden;
-  }
-}
-
-header nav ul.dropdown-menu {
-  li {
-	padding:0;
-	display: block;
-  }
-}
-
-.dropdown-menu > li > a {
-	padding: 12px 20px;
-	cursor: pointer;
-	border-top: 1px solid @bg-darker;
-	color: #909fb9;
-}
-
-.dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus, .dropdown-menu > li > a:active {
-    background: @bg-bright;
-    color: #fff;
-}
 
 .block-header {
   width: @chat-width;
@@ -588,7 +546,8 @@ header nav ul.dropdown-menu {
 }
 
 .modal {
-	position: absolute;
+  position: absolute;
+  -webkit-font-smoothing: subpixel-antialiased;
 }
 
 .nav li a h4 {
@@ -1057,44 +1016,130 @@ body.bEditor #progressbar {
 }
 
 // svgs sometimes prevent button events from triggering (ios), this fixes it
-button.svg>svg {
+button.svg>svg, a.btn.svg>svg {
   pointer-events: none;
 }
 
 body.layoutMobile .nomobile,
 body.layoutTablet .notablet,
 body.layoutDesktop .nodesktop {
-  display: none;
+  display: none !important;
+}
+
+// prevent flash of device-specific content
+@media screen and (min-width: @threshold-mobile) {
+  .mobileonly {
+	display: none !important;
+  }
+}
+@media screen and (max-width: @threshold-mobile) {
+  .nomobile {
+	display: none !important;
+  }
 }
 
 body.deviceMobile .noDeviceMobile,
 body.deviceTablet .noDeviceTablet,
 body.deviceDesktop .noDeviceDesktop {
-  display: none;
+  display: none !important;
 }
 
 body {
   &.layoutTablet, &.layoutDesktop {
-	.mobileonly { display: none}
+	.mobileonly { display: none !important;}
   }
   &.layoutTablet, &.layoutMobile {
-	.desktoponly {display: none}
+	.desktoponly {display: none !important;}
   }
   &.layoutDesktop, &.layoutMobile {
-	.tabletonly { display: none}
+	.tabletonly { display: none !important;}
   }
   &.deviceTablet, &.deviceDesktop {
-	.mobileDeviceOnly { display: none}
+	.mobileDeviceOnly { display: none !important;}
   }
   &.deviceTablet, &.deviceMobile {
-	.desktopDeviceOnly {display: none}
+	.desktopDeviceOnly {display: none !important;}
   }
   &.deviceDesktop, &.deviceMobile {
-	.tabletDeviceOnly { display: none}
+	.tabletDeviceOnly { display: none !important;}
   }
   &.hasHMD {
 	#entervr {
 	  display: block !important;
 	}
   }
+}
+
+.launch-button-macro {
+  display: block;
+  border:1px solid @bordercolor-launch-button;
+  padding: 15px 20px;
+  background: none;
+  margin: 20px 0;
+  border-radius: 6px;
+  font-weight: @font-weight-home;
+  font-size: 150%;
+  width: 11em;
+  &:hover {
+	border:2px solid #fff;
+	padding-top: 14px;
+	padding-bottom: 14px;
+  }
+}
+
+.nofx {
+  outline: 0;
+  border:0;
+  background: none;
+  padding: 0;
+  text-decoration: none;
+  a&:hover {
+	background: none;
+  }
+}
+
+.readmore(@vsize, @offsetLeft) {
+  @voffset: @vsize/2 + @offsetLeft;
+  &:before {
+	  content: " ";
+	  position: absolute;
+	  left: 0;
+	  top: 50%;
+	  margin-top: -@vsize/2;
+	  width: @vsize;
+	  height: @vsize;
+	  background: url('/images/v2/chevron.svg') @voffset center no-repeat;
+	  background-size: @vsize - 1;
+	  -webkit-transform: rotate(0deg) translate3d(-@voffset, 0, 0);
+	  -webkit-transition: -webkit-transform 0.1s linear;
+	  transform: rotate(0deg) translate3d(-@voffset, 0, 0);
+	  transition: transform 0.1s linear;
+	}
+	&.open:before {
+	  -webkit-transform: rotate(90deg) translate3d(-@voffset, 0, 0);
+	  transform: rotate(90deg) translate3d(-@voffset, 0, 0);
+	}
+
+	position: relative;
+	display: block;
+
+	padding: 5px 0 5px @vsize;
+
+	&:hover {
+	  text-decoration: none;
+	  cursor: pointer;
+	}
+	&.btn:before {
+	  content:none;
+	}
+}
+
+.center-neg-margin(@width, @height) {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: @width;
+  height: @height;
+  margin-left: -@width/2;
+  margin-top: -@height/2;
 }

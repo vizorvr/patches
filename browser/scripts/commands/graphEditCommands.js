@@ -187,6 +187,7 @@ function Connect(graph, connection) {
 	this.title = 'Connect'
 	this.connection = connection
 }
+
 Connect.prototype = Object.create(GraphEditCommand.prototype)
 Connect.prototype.undo = uiDisconnected
 Connect.prototype.redo = uiConnected

@@ -1,0 +1,12 @@
+<form id="editBioForm" action="/account/profile" class="xhr panel" method="POST">
+    <input type="hidden" name="_csrf" value={{_csrf}}>
+    <fieldset>{{#with profile}}
+        <div class="form-input" id="f_bio">
+            <!-- label for="bioinput">Bio</label -->
+            <textarea id="bioinput" name="profile[bio]" style="resize:none" placeholder="Place  here">{{profile.bio}}</textarea>
+            <span class="message"></span>
+        </div>
+        <button class="" type="submit" data-svgref="icon-go">Update</button>
+        <span class="explain">Maximum 140 characters.</span>
+    {{/with}}</fieldset>
+</form>

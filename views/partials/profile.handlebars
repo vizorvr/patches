@@ -1,0 +1,51 @@
+{{!-- context is (user) profile --}}
+<div class="user-profile" data-objectid="{{id}}">
+    <div class="avatar">
+        {{#with profile}}{{!-- profile.profile --}}
+           <a href="/{{../username}}">
+                {{#if avatar}}
+                    <img class="user avatar" src="{{avatar}}" />
+                {{else}}
+                    <img class="user gr avatar" src="{{../gravatar}}" />
+                {{/if}}
+            </a>
+        {{/with}}
+    </div>
+    <div class="meta userinfo">
+        <h2>
+            {{#if name}}
+                {{name}}
+            {{else}}
+                @{{username}}
+            {{/if}}
+        </h2>
+
+        <p class="strapline">
+            {{#if profile.bio}}
+                {{profile.bio}}
+            {{else}}
+                Vizor user
+                {{#if createdAt}}
+                    since {{moment createdAt 'MMM Do YYYY'}}
+                {{/if}}
+            {{/if}}
+        </p>
+        <ul class="meta">
+            <li class="website">
+                {{#if profile.website}}
+                    <a href="{{profile.website}}" target="_blank">{{friendlyURL profile.website}}</a>
+                {{else}}
+                    <a href="{{concat '//vizor.io/' username}}" target="_blank">{{friendlyURL (concat 'http://vizor.io/' username)}}</a>
+                {{/if}}
+            </li>
+            <li class="stats">
+               <span class="count">{{plural stats.projects 'project'}}</span>
+               <span class="count">{{plural stats.views 'view'}}</span>
+            </li>
+            {{!--
+            <li class="email">
+                {{> email to=email subject='hello'}}
+            </li> --}}
+        </ul>
+    </div>
+</div>

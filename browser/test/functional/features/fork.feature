@@ -2,7 +2,7 @@ Feature: Forking feature
 
   Background:
     Given I am signed in
-    And I am in the editor
+    And I open the editor
     And I publish the project
     And the player is playing
 

@@ -2,7 +2,7 @@
 
 	var UrlStereoCubeMap = E2.plugins.url_stereo_cubemap_generator = function(core, node) {
 		Plugin.apply(this, arguments)
-		this.desc = 'Load a stereo cubemap from a URL. JPEG and PNG supported. Hover over the Browse button to select an existing image from the library.'
+		this.desc = 'Load a stereo cubemap. JPEG and PNG supported. Click the Browse button to select an existing image from the library.'
 		
 		this.input_slots = []
 
@@ -25,13 +25,11 @@
 		this.loadingTexture = new THREE.CubeTexture([
 			loadTex, loadTex, loadTex, loadTex, loadTex, loadTex
 		])
-		this.loadingTexture.needsUpdate = true
 
 		var defTex = E2.core.assetLoader.defaultTexture.image
 		this.defaultTexture = new THREE.CubeTexture([
 			defTex, defTex, defTex, defTex, defTex, defTex
 		])
-		this.defaultTexture.needsUpdate = true
 
 		this.leftTexture = this.loadingTexture
 		this.rightTexture = this.loadingTexture
@@ -83,7 +81,12 @@
 						if (newValue === oldValue)
 							return;
 
-						mixpanel.track('UrlStereoCubeMap Texture Changed')
+						E2.track({
+							event: 'assetChanged',
+							plugin: 'UrlStereoCubeMap',
+							url: newValue
+						})
+						
 						that.undoableSetState('url', newValue, oldValue)
 					})
 					.modal()
@@ -119,12 +122,17 @@
 		E2.core.assetLoader
 		.loadAsset('image', this.state.url)
 		.then(function(img) {
+			that.waitingToLoad = false
 			that.makeTexturesFromImage(img)
 		})
 		.catch(function() {
 			that.leftTexture = that.defaultTexture
 			that.rightTexture = that.defaultTexture
+			this.leftTexture.needsUpdate = true
+			this.rightTexture.needsUpdate = true
 			that.waitingToLoad = false
+		})
+		.finally(function() {
 			that.updated = true
 		})
 		
@@ -135,31 +143,58 @@
 		var imageWidth = img.width
 		var imageHeight = img.height
 
-		var tiles = 12
+		var tiles = imageWidth / imageHeight
 
 		var tileWidth = imageWidth / tiles
 		var tileHeight = imageHeight
 
 		var textures = []
 
-		for (var i = 0; i < tiles; ++i) {
-			var tileCanvas = document.createElement('canvas')
-			tileCanvas.width = tileWidth
-			tileCanvas.height = tileHeight
+		if (VizorUI.isMobile.Android()) {
+			// work around a problem on android (only) where drawing directly from an
+			// img would create corrupted images
+			var intermediateCanvas = document.createElement('canvas')
+			intermediateCanvas.width = img.width
+			intermediateCanvas.height = img.height
+			intermediateCanvas.getContext('2d').drawImage(img, 0, 0, imageWidth, imageHeight, 0, 0, imageWidth, imageHeight)
 
-			var ctx = tileCanvas.getContext('2d')
-			ctx.drawImage(img, i * tileWidth, 0,
-				tileWidth, tileHeight, 0, 0, tileWidth, tileHeight)
+			for (var i = 0; i < tiles; ++i) {
+				var tileCanvas = document.createElement('canvas')
+				tileCanvas.width = tileWidth
+				tileCanvas.height = tileHeight
 
-			textures.push(tileCanvas)
+				var ctx = tileCanvas.getContext('2d')
+				ctx.drawImage(intermediateCanvas, i * tileWidth, 0,
+					tileWidth, tileHeight, 0, 0, tileWidth, tileHeight)
+
+				textures.push(tileCanvas)
+			}
+		}
+		else {
+			for (var i = 0; i < tiles; ++i) {
+				var tileCanvas = document.createElement('canvas')
+				tileCanvas.width = tileWidth
+				tileCanvas.height = tileHeight
+
+				var ctx = tileCanvas.getContext('2d')
+				ctx.drawImage(img, i * tileWidth, 0,
+					tileWidth, tileHeight, 0, 0, tileWidth, tileHeight)
+
+				textures.push(tileCanvas)
+			}
 		}
 
+		var leftTextures = textures.splice(0, 6)
+		var rightTextures = textures.length >= 6 ? textures.splice(0, 6) : leftTextures
+
 		// left eye
-		var leftTexture = new THREE.CubeTexture(textures.splice(0, 6))
+		var leftTexture = new THREE.CubeTexture(leftTextures)
+		leftTexture.format = THREE.RGBFormat
 		leftTexture.needsUpdate = true
 
 		// right eye
-		var rightTexture = new THREE.CubeTexture(textures.splice(0, 6))
+		var rightTexture = new THREE.CubeTexture(rightTextures)
+		rightTexture.format = THREE.RGBFormat
 		rightTexture.needsUpdate = true
 
 		this.leftTexture = leftTexture

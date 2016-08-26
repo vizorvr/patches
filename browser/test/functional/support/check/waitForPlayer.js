@@ -6,7 +6,7 @@ module.exports = function (done) {
     this.browser
 	    .timeoutsAsyncScript(timeout)
         .executeAsync(function(cb) {
-            E2.core.once('player:playing', function() {
+            E2.core.once('player:firstFramePlayed', function() {
             	setTimeout(cb, 0)
             })
         })

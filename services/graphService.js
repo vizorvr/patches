@@ -1,7 +1,8 @@
-var when = require('when');
-var util = require('util');
-var AssetService = require('./assetService');
-var GraphOptimizer = require('../lib/graphOptimizer');
+var when = require('when')
+var util = require('util')
+var _ = require('lodash')
+var AssetService = require('./assetService')
+var GraphOptimizer = require('../lib/graphOptimizer')
 
 var fs = require('fs')
 var packageJson = JSON.parse(fs.readFileSync(__dirname+'/../package.json'))
@@ -15,50 +16,20 @@ function GraphService(assetModel, gfs) {
 util.inherits(GraphService, AssetService);
 
 GraphService.prototype.findByPath = function(path) {
-	var parts = path.split('/');
-	return this.findOne({ owner: parts[1], name: parts[2] });
-};
-
-GraphService.prototype.minimalList = function() {
-	var dfd = when.defer();
-	this._model
-		.find()
-		.select('owner name updatedAt')
-		.sort('-updatedAt')
-		.exec(function(err, list)
-	{
-		if (err)
-			return dfd.reject(err);
-		
-		dfd.resolve(list);
-	});
-
-	return dfd.promise;
-};
+	var parts = path.split('/')
+	return this.findOne({
+		owner: parts[1],
+		name: parts[2]
+	})
+}
 
 GraphService.prototype.listWithPreviews = function() {
-	var dfd = when.defer();
-	this._model
-		.find()
-		.select('owner name previewUrlSmall updatedAt stat')
-		.sort('-updatedAt')
-		.exec(function(err, list)
-	{
-		if (err)
-			return dfd.reject(err);
-		
-		dfd.resolve(list);
-	});
-
-	return dfd.promise;
-};
-
-GraphService.prototype.publicRankedList = function() {
 	var dfd = when.defer()
 
 	this._model
-		.find({ private: false })
-		.sort('-rank')
+		.find({ deleted: false })
+		.select('_creator owner name previewUrlSmall previewUrlLarge updatedAt stat')
+		.sort('-updatedAt')
 		.exec(function(err, list)
 	{
 		if (err)
@@ -70,33 +41,102 @@ GraphService.prototype.publicRankedList = function() {
 	return dfd.promise
 }
 
-GraphService.prototype.userGraphs = function(username) {
-	var dfd = when.defer();
-	this._model
-		.find({ owner: username })
-		.select('owner name previewUrlSmall updatedAt stat')
-		.sort('-updatedAt')
+GraphService.prototype.publicRankedList = function(offset, limit) {
+	var dfd = when.defer()
+
+	var query = this._model
+		.find({ private: false, deleted: false })
+		.sort({'rank': -1, 'updatedAt': -1})
+
+	if (offset)
+		query.skip(offset)
+
+	if (limit)
+	 	query.limit(limit)
+
+	query
+		.select('_creator private owner name previewUrlSmall updatedAt stat rank')
 		.exec(function(err, list)
 	{
 		if (err)
-			return dfd.reject(err);
+			return dfd.reject(err)
+		
+		dfd.resolve(list)
+	})
 
-		dfd.resolve(list);
-	});
+	return dfd.promise
+}
 
-	return dfd.promise;
-};
+/**
+ * get user graphs for username. defaults to filter for non-deleted graphs only.
+ * @param username string
+ * @param offset int
+ * @param limit int
+ * @param filter object mongo filter (as in .find({...}))
+ * @returns {Promise}
+ * @private
+ */
+GraphService.prototype._userGraphs = function(username, offset, limit, filter) {
+	var dfd = when.defer()
 
-GraphService.prototype._save = function(data, user) {
+	filter = _.extend({deleted:false}, filter)
+	filter.owner = username
+
+	var query = this._model
+		.find(filter)
+		.sort('-updatedAt')
+
+	if (offset)
+		query.skip(offset)
+
+	if (limit)
+	 	query.limit(limit)
+
+	query
+		.select('_creator private owner name previewUrlSmall previewUrlLarge updatedAt stat views')
+		.exec(function(err, list) {
+			if (err)
+				return dfd.reject(err)
+
+			dfd.resolve(list)
+		})
+
+	return dfd.promise
+}
+
+GraphService.prototype.userGraphs = function(username, offset, limit) {
+	return this._userGraphs(username, offset, limit)
+}
+
+// allows to filter by private graph. defaults to public graphs
+GraphService.prototype.userGraphsWithPrivacy = function(username, offset, limit, isPrivate) {
+	var filter = {
+		'private': !!isPrivate
+	}
+	return this._userGraphs(username, offset, limit, filter)
+}
+
+
+// e.g. when toggling public/private or renaming, but not touching anything else
+// opts {updatedAt, version}
+GraphService.prototype._save = function(data, user, opts) {
 	var that = this
+	var wasNew = false
+
+	opts = _.extend({
+		version : currentPlayerVersion,
+		updatedAt: Date.now()
+	}, opts)
 
 	return this.findByPath(data.path)
 	.then(function(asset) {
-		if (!asset)
+		if (!asset) {
+			wasNew = true
 			asset = new that._model(data)
+		}
 
 		asset._creator = user.id
-		asset.updatedAt = Date.now()
+		asset.updatedAt = opts.updatedAt
 
 		if (data.tags)
 			asset.tags = data.tags
@@ -113,15 +153,21 @@ GraphService.prototype._save = function(data, user) {
 		if (data.hasAudio)
 			asset.hasAudio = data.hasAudio
 
-		asset.version = currentPlayerVersion
-		asset.editable = data.editable === false ? false : true
+		// by default bumps to latest player version
+		asset.version = opts.version
+
+		asset.deleted = data.deleted || false
 		asset.private = data.private || false
+		asset.editable = data.editable === false ? false : true
 
 		var dfd = when.defer()
 
 		asset.save(function(err) {
 			if (err)
 				return dfd.reject(err)
+
+			if (wasNew && !user.isAnonymous)
+				user.increaseProjectsCount()
 
 			dfd.resolve(asset)
 		})
@@ -131,13 +177,16 @@ GraphService.prototype._save = function(data, user) {
 }
 
 
-GraphService.prototype.save = function(data, user) {
+GraphService.prototype.save = function(data, user, opts) {
 	var that = this;
 	var gridFsPath = '/graph'+data.path+'.json';
 	var optimisedGfsPath = '/graph'+data.path+'.min.json';
 
 	return this._save.apply(this, arguments)
 	.then(function(asset) {
+		if (asset.deleted)
+			return asset
+
 		// make an optimized copy
 		return that._fs.readString(gridFsPath)
 		.then(function(source) {

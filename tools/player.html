@@ -98,7 +98,11 @@
 			
 			$(document).ready(function()
 			{
-				if(navigator.getVRDevices)
+				if(navigator.getVRDisplays)
+				{
+					navigator.getVRDisplays().then(EnumerateVRDevices);
+				}
+				else if(navigator.getVRDevices)
 				{
 					navigator.getVRDevices().then(EnumerateVRDevices);
 				}

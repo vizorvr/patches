@@ -31,7 +31,7 @@ exports.config = {
      */
     options: {
         logLevel: 'silent',
-        waitforTimeout: 30000
+        waitforTimeout: 45000
     },
 
     /**
@@ -66,7 +66,7 @@ exports.config = {
      */
     mochaOpts: {
         reporter: 'spec',
-        timeout: 30000,
+        timeout: 60000,
         require: 'chai'
     }
 };

@@ -1,0 +1,21 @@
+{{> assets/graphCardJS .}}
+<article class="small vizor graph" data-id="{{id}}" data-owner="{{owner}}" itemscope itemtype="http://schema.org/CreativeWork">
+    <a href="{{{path}}}" itemprop="sameAs url">
+        <img src="{{{previewUrlSmall}}}" alt="{{name}} thumbnail" itemprop="thumbnailUrl" />
+    </a>
+    <div class="text" itemprop="description">
+        <h3><span itemprop="name">{{graphName}}</span></h3>
+        <p class="by"><span>
+            by <span itemprop="creator" class="author" itemscope itemtype="http://schema.org/Person">
+                    <a itemprop="sameAs" rel="author" target="_top"
+                       {{#if graph.owner}}
+                            href="/{{graph.owner}}"
+                       {{else}}
+                           {{#if graphOwnerLink}} href="{{graphOwnerLink}}" {{/if}}
+                       {{/if}}>
+                        <span itemprop="name">{{graphOwner}}</span></a>
+                </span><!-- /creator -->
+            {{#if graph.size}}<span itemprop="contentSize">({{graph.size}})</span>{{/if}}
+        </span></p>
+    </div>
+</article>

@@ -22,12 +22,18 @@ THREE.js VR Camera
 ###far
 
 
+###lock transform
+If enabled, the transform coming from the HMD is ignored
+
 ##Outputs
 ###camera
 
 
-###position
+###offset
+The position offset of the camera.
 
+###position
+The current position of the headset.
 
 ###rotation
 

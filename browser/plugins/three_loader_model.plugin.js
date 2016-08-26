@@ -36,7 +36,12 @@
 					that.state_changed(null)
 					that.state_changed(inp)
 					that.updated = true
-					mixpanel.track('ThreeLoaderModelPlugin Model Changed')
+
+					E2.track({
+						event: 'assetChanged',
+						plugin: 'ThreeLoaderModelPlugin',
+						url: v
+					})
 				})
 				.on('closed', function() {
 					if (newValue === oldValue)
@@ -61,7 +66,7 @@
 		this.geometries = this.getDefaultGeometries()
 		this.materials = this.getDefaultMaterials()
 
-		console.log('AbstractThreeLoaderObjPlugin loading', this.state.url)
+		console.log('ThreeLoaderModelPlugin loading', this.state.url)
 
 		E2.core.assetLoader
 		.loadAsset('model', this.state.url)

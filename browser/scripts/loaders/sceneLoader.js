@@ -5,10 +5,13 @@ function SceneLoader() {
 }
 SceneLoader.prototype = Object.create(E2.Loaders.ModelLoader.prototype)
 
-SceneLoader.prototype.loadJson = function(url) {
-	var loader = new MultiObjectLoader()
-	loader.crossOrigin = 'Anonymous'
-	loader.load(
+SceneLoader.prototype.loadObject3D = function(url) {
+	if (!this.loader) {
+		this.loader = new MultiObjectLoader()
+	}
+
+	this.loader.crossOrigin = 'Anonymous'
+	this.loader.load(
 			url,
 			this.onObjLoaded.bind(this),
 			this.onHierarchyLoaded.bind(this),
@@ -17,14 +20,28 @@ SceneLoader.prototype.loadJson = function(url) {
 }
 
 SceneLoader.prototype.onHierarchyLoaded = function(scene) {
-	if (scene.scene) {
-		this.object3d = new THREE.Object3D()
-		this.object3d.copy(scene.scene, /*recursive = */false)
+	if (scene.animations) {
+		var len = scene.animations.length
+		for (var i = 0; i < len; ++i) {
+			var animation = scene.animations[i]
+			animation.loop = true
+			animation.play()
+		}
+	}
 
-		while (scene.scene.children.length > 0) {
-			var obj = scene.scene.children[0]
-			scene.scene.remove(obj)
-			this.object3d.add(obj)
+	if (scene.scene) {
+		if (scene.scene instanceof THREE.Object3D) {
+			this.object3d = scene.scene
+		}
+		else {
+			this.object3d = new THREE.Object3D()
+			this.object3d.copy(scene.scene, /*recursive = */false)
+
+			while (scene.scene.children.length > 0) {
+				var obj = scene.scene.children[0]
+				scene.scene.remove(obj)
+				this.object3d.add(obj)
+			}
 		}
 	}
 	else {
