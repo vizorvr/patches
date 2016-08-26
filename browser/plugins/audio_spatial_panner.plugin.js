@@ -2,17 +2,17 @@
 
 var SpatialPanner = E2.plugins.audio_spatial_panner = function(core, node) 
 {
-	this.desc = 'Spatial Panner (Advanced).';
+	this.desc = 'Spatial Panner.';
 	
 	this.input_slots = [ 
 		{ name: 'source', dt: core.datatypes.OBJECT, desc: 'An audio source to spatialize.', def: null },
 		{ name: 'position', dt: core.datatypes.VECTOR, desc: 'Position.', def: core.renderer.vector_origin },
 		{ name: 'orientation', dt: core.datatypes.VECTOR, desc: 'Orientation.', def: core.renderer.vector_origin },
-		{ name: 'coneinnerangle', dt: core.datatypes.FLOAT, desc: 'Cone Inner Angle.', def: 360 }, 	
-		{ name: 'coneouterangle', dt: core.datatypes.FLOAT, desc: 'Cone Outer Angle.', def: 360 },
-		{ name: 'coneoutergain', dt: core.datatypes.FLOAT, desc: 'Cone Outer Gain.', def: 0 },
-		{ name: 'refdistance', dt: core.datatypes.FLOAT, desc: 'Reference Distance.', def: 1 },
-		{ name: 'maxdistance', dt: core.datatypes.FLOAT, desc: 'Maximum Distance.', def: 10000 },
+		{ name: 'coneInnerAngle', dt: core.datatypes.FLOAT, desc: 'Cone Inner Angle.', def: 360 }, 	
+		{ name: 'coneOuterAngle', dt: core.datatypes.FLOAT, desc: 'Cone Outer Angle.', def: 360 },
+		{ name: 'coneOuterGain', dt: core.datatypes.FLOAT, desc: 'Cone Outer Gain.', def: 0 },
+		{ name: 'refDistance', dt: core.datatypes.FLOAT, desc: 'Reference Distance.', def: 1 },
+		{ name: 'maxDistance', dt: core.datatypes.FLOAT, desc: 'Maximum Distance.', def: 10000 },
 		{ name: 'rolloff', dt: core.datatypes.FLOAT, desc: 'Rolloff Factor.', def: 1 }
 	];
 	
@@ -34,6 +34,8 @@ var SpatialPanner = E2.plugins.audio_spatial_panner = function(core, node)
 	this.maxDistance = null;
 	this.rolloff = null;
 
+	this.distanceModel = 'linear';
+
 	this.first = true;
 }
 
@@ -42,6 +44,30 @@ SpatialPanner.prototype.reset = function()
 	this.first = true;
 }
 
+/*
+SpatialPanner.prototype.create_ui = function()
+{
+	var layout = make('div')
+	var inp = $('<select />', { selectedIndex: 0 });
+	var create = function(val, txt) { $('<option />', { value: val, text: txt }).appendTo(inp) };
+
+	create("linear", 'Linear');
+	create("inverse", 'Inverse');
+	create("exponential", 'Exponential');
+
+	inp.change(function(self) { return function() 
+	{
+		self.undoableSetState('type', inp.val(), self.distanceModel)
+	}}(this));
+
+	layout.append('Distance Model<br />');
+
+	layout.append(inp);
+
+	return layout;
+};
+*/
+
 SpatialPanner.prototype.update_input = function(slot, data)
 {
 	switch(slot.index) {
@@ -49,14 +75,14 @@ SpatialPanner.prototype.update_input = function(slot, data)
 			if(this.src && this.src.disconnect)
 				this.src.disconnect(0);
 
-			if(this.src = data)
-			{
+			if(this.src = data)	{
 				if(data.connect)
 					data.connect(this.panner);
 
 				this.panner.player = data.player;
 			}		
 		} break;
+
 		case 1:	this.position = data; 		break;
 		case 2:	this.orientation = data;	break;
 		case 3: this.coneInnerAngle = data; break;
@@ -64,7 +90,7 @@ SpatialPanner.prototype.update_input = function(slot, data)
 		case 5: this.coneOuterGain = data;	break;
 		case 6: this.refDistance = data;	break;
 		case 7: this.maxDistance = data;	break;
-		case 7: this.rolloff = data;		break;
+		case 8: this.rolloff = data;		break;
 	}
 }
 
@@ -75,6 +101,24 @@ SpatialPanner.prototype.update_state = function(uc)
 
 	if( this.orientation !== null )
 		this.panner.setOrientation( this.orientation.x, this.orientation.y, this.orientation.z );
+
+	if( this.coneInnerAngle !== null )
+		this.panner.coneInnerAngle = this.coneInnerAngle;
+
+	if( this.coneOuterAngle !== null )
+		this.panner.coneOuterAngle = this.coneOuterAngle;
+
+	if( this.coneOuterGain !== null )
+		this.panner.coneOuterGain = this.coneOuterGain;
+
+	if( this.refDistance !== null )
+		this.panner.refDistance = this.refDistance;
+
+	if( this.maxDistance !== null )
+		this.panner.maxDistance = this.maxDistance;
+
+	if( this.rolloff !== null )
+		this.panner.rolloffFactor = this.rolloff;
 
 	this.first = false;
 }
