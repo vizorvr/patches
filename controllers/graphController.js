@@ -143,9 +143,15 @@ function makeGraphSummary(req,graph) {
 }
 
 function parsePaging(req, perPage) {
-
-	var page = req.params.page || req.query.page
-	var start = req.params.start || req.query.start
+	var page = 0
+	var start = 0
+	if (req.params && typeof req.params.page !== 'undefined') {
+		page = req.params.page
+	}
+	else if (req.query) {
+		page = req.query.page
+		start = req.query.start
+	}
 
 	page = parseInt(page, 10) || 1
 	start = parseInt(start, 10) || 0
