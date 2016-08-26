@@ -20,7 +20,7 @@
     {{> assets/graphCardJS . }}
 {{/unless}}
 
-<article class="graph asset card {{#if private}}private{{/if}} noselect"
+    <article class="graph asset card {{#if private}}private{{/if}} {{#if-gt rank 0}}featured{{/if-gt}} noselect"
          data-objectid="{{_id}}" data-sortid="{{updatedTS}}" data-path="{{path}}" data-url="/{{owner}}/{{name}}" data-asset-type="graph">
 
 	<div class="meta scrollbar">
