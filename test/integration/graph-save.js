@@ -297,8 +297,9 @@ describe('Graph', function() {
 			.set('X-Requested-With', 'XMLHttpRequest')
 			.expect(200)
 			.end(function(err, res) {
+				var list = res.body.data.graphs.list
 				if (err) return done(err)
-				expect(res.body.data.graphs.length).to.equal(0)
+				expect(list.length).to.equal(0)
 				done()
 			})
 		})

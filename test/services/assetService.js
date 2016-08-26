@@ -4,7 +4,7 @@ var _ = require('lodash');
 
 function MockGraph()
 {
-	this.find = this.findOne = this.exec = 
+	this.find = this.findOne = this.exec = this.skip = this.limit =
 	this.populate = function() { return this; };
 	this.sort = function() { return this; };
 	this.save = function(cb) { cb(); };

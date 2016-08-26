@@ -86,13 +86,15 @@ describe('Graph', function() {
 				if (err)
 					return done(err)
 
-				expect(res.body.data.result.length)
+				var list = res.body.data.list
+
+				expect(list.length)
 					.to.equal(1)
 
-				expect(res.body.data.result[0].private)
+				expect(list[0].private)
 					.to.equal(false)
 
-				expect(res.body.data.result[0].name)
+				expect(list[0].name)
 					.to.equal(path)
 
 				done()
@@ -122,7 +124,7 @@ describe('Graph', function() {
 				if (err)
 					return done(err)
 
-				res.body.data.result.map(function(graph) {
+				res.body.data.list.map(function(graph) {
 					assert.notEqual(graph.name, path)
 				})
 
@@ -156,7 +158,7 @@ describe('Graph', function() {
 					if (err)
 						return done(err)
 
-					res.body.data.map(function(graph) {
+					res.body.data.list.map(function(graph) {
 						assert.notEqual(graph.name, path)
 					})
 

@@ -1,5 +1,6 @@
 var testId = rand()
 var DBNAME = 'paging'+testId
+var Pagination = require('../../lib/pagination')
 
 process.env.MONGODB = 'mongodb://localhost:27017/'+DBNAME
 process.env.GRAPHCONTROLLER_PAGE_SIZE = 3
@@ -105,12 +106,13 @@ describe('Graph paging', function() {
 			if (err)
 				return done(err)
 
-			assert.equal(3, res.body.data.result.length)
-			assert.equal(1, res.body.data.meta.page)
-			assert.equal(4, res.body.data.meta.pages)
 			assert.equal(10, res.body.data.meta.totalCount)
+			assert.equal(3, res.body.data.list.length)
+			assert.equal('dummy9', res.body.data.list[0].name)
 
-			assert.equal('dummy9', res.body.data.result[0].name)
+			var p = Pagination.fromMeta(res.body.data.meta)
+			assert.equal(1, p.currentPage)
+			assert.equal(4, p.totalPages)
 
 			done()
 		})
@@ -125,12 +127,13 @@ describe('Graph paging', function() {
 			if (err)
 				return done(err)
 
-			assert.equal(3, res.body.data.result.length)
-			assert.equal(2, res.body.data.meta.page)
-			assert.equal(4, res.body.data.meta.pages)
 			assert.equal(10, res.body.data.meta.totalCount)
+			assert.equal(3, res.body.data.list.length)
+			assert.equal('dummy6', res.body.data.list[0].name)
 
-			assert.equal('dummy6', res.body.data.result[0].name)
+			var p = Pagination.fromMeta(res.body.data.meta)
+			assert.equal(2, p.currentPage)
+			assert.equal(4, p.totalPages)
 
 			done()
 		})
@@ -145,12 +148,14 @@ describe('Graph paging', function() {
 			if (err)
 				return done(err)
 
-			assert.equal(3, res.body.data.result.length)
-			assert.equal(3, res.body.data.meta.page)
-			assert.equal(4, res.body.data.meta.pages)
-			assert.equal(10, res.body.data.meta.totalCount)
+			var graphs = res.body.data.graphs
+			assert.equal(10, graphs.meta.totalCount)
+			assert.equal(3, graphs.list.length)
+			assert.equal('dummy3', graphs.list[0].name)
 
-			assert.equal('dummy3', res.body.data.result[0].name)
+			var p = Pagination.fromMeta(graphs.meta)
+			assert.equal(3, p.currentPage)
+			assert.equal(4, p.totalPages)
 
 			done()
 		})
