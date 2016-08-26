@@ -127,7 +127,7 @@ AccountController.prototype.openLoginModal = function(dfd) {
 
 		E2.models.user.set(user)
 		bootbox.hideAll()
-		dfd.resolve()
+		dfd.resolve(user)
 	};
 
 	var $form = $('#loginForm', $modal);

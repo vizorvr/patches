@@ -94,6 +94,15 @@ templateCache.compile()
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 
+app.use((req,res,next) => {	// allow some context through to handlebars engine/helpers automatically
+	hbs.handlebars._request = {}
+	for (var key of ['hostname', 'ip', 'query', 'headers', 'method', 'params', 'secure', 'xhr', 'url', 'originalUrl']) {
+		hbs.handlebars._request[key] = Object.freeze(_.extend(req[key]))
+	}
+	Object.freeze(hbs.handlebars._request)
+	next()
+})
+
 app.use(compress())
 app.use(connectAssets({
 	paths: [
@@ -296,6 +305,9 @@ switch (process.env.FQDN) {
 }
 
 var gfs
+
+// http://mongoosejs.com/docs/promises.html
+mongoose.Promise = global.Promise
 
 mongoose.connect(secrets.db);
 mongoose.connection.on('error', function(err) {

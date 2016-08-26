@@ -1,15 +1,29 @@
+{{#*inline 'render'}}
+    {{#each list}}
+        {{!-- context (this) is graph --}}
+        {{#eq ../profile.username ../user.username}}
+            {{> assets/graphCard visitor=../user profile=../profile withActions=true allowAllActions=true }}
+        {{else}}
+            {{> assets/graphCard visitor=../user profile=../profile withActions=true }}
+        {{/eq}}
+    {{/each}}
+{{/inline}}
 {{!-- {{>graphlist . list=publicGraphs heading='Public projects' withNew=(equals profile.username user.username)}} --}}
 <section class="list assets clearfix noselect {{class}}"
-        data-numitems="{{length list}}"
         data-with-new="{{withNew}}"
         data-with-actions="{{withActions}}"
         data-allow-all-actions="{{allowAllActions}}"
-        data-profile="{{profile.username}}">
-
+        data-profile="{{profile.username}}"
+         {{!-- check if list is paginated --}}
+         {{#if list.meta}}
+             data-numitems="{{list.meta.listCount}}"
+         {{else}}
+             data-numitems="{{length list}}"
+         {{/if}}
+>
 {{#if heading}}
     <h4>{{heading}}</h4>
 {{/if}}
-
 
 {{#if withNew}}
     {{#if newAssetTypeText }}
@@ -19,14 +33,16 @@
     {{/if}}
 {{/if}}
 
-{{#each list}}
-    {{!-- context (this) is graph --}}
-    {{#eq ../profile.username ../user.username}}
-        {{> assets/graphCard visitor=../user profile=../profile withActions=true allowAllActions=true }}
-    {{else}}
-        {{> assets/graphCard visitor=../user profile=../profile withActions=true }}
-    {{/eq}}
-{{/each}}
+     {{#if list.meta}}
+
+        {{>render . list=list.list}}
+
+        {{#if withPagination}}
+            {{>pagination (makePaginationData list.meta)}}
+        {{/if}}
+     {{else}}
+         {{>render .}}
+     {{/if}}
 
     {{#if withMoreLink}}
     <p class="more" style="clear:both;">

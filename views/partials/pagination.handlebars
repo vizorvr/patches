@@ -1,0 +1,59 @@
+{{!--
+log .
+  totalPages:  (total number of pages)
+  perPage:     (number of results per page)
+  currentPage: (this page number)
+  totalCount:  (total results)
+  thisPageCount: (on this page)
+  pages: [] (all pages)
+  displayPages: []  (only pages to display)
+  nextPage
+  prevPage
+  firstPage
+  lastPage
+  thisPage
+--}}
+<div class="clearfix" style="clear: both; height: 1px"></div>
+{{#*inline 'pageLink'}}
+    {{!-- context is .. --}}
+    {{#if page}}
+    <a
+        {{#if (equals page.num currentPage)}}
+            class="current page {{class}}"
+        {{else}}
+            class="page {{class}}"
+        {{/if}}
+        title="{{page.displayStart}} - {{page.displayEnd}} of {{totalCount}}"
+        {{#if usePage}}
+            href="{{{replaceQueryParameters page=page.num }}}"
+        {{else}}
+            href="{{{replaceQueryParameters start=page.start }}}"
+        {{/if}}
+    >
+        {{#if text}}
+            {{{text}}}
+        {{else}}
+            {{page.num}}
+        {{/if}}
+    </a>
+    {{/if}}
+{{/inline}}
+<div class="pagination" data-totalcount="{{totalCount}}" data-thispagecount="{{thisPageCount}}"
+     data-totalpages="{{totalPages}}" data-perpage="{{perPage}}" data-currentpage="{{currentPage}}" >
+
+    {{>pageLink page=firstPage text='&laquo;' class='first' usePage=true}}
+    {{>pageLink page=prevPage text='&lsaquo;' class='prev' usePage=true}}
+
+    {{#each displayPages}}
+        {{>pageLink .. page=this usePage=true}}
+    {{/each}}
+
+    {{>pageLink page=nextPage text='&rsaquo;' class='next' usePage=true}}
+    {{>pageLink page=lastPage text='&raquo;' class='last' usePage=true}}
+
+    {{#with thisPage}}
+    <p class="explain meta" style="margin-top:20px; font-size: 90%;">
+        Results {{displayStart}} - {{displayEnd}} of {{../totalCount}}
+    </p>
+    {{/with}}
+</div>

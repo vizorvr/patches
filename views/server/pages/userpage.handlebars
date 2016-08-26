@@ -10,7 +10,7 @@
 
 <div id="contentcontainer" class="in">
     {{#if graphs}}
-        {{>browse/graphList . list=graphs class='public'}}
+        {{>browse/graphList . list=graphs class='public' withPagination=true}}
     {{else}}
         {{#if isSummaryPage}}
             {{!-- front page (summary) --}}
@@ -34,6 +34,7 @@
             {{!-- filtered public/private lists --}}
             {{#if publicGraphs}}
                 {{>browse/graphList . list=publicGraphs
+                    withPagination=true
                     class='public'
                     withNew=(equals profile.username user.username)
                     newAssetTypeText='Public Project'
@@ -42,6 +43,7 @@
 
             {{#if privateGraphs}}
                 {{>browse/graphList . list=privateGraphs
+                    withPagination=true
                     class='private'
                     withNew=(equals profile.username user.username)
                     newAssetTypeText='Private Project'

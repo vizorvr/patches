@@ -17,7 +17,7 @@ function GraphService(assetModel, gfs) {
 util.inherits(GraphService, AssetService)
 
 GraphService.prototype.publicList = function() {
-	return this.find({ private: false })
+	return this.find({ private: false }, {offset: 0, limit: 1})
 }
 
 GraphService.prototype.findByPath = function(path) {
@@ -28,100 +28,39 @@ GraphService.prototype.findByPath = function(path) {
 	})
 }
 
-GraphService.prototype.listWithPreviews = function() {
-	var dfd = when.defer()
-
-	this._model
-		.find({ deleted: false })
-		.select('_creator owner name previewUrlSmall previewUrlLarge updatedAt stat')
-		.sort('-updatedAt')
-		.exec(function(err, list)
-	{
-		if (err)
-			return dfd.reject(err)
-		
-		dfd.resolve(list)
-	})
-
-	return dfd.promise
+GraphService.prototype.listWithPreviews = function(paging) {
+	var filter = {deleted: false}
+	var select = '_creator owner name previewUrlSmall previewUrlLarge updatedAt stat'
+	var sort = '-updatedAt'
+	return this.countAndFind(filter, sort, select, paging)
 }
 
-GraphService.prototype.publicRankedList = function(offset, limit) {
-	var dfd = when.defer()
+GraphService.prototype.publicRankedList = function(paging) {
+	var filter = { private: false, deleted: false }
+	var sort = {'rank': -1, 'updatedAt': -1}
+	var select = '_creator private owner name previewUrlSmall updatedAt stat rank'
 
-	// @TODO GM COUNT & BUILD QUERY
-	var query = this._model
-		.find({ private: false, deleted: false })
-		.sort({'rank': -1, 'updatedAt': -1})
-
-	if (offset)
-		query.skip(offset)
-
-	if (limit)
-	 	query.limit(limit)
-
-	query
-		.select('_creator private owner name previewUrlSmall updatedAt stat rank')
-		.exec(function(err, list)
-	{
-		if (err)
-			return dfd.reject(err)
-		// @TODO GM
-		/*
-		return dfd.resolve({
-				meta: {
-					page: options.page,
-					pages: Math.ceil(totalCount / options.limit),
-					totalCount: totalCount
-				},
-				result: list
-			} */
-		dfd.resolve(list)
-	})
-
-	return dfd.promise
+	return this.countAndFind(filter, sort, select, paging)
 }
 
 /**
  * get user graphs for username. defaults to filter for non-deleted graphs only.
  * @param username string
- * @param offset int
- * @param limit int
+ * @param paging object {offset: int, limit: int}
  * @param filter object mongo filter (as in .find({...}))
  * @returns {Promise}
  * @private
  */
-GraphService.prototype._userGraphs = function(username, offset, limit, filter) {
-	var dfd = when.defer()
-
+GraphService.prototype._userGraphs = function(username, filter, paging) {
 	filter = _.extend({deleted:false}, filter)
 	filter.owner = username
-
-	// @TODO GM BUILD QUERY, RETURN META
-	var query = this._model
-		.find(filter)
-		.sort('-updatedAt')
-
-	if (offset)
-		query.skip(offset)
-
-	if (limit)
-	 	query.limit(limit)
-
-	query
-		.select('_creator private owner name previewUrlSmall previewUrlLarge updatedAt stat views')
-		.exec(function(err, list) {
-			if (err)
-				return dfd.reject(err)
-
-			dfd.resolve(list)
-		})
-
-	return dfd.promise
+	var sort = '-updatedAt'
+	var fields = '_creator private owner name previewUrlSmall previewUrlLarge updatedAt stat views'
+	return this.countAndFind(filter, sort, fields, paging)
 }
 
 GraphService.prototype.userGraphs = function(username, offset, limit) {
-	return this._userGraphs(username, offset, limit)
+	return this._userGraphs(username, null, {offset:offset, limit:limit})
 }
 
 // allows to filter by private graph. defaults to public graphs
@@ -129,7 +68,7 @@ GraphService.prototype.userGraphsWithPrivacy = function(username, offset, limit,
 	var filter = {
 		'private': !!isPrivate
 	}
-	return this._userGraphs(username, offset, limit, filter)
+	return this._userGraphs(username, filter, {offset:offset, limit:limit})
 }
 
 

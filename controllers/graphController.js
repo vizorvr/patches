@@ -8,7 +8,7 @@ var templateCache = require('../lib/templateCache').templateCache
 
 var helper = require('./controllerHelpers')
 var isStringEmpty = require('../lib/stringUtil').isStringEmpty
-var PreviewImageProcessor = require('../lib/previewImageProcessor');
+var PreviewImageProcessor = require('../lib/previewImageProcessor')
 
 var GraphAnalyser = require('../common/graphAnalyser').GraphAnalyser
 var SerialNumber = require('redis-serial')
@@ -142,17 +142,34 @@ function makeGraphSummary(req,graph) {
 	}
 }
 
-function parsePaging(req) {
-	req.params.page = parseInt(req.params.page, 10) || 1
+function parsePaging(req, perPage) {
 
-	var pageSize = parseInt(process.env.GRAPHCONTROLLER_PAGE_SIZE, 10) || 20
+	var page = req.params.page || req.query.page
+	var start = req.params.start || req.query.start
 
-	if (req.params.page < 1)
-		req.params.page = 1
+	page = parseInt(page, 10) || 1
+	start = parseInt(start, 10) || 0
+	var pageSize = parseInt(process.env.GRAPHCONTROLLER_PAGE_SIZE, 10) || (perPage || 20)
+
+	if (page < 1)
+		page = 1
+
+	var offset
+	if (start) {
+		offset = start
+		page = 1 + Math.floor(offset / pageSize)
+	}
+	else if (page) {
+		// page
+		offset = pageSize * (page - 1)
+	}
+
+	if (offset < 0)
+		offset = 0
 
 	return {
-		page: req.params.page,
-		offset: pageSize * (req.params.page - 1),
+		page: page,
+		offset: offset,
 		limit: pageSize
 	}
 }
@@ -176,25 +193,25 @@ function GraphController(s, gfs, mongoConnection) {
 
 GraphController.prototype = Object.create(AssetController.prototype)
 
-// @TODO FIX GM
 GraphController.prototype.publicRankedIndex = function(req, res, next) {
 	var paging = parsePaging(req)
 	this._service.publicRankedList(paging)
-	.then(function(data) {
+	.then((data) => {
 
-		data.result = prettyPrintList(data.result)
+		data.list = prettyPrintList(data.list)
 
 		if (req.xhr) {
 			return res.json(helper.responseStatusSuccess('OK', data))
 		}
 
-		res.render('server/pages/browse', _.extend({
-			meta : {
+		res.render('graph/index', {meta : {
 				title: 'Vizor - Browse',
 				bodyclass: 'bBrowse',
-				helper.metaScript('site/userpages.js')
-			}
-		}, data)
+				scripts: [
+					helper.metaScript('site/userpages.js')
+				]},
+				pageHeading: 'Public projects',
+				graphs: data})
 	})
 	.catch(next)
 }
@@ -209,7 +226,7 @@ GraphController.prototype._userOwnIndex = function(user, req, res, next) {
 		wantPrivate = (req.query.public === '0')
 	}
 
-	function render(publicList, privateList, profile, data) {
+	function render(publicGraphs, privateGraphs, profile, data) {
 		data = _.extend({
 			bodyclass: '',
 			publicHasMoreLink: false,
@@ -227,68 +244,80 @@ GraphController.prototype._userOwnIndex = function(user, req, res, next) {
 		}, data)
 
 		// format
-		data.publicGraphs = publicList || []
-		data.privateGraphs = privateList || []
+		data.publicGraphs = publicGraphs
+		data.privateGraphs = privateGraphs
 		data.profile = profile
 
+		if (publicGraphs)
+			data.publicHasMoreLink = publicGraphs.meta.totalCount > publicGraphs.meta.listCount
+
+		if (publicGraphs)
+			data.privateHasMoreLink = privateGraphs.meta.totalCount > privateGraphs.meta.listCount
+
 		// allow the 'create' card to appear if both lists are empty. see css.
-		var noProjectsClass = (data.publicGraphs.length + data.privateGraphs.length > 0) ? '' : 'noProjects '
+		var totalProjects = 0
+		for (var graphs of [data.publicGraphs, data.privateGraphs]) {
+			if (graphs) {
+				if (Array.isArray(graphs))
+					totalProjects += graphs.length				// plain list
+				else if (Array.isArray(graphs.list))
+					totalProjects += graphs.list.length			// {list:, meta:} (pagination)
+			}
+		}
+
+		var noProjectsClass = (totalProjects > 0) ? '' : 'noProjects '
 		data.meta.bodyclass = ('bUserpage ' + noProjectsClass + data.bodyclass).trim()
 		delete data.bodyclass
+
 
 		if (req.xhr) {
 			return res.status(200).json(
 				helper.responseStatusSuccess('OK', data))
 		}
-
 		res.render('server/pages/userpage', data)
 	}
 
 	var profile = user.toJSON()
 
 	var maxNumOnFront = 7	// allow for "create new" card
-	var data = {
-		publicHasMoreLink : false,
-		privateHasMoreLink : false
-	}
 	// front page, two lists
+	var data = {}
 	if (wantPrivate === undefined) {
 		data.isSummaryPage = true
 		data.bodyclass = 'bGraphlistSummary'
-		var publicList, privateList
-		that._service.userGraphsWithPrivacy(username, 0, maxNumOnFront+1, false)
-			.then(function(list){
-				if (list && (list.length >= maxNumOnFront)) {
-					data.publicHasMoreLink = true
-					list.pop()
+		var publicResults, privateResults
+		that._service.userGraphsWithPrivacy(username, 0, maxNumOnFront, false)
+			.then((results)=>{
+				if (results.list) {
+					results.list = prettyPrintList(results.list)
+					publicResults = results
 				}
-				publicList = prettyPrintList(list)
-				return that._service.userGraphsWithPrivacy(username, 0, maxNumOnFront+1, true)
+				return that._service.userGraphsWithPrivacy(username, 0, maxNumOnFront, true)
 			})
-			.then(function(list) {
-				if (list && (list.length >= maxNumOnFront)) {
-					data.privateHasMoreLink = true
-					list.pop()
+			.then((privateResults) => {
+				if (privateResults.list) {
+					privateResults.list = prettyPrintList(privateResults.list)
 				}
-				privateList = prettyPrintList(list)
-
-				render(publicList, privateList, profile, data)
+				return render(publicResults, privateResults, profile, data)
+			})
+			.catch(()=>{
+				render(null, null, profile, data)
 			})
 	} else {
 		// "Public" or "Private" lists
 		var paging = parsePaging(req)
 		data.isSummaryPage = false
-		// @TODO GM FIX paging 
-		that._service.userGraphsWithPrivacy(username, null, null, wantPrivate)
-			.then(function(list){
-				data.bodyclass = (wantPrivate) ? 'bGraphlistPrivate' : 'bGraphlistPublic'
-				list = prettyPrintList(list)
+		that._service.userGraphsWithPrivacy(username, paging.offset, paging.limit, wantPrivate)
+			.then(function(result){
 
+				data.bodyclass = (wantPrivate) ? 'bGraphlistPrivate' : 'bGraphlistPublic'
+
+				result.list = prettyPrintList(result.list)
 
 				if (wantPrivate)
-					render(null, list, profile, data)
+					render(null, result, profile, data)
 				else
-					render(list, null, profile, data)
+					render(result, null, profile, data)
 			})
 	}
 
@@ -299,24 +328,30 @@ GraphController.prototype._userPublicIndex = function(user, req, res, next) {
 	var username = (user) ? user.username : null
 	var graphs
 
+	var paging = parsePaging(req)
+
 	if (req.user && req.user.isAdmin)
-		graphs = that._service.userGraphs(username)
+		graphs = that._service.userGraphs(username, paging.offset, paging.limit)
 	else
-		graphs = that._service.userGraphsWithPrivacy(username)
+		graphs = that._service.userGraphsWithPrivacy(username, paging.offset, paging.limit, false)	// public
 
 	graphs
-		.then(function(list) {
+		.then((result) => {
 			// no files found, but if there is a user
 			// then show empty userpage
+			if (!result)
+				return next()
+
+			var list = result.list
 			if (!user && (!list || !list.length)) {
 				return next()
 			}
 
-			list = prettyPrintList(list)
+			result.list = prettyPrintList(result.list)
 
 			var data = {
 				profile: user ? user.toPublicJSON() : {},
-				graphs: list || []
+				graphs: result
 			}
 
 			if (req.xhr) {
@@ -338,8 +373,8 @@ GraphController.prototype._userPublicIndex = function(user, req, res, next) {
 				}
 			})
 
-			res.render('server/pages/userpage', data);
-		});
+			res.render('server/pages/userpage', data)
+		})
 }
 
 
@@ -363,15 +398,16 @@ GraphController.prototype.userIndex = function(req, res, next) {
 GraphController.prototype.adminIndex = function(req, res) {
 	var user = req.user
 
-	this._service.listWithPreviews()
-	.then(function(list) {
+	var paging = parsePaging(req)
+	this._service.listWithPreviews(paging)
+	.then((result) => {
 		if (req.xhr || req.path.slice(-5) === '.json')
-			return res.json(list);
+			return res.json(result.list);
 
-		list = prettyPrintList(list)
+		result.list = prettyPrintList(result.list)
 
 		var data = {
-			graphs: list
+			graphs: result
 		}
 
 		_.extend(data, {
@@ -381,10 +417,11 @@ GraphController.prototype.adminIndex = function(req, res) {
 				scripts: [
 					helper.metaScript('site/userpages.js')
 				]
-			}
-		});
+			},
+			pageHeading: 'Admin index'
+		})
 
-		res.render('graph/index', data);
+		res.render('graph/index', data)
 	})
 }
 
@@ -441,9 +478,8 @@ GraphController.prototype.edit = function(req, res, next) {
 }
 
 
-// GET /latest-graph
+// GET /~latest-graph
 GraphController.prototype.latest = function(req, res) {
-	// @TODO FIX GM
 	this._service.publicList()
 	.then(function(list) {
 		res.redirect(list[0].path)

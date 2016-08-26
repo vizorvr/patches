@@ -10,23 +10,57 @@ AssetService.prototype.list = function() {
 	return this.find()
 }
 
-AssetService.prototype.count = function(q) {
+AssetService.prototype.count = function(filter, cb) {
 	var dfd = when.defer()
 
 	this._model
-	.count(q)
-	.exec(function(err, count) {
-		if (err)
-			return dfd.reject(err)
-		
-		dfd.resolve(count)
-	})
+		.count(filter, function(err, count) {
+			if (err)
+				return dfd.reject(err)
+
+			dfd.resolve(cb(count))
+		})
 
 	return dfd.promise
 }
 
-AssetService.prototype.buildQuery = function(q, options) {
-	var query = this._model.find(q)
+AssetService.prototype.countAndFind = function(filter, sort, select, paging) {
+	paging = paging || {limit: 0, offset: 0}
+	var limit = paging.limit || 0
+	var offset = paging.offset || 0
+
+	var query = this._model
+
+	var totalCount
+	function getData(count) {
+		totalCount = count
+		return query.find(filter)
+			.sort(sort)
+			.skip(offset)
+			.limit(limit)
+			.select(select)
+	}
+	function returnData(list) {
+		return {
+			meta: _.extend(paging, {
+				totalCount: totalCount,
+				listCount : list.length,
+				limit	: limit,
+				offset	: offset,
+				displayStart : 1 + offset,
+				displayEnd	:  offset + list.length
+			}),
+			list: list
+		}
+	}
+
+	return query.count(filter)
+		.then(getData)
+		.then(returnData)
+}
+
+AssetService.prototype.buildQuery = function(find, options) {
+	var query = this._model.find(find)
 
 	if (options && options.limit)
 		query = query.limit(options.limit)
@@ -37,18 +71,21 @@ AssetService.prototype.buildQuery = function(q, options) {
 	return query
 }
 
-AssetService.prototype.find = function(q) {
+AssetService.prototype.find = function(q, paging) {
 	var dfd = when.defer()
+
+	paging = paging || {offset: 0, limit: 20}
 
 	this._model.find(q)
 		.sort('-updatedAt')
-		.exec(function(err, list)
-	{
-		if (err)
-			return dfd.reject(err)
+		.skip(paging.offset || 0)
+		.limit(paging.limit || 0)
+		.exec((err, list) => {
+			if (err)
+				return dfd.reject(err)
 		
-		dfd.resolve(list)
-	})
+			dfd.resolve(list)
+		})
 
 	return dfd.promise
 }
