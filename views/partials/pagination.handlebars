@@ -1,4 +1,5 @@
 {{!--
+Pagination.fromMeta:
 log .
   totalPages:  (total number of pages)
   perPage:     (number of results per page)
@@ -11,7 +12,11 @@ log .
   prevPage
   firstPage
   lastPage
-  thisPage
+  thisPage,
+  shouldDisplayFirstPageLink,
+  shouldDisplayLastPageLink,
+  shouldDisplayFirstPageEllipsis,
+  shouldDisplayLastPageEllipsis
 --}}
 <div class="clearfix" style="clear: both; height: 1px"></div>
 {{#*inline 'pageLink'}}
@@ -23,7 +28,13 @@ log .
         {{else}}
             class="page {{class}}"
         {{/if}}
-        title="{{page.displayStart}} - {{page.displayEnd}} of {{totalCount}}"
+
+        {{#unless (equals page.displayStart page.displayEnd)}}
+            title="results {{page.displayStart}} - {{page.displayEnd}} of {{totalCount}}"
+        {{else}}
+            title="result {{page.displayStart}} of {{totalCount}}"
+        {{/unless}}
+
         {{#if usePage}}
             href="{{{replaceQueryParameters page=page.num }}}"
         {{else}}
@@ -41,15 +52,21 @@ log .
 <div class="pagination" data-totalcount="{{totalCount}}" data-thispagecount="{{thisPageCount}}"
      data-totalpages="{{totalPages}}" data-perpage="{{perPage}}" data-currentpage="{{currentPage}}" >
 
-    {{>pageLink page=firstPage text='&laquo;' class='first' usePage=true}}
-    {{>pageLink page=prevPage text='&lsaquo;' class='prev' usePage=true}}
+    {{>pageLink page=prevPage text='Previous' class='prev' usePage=true}}
+    {{#if shouldDisplayFirstPageLink}}
+        {{>pageLink page=firstPage class='first' usePage=true}}
+        {{#if shouldDisplayFirstPageEllipsis}}<span class="ellipsis">...</span>{{/if}}
+    {{/if}}
 
     {{#each displayPages}}
         {{>pageLink .. page=this usePage=true}}
     {{/each}}
 
-    {{>pageLink page=nextPage text='&rsaquo;' class='next' usePage=true}}
-    {{>pageLink page=lastPage text='&raquo;' class='last' usePage=true}}
+    {{#if shouldDisplayLastPageLink}}
+        {{#if shouldDisplayLastPageEllipsis}}<span class="ellipsis">...</span>{{/if}}
+        {{>pageLink page=lastPage class='last' usePage=true}}
+    {{/if}}
+    {{>pageLink page=nextPage text='Next' class='next' usePage=true}}
 
     {{#with thisPage}}
     <p class="explain meta" style="margin-top:20px; font-size: 90%;">
