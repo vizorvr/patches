@@ -35,8 +35,9 @@ log .
             title="result {{page.displayStart}} of {{totalCount}}"
         {{/unless}}
 
-        {{#if usePage}}
-            href="{{{replaceQueryParameters page=page.num }}}"
+
+        {{#if baseUrl}} {{!-- supply via meta.baseUrl to render href="/baseurl/page/#" --}}
+            href="{{{baseUrl}}}page/{{{page.num}}}"
         {{else}}
             href="{{{replaceQueryParameters start=page.start }}}"
         {{/if}}
@@ -52,21 +53,27 @@ log .
 <div class="pagination" data-totalcount="{{totalCount}}" data-thispagecount="{{thisPageCount}}"
      data-totalpages="{{totalPages}}" data-perpage="{{perPage}}" data-currentpage="{{currentPage}}" >
 
-    {{>pageLink page=prevPage text='Previous' class='prev' usePage=true}}
+    {{>pageLink page=prevPage text='Previous' class='prev'}}
+
+    {{!-- intentionally left in --}}
+    {{!--
     {{#if shouldDisplayFirstPageLink}}
-        {{>pageLink page=firstPage class='first' usePage=true}}
+        {{>pageLink page=firstPage class='first'}}
         {{#if shouldDisplayFirstPageEllipsis}}<span class="ellipsis">...</span>{{/if}}
     {{/if}}
 
     {{#each displayPages}}
-        {{>pageLink .. page=this usePage=true}}
+        {{>pageLink .. page=this}}
     {{/each}}
 
     {{#if shouldDisplayLastPageLink}}
         {{#if shouldDisplayLastPageEllipsis}}<span class="ellipsis">...</span>{{/if}}
-        {{>pageLink page=lastPage class='last' usePage=true}}
+        {{>pageLink page=lastPage class='last'}}
     {{/if}}
-    {{>pageLink page=nextPage text='Next' class='next' usePage=true}}
+    --}}
+
+    {{>pageLink page=nextPage text='Next' class='next'}}
+
 
     {{#with thisPage}}
     <p class="explain meta" style="margin-top:20px; font-size: 90%;">

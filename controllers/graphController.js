@@ -205,6 +205,8 @@ GraphController.prototype.publicRankedIndex = function(req, res, next) {
 	.then((data) => {
 
 		data.list = prettyPrintList(data.list)
+		if (data.meta)
+			data.meta.baseUrl = '/browse/'
 
 		if (req.xhr) {
 			return res.json(helper.responseStatusSuccess('OK', data))
@@ -257,7 +259,7 @@ GraphController.prototype._userOwnIndex = function(user, req, res, next) {
 		if (publicGraphs)
 			data.publicHasMoreLink = publicGraphs.meta.totalCount > publicGraphs.meta.listCount
 
-		if (publicGraphs)
+		if (privateGraphs)
 			data.privateHasMoreLink = privateGraphs.meta.totalCount > privateGraphs.meta.listCount
 
 		// allow the 'create' card to appear if both lists are empty. see css.
@@ -307,6 +309,7 @@ GraphController.prototype._userOwnIndex = function(user, req, res, next) {
 				return render(publicResults, privateResults, profile, data)
 			})
 			.catch(()=>{
+				console.error(err)
 				render(null, null, profile, data)
 			})
 	} else {
@@ -324,6 +327,10 @@ GraphController.prototype._userOwnIndex = function(user, req, res, next) {
 					render(null, result, profile, data)
 				else
 					render(result, null, profile, data)
+			})
+			.catch((err) => {
+				console.error(err)
+				render(null,null,profile,data)
 			})
 	}
 
