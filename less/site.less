@@ -666,6 +666,7 @@ article.asset.card {
   	div.image:not(.noimage) {
 	  background-color: #1e1269;
 	}
+
   	h4 a {
 	  color: @color-action;
 	}
@@ -680,14 +681,9 @@ article.asset.card {
 	}
 
   	&.featured {
-	  div.meta h4:after {
+	  div.meta h4>a:after {
 		content: "★";
 		color: #999;
-		//background: #999;
-		//width: 1.5em;
-		//height: 1.5em;
-		//line-height: 1.5em;
-		//border-radius: 50% 50%;
 		display: inline-block;
 		text-align: center;
 		font-size: 60%;
@@ -881,6 +877,15 @@ article.asset.card {
 		font-weight: 500;
 		color: @color-asset-card-title;
 		margin-bottom: 10px;
+		span.user {
+		  .by {
+			display: none;
+		  }
+		  display: block;
+		  font-size: 1.2rem;
+		  margin-top: 10px;
+		  margin-bottom: -10px;
+		}
 	  }
 	  p {
 		font-size: 75%;

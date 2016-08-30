@@ -53,7 +53,7 @@ log .
 <div class="pagination" data-totalcount="{{totalCount}}" data-thispagecount="{{thisPageCount}}"
      data-totalpages="{{totalPages}}" data-perpage="{{perPage}}" data-currentpage="{{currentPage}}" data-baseurl="{{{baseUrl}}}">
 
-    {{>pageLink page=prevPage text='Previous' class='prev'}}
+    {{>pageLink page=prevPage text='Previous page' class='prev'}}
 
     {{!-- intentionally left in --}}
     {{!--
@@ -72,7 +72,7 @@ log .
     {{/if}}
     --}}
 
-    {{>pageLink page=nextPage text='Next' class='next'}}
+    {{>pageLink page=nextPage text='Next page' class='next'}}
 
 
     {{#with thisPage}}
