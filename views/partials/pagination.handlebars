@@ -36,7 +36,6 @@ log .
             title="result {{page.displayStart}} of {{totalCount}}"
         {{/unless}}
 
-
         {{#if baseUrl}} {{!-- supply via meta.baseUrl to render href="/baseurl/page/#" --}}
             href="{{{baseUrl}}}page/{{{page.num}}}"
         {{else}}
@@ -57,36 +56,9 @@ log .
      data-totalcount="{{totalCount}}" data-thispagecount="{{thisPageCount}}"
      data-displaystart="{{thisPage.displayStart}}" data-displayend="{{thisPage.displayEnd}}"
      data-totalpages="{{totalPages}}" data-perpage="{{perPage}}" data-currentpage="{{currentPage}}"
-     data-baseurl="{{{baseUrl}}}"
-     >
+     data-baseurl="{{{baseUrl}}}">
 
     {{>pageLink page=prevPage text='Previous' class='prev'}}
-
-    {{!-- intentionally left in --}}
-    {{!--
-    {{#if shouldDisplayFirstPageLink}}
-        {{>pageLink page=firstPage class='first'}}
-        {{#if shouldDisplayFirstPageEllipsis}}<span class="ellipsis">...</span>{{/if}}
-    {{/if}}
-
-    {{#each displayPages}}
-        {{>pageLink .. page=this}}
-    {{/each}}
-
-    {{#if shouldDisplayLastPageLink}}
-        {{#if shouldDisplayLastPageEllipsis}}<span class="ellipsis">...</span>{{/if}}
-        {{>pageLink page=lastPage class='last'}}
-    {{/if}}
-    --}}
-
     {{>pageLink page=nextPage text='Next' class='next'}}
 
-
-    {{#not-eq moreCount 0}}
-        {{#with thisPage}}
-        <p class="explain meta" style="margin-top:20px; font-size: 90%;">
-            {{../moreCount}} more {{#eq ../moreCount 1}}result{{else}}results{{/eq}} {{!-- {{displayStart}} - {{displayEnd}} --}}
-        </p>
-        {{/with}}
-    {{/not-eq}}
 </div>

@@ -184,7 +184,6 @@ var userpagesUI = new function() {
 		return card
 	}
 
-	var startOfResults = 0
 	this.xhrPaginationCallback = function(response, oldPaginationContainer, display) {
 		var that = this
 
@@ -237,10 +236,6 @@ var userpagesUI = new function() {
 				prevLink.href = '#top_'
 				VizorUI.enableScrollToLinks(paginationContainer)
 			}
-			var explain = paginationContainer.querySelector('p.explain')
-			var oldMeta = UIPagination.readContainer(oldPaginationContainer)
-			if (!startOfResults)
-				startOfResults = oldMeta.displayStart
 		}
 
 		if (firstNewContent) {
