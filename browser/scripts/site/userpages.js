@@ -19,7 +19,7 @@ var userpagesUI = new function() {
 		var $card = jQuery(card)
 		VizorUI.setupAssetCard($card)
 		if (siteUI.isTouchCapable()) {
-			var overlayDiv = this.querySelector('div.overlay')
+			var overlayDiv = card.querySelector('div.overlay')
 			overlayDiv.addEventListener('click', VizorUI.touchCardOverlay, true)	// unbound, this=div
 		}
 	}
@@ -202,18 +202,22 @@ var userpagesUI = new function() {
 
 		temp.innerHTML = E2.views.partials.browse.graphList({list: response.data, withPagination:true})
 
+		// take scripts out, since they won't execute
 		var scripts = temp.getElementsByTagName('script')
 		while (scripts.length)
 			scripts[0].parentElement.removeChild(scripts[0])
 
+		// do the UI on the cards
 		var cards = temp.querySelectorAll('article.card')
 		Array.prototype.forEach.call(cards, function(card){
 			if ((card.tagName.toLowerCase() === 'article') && card.classList.contains('card'))
 				that.setupCardUI(card)
 		})
 
+		var firstNewContent = temp.firstChild
+		// append the content to the parent container
 		while (temp.childNodes.length) {
-			parent.parentElement.appendChild(temp.firstChild)	// this won't execute
+			parent.parentElement.appendChild(temp.firstChild)
 		}
 
 		if (list.length && Vizor.pageObjects.addGraph) {
@@ -235,9 +239,16 @@ var userpagesUI = new function() {
 			}
 			var explain = paginationContainer.querySelector('p.explain')
 			var oldMeta = UIPagination.readContainer(oldPaginationContainer)
-			var newMeta = UIPagination.readContainer(paginationContainer)
 			if (!startOfResults)
 				startOfResults = oldMeta.displayStart
+		}
+
+		if (firstNewContent) {
+			// scroll to new content
+			setTimeout(function () {
+				var r = firstNewContent.getBoundingClientRect()
+				$("body").animate({scrollTop: '' + (display.scroll.y + r.top) + 'px'}, 450)
+			}, 200)
 		}
 	}
 }
