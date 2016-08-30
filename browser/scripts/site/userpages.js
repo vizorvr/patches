@@ -220,7 +220,6 @@ var userpagesUI = new function() {
 			}
 		}
 
-
 		UIPagination.listen(parent.parentElement.querySelector('div.pagination'), this.xhrPagination.bind(this))
 	}
 }

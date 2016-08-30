@@ -29,12 +29,12 @@ VizorUI.makeStore = function (obj, objClass, objId) {
 		return obj
 	}
 
-	var changed = function(className, k, v) {
+	var changed = function(className, id, k, v) {
 		// emit changed:objClass, objId, k, v
 		// e.g. changed:graph, {id: '5abc723781273', class: 'graph', key: 'stats.views', value: 4
 		// e.g. changed:graph, 5abc723781273, name, "boza"
 		var detail = {
-			id: objId,
+			id: id,
 			class: className,
 			key: k,
 			value: v
@@ -53,7 +53,12 @@ VizorUI.makeStore = function (obj, objClass, objId) {
 		var store = {}
 
 		var etters = function(key, className) {
-			stack.push(key)
+			var pushStack = (typeof id !== 'undefined')
+			if (pushStack)
+				stack.push(key)
+			else {
+				id = key
+			}
 
 			var stackCopy = []
 			stack.forEach(function(v){stackCopy.push(v)})
@@ -78,14 +83,16 @@ VizorUI.makeStore = function (obj, objClass, objId) {
 						o[key] = v
 
 					if (change)
-						changed(className, propFQN, o[key])
+						changed(className, id, propFQN, o[key])
 
 					return v
 				},
 				enumerable: true,
 				configurable: true
 			})
-			stack.pop()
+
+			if (pushStack)
+				stack.pop()
 		}
 
 		Object.keys(o).forEach(function (key) {
@@ -95,9 +102,15 @@ VizorUI.makeStore = function (obj, objClass, objId) {
 
 
 		store._add_ = function(key, prop) {
-			o[key] = prop
+			var _stack = stack
+			var _id = id
+			stack = []
+			id = undefined
+			o[key] = {}
 			etters(key, className)
-			changed(className, key, o[key])
+			store[key] = prop
+			stack = _stack
+			id = _id
 		}
 		store.__store__ = true
 
@@ -122,9 +135,18 @@ VizorUI.pageStore = function() {
 
 	Vizor.pageObjects = null
 
-	page.profiles = VizorUI.makeStore(page.profiles || {}, 'profile', 'profile')
-	page.graphs = VizorUI.makeStore(page.graphs || {}, 'graph', 'graph')
-	page = VizorUI.makeStore(page, 'pageObjects', 'pageObject')
+	// added via iteration to ensure correct object id-s
+	var profiles = page.profiles
+	page.profiles = VizorUI.makeStore({}, 'profile')
+	for (var k in profiles)
+		page.profiles._add_(k, profiles[k])
+
+	var graphs = page.graphs
+	page.graphs = VizorUI.makeStore({}, 'graph')
+	for (var k in graphs)
+		page.graphs._add_(k, graphs[k])
+
+	page = VizorUI.makeStore(page, 'pageObjects')
 
 	// convenience methods
 	page.getGraph = function(id) {
