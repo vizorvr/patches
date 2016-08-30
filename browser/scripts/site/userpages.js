@@ -14,18 +14,24 @@ var assetUIEvent = {	// CustomEvent names (dispatched on document)
 
 var userpagesUI = new function() {
 
+	// transitional
+	this.setupCardUI = function(card) {
+		var $card = jQuery(card)
+		VizorUI.setupAssetCard($card)
+		if (siteUI.isTouchCapable()) {
+			var overlayDiv = this.querySelector('div.overlay')
+			overlayDiv.addEventListener('click', VizorUI.touchCardOverlay, true)	// unbound, this=div
+		}
+	}
+
 	this.init = function () {
+		var that = this
 		document.addEventListener(assetUIEvent.graphOpen, this.handleGraphOpen);
 
 		jQuery('#contentcontainer .asset.card')
 			.not('.new')
 			.each(function () {
-				var $card = jQuery(this)
-				VizorUI.setupAssetCard($card)
-				if (siteUI.isTouchCapable()) {
-					var overlayDiv = this.querySelector('div.overlay')
-					overlayDiv.addEventListener('click', VizorUI.touchCardOverlay, true)	// unbound, this=div
-				}
+				that.setupCardUI(this)
 			})
 
 		document.addEventListener(assetUIEvent.graphShare, VizorUI.actionGraphShare)
@@ -47,6 +53,9 @@ var userpagesUI = new function() {
 		}
 		jQuery('a#homeSignin').on('click', accountHandler(VizorUI.openLoginModal))
 		jQuery('a#homeSignup').on('click', accountHandler(VizorUI.openSignupModal))
+
+		if (UIPagination && document.body.classList.contains('bBrowse'))
+			UIPagination.listen(document.querySelector('div.pagination'), this.xhrPagination.bind(this))
 	}
 
 	// note the buttons are wired directly (for search-engine indexing)
@@ -172,6 +181,47 @@ var userpagesUI = new function() {
 		}
 
 		return card
+	}
+
+	this.xhrPagination = function(response, container, display) {
+		var that = this
+
+		if (!(response && response.data && response.data.meta)) {
+			console.info('?response', response)
+		}
+		var meta = response.data.meta
+		var list = response.data.list
+		// new
+		var pagination = UIPagination.fromMeta(meta)
+		var parent = container.parentElement
+		parent.removeChild(container)
+
+		var temp = document.createElement('DIV')
+
+		temp.innerHTML = E2.views.partials.browse.graphList({list: response.data, withPagination:true})
+
+		var scripts = temp.getElementsByTagName('script')
+		while (scripts.length)
+			scripts[0].parentElement.removeChild(scripts[0])
+
+		var cards = temp.querySelectorAll('article.card')
+		Array.prototype.forEach.call(cards, function(card){
+			if ((card.tagName.toLowerCase() === 'article') && card.classList.contains('card'))
+				that.setupCardUI(card)
+		})
+
+		while (temp.childNodes.length) {
+			parent.parentElement.appendChild(temp.firstChild)	// this won't execute
+		}
+
+		if (list.length && Vizor.pageObjects.addGraph) {
+			for (var graph of list) {
+				Vizor.pageObjects.addGraph(graph)
+			}
+		}
+
+
+		UIPagination.listen(parent.parentElement.querySelector('div.pagination'), this.xhrPagination.bind(this))
 	}
 }
 

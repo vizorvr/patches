@@ -1,5 +1,5 @@
 {{!--
-Pagination.fromMeta:
+UIPagination.fromMeta:
 log .
   totalPages:  (total number of pages)
   perPage:     (number of results per page)
@@ -51,7 +51,7 @@ log .
     {{/if}}
 {{/inline}}
 <div class="pagination" data-totalcount="{{totalCount}}" data-thispagecount="{{thisPageCount}}"
-     data-totalpages="{{totalPages}}" data-perpage="{{perPage}}" data-currentpage="{{currentPage}}" >
+     data-totalpages="{{totalPages}}" data-perpage="{{perPage}}" data-currentpage="{{currentPage}}" data-baseurl="{{{baseUrl}}}">
 
     {{>pageLink page=prevPage text='Previous' class='prev'}}
 

@@ -1,6 +1,6 @@
 var testId = rand()
 var DBNAME = 'paging'+testId
-var Pagination = require('../../lib/pagination')
+var UIPagination = require('../../browser/scripts/ui/pagination')
 
 process.env.MONGODB = 'mongodb://localhost:27017/'+DBNAME
 process.env.GRAPHCONTROLLER_PAGE_SIZE = 3
@@ -110,7 +110,7 @@ describe('Graph paging', function() {
 			assert.equal(3, res.body.data.list.length)
 			assert.equal('dummy9', res.body.data.list[0].name)
 
-			var p = Pagination.fromMeta(res.body.data.meta)
+			var p = UIPagination.fromMeta(res.body.data.meta)
 			assert.equal(1, p.currentPage)
 			assert.equal(4, p.totalPages)
 
@@ -131,7 +131,7 @@ describe('Graph paging', function() {
 			assert.equal(3, res.body.data.list.length)
 			assert.equal('dummy6', res.body.data.list[0].name)
 
-			var p = Pagination.fromMeta(res.body.data.meta)
+			var p = UIPagination.fromMeta(res.body.data.meta)
 			assert.equal(2, p.currentPage)
 			assert.equal(4, p.totalPages)
 
@@ -153,7 +153,7 @@ describe('Graph paging', function() {
 			assert.equal(3, graphs.list.length)
 			assert.equal('dummy3', graphs.list[0].name)
 
-			var p = Pagination.fromMeta(graphs.meta)
+			var p = UIPagination.fromMeta(graphs.meta)
 			assert.equal(3, p.currentPage)
 			assert.equal(4, p.totalPages)
 

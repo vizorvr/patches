@@ -15,10 +15,17 @@ if (typeof VizorUI === 'undefined')
  * @param objClass e.g. graph,profile,etc - used to name events e.g. changed:graph
  * @param objId id/uniq of object
  */
+
 VizorUI.makeStore = function (obj, objClass, objId) {
 
 	if (typeof obj !== 'object') {
-		console.warn('obj is not object')
+		console.warn('obj is not object', obj)
+		console.trace()
+		return obj
+	}
+	if (obj.__store__) {
+		console.warn('already a store', obj)
+		console.trace()
 		return obj
 	}
 
@@ -37,6 +44,12 @@ VizorUI.makeStore = function (obj, objClass, objId) {
 	}
 
 	var makeObj = function(o, className, id, stack) {
+
+		if (o.__store__) {
+			console.log('already a store', o)
+			return o
+		}
+
 		var store = {}
 
 		var etters = function(key, className) {
@@ -76,17 +89,25 @@ VizorUI.makeStore = function (obj, objClass, objId) {
 		}
 
 		Object.keys(o).forEach(function (key) {
-			etters(key, className)
+			if (['_add_','__store__'].indexOf(key) < 0)
+				etters(key, className)
 		})
+
+
+		store._add_ = function(key, prop) {
+			o[key] = prop
+			etters(key, className)
+			changed(className, key, o[key])
+		}
+		store.__store__ = true
+
 		return store
 	}
 
 	// obj holds the original data for store
 	// writing to store writes to obj, and emits an event as described
-	var store = makeObj(obj, objClass, objId, [])
-	store.__store__ = true
-
-	return store
+	var ret = makeObj(obj, objClass, objId, [])
+	return ret
 }
 
 
@@ -99,18 +120,11 @@ VizorUI.pageStore = function() {
 	if (!page)
 		return
 
-	function make(collection, className) {
-		Object.keys(collection).forEach(function(k){
-			collection[k] = VizorUI.makeStore(collection[k], className, k) })
-	}
+	Vizor.pageObjects = null
 
-	if (page.profiles)
-		make(page.profiles, 'profile')
-
-	if (page.graphs)
-		make(page.graphs, 'graph')
-
-	make(page, 'pageObjects')
+	page.profiles = VizorUI.makeStore(page.profiles || {}, 'profile', 'profile')
+	page.graphs = VizorUI.makeStore(page.graphs || {}, 'graph', 'graph')
+	page = VizorUI.makeStore(page, 'pageObjects', 'pageObject')
 
 	// convenience methods
 	page.getGraph = function(id) {
@@ -136,6 +150,38 @@ VizorUI.pageStore = function() {
 		if (graphOwner)
 			--graphOwner.stats.projects
 	}
+
+	page.addProfile = function(profile) {
+		if (profile.id)
+			page.profiles._add_(profile.id, profile)
+		else
+			console.error('no profile.id', profile)
+	}
+
+	page.addGraph = function(graph) {	// formerly inside graphCardJS.handlebars
+		if (!graph)
+			return console.info('addGraph but no graph')
+
+		var key = graph._id || graph.path
+		if (!key)
+			return console.error('no key for graph', graph)
+
+		if (graph._creator) {
+			var profile
+			if (graph.profile && graph.profile.id && !page.profiles[id])
+				profile = graph.profile
+			else
+				profile = {}
+
+			profile['_id'] = graph._creator
+			page.profiles._add_(graph._creator, profile)
+		}
+
+		delete graph.profile
+		page.graphs._add_(key, graph)
+	}
+
+	Vizor.pageObjects = page
 
 }
 

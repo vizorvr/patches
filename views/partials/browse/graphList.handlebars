@@ -16,6 +16,8 @@
         data-profile="{{profile.username}}"
          {{!-- check if list is paginated --}}
          {{#if list.meta}}
+             data-offset="{{list.meta.offset}}"
+             data-limit="{{list.meta.limit}}"
              data-numitems="{{list.meta.listCount}}"
          {{else}}
              data-numitems="{{length list}}"

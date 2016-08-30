@@ -216,7 +216,8 @@ GraphController.prototype.publicRankedIndex = function(req, res, next) {
 				title: 'Vizor - Browse',
 				bodyclass: 'bBrowse',
 				scripts: [
-					helper.metaScript('site/userpages.js')
+					helper.metaScript('site/userpages.js'),
+					helper.metaScript('ui/pagination.js')
 				]},
 				pageHeading: 'Public projects',
 				graphs: data})

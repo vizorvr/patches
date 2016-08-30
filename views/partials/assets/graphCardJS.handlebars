@@ -1,10 +1,11 @@
 {{!--
     // adds this graph card's data to Vizor.pageObjects.graphs{}
     // also places graph._creator data in Vizor.pageObjects.profiles{}
+    // note, see also userpages.js
 --}}
 <script>
     (function() {
-        var j = {{{json this deleteKeys="profile,withActions,allowAllActions,withLinks,withActionEdit,withActionView,withActionChoose"}}}
+        var j = {{{json this deleteKeys="withActions,allowAllActions,withLinks,withActionEdit,withActionView,withActionChoose"}}}
 
         {{#if _id}}
             window.Vizor.pageObjects.graphs['{{_id}}'] = j
