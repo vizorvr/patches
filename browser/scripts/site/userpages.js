@@ -54,8 +54,10 @@ var userpagesUI = new function() {
 		jQuery('a#homeSignin').on('click', accountHandler(VizorUI.openLoginModal))
 		jQuery('a#homeSignup').on('click', accountHandler(VizorUI.openSignupModal))
 
-		if (UIPagination && document.body.classList.contains('bBrowse'))
-			UIPagination.listen(document.querySelector('div.pagination'), this.xhrPagination.bind(this))
+		if ((typeof UIPagination !== 'undefined') && document.body.classList.contains('bBrowse')) {
+			UIPagination.bindNextLink(document.querySelector('div.pagination'), this.xhrPaginationCallback.bind(this))
+	//		UIPagination.listen(document.querySelector('div.pagination'), this.xhrPagination.bind(this))
+		}
 	}
 
 	// note the buttons are wired directly (for search-engine indexing)
@@ -183,7 +185,7 @@ var userpagesUI = new function() {
 		return card
 	}
 
-	this.xhrPagination = function(response, container, display) {
+	this.xhrPaginationCallback = function(response, oldPaginationContainer, display) {
 		var that = this
 
 		if (!(response && response.data && response.data.meta)) {
@@ -193,8 +195,8 @@ var userpagesUI = new function() {
 		var list = response.data.list
 		// new
 		var pagination = UIPagination.fromMeta(meta)
-		var parent = container.parentElement
-		parent.removeChild(container)
+		var parent = oldPaginationContainer.parentElement
+		parent.removeChild(oldPaginationContainer)
 
 		var temp = document.createElement('DIV')
 
@@ -220,7 +222,20 @@ var userpagesUI = new function() {
 			}
 		}
 
-		UIPagination.listen(parent.parentElement.querySelector('div.pagination'), this.xhrPagination.bind(this))
+		var paginationContainer = parent.parentElement.querySelector('div.pagination')
+		if (paginationContainer) {
+			UIPagination.bindNextLink(paginationContainer, this.xhrPaginationCallback.bind(this))
+			// seeing we added this, we can take out the previous link
+			var prevLink = paginationContainer.querySelector('a.prev.page')
+			if (prevLink) {
+				prevLink.className = 'scrollto top'
+				prevLink.innerHTML = '^'
+				prevLink.href = '#top_'
+				VizorUI.enableScrollToLinks(paginationContainer)
+			}
+		}
+
+		// UIPagination.listen(parent.parentElement.querySelector('div.pagination'), this.xhrPagination.bind(this))
 	}
 }
 

@@ -164,12 +164,89 @@ UIPagination.readContainer = function(el) {
 }
 
 /**
- * handles pagination coming into view and hits the next link automatically,
- * passing the loaded content to callback function
+ * loads href from nextLink, passing the loaded content to callback function
  * @param paginationContainer HTMLElement DOM node
  * @param cb function callback
  */
-UIPagination.listen = function(paginationContainer, cb) {
+UIPagination.bindNextLink = function(paginationContainer, cb) {
+	if (!paginationContainer)
+		return // nothing to listen for
+
+	var nextLink = paginationContainer.querySelector('a.page.next')
+	if (!(nextLink && nextLink.href))
+		return true
+
+	if (!document.body.dataset.originalTitle) {
+		document.body.dataset.originalTitle = document.title
+		document.body.dataset.previousTitle = document.title
+		document.body.dataset.originalUrl = window.location.href
+		document.body.dataset.previousUrl = window.location.href
+	}
+
+
+	function loadNext(e) {
+		var classes = paginationContainer.classList
+		if (classes.contains('loading') || classes.contains('loaded') || classes.contains('error'))
+			return true
+
+		e.preventDefault()
+		e.stopPropagation()
+
+		var scroll = {x: window.scrollX, y: window.scrollY}		// current scrollX/Y
+		var screen = {width: window.innerWidth, height: window.innerHeight}		// includes scrollbars but that's OK
+		var rect = paginationContainer.getBoundingClientRect()	// monitored pagination container
+
+		// should hit link
+		classes.add('loading')
+		var url = nextLink.href
+		var nextPageNum = nextLink.dataset.num
+
+		document.body.dataset.previousUrl = window.location.href
+
+		$.get(url)
+			.success(function(response){
+
+				classes.remove('loading')
+				classes.add('loaded')
+
+				// http://stackoverflow.com/a/27692636
+				// http://stackoverflow.com/a/15261800
+
+				window.history.replaceState({}, document.title, url)
+
+				var title = document.body.dataset.originalTitle + ' (page '+nextPageNum + ')'
+				try {
+					document.getElementsByTagName('title')[0].innerHTML = title.replace('<','&lt;').replace('>','&gt;').replace(' & ',' &amp; ')
+				}
+				catch (e) {}
+				document.title = title
+
+
+				// window.history.replaceState({}, document.body.dataset.originalTitle, url)
+
+
+				// document.body.dataset.previousTitle = _title
+				if (cb) {
+					var oldData = UIPagination.readContainer(paginationContainer)
+					cb(response, paginationContainer, {scroll:scroll, viewport:screen, containerRect: rect})
+				}
+			})
+			.fail(function(err){
+				classes.remove('loading')
+				classes.add('error')
+				console.error(err)
+			})
+	}
+
+	nextLink.addEventListener('click', loadNext)
+	nextLink.dataset.xhrenabled = true
+
+}
+
+/**
+ * handles pagination coming into view and hits the next link automatically if its data-xhrenabled is set to true
+ */
+UIPagination.listen = function(paginationContainer) {
 
 	if (UIPagination._resetListener)
 		UIPagination._resetListener()
@@ -177,45 +254,32 @@ UIPagination.listen = function(paginationContainer, cb) {
 	if (!paginationContainer)
 		return // nothing to listen for
 
-	// checks if element is in view and, if necessary, requests data and calls cb(data)
 	function handler(e) {
-
-		var classes = paginationContainer.classList
-		if (classes.contains('loading') || classes.contains('loaded') || classes.contains('error'))
-			return true
-
 		var nextLink = paginationContainer.querySelector('a.page.next')
 		if (!(nextLink && nextLink.href))
 			return true
 
-		var scroll = {x: window.scrollX, y: window.scrollY}		// current scrollX/Y
-		var screen = {width: window.innerWidth, height: window.innerHeight}		// includes scrollbars but that's OK
 		var rect = paginationContainer.getBoundingClientRect()	// monitored pagination container
 
-		if (rect.top < screen.height) {
-			// should hit link
-			classes.add('loading')
-			$.get(nextLink.href)
-				.success(function(response){
-					classes.remove('loading')
-					classes.add('loaded')
-					if (cb) {
-						var oldData = UIPagination.readContainer(paginationContainer)
-						cb(response, paginationContainer, {scroll:scroll, viewport:screen, containerRect: rect})
-					}
-				})
-				.fail(function(err){
-					classes.remove('loading')
-					classes.add('error')
-					console.error(err)
-				})
+		if (!nextLink.dataset.xhrenabled)	// !
+			return true
+
+		if (rect.top < window.innerHeight) {	// includes scrollbars but that's OK
+
+			var evt = new MouseEvent('click', {
+				view: window,
+				bubbles: true,
+				cancelable: true,
+				clientX: 5
+			})
+			nextLink.dispatchEvent(evt)
 		}
+		return true
 	}
 
+	// throttles and calls the handler if it's time
 	var oldTimeStamp = 0
 	var _t
-
-	// throttles and calls the handler if it's time
 	function listener(e) {
 		// throttle this
 		clearTimeout(_t)

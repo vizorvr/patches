@@ -205,15 +205,16 @@ GraphController.prototype.publicRankedIndex = function(req, res, next) {
 	.then((data) => {
 
 		data.list = prettyPrintList(data.list)
-		if (data.meta)
-			data.meta.baseUrl = '/browse/'
+		var listmeta = data.meta
+		if (listmeta)
+			listmeta.baseUrl = '/browse/'
 
 		if (req.xhr) {
 			return res.json(helper.responseStatusSuccess('OK', data))
 		}
 
 		res.render('graph/index', {meta : {
-				title: 'Vizor - Browse',
+				title : 'Vizor - Browse projects',
 				bodyclass: 'bBrowse',
 				scripts: [
 					helper.metaScript('site/userpages.js'),
