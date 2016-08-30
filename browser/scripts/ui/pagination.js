@@ -1,5 +1,5 @@
 /**
- * helper data preprocessor Handlebars rendering. see pagination.handlebars
+ * helper data preprocessor for Handlebars rendering. see views/partials/pagination.handlebars
  * @param perPage number of results on page
  * @param totalPages number of total pages
  * @param currentPage current page
