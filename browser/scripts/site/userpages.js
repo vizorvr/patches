@@ -54,7 +54,9 @@ var userpagesUI = new function() {
 		jQuery('a#homeSignin').on('click', accountHandler(VizorUI.openLoginModal))
 		jQuery('a#homeSignup').on('click', accountHandler(VizorUI.openSignupModal))
 
-		if ((typeof UIPagination !== 'undefined') && document.body.classList.contains('bBrowse')) {
+		var isBrowse = document.body.classList.contains('bBrowse')
+		var isUserPublic = document.body.classList.contains('bUserpublic')
+		if ((typeof UIPagination !== 'undefined') && (isBrowse || isUserPublic)) {
 			UIPagination.bindNextLink(document.querySelector('div.pagination'), this.xhrPaginationCallback.bind(this))
 		}
 	}
@@ -187,11 +189,23 @@ var userpagesUI = new function() {
 	this.xhrPaginationCallback = function(response, oldPaginationContainer, display) {
 		var that = this
 
-		if (!(response && response.data && response.data.meta)) {
-			console.info('?response', response)
+		if (!(response && response.data))
+			return console.info('?response', response)
+
+		var data
+		if (response.data.graphs) {
+			// public user page
+			data = response.data.graphs
+		} else {
+			// browse
+			data = response.data
 		}
-		var meta = response.data.meta
-		var list = response.data.list
+		var meta = data.meta
+		var list = data.list
+
+		if (!(list && meta))
+			return console.info('?list/meta', list, meta)
+
 		// new
 		var pagination = UIPagination.fromMeta(meta)
 		var parent = oldPaginationContainer.parentElement
@@ -199,7 +213,7 @@ var userpagesUI = new function() {
 
 		var temp = document.createElement('DIV')
 
-		temp.innerHTML = E2.views.partials.browse.graphList({list: response.data, withPagination:true})
+		temp.innerHTML = E2.views.partials.browse.graphList({list: data, withPagination:true})
 
 		// take scripts out, since they won't execute
 		var scripts = temp.getElementsByTagName('script')

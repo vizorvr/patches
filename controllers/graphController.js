@@ -199,6 +199,8 @@ function GraphController(s, gfs, mongoConnection) {
 
 GraphController.prototype = Object.create(AssetController.prototype)
 
+
+// GET /browse
 GraphController.prototype.publicRankedIndex = function(req, res, next) {
 	var paging = parsePaging(req)
 	this._service.publicRankedList(paging)
@@ -215,6 +217,7 @@ GraphController.prototype.publicRankedIndex = function(req, res, next) {
 
 		res.render('graph/index', {meta : {
 				title : 'Vizor - Browse projects',
+				footer: 'srv/home/_footer',
 				bodyclass: 'bBrowse',
 				scripts: [
 					helper.metaScript('site/userpages.js'),
@@ -338,6 +341,7 @@ GraphController.prototype._userOwnIndex = function(user, req, res, next) {
 
 }
 
+// GET /fthr when visitor is not fthr
 GraphController.prototype._userPublicIndex = function(user, req, res, next) {
 	var that = this
 	var username = (user) ? user.username : null
@@ -381,9 +385,10 @@ GraphController.prototype._userPublicIndex = function(user, req, res, next) {
 					header: 'srv/userpage/userpageHeader',
 					footer: 'srv/home/_footer',
 					title: username+'\'s Files',
-					bodyclass: 'bUserpage',
+					bodyclass: 'bUserpage bUserpublic',
 					scripts : [
-						helper.metaScript('site/userpages.js')
+						helper.metaScript('site/userpages.js'),
+						helper.metaScript('ui/pagination.js')
 					]
 				}
 			})
