@@ -25,8 +25,6 @@ var hashids = new Hashids(secrets.sessionSecret)
 var fs = require('fs')
 var packageJson = JSON.parse(fs.readFileSync(__dirname+'/../package.json'))
 
-
-
 function renderError(status, res, message) {
 	res.status(status).render('error', {
 		message: message || 'Not found'
@@ -55,75 +53,16 @@ function makeHashid(serial) {
 	return hashids.encode(serial)
 }
 
-function makeCardName(cardName) {
-	var maxLen = 22
-	var nameParts = cardName.split(' ')
-	var name = nameParts.shift()
-
-	function addNamePart() {
-		var nextPart = nameParts.shift()
-		if (nextPart && name.length + nextPart.length < maxLen) {
-			name += ' ' + nextPart
-
-			if (nameParts.length)
-				addNamePart()
-		}
-	}
-
-	addNamePart()
-
-	if (name.length > maxLen)
-		name = name.substring(0, maxLen)
-
-	return name
-}
-
-function prettyPrintGraphInfo(graph) {
-	// Get displayed values for graph and owner
-	// 'this-is-a-graph' => 'This Is A Graph'
-	var graphName = graph.name.split('-')
-		.map(s => s.charAt(0).toUpperCase() + s.slice(1))
-		.join(' ')
-
-	// Figure out if the graph owner has a fullname
-	// Use that if does, else use the username for display
-	var graphOwner
-	var creator = graph._creator
-
-	if (creator && creator.name && !isStringEmpty(creator.name)) {
-		graphOwner = creator.name
-		graph.username = creator.username
-	} else {
-		if (graph.owner)
-			graphOwner = graph.owner
-		else
-			graphOwner = 'anonymous'
-		graph.username = graphOwner
-	}
-
-	graph.prettyOwner = graphOwner
-	graph.prettyName = makeCardName(graphName)
-
-	graph.size = ''
-
-	if (graph.stat && graph.stat.size) {
-		var sizeInKb = (graph.stat.size / 1048576).toFixed(2) // megabytes
-		graph.size = sizeInKb + ' MB'
-	}
-
-	return graph
-}
-
 function prettyPrintList(list) {
 	if (!list || !list.length)
 		return list
 	return list.map(function(graph) {
-		return prettyPrintGraphInfo(graph.toJSON())
+		return graph.getPrettyInfo()
 	})
 }
 
-function makeGraphSummary(req,graph) {
-	graph = prettyPrintGraphInfo(graph)
+function makeGraphSummary(req, graphModel) {
+	var graph = graphModel.getPrettyInfo()
 	return {
 		id:				graph.id,
 		graphMinUrl: 	graph.url,
@@ -512,7 +451,7 @@ function renderPlayer(graph, req, res, options) {
 	if (graph._creator)
 		graph._creator.increaseViewCount()
 
-	var graphJson = prettyPrintGraphInfo(graph.toJSON())
+	var graphJson = graph.getPrettyInfo()
 
 	// which version of player to use?
 	var version = graphJson.version || packageJson.version
