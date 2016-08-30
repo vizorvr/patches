@@ -6,6 +6,7 @@ log .
   currentPage: (this page number)
   totalCount:  (total results)
   thisPageCount: (on this page)
+  moreCount:    (remaining)
   pages: [] (all pages)
   displayPages: []  (only pages to display)
   nextPage
@@ -52,16 +53,14 @@ log .
     </a>
     {{/if}}
 {{/inline}}
-<div class="pagination" data-totalcount="{{totalCount}}" data-thispagecount="{{thisPageCount}}"
-     data-totalpages="{{totalPages}}" data-perpage="{{perPage}}" data-currentpage="{{currentPage}}" data-baseurl="{{{baseUrl}}}"
-        {{#if baseUrl}} {{!-- supply via meta.baseUrl to render href="/baseurl/page/#" --}}
-            data-thisurl="{{{baseUrl}}}page/{{{currentPage}}}"
-        {{else}}
-            data-thisurl="{{{replaceQueryParameters}}}"
-        {{/if}}
+<div class="pagination"
+     data-totalcount="{{totalCount}}" data-thispagecount="{{thisPageCount}}"
+     data-displaystart="{{thisPage.displayStart}}" data-displayend="{{thisPage.displayEnd}}"
+     data-totalpages="{{totalPages}}" data-perpage="{{perPage}}" data-currentpage="{{currentPage}}"
+     data-baseurl="{{{baseUrl}}}"
      >
 
-    {{>pageLink page=prevPage text='Previous page' class='prev'}}
+    {{>pageLink page=prevPage text='Previous' class='prev'}}
 
     {{!-- intentionally left in --}}
     {{!--
@@ -80,12 +79,14 @@ log .
     {{/if}}
     --}}
 
-    {{>pageLink page=nextPage text='Next page' class='next'}}
+    {{>pageLink page=nextPage text='Next' class='next'}}
 
 
-    {{#with thisPage}}
-    <p class="explain meta" style="margin-top:20px; font-size: 90%;">
-        Results {{displayStart}} - {{displayEnd}} of {{../totalCount}}
-    </p>
-    {{/with}}
+    {{#not-eq moreCount 0}}
+        {{#with thisPage}}
+        <p class="explain meta" style="margin-top:20px; font-size: 90%;">
+            {{../moreCount}} more {{#eq ../moreCount 1}}result{{else}}results{{/eq}} {{!-- {{displayStart}} - {{displayEnd}} --}}
+        </p>
+        {{/with}}
+    {{/not-eq}}
 </div>

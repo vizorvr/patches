@@ -56,7 +56,6 @@ var userpagesUI = new function() {
 
 		if ((typeof UIPagination !== 'undefined') && document.body.classList.contains('bBrowse')) {
 			UIPagination.bindNextLink(document.querySelector('div.pagination'), this.xhrPaginationCallback.bind(this))
-	//		UIPagination.listen(document.querySelector('div.pagination'), this.xhrPagination.bind(this))
 		}
 	}
 
@@ -185,6 +184,7 @@ var userpagesUI = new function() {
 		return card
 	}
 
+	var startOfResults = 0
 	this.xhrPaginationCallback = function(response, oldPaginationContainer, display) {
 		var that = this
 
@@ -229,13 +229,16 @@ var userpagesUI = new function() {
 			var prevLink = paginationContainer.querySelector('a.prev.page')
 			if (prevLink) {
 				prevLink.className = 'scrollto top'
-				prevLink.innerHTML = '^'
+				prevLink.innerHTML = '<svg style="width:1rem;height:1rem;stroke:black; transform:rotate(180deg)"><use xlink:href="#site-icon-arrow-vertical"></use></svg>'
 				prevLink.href = '#top_'
 				VizorUI.enableScrollToLinks(paginationContainer)
 			}
+			var explain = paginationContainer.querySelector('p.explain')
+			var oldMeta = UIPagination.readContainer(oldPaginationContainer)
+			var newMeta = UIPagination.readContainer(paginationContainer)
+			if (!startOfResults)
+				startOfResults = oldMeta.displayStart
 		}
-
-		// UIPagination.listen(parent.parentElement.querySelector('div.pagination'), this.xhrPagination.bind(this))
 	}
 }
 

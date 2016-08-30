@@ -35,6 +35,9 @@ var UIPagination = function (perPage, totalPages, currentPage, totalCount, baseU
 		displayPages: {
 			get: function() {return that.getDisplayPages()}
 		},
+		moreCount : {
+			get: function() {return that.totalCount - this.thisPage.displayEnd}
+		},
 		// currentPage starts from 1, (pages[] is 0-based)
 		prevPage : {
 			get: function() {return (that.currentPage >= 2) ? this.pages[that.currentPage-2] : null }
@@ -159,6 +162,8 @@ UIPagination.readContainer = function(el) {
 		totalPages : parseInt(d.totalpages),
 		perPage : parseInt(d.perpage),
 		currentPage: parseInt(d.currentpage),
+		displayStart: parseInt(d.displaystart),
+		displayEnd: parseInt(d.displayend),
 		baseUrl: d.baseurl
 	}
 }
@@ -176,12 +181,8 @@ UIPagination.bindNextLink = function(paginationContainer, cb) {
 	if (!(nextLink && nextLink.href))
 		return true
 
-	if (!document.body.dataset.originalTitle) {
+	if (!document.body.dataset.originalTitle)
 		document.body.dataset.originalTitle = document.title
-		document.body.dataset.previousTitle = document.title
-		document.body.dataset.originalUrl = window.location.href
-		document.body.dataset.previousUrl = window.location.href
-	}
 
 
 	function loadNext(e) {
@@ -201,19 +202,13 @@ UIPagination.bindNextLink = function(paginationContainer, cb) {
 		var url = nextLink.href
 		var nextPageNum = nextLink.dataset.num
 
-		document.body.dataset.previousUrl = window.location.href
-
 		$.get(url)
 			.success(function(response){
 
 				classes.remove('loading')
 				classes.add('loaded')
 
-				// http://stackoverflow.com/a/27692636
-				// http://stackoverflow.com/a/15261800
-
 				window.history.replaceState({}, document.title, url)
-
 				var title = document.body.dataset.originalTitle + ' (page '+nextPageNum + ')'
 				try {
 					document.getElementsByTagName('title')[0].innerHTML = title.replace('<','&lt;').replace('>','&gt;').replace(' & ',' &amp; ')
@@ -221,11 +216,6 @@ UIPagination.bindNextLink = function(paginationContainer, cb) {
 				catch (e) {}
 				document.title = title
 
-
-				// window.history.replaceState({}, document.body.dataset.originalTitle, url)
-
-
-				// document.body.dataset.previousTitle = _title
 				if (cb) {
 					var oldData = UIPagination.readContainer(paginationContainer)
 					cb(response, paginationContainer, {scroll:scroll, viewport:screen, containerRect: rect})
@@ -244,9 +234,9 @@ UIPagination.bindNextLink = function(paginationContainer, cb) {
 }
 
 /**
- * handles pagination coming into view and hits the next link automatically if its data-xhrenabled is set to true
+ * handles pagination coming into view and clicks the next link automatically if its data-xhrenabled is set to true
  */
-UIPagination.listen = function(paginationContainer) {
+UIPagination.listenForScroll = function(paginationContainer) {
 
 	if (UIPagination._resetListener)
 		UIPagination._resetListener()
