@@ -2,18 +2,6 @@ const when = require('when')
 const Graph = require('../models/graph')
 const fsPath = require('path')
 
-function renderFeatured(graph) {
-	var owner = graph.owner || 'v'
-	return {
-		graphName: graph.prettyName,
-		graphOwner: graph.prettyOwner,
-		graphOwnerLink: "/" + owner,
-		previewUrlSmall: "/data/previews/"+
-			owner+"/"+graph.name+"-preview-440x330.png",
-		path: "/"+owner+"/"+graph.name
-	}
-}
-
 function getHomeStaffPicks() {
 	var staffPicks = {}
 	var dfd = when.defer()
@@ -32,7 +20,6 @@ function getHomeStaffPicks() {
 		createdAt: -1
 	})
 	.exec((err, graphs) => {
-		console.log('picks0', graphs)
 		if (err) {
 			console.error(err.stack)
 			return dfd.resolve([])
@@ -44,7 +31,7 @@ function getHomeStaffPicks() {
 				if (!staffPicks[tag])
 					staffPicks[tag] = []
 
-				staffPicks[tag].push(renderFeatured(graph.getPrettyInfo()))
+				staffPicks[tag].push(graph.getPrettyInfo())
 			})
 		})
 
@@ -52,8 +39,6 @@ function getHomeStaffPicks() {
 		Object.keys(staffPicks).map(tag => {
 			staffPicks[tag] = cull(staffPicks[tag])
 		})
-
-		console.log('staff picks', staffPicks)
 
 		dfd.resolve(staffPicks)
 	})
