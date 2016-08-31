@@ -26,7 +26,8 @@ function AssetLoader(loaders) {
 		texture: E2.Loaders.TextureLoader,
 		model: E2.Loaders.ModelLoader,
 		scene: E2.Loaders.SceneLoader,
-		audiobuffer: E2.Loaders.AudioBufferLoader
+		audiobuffer: E2.Loaders.AudioBufferLoader,
+		video: E2.Loaders.VideoLoader,
 	}
 
 	this.loaders = loaders || defaultLoaders

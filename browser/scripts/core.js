@@ -67,9 +67,9 @@ E2.LOADING_NODES = {
 	'url_stereo_cubemap_generator': 'image',
 	'url_stereo_latlongmap_generator': 'image',
 	'url_audio_buffer_generator': 'audiobuffer',
+	'url_video_generator': 'video',
 	// 'url_audio_generator': 'audio',
 	// 'url_json_generator': 'json',
-	// 'url_video_generator': 'video'
 }
 
 E2.dt = {
