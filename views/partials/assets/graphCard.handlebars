@@ -13,6 +13,48 @@
             <span>{{#if text}}{{text}}{{else}}{{act}}{{/if}}</span>
         </{{#eq tag 'a'}}a{{else}}button{{/eq}}>
 {{/inline}}
+
+{{#* inline 'meta'}}
+    <div class="meta scrollbar">
+		<h4>
+            {{#unless (equals withLinks false)}}
+                <a href="{{path}}">{{prettyName}}</a>
+            {{else}}
+                {{prettyName}}
+            {{/unless}}
+
+        {{#if this.owner}}
+            {{#not-eq visitor.username this.owner}}
+            <span class="description user">
+                <span class="by">by</span>
+                <a style="margin-right:0.5em;color:#666;" href="/{{owner}}">{{owner}}</a>
+            </span>
+            {{/not-eq}}
+        {{/if}}
+        </h4>
+        {{#if updatedAt}}<p class="description updatedAt">{{formatDate updatedAt}}</p>{{/if}}
+	</div>
+{{/inline}}
+
+{{#* inline 'meta360'}}
+    <div class="meta scrollbar">
+		<h4>
+            {{#unless (equals withLinks false)}}
+                <a href="{{path}}">{{prettyName}}º</a>
+            {{else}}
+                {{prettyName}}º
+            {{/unless}}
+
+        <span class="description user">
+            <span class="by">by</span>
+            <a style="margin-right:0.5em;color:#666;" href="//360.vizor.io">360.vizor.io</a>
+        </span>
+
+        </h4>
+        {{#if updatedAt}}<p class="description updatedAt">{{formatDate updatedAt}}</p>{{/if}}
+	</div>
+{{/inline}}
+
 {{#*inline 'actionLink'}}{{> action . tag='a'}}{{/inline}}
 {{#*inline 'actionButton'}}{{> action . tag='button'}}{{/inline}}
 
@@ -20,26 +62,14 @@
     {{> assets/graphCardJS . }}
 {{/unless}}
 
-<article class="graph asset card {{#if private}}private{{/if}} noselect"
+    <article class="graph asset card {{#if private}}private{{/if}} {{#if-gt rank 0}}featured{{/if-gt}} noselect"
          data-objectid="{{_id}}" data-sortid="{{updatedTS}}" data-path="{{path}}" data-url="/{{owner}}/{{name}}" data-asset-type="graph">
 
-	<div class="meta scrollbar">
-		<h4>
-            {{#unless (equals withLinks false)}}
-                <a href="{{path}}">{{prettyName}}</a>
-            {{else}}
-                {{prettyName}}
-            {{/unless}}
-        </h4>
-        {{#if this.owner}}
-            {{#not-eq visitor.username this.owner}}
-            <p class="description user">
-                <a style="margin-right:0.5em;color:#666;" href="/{{owner}}">{{owner}}</a>
-            </p>
-            {{/not-eq}}
-        {{/if}}
-        {{#if updatedAt}}<p class="description updatedAt">{{formatDate updatedAt}}</p>{{/if}}
-	</div>
+    {{#eq this.owner 'v'}}
+	    {{> meta360 .}}
+    {{else}}
+        {{> meta .}}
+    {{/eq}}
 
 	{{#if previewUrlLarge}}
 	 <div class="image" style="background-image: url('{{previewUrlLarge}}');">

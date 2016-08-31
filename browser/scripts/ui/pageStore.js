@@ -15,19 +15,15 @@ if (typeof VizorUI === 'undefined')
  * @param objClass e.g. graph,profile,etc - used to name events e.g. changed:graph
  * @param objId id/uniq of object
  */
+
 VizorUI.makeStore = function (obj, objClass, objId) {
 
-	if (typeof obj !== 'object') {
-		console.warn('obj is not object')
-		return obj
-	}
-
-	var changed = function(className, k, v) {
+	var changed = function(className, id, k, v) {
 		// emit changed:objClass, objId, k, v
 		// e.g. changed:graph, {id: '5abc723781273', class: 'graph', key: 'stats.views', value: 4
 		// e.g. changed:graph, 5abc723781273, name, "boza"
 		var detail = {
-			id: objId,
+			id: id,
 			class: className,
 			key: k,
 			value: v
@@ -37,10 +33,19 @@ VizorUI.makeStore = function (obj, objClass, objId) {
 	}
 
 	var makeObj = function(o, className, id, stack) {
+
+		if (o.__store__)
+			return o
+
 		var store = {}
 
 		var etters = function(key, className) {
-			stack.push(key)
+			var pushStack = (typeof id !== 'undefined')
+			if (pushStack)
+				stack.push(key)
+			else {
+				id = key
+			}
 
 			var stackCopy = []
 			stack.forEach(function(v){stackCopy.push(v)})
@@ -65,28 +70,44 @@ VizorUI.makeStore = function (obj, objClass, objId) {
 						o[key] = v
 
 					if (change)
-						changed(className, propFQN, o[key])
+						changed(className, id, propFQN, o[key])
 
 					return v
 				},
 				enumerable: true,
 				configurable: true
 			})
-			stack.pop()
+
+			if (pushStack)
+				stack.pop()
 		}
 
 		Object.keys(o).forEach(function (key) {
-			etters(key, className)
+			if (['_add_','__store__'].indexOf(key) < 0)
+				etters(key, className)
 		})
+
+
+		store._add_ = function(key, prop) {
+			var _stack = stack
+			var _id = id
+			stack = []
+			id = undefined
+			o[key] = {}
+			etters(key, className)
+			store[key] = prop
+			stack = _stack
+			id = _id
+		}
+		store.__store__ = true
+
 		return store
 	}
 
 	// obj holds the original data for store
 	// writing to store writes to obj, and emits an event as described
-	var store = makeObj(obj, objClass, objId, [])
-	store.__store__ = true
-
-	return store
+	var ret = makeObj(obj, objClass, objId, [])
+	return ret
 }
 
 
@@ -99,18 +120,20 @@ VizorUI.pageStore = function() {
 	if (!page)
 		return
 
-	function make(collection, className) {
-		Object.keys(collection).forEach(function(k){
-			collection[k] = VizorUI.makeStore(collection[k], className, k) })
-	}
+	Vizor.pageObjects = null
 
-	if (page.profiles)
-		make(page.profiles, 'profile')
+	// added via iteration to ensure correct object id-s
+	var profiles = page.profiles
+	page.profiles = VizorUI.makeStore({}, 'profile')
+	for (var k in profiles)
+		page.profiles._add_(k, profiles[k])
 
-	if (page.graphs)
-		make(page.graphs, 'graph')
+	var graphs = page.graphs
+	page.graphs = VizorUI.makeStore({}, 'graph')
+	for (var k in graphs)
+		page.graphs._add_(k, graphs[k])
 
-	make(page, 'pageObjects')
+	page = VizorUI.makeStore(page, 'pageObjects')
 
 	// convenience methods
 	page.getGraph = function(id) {
@@ -136,6 +159,38 @@ VizorUI.pageStore = function() {
 		if (graphOwner)
 			--graphOwner.stats.projects
 	}
+
+	page.addProfile = function(profile) {
+		if (profile.id)
+			page.profiles._add_(profile.id, profile)
+		else
+			console.error('no profile.id', profile)
+	}
+
+	page.addGraph = function(graph) {	// formerly inside graphCardJS.handlebars
+		if (!graph)
+			return console.info('addGraph but no graph')
+
+		var key = graph._id || graph.path
+		if (!key)
+			return console.error('no key for graph', graph)
+
+		if (graph._creator) {
+			var profile
+			if (graph.profile && graph.profile.id && !page.profiles[id])
+				profile = graph.profile
+			else
+				profile = {}
+
+			profile['_id'] = graph._creator
+			page.profiles._add_(graph._creator, profile)
+		}
+
+		delete graph.profile
+		page.graphs._add_(key, graph)
+	}
+
+	Vizor.pageObjects = page
 
 }
 

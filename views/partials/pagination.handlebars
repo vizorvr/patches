@@ -1,0 +1,64 @@
+{{!--
+UIPagination.fromMeta:
+log .
+  totalPages:  (total number of pages)
+  perPage:     (number of results per page)
+  currentPage: (this page number)
+  totalCount:  (total results)
+  thisPageCount: (on this page)
+  moreCount:    (remaining)
+  pages: [] (all pages)
+  displayPages: []  (only pages to display)
+  nextPage
+  prevPage
+  firstPage
+  lastPage
+  thisPage,
+  shouldDisplayFirstPageLink,
+  shouldDisplayLastPageLink,
+  shouldDisplayFirstPageEllipsis,
+  shouldDisplayLastPageEllipsis
+--}}
+<div class="clearfix" style="clear: both; height: 1px"></div>
+{{#*inline 'pageLink'}}
+    {{!-- context is .. --}}
+    {{#if page}}
+    <a
+        {{#if (equals page.num currentPage)}}
+            class="current page {{class}}"
+        {{else}}
+            class="page {{class}}"
+        {{/if}}
+
+        {{#unless (equals page.displayStart page.displayEnd)}}
+            title="results {{page.displayStart}} - {{page.displayEnd}} of {{totalCount}}"
+        {{else}}
+            title="result {{page.displayStart}} of {{totalCount}}"
+        {{/unless}}
+
+        {{#if baseUrl}} {{!-- supply via meta.baseUrl to render href="/baseurl/page/#" --}}
+            href="{{{baseUrl}}}page/{{{page.num}}}"
+        {{else}}
+            href="{{{replaceQueryParameters start=page.start }}}"
+        {{/if}}
+
+        data-num="{{page.num}}"
+    >
+        {{#if text}}
+            {{{text}}}
+        {{else}}
+            {{page.num}}
+        {{/if}}
+    </a>
+    {{/if}}
+{{/inline}}
+<div class="pagination"
+     data-totalcount="{{totalCount}}" data-thispagecount="{{thisPageCount}}"
+     data-displaystart="{{thisPage.displayStart}}" data-displayend="{{thisPage.displayEnd}}"
+     data-totalpages="{{totalPages}}" data-perpage="{{perPage}}" data-currentpage="{{currentPage}}"
+     data-baseurl="{{{baseUrl}}}">
+
+    {{>pageLink page=prevPage text='Previous' class='prev'}}
+    {{>pageLink page=nextPage text='Next' class='next'}}
+
+</div>

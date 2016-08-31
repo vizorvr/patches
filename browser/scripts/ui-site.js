@@ -281,8 +281,8 @@ var siteUI = new function() {
 			e.preventDefault()
 			e.stopPropagation()
 			VizorUI.openLoginModal()
-			.then(function(){
-				document.location.href="/account"
+			.then(function(user){
+				document.location.href="/"+user.username
 			})
 			return false
 		})
