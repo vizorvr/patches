@@ -1,4 +1,5 @@
-<header><nav class="primary clearfix in" style="position:relative">
+{{#unless noHeaderTag}}<header>{{/unless}}
+<nav class="primary clearfix in" style="position:relative">
     <h1 id="brandTop" class="brandTop">
         <a href="/" class="nofx"><span>Vizor</span>
         <svg class="mobileonly" style="fill:#fff;"><use xlink:href="#vizor-mark" /></svg>
@@ -28,4 +29,5 @@
             <img src="/images/home/xmenu.png" width="22" height="32" alt="" />
         </button>
     </div>
-</nav></header>
+</nav>
+{{#unless noHeaderTag}}</header>{{/unless}}

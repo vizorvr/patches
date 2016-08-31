@@ -91,6 +91,7 @@ userSchema.methods.toPublicJSON = function() {
 		id : this._id,
 		username: this.username,
 		name: this.name,
+		createdAt: this.createdAt,
 		profile: {
 			avatar: avatar,
 			header: this.profile.headerScaled,
