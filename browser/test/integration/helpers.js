@@ -179,6 +179,16 @@ exports.reset = function() {
 	
 	E2.core = new Core()
 
+	E2.core.audioContext = {
+		createDelay: function() {},
+		createGain: function() {},
+		createPanner: function() {},
+		createAnalyser: function() {},
+		createBufferSource: function() {
+			return {}
+		},
+	}
+
 	E2.plugins = {}
 	E2.commands = {}
 

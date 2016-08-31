@@ -1,15 +1,18 @@
-#Gain (mix)
+#Spatial Listener
 
 ##Description
-Listener for spatialization.
+Spatial Listener.
 
 ##Inputs
 ###position
-Listener position.
-###forward
-Forward vector.
-###up
-Up vector.
+Position.
 
+###forward
+Forward Vector.
+
+###up
+Up Vector.
+
+##Outputs
 ##Detail
 
