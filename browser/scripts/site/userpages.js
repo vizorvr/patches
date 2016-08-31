@@ -206,8 +206,6 @@ var userpagesUI = new function() {
 		if (!(list && meta))
 			return console.info('?list/meta', list, meta)
 
-		// new
-		var pagination = UIPagination.fromMeta(meta)
 		var parent = oldPaginationContainer.parentElement
 		parent.removeChild(oldPaginationContainer)
 

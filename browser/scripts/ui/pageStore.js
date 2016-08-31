@@ -18,17 +18,6 @@ if (typeof VizorUI === 'undefined')
 
 VizorUI.makeStore = function (obj, objClass, objId) {
 
-	if (typeof obj !== 'object') {
-		console.warn('obj is not object', obj)
-		console.trace()
-		return obj
-	}
-	if (obj.__store__) {
-		console.warn('already a store', obj)
-		console.trace()
-		return obj
-	}
-
 	var changed = function(className, id, k, v) {
 		// emit changed:objClass, objId, k, v
 		// e.g. changed:graph, {id: '5abc723781273', class: 'graph', key: 'stats.views', value: 4
@@ -45,10 +34,8 @@ VizorUI.makeStore = function (obj, objClass, objId) {
 
 	var makeObj = function(o, className, id, stack) {
 
-		if (o.__store__) {
-			console.log('already a store', o)
+		if (o.__store__)
 			return o
-		}
 
 		var store = {}
 
