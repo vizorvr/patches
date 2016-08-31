@@ -298,7 +298,7 @@ GraphController.prototype._userOwnIndex = function(user, req, res, next) {
 	if (wantPrivate === undefined) {
 		data.isSummaryPage = true
 		data.bodyclass = 'bGraphlistSummary'
-		var publicResults, privateResults
+		var publicResults
 		that._service.userGraphsWithPrivacy(username, 0, maxNumOnFront, false)
 			.then((results)=>{
 				if (results.list) {
@@ -313,7 +313,7 @@ GraphController.prototype._userOwnIndex = function(user, req, res, next) {
 				}
 				return render(publicResults, privateResults, profile, data)
 			})
-			.catch(()=>{
+			.catch((err)=>{
 				console.error(err)
 				render(null, null, profile, data)
 			})
