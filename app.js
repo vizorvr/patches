@@ -24,6 +24,7 @@ var fsPath = require('path');
 var EventEmitter = require('events').EventEmitter;
 
 var mongoose = require('mongoose');
+mongoose.Promise = global.Promise	// http://mongoosejs.com/docs/promises.html
 
 var passport = require('passport');
 var expressValidator = require('express-validator');
@@ -306,8 +307,6 @@ switch (process.env.FQDN) {
 
 var gfs
 
-// http://mongoosejs.com/docs/promises.html
-mongoose.Promise = global.Promise
 
 mongoose.connect(secrets.db);
 mongoose.connection.on('error', function(err) {
