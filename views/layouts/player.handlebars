@@ -1,4 +1,7 @@
 <!DOCTYPE html>
+{{#*inline 'favicon'}}
+    <link {{#if apple}}rel="apple-touch-icon-precomposed"{{else}}rel="icon"{{/if}} sizes="{{size}}x{{size}}" href="/images/v2/favicons/icon-{{size}}px.png" />
+{{/inline}}
 <html lang="en" class="hVizor">
 	<head id="head">
 		<meta charset='utf-8' />
@@ -18,6 +21,16 @@
         <meta name="twitter:title" content="{{graphName}} by {{graphOwner}}" />
         <meta name="twitter:description" content="Vizor is a platform for creating and sharing VR experiences" />
         <meta name="twitter:image" content="{{previewImage}}" />
+
+        {{>favicon apple=true size=57}}
+        {{>favicon apple=true size=114}}
+        {{>favicon apple=true size=72}}
+        {{>favicon apple=true size=144}}
+        {{>favicon size=48}}
+        {{>favicon size=32}}
+        {{>favicon size=16}}
+        <link rel="icon" href="/favicon.ico?v=201608" />
+
 
         {{{css 'site'}}}
 

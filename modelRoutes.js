@@ -334,17 +334,22 @@ function modelRoutes(
 	// Generic model routes
 
 	// latest ("I'm feeling lucky")
-	app.get('/graph/latest', function(req,res,next) {
+	app.get('/~latest-graph', function(req,res,next) {
 		graphController.latest(req, res, next)
 	})
 
 	// discovery
-	app.get(['/browse', '/graphs', '/browse.json'], function(req, res, next) {
+	app.get([
+		'/browse',
+		'/browse/page/:page',
+		'/graphs',
+		'/graphs/page/:page'
+	], function(req, res, next) {
 		graphController.publicRankedIndex(req, res, next)
 	})
 
 	// list own assets
-	app.get('/:model', getController, function(req, res, next) {
+	app.get(['/:model', '/:model/page/:page'], getController, function(req, res, next) {
 		if (!req.controller)
 			return graphController.userIndex(req, res, next)
 

@@ -253,6 +253,10 @@ div.nojs, div.nowebgl {
   margin: 100px auto;
 }
 
+body:not(.b360) #progressbar {
+  margin: 10px 0;
+}
+
 #progressbar {
   -webkit-appearance: none;
   appearance: none;
@@ -260,7 +264,6 @@ div.nojs, div.nowebgl {
   height: 2px;
   width: 100%;
   opacity: 0.75;
-  margin: 10px 0;
   transition: background-color 1s;
   border: 0;
   &::-webkit-progress-value {

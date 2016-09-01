@@ -7,6 +7,7 @@ var packageJson = JSON.parse(fs.readFileSync(__dirname+'/../package.json'))
 var currentPlayerVersion = packageJson.version.split('.').slice(0,2).join('.')
 
 var when = require('when')
+var isStringEmpty = require('../lib/stringUtil').isStringEmpty
 
 var alphanumeric = [
 	/[a-z0-9\-\_]/,
@@ -14,8 +15,8 @@ var alphanumeric = [
 ]
 
 var statSpec = {
-	size: { type: Number, required: true }, 
-	numAssets: { type: Number, required: true }
+	size: { type: Number, required: false, default: 0 }, 
+	numAssets: { type: Number, required: false, default: 0 }
 }
 
 var graphSchema = new mongoose.Schema({
@@ -25,6 +26,12 @@ var graphSchema = new mongoose.Schema({
 	url: { type: String, required: true },
 	
 	tags: [{
+		type: String,
+		match: alphanumeric,
+		index: true
+	}],
+
+	staffpicks: [{
 		type: String,
 		match: alphanumeric,
 		index: true
@@ -44,7 +51,7 @@ var graphSchema = new mongoose.Schema({
 
 	version: { type: String, default: currentPlayerVersion },
 
-	stat: statSpec,
+	stat: { type: statSpec, required: false },
 
 	updatedAt: { type: Date, default: Date.now },
 	createdAt: { type: Date, default: Date.now }
@@ -52,6 +59,9 @@ var graphSchema = new mongoose.Schema({
 	toObject: { virtuals: true },
 	toJSON: { virtuals: true }
 })
+
+// index on staff picks (eg. frontpage)
+graphSchema.index({ staffpicks: 1 })
 
 // unique index on owner+name
 graphSchema.index({ owner: 1, name: 1, unique: true })
@@ -107,5 +117,68 @@ graphSchema.pre('save', function(next) {
 	graph.name = assetHelper.slugify(graph.name)
 	next()
 })
+
+function getPrettyName(cardName) {
+	var maxLen = 22
+	var nameParts = cardName.split(' ')
+	var name = nameParts.shift()
+
+	function addNamePart() {
+		var nextPart = nameParts.shift()
+		if (nextPart && name.length + nextPart.length < maxLen) {
+			name += ' ' + nextPart
+
+			if (nameParts.length)
+				addNamePart()
+		}
+	}
+
+	addNamePart()
+
+	if (name.length > maxLen)
+		name = name.substring(0, maxLen)
+
+	return name
+}
+
+function getPrettyInfo() {
+	var graph = this.toJSON()
+
+	// Get displayed values for graph and owner
+	// 'this-is-a-graph' => 'This Is A Graph'
+	var graphName = graph.name
+		.split('-')
+		.map(s => s.charAt(0).toUpperCase() + s.slice(1))
+		.join(' ')
+
+	// Figure out if the graph owner has a fullname
+	// Use that if does, else use the username for display
+	var graphOwner
+	var creator = graph._creator
+	if (creator && creator.name && !isStringEmpty(creator.name)) {
+		graphOwner = creator.name
+		graph.username = creator.username
+	} else {
+		if (graph.owner)
+			graphOwner = graph.owner
+		else
+			graphOwner = 'anonymous'
+		graph.username = graphOwner
+	}
+
+	graph.prettyOwner = graphOwner
+	graph.prettyName = getPrettyName(graphName)
+
+	graph.size = ''
+
+	if (graph.stat && graph.stat.size) {
+		var sizeInKb = (graph.stat.size / 1048576).toFixed(2) // megabytes
+		graph.size = sizeInKb + ' MB'
+	}
+
+	return graph
+}
+
+graphSchema.methods.getPrettyInfo = getPrettyInfo
 
 module.exports = mongoose.model('Graph', graphSchema)

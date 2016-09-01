@@ -332,7 +332,9 @@
         "Radial Point Geometry": "radial_point_geometry",
         "Cubemap Assembler": "cubemap_assembler",
         "Stereo Cube Map (old)": "stereo_cube_map",
-        "Photosphere Orientation": "photosphere_orientation_reader"
+        "Photosphere Orientation": "photosphere_orientation_reader",
+        "Spatial Audio Listener": "audio_spatial_listener",
+        "Spatial Audio Panner": "audio_spatial_panner"
     }
 
 }

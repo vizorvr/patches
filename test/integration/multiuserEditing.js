@@ -1,5 +1,6 @@
 var testId = rand()
-process.env.MONGODB = 'mongodb://localhost:27017/mutest'+testId
+var DBNAME = 'multiuser'+testId
+process.env.MONGODB = 'mongodb://localhost:27017/'+DBNAME
 
 global.WebSocket = require('ws')
 global.EventEmitter = require('events').EventEmitter
@@ -98,7 +99,7 @@ describe('Multiuser', function() {
 		global.dataLayer = []
 
 		app.events.on('ready', function() {
-			db = new mongo.Db('mutest'+testId, 
+			db = new mongo.Db(DBNAME, 
 				new mongo.Server('localhost', 27017),
 				{ safe: true })
 
@@ -108,11 +109,12 @@ describe('Multiuser', function() {
 		})
 	})
 
-	after(function(done) {
+	after(function() {
+		db.dropDatabase()
+		db.close()
 		mongoose.models = {}
 		mongoose.modelSchemas = {}
 		mongoose.connection.close()
-		done()
 	})
 
 	beforeEach(function() {

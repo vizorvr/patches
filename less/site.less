@@ -666,6 +666,7 @@ article.asset.card {
   	div.image:not(.noimage) {
 	  background-color: #1e1269;
 	}
+
   	h4 a {
 	  color: @color-action;
 	}
@@ -676,6 +677,17 @@ article.asset.card {
 		div.image {
 		  background: #0597cd;
 		}
+	  }
+	}
+
+  	&.featured {
+	  div.meta h4>a:after {
+		content: "★";
+		color: #999;
+		display: inline-block;
+		text-align: center;
+		font-size: 60%;
+		vertical-align: 40%;
 	  }
 	}
 
@@ -865,6 +877,15 @@ article.asset.card {
 		font-weight: 500;
 		color: @color-asset-card-title;
 		margin-bottom: 10px;
+		span.user {
+		  .by {
+			display: none;
+		  }
+		  display: block;
+		  font-size: 1.2rem;
+		  margin-top: 10px;
+		  margin-bottom: -8px;
+		}
 	  }
 	  p {
 		font-size: 75%;

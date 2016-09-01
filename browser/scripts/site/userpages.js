@@ -14,18 +14,24 @@ var assetUIEvent = {	// CustomEvent names (dispatched on document)
 
 var userpagesUI = new function() {
 
+	// transitional
+	this.setupCardUI = function(card) {
+		var $card = jQuery(card)
+		VizorUI.setupAssetCard($card)
+		if (siteUI.isTouchCapable()) {
+			var overlayDiv = card.querySelector('div.overlay')
+			overlayDiv.addEventListener('click', VizorUI.touchCardOverlay, true)	// unbound, this=div
+		}
+	}
+
 	this.init = function () {
+		var that = this
 		document.addEventListener(assetUIEvent.graphOpen, this.handleGraphOpen);
 
 		jQuery('#contentcontainer .asset.card')
 			.not('.new')
 			.each(function () {
-				var $card = jQuery(this)
-				VizorUI.setupAssetCard($card)
-				if (siteUI.isTouchCapable()) {
-					var overlayDiv = this.querySelector('div.overlay')
-					overlayDiv.addEventListener('click', VizorUI.touchCardOverlay, true)	// unbound, this=div
-				}
+				that.setupCardUI(this)
 			})
 
 		document.addEventListener(assetUIEvent.graphShare, VizorUI.actionGraphShare)
@@ -47,6 +53,12 @@ var userpagesUI = new function() {
 		}
 		jQuery('a#homeSignin').on('click', accountHandler(VizorUI.openLoginModal))
 		jQuery('a#homeSignup').on('click', accountHandler(VizorUI.openSignupModal))
+
+		var isBrowse = document.body.classList.contains('bBrowse')
+		var isUserPublic = document.body.classList.contains('bUserpublic')
+		if ((typeof UIPagination !== 'undefined') && (isBrowse || isUserPublic)) {
+			UIPagination.bindNextLink(document.querySelector('div.pagination'), this.xhrPaginationCallback.bind(this))
+		}
 	}
 
 	// note the buttons are wired directly (for search-engine indexing)
@@ -172,6 +184,79 @@ var userpagesUI = new function() {
 		}
 
 		return card
+	}
+
+	this.xhrPaginationCallback = function(response, oldPaginationContainer, display) {
+		var that = this
+
+		if (!(response && response.data))
+			return console.info('?response', response)
+
+		var data
+		if (response.data.graphs) {
+			// public user page
+			data = response.data.graphs
+		} else {
+			// browse
+			data = response.data
+		}
+		var meta = data.meta
+		var list = data.list
+
+		if (!(list && meta))
+			return console.info('?list/meta', list, meta)
+
+		var parent = oldPaginationContainer.parentElement
+		parent.removeChild(oldPaginationContainer)
+
+		var temp = document.createElement('DIV')
+
+		temp.innerHTML = E2.views.partials.browse.graphList({list: data, withPagination:true})
+
+		// take scripts out, since they won't execute
+		var scripts = temp.getElementsByTagName('script')
+		while (scripts.length)
+			scripts[0].parentElement.removeChild(scripts[0])
+
+		// do the UI on the cards
+		var cards = temp.querySelectorAll('article.card')
+		Array.prototype.forEach.call(cards, function(card){
+			if ((card.tagName.toLowerCase() === 'article') && card.classList.contains('card'))
+				that.setupCardUI(card)
+		})
+
+		var firstNewContent = temp.firstChild
+		// append the content to the parent container
+		while (temp.childNodes.length) {
+			parent.parentElement.appendChild(temp.firstChild)
+		}
+
+		if (list.length && Vizor.pageObjects.addGraph) {
+			for (var graph of list) {
+				Vizor.pageObjects.addGraph(graph)
+			}
+		}
+
+		var paginationContainer = parent.parentElement.querySelector('div.pagination')
+		if (paginationContainer) {
+			UIPagination.bindNextLink(paginationContainer, this.xhrPaginationCallback.bind(this))
+			// seeing we added this, we can take out the previous link
+			var prevLink = paginationContainer.querySelector('a.prev.page')
+			if (prevLink) {
+				prevLink.className = 'scrollto top'
+				prevLink.innerHTML = '<svg style="width:1rem;height:1rem;stroke:black; transform:rotate(180deg)"><use xlink:href="#site-icon-arrow-vertical"></use></svg>'
+				prevLink.href = '#top_'
+				VizorUI.enableScrollToLinks(paginationContainer)
+			}
+		}
+
+		if (firstNewContent) {
+			// scroll to new content
+			setTimeout(function () {
+				var r = firstNewContent.getBoundingClientRect()
+				$("body").animate({scrollTop: '' + (display.scroll.y + r.top) + 'px'}, 450)
+			}, 200)
+		}
 	}
 }
 
