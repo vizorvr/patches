@@ -15,8 +15,8 @@ var alphanumeric = [
 ]
 
 var statSpec = {
-	size: { type: Number, required: true }, 
-	numAssets: { type: Number, required: true }
+	size: { type: Number, required: false, default: 0 }, 
+	numAssets: { type: Number, required: false, default: 0 }
 }
 
 var graphSchema = new mongoose.Schema({
@@ -51,7 +51,7 @@ var graphSchema = new mongoose.Schema({
 
 	version: { type: String, default: currentPlayerVersion },
 
-	stat: statSpec,
+	stat: { type: statSpec, required: false },
 
 	updatedAt: { type: Date, default: Date.now },
 	createdAt: { type: Date, default: Date.now }
