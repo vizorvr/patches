@@ -184,9 +184,7 @@
         "Current time": "audio_get_current_time_modulator",
         "Duration": "audio_get_duration_modulator",
         "Module player": "module_player",
-        "Gain (mix)": "audio_gain_modulator",
-        "Spatial Listener": "audio_spatial_listener",
-        "Spatial Panner": "audio_spatial_panner"
+        "Gain (mix)": "audio_gain_modulator"
     },
 
     "DEBUG TOOLS": {
@@ -334,7 +332,9 @@
         "Radial Point Geometry": "radial_point_geometry",
         "Cubemap Assembler": "cubemap_assembler",
         "Stereo Cube Map (old)": "stereo_cube_map",
-        "Photosphere Orientation": "photosphere_orientation_reader"
+        "Photosphere Orientation": "photosphere_orientation_reader",
+        "Spatial Audio Listener": "audio_spatial_listener",
+        "Spatial Audio Panner": "audio_spatial_panner"
     }
 
 }
