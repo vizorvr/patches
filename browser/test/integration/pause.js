@@ -77,14 +77,13 @@ describe('pause', function() {
 			}
 
 			for(var i = 0; i < plugins.length; ++i) {
-				assert.doesNotThrow(function() {
+				// assert.doesNotThrow(function() {
 					pluginInstances.push(E2.app.instantiatePlugin(plugins[i]))
 					var ag = E2.core.active_graph
 
 					ag.update({abs_t: 0, delta_t: 1/60})
-
 					ag.update({abs_t: 1/60, delta_t: 0})
-				})
+				// })
 			}
 
 			assert.ok(plugins.length > 200)
