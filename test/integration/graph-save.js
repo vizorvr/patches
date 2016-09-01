@@ -152,6 +152,20 @@ describe('Graph', function() {
 		})
 	})
 
+	it('should be able to give a summary', function(done) {
+		var path = 'button-'+rand()
+
+		sendGraph(path, function(err, res) {
+			if (err) return done(err)
+			request(app).get(res.body.path + '?summary=1')
+			.expect(200).end(function(err, res) {
+				if (err) return done(err)
+				assert.equal(res.body.data.private, true)
+				done()
+			})
+		})
+	})
+
 	it('should force the right path', function(done) {
 		var path = '/blah/quux/bar/foo.png'
 		var expectedPath = '/'+username+'/foo'

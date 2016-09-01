@@ -517,7 +517,7 @@ GraphController.prototype.graphLanding = function(req, res, next) {
 			return notFound()
 
 		if (wantSummary) {
-			var data = makeGraphSummary(req, graph.toJSON())
+			var data = makeGraphSummary(req, graph)
 			return res.json(helper.responseStatusSuccess('OK', data))
 		}
 		
@@ -569,7 +569,7 @@ GraphController.prototype.graphModify = function(req, res, next) {
 					res.status(500).json(helper.responseStatusError('could not save graph', err))
 				}
 
-				var data = makeGraphSummary(req, savedGraph.toJSON())
+				var data = makeGraphSummary(req, savedGraph)
 				if (wantXhr)
 					return res.json(helper.responseStatusSuccess('OK', data))
 				// else
