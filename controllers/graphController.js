@@ -737,7 +737,7 @@ GraphController.prototype._save = function(path, user, req, res, next) {
 					return that._fs.writeString(previewImageSpecs[0].gridFsPath, processedImages[0], 'base64')
 					.then(function() {
 						// write large image
-						that._fs.writeString(previewImageSpecs[1].gridFsPath, processedImages[1], 'base64')
+						return that._fs.writeString(previewImageSpecs[1].gridFsPath, processedImages[1], 'base64')
 					})
 				}
 			})
