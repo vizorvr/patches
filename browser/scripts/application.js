@@ -2373,6 +2373,11 @@ E2.InitialiseEngi = function(loadGraphUrl) {
 	E2.core.renderer = new THREE.WebGLRenderer({context: E2.core.glContext, canvas: E2.dom.webgl_canvas[0]})
 
 	E2.core.on('ready', E2.app.onCoreReady.bind(E2.app, loadGraphUrl))
+
+	window.onpopstate = function() {
+		window.location.href = window.location.href
+		return
+	}
 }
 
 if (typeof(module) !== 'undefined')
