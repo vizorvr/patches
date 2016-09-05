@@ -74,7 +74,7 @@ AssetService.prototype.buildQuery = function(find, options) {
 AssetService.prototype.find = function(q, paging) {
 	var dfd = when.defer()
 
-	paging = paging || {offset: 0, limit: 20}
+	paging = paging || { offset: 0, limit: 0 }
 
 	this._model.find(q)
 		.sort('-updatedAt')
