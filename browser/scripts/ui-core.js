@@ -12,7 +12,7 @@ var uiKeys = {
 
 	// handled on keydown - keycode + modifier value
 	toggleMode 			: 9,	// Tab
-	togglePatchEditor	: 1009,	// Shift+Tab
+	navigateToPatch	: 1009,	// Shift+Tab
 	toggleUILayer		: 11085,	// meta+Shift+U
 	toggleFloatingPanels : 10066, // meta+B
 
@@ -151,8 +151,12 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 		}
 	})
 
+	E2.app.worldEditor.on('selectionSet', function(selected){
+		state.selectedObjects = selected
+	})
+
 	state
-		.on('changed:mode', function(mode) {
+		.on('changed:mode', function(mode, oldmode) {
 			var inBuildMode = mode === uiMode.build
 			var inProgramMode = !inBuildMode
 
@@ -193,10 +197,13 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 			if (inBuildMode) {
 				dom.tabObjects.find('a').trigger('click')
 				dom.tabObjProperties.find('a').trigger('click')
+				state.selectedObjects = E2.app.worldEditor.getSelectedNodes()
 			}
 			else if (inProgramMode) {
 				dom.tabPatches.find('a').trigger('click')
 				dom.tabNodeProperties.find('a').trigger('click')
+				E2.app.clearSelection(false)
+				state.selectedObjects = E2.app.selectedNodes
 			}
 
 		})
@@ -259,17 +266,7 @@ VizorUI.prototype.setupStateStoreEventListeners = function() {
 
 	state
 		.on('changed:selectedObjects', function(selected){
-			var text = '';
-			if (selected) {
-				if (selected.length > 1)
-					text = selected.length + ' objects';
-				else if (selected.length === 1)
-					text = selected[0].title || selected[0].id;
-			}
-			that.buildBreadcrumb(E2.core.active_graph, function(b) {
-				if (text)
-					b.add(text)
-			});
+			that.buildBreadcrumb(E2.core.active_graph, selected);
 		})
 		.emit('changed:selectedObjects', state.selectedObjects);
 
@@ -712,17 +709,21 @@ VizorUI.prototype.onKeyDown = function(e) {
 			e.preventDefault();
 			break;
 		case uiKeys.toggleMode:
-			if (state.mode === uiMode.build)
-				that.setModeProgram();
+		case uiKeys.navigateToPatch:
+			e.preventDefault()
+			e.stopPropagation()
+			if (this.isInBuildMode()) {
+				this.setModeProgram()
+				var selectedGraph = E2.app.worldEditor.selectedEntityPatch
+				if ((!selectedGraph) && E2.app.worldEditor.selectedEntityNode)
+					selectedGraph = E2.app.worldEditor.selectedEntityNode.parent_graph
+				if (this.flags.pressedShift && selectedGraph) {
+					E2.app.setActiveGraph(selectedGraph)
+				}
+			}
 			else
-				that.setModeBuild();
-			e.preventDefault();
-			e.stopPropagation();
-			break;
-		case uiKeys.togglePatchEditor:
-			this.togglePatchEditor();
-			e.preventDefault();
-			break;
+				this.setModeBuild()
+			break
 		case uiKeys.toggleUILayer:
 			that.toggleUILayer();
 			e.preventDefault();

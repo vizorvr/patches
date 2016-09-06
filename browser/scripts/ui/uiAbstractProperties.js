@@ -20,10 +20,14 @@ var UIAbstractProperties = function UIAbstractProperties(domElement) {
 	// collects exposed properties. set at render-time
 	this.adapter = null
 
+	function isGraphNode(node) {
+		return node && node.plugin && (node.plugin.parentNode === node)
+	}
+
 	Object.defineProperty(this, 'selectedEditorObjectMeshNode', {
 		get: function() {
 			var p = E2.app.worldEditor.getSelectedObjectPlugin()
-			return p ? p.parentNode : p
+			return (p && isGraphNode(p.parentNode)) ? p.parentNode : p
 		}
 	})
 
@@ -37,7 +41,7 @@ var UIAbstractProperties = function UIAbstractProperties(domElement) {
 	Object.defineProperty(this, 'selectedGraphNode', {
 		get: function() {
 			var sel = E2.ui.state.selectedObjects
-			return (sel &&  sel.length === 1) ? sel[0] : null
+			return (sel &&  sel.length === 1 && isGraphNode(sel[0])) ? sel[0] : null
 		}
 	})
 

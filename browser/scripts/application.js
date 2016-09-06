@@ -940,6 +940,10 @@ Application.prototype.onDelete = function(e) {
 		return;
 
 	if (this.isWorldEditorActive()) {
+		if (!this.worldEditor.selectedEntityPatch)	{
+			E2.app.growl('could not delete')
+			return
+		}
 		var sn = this.worldEditor.selectedEntityNode
 		this.setActiveGraph(this.worldEditor.selectedEntityPatch.parent_graph)
 		this.selectedNodes = []
@@ -1334,7 +1338,8 @@ Application.prototype.markConnectionAsSelected = function(conn) {
 	this.selectedConnections.push(conn)
 }
 
-Application.prototype.clearSelection = function() {
+Application.prototype.clearSelection = function(alsoClearWorldEditor) {
+	alsoClearWorldEditor = (typeof alsoClearWorldEditor === 'undefined') ? true : !!alsoClearWorldEditor
 	var sn = this.selectedNodes;
 	var sc = this.selectedConnections;
 
@@ -1355,7 +1360,8 @@ Application.prototype.clearSelection = function() {
 
 	this.clearNodeSelection()
 
-	this.worldEditor.clearSelection()
+	if (alsoClearWorldEditor)
+		this.worldEditor.clearSelection()
 }
 
 Application.prototype.clearNodeSelection = function() {
@@ -1759,7 +1765,6 @@ Application.prototype.onGraphSelected = function(graph) {
 	this.scrollOffset[0] = this.scrollOffset[1] = 0
 
 	E2.dom.breadcrumb.children().remove()
-
 	E2.ui.buildBreadcrumb(E2.core.active_graph)
 
 	E2.core.active_graph.create_ui()

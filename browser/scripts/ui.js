@@ -114,6 +114,8 @@ VizorUI.prototype.setupEventHandlers = function(e2, dom) {
 	dom.btnRotate.on('mousedown', switchModifyMode(uiModifyMode.rotate));
 	dom.btnScale.on('mousedown', switchModifyMode(uiModifyMode.scale));
 
+	E2.app.graphStore.on('nodeRenamed', this.refreshBreadcrumb)
+
 };
 
 
@@ -502,30 +504,70 @@ VizorUI.prototype.setModeProgram = function() {
 	return true;
 };
 
-VizorUI.prototype.buildBreadcrumb = function(graph, beforeRender) {
+VizorUI.prototype.buildBreadcrumb = function(graph, selected, beforeRender) {
 	var b = new UIbreadcrumb()
-	
-	function processGraph(parentEl, graph, add_handler) {
-		var title = graph.tree_node.title || graph.tree_node.id
-		if (add_handler) {
-			b.prepend(title, null, function() {
-				E2.app.setActiveGraph(graph)
-			})
-		} else {
-			b.prepend(title, null)
+	var that = this
+
+	selected = selected || []
+
+	function prependFrom(graph) {
+		var node, title
+		while (graph && (node = graph.tree_node)){
+			title = node.title || node.id
+			if (b.length > 0) {
+				b.prepend(title, null, function() {
+					// switch over to program and navigate to layer/graph
+					if (!that.isInProgramMode())
+						that.setModeProgram()
+					E2.app.setActiveGraph(this)
+				}.bind(graph))
+			} else {
+				b.prepend(title)
+			}
+			graph = graph.parent_graph
 		}
-		if (graph.parent_graph)
-			processGraph(parentEl, graph.parent_graph, true)
 	}
 
-	processGraph(this.dom.breadcrumb, graph, false)
+	if (this.isInBuildMode()) {
+		if (selected.length === 1) {
+			b.add(selected[0].title)
+			prependFrom(selected[0].parent_graph)
+		}
+		else if (selected.length > 1) {
+			// get the group name from first selected object
+			var groupNode=''
+			var conns = selected[0].getConnections()
+			for (var i=0;i<conns.length;i++) {
+				if (conns[i].dst_node.plugin.id === 'three_group') {
+					if (groupNode !== '')
+						console.warn('node in more than one group ', selected[0])
+					else
+						groupNode = conns[i].dst_node
+				}
+			}
+
+			b.add(groupNode.get_disp_name() + ' (' + selected.length + ' objects)')
+			prependFrom(groupNode.parent_graph)
+
+		}
+	} else {
+		if (selected.length === 1) {
+			b.add(selected[0].title || selected[0].id)
+			prependFrom(selected[0].parent_graph)
+		}
+		else {
+			if (selected.length > 1)
+				b.add(selected.length + ' nodes')
+			prependFrom(graph)
+		}
+	}
 
 	if (typeof beforeRender === 'function') 
-		beforeRender(b);
+		beforeRender(b)
 
 	b.render(this.dom.breadcrumb)
 
-	return b;
+	return b
 }
 
 VizorUI.prototype.toggleFullscreenVRViewButtons = function() {

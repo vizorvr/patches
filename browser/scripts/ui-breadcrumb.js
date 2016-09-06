@@ -3,6 +3,7 @@
  * known limitations - if used server-side it won't attach clickhandlers
  */
 var UIbreadcrumb = function(/* @var jQuery|null */ $existingContainer) {
+	var that = this
 	this.crumbs = []
 	this.clickHandlers = {}
 	this.withJquery = (typeof jQuery !== 'undefined')
@@ -25,6 +26,10 @@ var UIbreadcrumb = function(/* @var jQuery|null */ $existingContainer) {
 	} else {
 		this.container = null	// only produce html
 	}
+
+	Object.defineProperty(this, 'length', {
+		get: function(){return that.crumbs.length}
+	})
 }
 
 UIbreadcrumb.prototype.getTemplateData = function() {
