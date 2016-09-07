@@ -59,7 +59,7 @@ VizorUI.showHelpScreen = function(activeTab) {
 					}
 					var html=[]
 					var partial = E2.views.partials.assets.graphCard
-					response.data.graphs.forEach(function(entry){
+					response.data.graphs.list.forEach(function(entry){
 						html.push(partial(_.assign(entry, renderFlags)))
 					})
 					domEl.innerHTML = html.join("\n")
