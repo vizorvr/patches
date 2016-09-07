@@ -1,5 +1,6 @@
 DEST=ops@ex40.kschzt.com:/var/www/fail.vizor.lol
 
+node ./tools/create-test-examples.js
 node ./browser/test/functional/run.js
 
 RETVAL=$?
