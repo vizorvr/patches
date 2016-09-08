@@ -53,11 +53,12 @@ function makeHashid(serial) {
 	return hashids.encode(serial)
 }
 
-function prettyPrintList(list) {
+function prettyPrintList(list, owners) {
 	if (!list || !list.length)
 		return list
+	owners = owners || {}
 	return list.map(function(graph) {
-		return graph.getPrettyInfo()
+		return graph.getPrettyInfo(owners[graph._creator])
 	})
 }
 
@@ -144,8 +145,8 @@ GraphController.prototype.publicRankedIndex = function(req, res, next) {
 	var paging = parsePaging(req)
 	this._service.publicRankedList(paging)
 	.then((data) => {
-
-		data.list = prettyPrintList(data.list)
+		data.list = prettyPrintList(data.list, data.owners)
+		delete (data.owners)
 		var listmeta = data.meta
 		if (listmeta)
 			listmeta.baseUrl = '/browse/'
@@ -231,6 +232,11 @@ GraphController.prototype._userOwnIndex = function(user, req, res, next) {
 
 	var profile = user.toJSON()
 
+	// setup prettyPrintList
+	var ownerInfo = {}
+	ownerInfo[user.id] = user.toPublicJSON()
+
+
 	var maxNumOnFront = 7	// allow for "create new" card
 	// front page, two lists
 	var data = {}
@@ -241,14 +247,14 @@ GraphController.prototype._userOwnIndex = function(user, req, res, next) {
 		that._service.userGraphsWithPrivacy(username, 0, maxNumOnFront, false)
 			.then((results)=>{
 				if (results.list) {
-					results.list = prettyPrintList(results.list)
+					results.list = prettyPrintList(results.list, ownerInfo)
 					publicResults = results
 				}
 				return that._service.userGraphsWithPrivacy(username, 0, maxNumOnFront, true)
 			})
 			.then((privateResults) => {
 				if (privateResults.list) {
-					privateResults.list = prettyPrintList(privateResults.list)
+					privateResults.list = prettyPrintList(privateResults.list, ownerInfo)
 				}
 				return render(publicResults, privateResults, profile, data)
 			})
@@ -265,7 +271,7 @@ GraphController.prototype._userOwnIndex = function(user, req, res, next) {
 
 				data.bodyclass = (wantPrivate) ? 'bGraphlistPrivate' : 'bGraphlistPublic'
 
-				result.list = prettyPrintList(result.list)
+				result.list = prettyPrintList(result.list, ownerInfo)
 
 				if (wantPrivate)
 					render(null, result, profile, data)
@@ -305,7 +311,11 @@ GraphController.prototype._userPublicIndex = function(user, req, res, next) {
 				return next()
 			}
 
-			result.list = prettyPrintList(result.list)
+			var ownerInfo = {}
+			if (user) {
+				ownerInfo[user.id] = user.toPublicJSON()
+			}
+			result.list = prettyPrintList(result.list, ownerInfo)
 
 			var data = {
 				profile: user ? user.toPublicJSON() : {},
@@ -363,7 +373,7 @@ GraphController.prototype.adminIndex = function(req, res) {
 		if (req.xhr || req.path.slice(-5) === '.json')
 			return res.json(result.list);
 
-		result.list = prettyPrintList(result.list)
+		result.list = prettyPrintList(result.list, result.owners)
 
 		var data = {
 			graphs: result

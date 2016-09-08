@@ -84,8 +84,6 @@ userSchema.methods.toJSON = function() {
 
 userSchema.methods.toPublicJSON = function() {
 	var avatar = this.profile.avatarScaled
-	if (!avatar)
-		avatar = this.gravatar
 
 	return {
 		id : this._id,

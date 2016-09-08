@@ -28,19 +28,45 @@ GraphService.prototype.findByPath = function(path) {
 	})
 }
 
+/**
+ * @param paging
+ * @return {list, meta, owners}
+ * @private
+ */
+GraphService.prototype._listWithOwners = function(filter, sort, select, paging) {
+	var that = this
+	var listData=[]
+	return this.countAndFind(filter, sort, select, paging)
+		.then((data) => {
+			listData = data
+			var creatorIds = {}
+			// only interested in unique ids
+			for (var row of data.list) {
+				if (row._creator)
+					creatorIds[row._creator] = true
+			}
+			return that.getOwnersInfo(Object.keys(creatorIds))
+		})
+		.then((ownersInfo) => {
+			listData.owners = ownersInfo
+			return Promise.resolve(listData)
+		})
+}
+
+
+// admin
 GraphService.prototype.listWithPreviews = function(paging) {
 	var filter = {deleted: false}
-	var select = '_creator owner name previewUrlSmall previewUrlLarge updatedAt stat'
+	var select = '_creator owner name previewUrlSmall previewUrlLarge updatedAt stat views'
 	var sort = '-updatedAt'
-	return this.countAndFind(filter, sort, select, paging)
+	return this._listWithOwners(filter, sort, select, paging)
 }
 
 GraphService.prototype.publicRankedList = function(paging) {
 	var filter = { private: false, deleted: false }
 	var sort = {'rank': -1, 'updatedAt': -1}
-	var select = '_creator private owner name previewUrlSmall updatedAt stat rank'
-
-	return this.countAndFind(filter, sort, select, paging)
+	var select = '_creator private owner name previewUrlSmall updatedAt stat rank views'
+	return this._listWithOwners(filter, sort, select, paging)
 }
 
 /**

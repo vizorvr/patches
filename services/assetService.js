@@ -1,6 +1,7 @@
 var User = require('../models/user')
 var when = require('when')
 var _ = require('lodash')
+var ObjectId = require('mongoose').Types.ObjectId
 
 function AssetService(assetModel) {
 	this._model = assetModel
@@ -197,6 +198,28 @@ AssetService.prototype.save = function(data, user) {
 		})
 
 		return dfd.promise
+	})
+}
+
+AssetService.prototype.getOwnersInfo = function(/* Array */ creatorIds) {
+	var ids = creatorIds.map((id) => ObjectId(id))
+
+	return new Promise(function(resolve, reject){
+		User.find({_id: {$in: ids}})
+			.exec(function(err, list) {
+				if (err)
+					reject(err)
+
+				if (!list)
+					resolve ([])
+
+				var userMap = {}
+				for (var user of list) {
+					userMap[user.id] = user.toPublicJSON()
+					delete userMap[user.id]['id']
+				}
+				resolve(userMap)
+			})
 	})
 }
 

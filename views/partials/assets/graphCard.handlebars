@@ -16,6 +16,17 @@
 
 {{#* inline 'meta'}}
     <div class="meta scrollbar">
+        {{#if ownerInfo}}
+            <a class="avatar" href="/{{ownerInfo.username}}">
+                {{#if ownerInfo.profile.avatar}}
+                    <img src="{{ownerInfo.profile.avatar}}" />
+                {{else}}
+                    <img src="/images/v2/avatar-head.png" />
+                {{/if}}
+            </a>
+        {{else}}
+            <img class="avatar" src="/images/v2/avatar-head.png" />
+        {{/if}}
 		<h4>
             {{#unless (equals withLinks false)}}
                 <a href="{{path}}">{{prettyName}}</a>
@@ -23,36 +34,43 @@
                 {{prettyName}}
             {{/unless}}
 
-        {{#if this.owner}}
-            {{#not-eq visitor.username this.owner}}
-            <span class="description user">
-                <span class="by">by</span>
-                <a style="margin-right:0.5em;color:#666;" href="/{{owner}}">{{owner}}</a>
+            <span class="description user">by <a style="margin-right:0.5em;color:#666;" href="/{{owner}}">{{owner}}</a></span>
+            <span class="description stat">
+                {{#if size}}
+                    <span class="stat size">{{size}}</span>
+                {{/if}}
+                {{#if views}}
+                    <span class="stat views">{{views}} {{#eq views 1}}view{{else}}views{{/eq}}</span>
+                {{/if}}
             </span>
-            {{/not-eq}}
-        {{/if}}
         </h4>
-        {{#if updatedAt}}<p class="description updatedAt">{{formatDate updatedAt}}</p>{{/if}}
+	</div>
+{{/inline}}
+
+{{#* inline 'metaInternal'}}
+    <div class="meta scrollbar">
+        <a class="vizor avatar" href="{{userLink}}"><img src="{{avatar}}" /></a>
+		<h4>
+            {{#unless (equals withLinks false)}}
+                <a href="{{path}}">{{prettyName}}</a>
+            {{else}}
+                360 Photo <!-- {{prettyName}} -->
+            {{/unless}}
+        <span class="description user">
+            by <a style="margin-right:0.5em;color:#666;" href="{{userLink}}">{{username}}</a>
+        </span>
+        </h4>
 	</div>
 {{/inline}}
 
 {{#* inline 'meta360'}}
-    <div class="meta scrollbar">
-		<h4>
-            {{#unless (equals withLinks false)}}
-                <a href="{{path}}">{{prettyName}}º</a>
-            {{else}}
-                {{prettyName}}º
-            {{/unless}}
+    {{> metaInternal . prettyName='360 Photo' username='360.vizor.io' userLink='//360.vizor.io'
+            avatar='/images/v2/avatar-360.svg' }}
+{{/inline}}
 
-        <span class="description user">
-            <span class="by">by</span>
-            <a style="margin-right:0.5em;color:#666;" href="//360.vizor.io">360.vizor.io</a>
-        </span>
-
-        </h4>
-        {{#if updatedAt}}<p class="description updatedAt">{{formatDate updatedAt}}</p>{{/if}}
-	</div>
+{{#* inline 'metaExamples'}}
+    {{> metaInternal . username='Vizor Examples' userLink='/examples'
+            avatar='/images/v2/avatar-vizor.svg' }}
 {{/inline}}
 
 {{#*inline 'actionLink'}}{{> action . tag='a'}}{{/inline}}
@@ -62,22 +80,24 @@
     {{> assets/graphCardJS . }}
 {{/unless}}
 
-    <article class="graph asset card {{#if private}}private{{/if}} {{#if-gt rank 0}}featured{{/if-gt}} noselect"
+    <article class="graph asset card {{#if private}}private{{/if}} noselect"
          data-objectid="{{_id}}" data-sortid="{{updatedTS}}" data-path="{{path}}" data-url="/{{owner}}/{{name}}" data-asset-type="graph">
 
-    {{#eq this.owner 'v'}}
-	    {{> meta360 .}}
-    {{else}}
-        {{> meta .}}
-    {{/eq}}
+        {{#eq this.owner 'v'}}
+            {{> meta360 .}}
+        {{else eq this.owner 'examples'}}
+            {{> metaExamples .}}
+        {{else}}
+            {{> meta .}}
+        {{/eq}}
 
-	{{#if previewUrlLarge}}
-	 <div class="image" style="background-image: url('{{previewUrlLarge}}');">
-    {{else if previewUrlSmall}}
-     <div class="image fromsmall" style="background-image: url('{{previewUrlSmall}}');">
-    {{else}}
-     <div class="image noimage">
-	{{/if}}
+        {{#if previewUrlLarge}}
+         <div class="image" style="background-image: url('{{previewUrlLarge}}');">
+        {{else if previewUrlSmall}}
+         <div class="image fromsmall" style="background-image: url('{{previewUrlSmall}}');">
+        {{else}}
+         <div class="image noimage">
+        {{/if}}
 
 		<div class="overlay flexcenter noselect_all">
             {{#if withActions}}
@@ -114,7 +134,7 @@
                 {{#if views}}
                 <span class="stat views">
                     <svg style="fill:#afbfdf; width:16px; height:10px; "><use xlink:href="#eye-16x10"></use></svg>
-                    {{views}} <span>views</span></span>
+                    {{views}} <span>{{#eq views 1}}view{{else}}views{{/eq}}</span></span>
                 {{/if}}
             </p>
 		</div>
