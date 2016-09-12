@@ -15,6 +15,24 @@ E2.ui.ui360 = new function() {
 
 	this.minProgress = 0	// allow half+half progress bar
 
+	Object.defineProperty(this, 'cancelText', {
+		get: function() {
+			var b = document.querySelector('#cancelbutton')
+			return (b) ? b.innerText : ''
+		},
+		set: function(text) {
+			var b = document.querySelector('#cancelbutton')
+			if (!b)
+				return false
+			b.innerText = text
+			var w = $(b).width()
+			if (w) {
+				b.style.marginLeft = (-w / 2) + 'px'
+			}
+			return text
+		}
+	})
+
 	function updateProgressBar(percent) {
 		$progress.val(percent)
 		that.minProgress = percent
@@ -50,7 +68,7 @@ E2.ui.ui360 = new function() {
 	}
 
 	var cancelledUploading = function() {
-		// remove fake progress bar
+		// remove fake procancelledUpgress bar
 		if (that.fakeProgressBarId) {
 			clearTimeout(that.fakeProgressBarId)
 		}
@@ -87,6 +105,7 @@ E2.ui.ui360 = new function() {
 				$body.removeClass('firsttime')
 				that.minProgress = 0
 				playerUI.headerFadeOut()
+				updateProgressBar(100)
 				return true
 			}
 			return false
@@ -117,6 +136,8 @@ E2.ui.ui360 = new function() {
 		E2.track({ event: 'ThreeSixty Uploading Graph' })
 
 		var previewImage = E2.app.player.getScreenshot(1280, 720)
+
+		that.cancelText = 'Creating 360 photo URL'
 
 		$.ajax({
 			url: '/graph/v',
@@ -182,6 +203,7 @@ E2.ui.ui360 = new function() {
 		var that = this
 		var templateUrl = "/patches/_template-360-photo.json";
 
+
 		$.ajax({
 			url: templateUrl,
 			type: 'GET',
@@ -189,6 +211,7 @@ E2.ui.ui360 = new function() {
 
 			success: function(graph) {
 				var urlReplaced = false;
+
 
 				// we replace the graph
 				graph = that.getGraphData(graph, imageUrl)
@@ -204,7 +227,7 @@ E2.ui.ui360 = new function() {
 
 					if (keepPlaying) {
 						that.uploadGraph(data.graph, function(asset) {
-							updateProgressBar(55)
+							updateProgressBar(100)
 							dfd.resolve(asset, data)
 						})
 					} else {
@@ -291,6 +314,7 @@ E2.ui.ui360 = new function() {
 			}
 		}
 
+		that.cancelText = 'Uploading image'
 		var xhr = $.ajax({
 			url: '/uploadAnonymous/' + modelName,
 			type: 'POST',
@@ -339,7 +363,7 @@ E2.ui.ui360 = new function() {
 					return
 				}
 				var errMsg = err.responseJSON ? err.responseJSON.message : err.status
-				cancelledUploading();
+				loading();
 		
 				E2.track({ 
 					event: 'ThreeSixty Error Uploading', 
