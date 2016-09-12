@@ -4,6 +4,26 @@ function ImageLoader(url) {
 	E2.Loader.apply(this, arguments)
 	var that = this
 
+	function loadImageFromDataSrc(src, data) {
+		return new Promise(function(resolve, reject){
+			try {
+				var img = new Image()
+				img.onload = function () {
+					data.img = img
+					data.metadata = {
+						'width': 	img.width,
+						'height' : 	img.height
+					}
+					resolve(data)
+				}
+				img.src = src
+			}
+			catch (e) {
+				reject(e)
+			}
+		})
+	}
+
 	function loadImage(data) {
 		var dfd = when.defer()
 
@@ -73,11 +93,19 @@ function ImageLoader(url) {
 
 	var data = {}
 
-	loadImage(data).then(function(data) {
-		return loadMetadata(data)
-	}).then(function(data) {
-		return that.onImageLoaded(data.img, data.metadata)
-	})
+
+	if (url.startsWith('data:')) {
+		return loadImageFromDataSrc(url, data)
+			.then(function(data){return that.onImageLoaded(data.img, data.metadata)})
+	}
+	else {
+
+		loadImage(data).then(function (data) {
+			return loadMetadata(data)
+		}).then(function (data) {
+			return that.onImageLoaded(data.img, data.metadata)
+		})
+	}
 }
 
 ImageLoader.prototype = Object.create(E2.Loader.prototype)

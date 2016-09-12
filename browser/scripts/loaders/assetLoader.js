@@ -128,7 +128,10 @@ AssetLoader.prototype.loadAssetsForGraph = function(graph) {
 			if (!assetUrl)
 				return
 
-			console.log('Loading', assetType, assetUrl)
+			if (assetUrl.startsWith('data:'))
+				console.log('Loading '+assetUrl.length+' data: bytes for ', assetType)
+			else
+				console.log('Loading', assetType, assetUrl)
 
 			return that.loadAsset(assetType, assetUrl)
 		})

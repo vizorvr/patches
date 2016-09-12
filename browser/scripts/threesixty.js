@@ -10,6 +10,9 @@ E2.ui.ui360 = new function() {
 	var $body = {},
 		$progress = {}	// progressbar element
 
+
+	var graph360 = null
+
 	this.minProgress = 0	// allow half+half progress bar
 
 	function updateProgressBar(percent) {
@@ -151,12 +154,32 @@ E2.ui.ui360 = new function() {
 		return p.promise
 	}
 
+
+	this.getGraphData = function(graph, imageUrl) {
+		graph = _.cloneDeep(graph)
+		// Go through the graph 'nodes' field and find the URL
+		// for the 360 template we are replacing
+		var nodes = graph.root.nodes;
+
+		for (var i=0; i < nodes.length; i++) {
+			var node = nodes[i];
+
+			// Check if we have the correct node, the 360 graph
+			// has this node generating the texture
+			if (node.plugin === 'url_texture_generator') {
+				node.state.url = imageUrl
+			}
+		}
+		return graph
+	}
+
 	// STEP 2
 	// Fetch the 360 template from our server and publish a graph with
 	// image url from passed in url
-	this.publishTemplateWithUrl = function(imageUrl) {
+	this.publishTemplateWithUrl = function(imageUrl, keepPlaying) {
 		var dfd = when.defer()
 
+		var that = this
 		var templateUrl = "/patches/_template-360-photo.json";
 
 		$.ajax({
@@ -167,20 +190,9 @@ E2.ui.ui360 = new function() {
 			success: function(graph) {
 				var urlReplaced = false;
 
-				// Go through the graph 'nodes' field and find the URL
-				// for the 360 template we are replacing
-				var nodes = graph.root.nodes;
-
-				for (var i=0; i < nodes.length; i++) {
-					var node = nodes[i];
-
-					// Check if we have the correct node, the 360 graph
-					// has this node generating the texture
-					if (node.plugin === 'url_texture_generator') {
-						node.state.url = imageUrl
-						urlReplaced = true
-					}
-				}
+				// we replace the graph
+				graph = that.getGraphData(graph, imageUrl)
+				urlReplaced = true
 
 				// Found the url, generate the graph data and upload
 				if (urlReplaced === true) {
@@ -190,18 +202,26 @@ E2.ui.ui360 = new function() {
 						'graph': JSON.stringify(graph)
 					}
 
-					E2.app.player.stop()
-
-					E2.app.player.load_from_object(graph, function() {
-						E2.core.once('player:firstFramePlayed', function() {
-							that.uploadGraph(data.graph, function(asset) {
-								updateProgressBar(55)
-								dfd.resolve(asset, data)
-							})
+					if (keepPlaying) {
+						that.uploadGraph(data.graph, function(asset) {
+							updateProgressBar(55)
+							dfd.resolve(asset, data)
 						})
-	
-						E2.app.player.play()
-					})
+					} else {
+
+						E2.app.player.stop()
+
+						E2.app.player.load_from_object(graph, function () {
+							E2.core.once('player:firstFramePlayed', function () {
+								that.uploadGraph(data.graph, function (asset) {
+									updateProgressBar(55)
+									dfd.resolve(asset, data)
+								})
+							})
+
+							E2.app.player.play()
+						})
+					}
 				}
 			},
 
@@ -220,8 +240,21 @@ E2.ui.ui360 = new function() {
 		$body.removeClass('firsttime')
 	}
 
-	this.beforeGraphPublish = function() {
+	this.beforeGraphPublish = function(localImageData) {
 		window.Vizor.disableHeaderClick = false
+
+		if (graph360) {
+			var graph = that.getGraphData(graph360, localImageData)
+			E2.app.player.stop()
+
+			E2.app.player.load_from_object(graph, function() {
+				E2.app.player.play()
+			})
+
+			return true
+		}
+
+		return false
 	}
 
 	this.beforePlay = function() {
@@ -356,6 +389,18 @@ E2.ui.ui360 = new function() {
 
 		filePath = filePath[0]
 
+		var reader = new FileReader();
+		reader.readAsDataURL(filePath);
+		var base64
+
+		var keepPlaying = false
+
+		reader.onload = function (e) {
+			base64 = e.target.result
+			console.info(' got base64 (' + base64.length + ' bytes)')
+			keepPlaying = that.beforeGraphPublish(base64)
+		}
+
 		if (filePath && filePath.type.match('image.*') === null) {
 			cancelledUploading()
 			return that.fileUploadErrorWrongType(filePath)
@@ -377,11 +422,9 @@ E2.ui.ui360 = new function() {
 				})
 
 				if (uploadedFile) {
-					that.beforeGraphPublish()
-
 					// Get the scaled version of the original image
 					var imageUrl = uploadedFile.scaled.url;
-					return that.publishTemplateWithUrl(imageUrl);
+					return that.publishTemplateWithUrl(imageUrl, keepPlaying);
 				}
 				else {
 					return when.reject()
@@ -488,6 +531,12 @@ E2.ui.ui360 = new function() {
 	}
 
 	this.init = function() {
+
+		$.get('/patches/_template-360-photo.json', function(response){
+			graph360 = response
+			console.info(' got graph360')
+		})
+
 		// scoped above
 		playerUI.headerDefaultFadeoutTimeMs = 3500
 
