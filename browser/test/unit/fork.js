@@ -17,6 +17,12 @@ function MockApp(path) {
 		dfd.resolve()
 		return dfd.promise
 	}
+	this.player = {
+		state: {},
+		current_state: 0,
+		stop: function() {},
+		play: function() {},
+	}
 	this.channel = {
 		sendPayload: function(e) {
 			that.channelSent.push(e)
