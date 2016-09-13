@@ -1480,37 +1480,29 @@ Application.prototype.changeControlState = function() {
 	if (cs !== s.PLAYING) {
 		E2.dom.playPauseIcon.attr('xlink:href','#icon-play')
 		E2.dom.stop.addClass('disabled')
-		E2.dom.stop.parent().addClass('active');
-		E2.dom.play.parent().removeClass('active');
+		E2.dom.stop.parent().addClass('active')
+		E2.dom.play.parent().removeClass('active')
 	} else {
 		E2.dom.playPauseIcon.attr('xlink:href','#icon-pause')
 		E2.dom.stop.removeClass('disabled')
-		E2.dom.stop.parent().removeClass('active');
-		E2.dom.play.parent().addClass('active');
+		E2.dom.stop.parent().removeClass('active')
+		E2.dom.play.parent().addClass('active')
 	}
 }
 
 Application.prototype.onPlayClicked = function() {
 	if (this.player.current_state === this.player.state.PLAYING)
-		this.player.pause();
+		this.player.pause()
 	else
-		this.player.play();
-		
-	E2.dom.stop.parent().removeClass('active');
-	E2.dom.play.parent().addClass('active');
-	
-	this.changeControlState();
+		this.player.play()
 }
 
 Application.prototype.onPauseClicked = function() {
 	this.player.pause()
-	this.changeControlState()
 }
 
 Application.prototype.onStopClicked = function() {
 	this.player.schedule_stop(this.changeControlState.bind(this))
-	E2.dom.stop.parent().addClass('active');
-	E2.dom.play.parent().removeClass('active');
 }
 
 Application.prototype.onOpenClicked = function() {
@@ -1952,8 +1944,6 @@ Application.prototype.setupEditorBindings = function() {
 			wasPlayingOnBlur = that.player.state.PLAYING === that.player.current_state
 			that.player.pause()
 		}
-
-		E2.app.changeControlState()
 	})
 
 	window.addEventListener('blur', function() {
@@ -2084,6 +2074,8 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 	that.setupStoreListeners()
 	this.setupEditorBindings()
 
+	E2.core.on('player:stateChanged', this.changeControlState.bind(this))
+
 	if (!loadGraphUrl && !boot.hasEdits) {
 		loadGraphUrl = '/data/graphs/default.json'
 		E2.app.snapshotPending = true
@@ -2139,7 +2131,6 @@ Application.prototype.startPlaying = function() {
 
 	this.player.play()
 
-	this.changeControlState()
 	this.onWindowResize()
 
 	E2.ui.setPageTitle()
