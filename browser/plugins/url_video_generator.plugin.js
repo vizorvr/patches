@@ -27,7 +27,6 @@ UrlVideo.prototype.reset = function() {}
 UrlVideo.prototype.play = function() {
 	if (this.video)
 		this.video.play()
-	console.trace('play video')
 }
 
 UrlVideo.prototype.create_ui = function() {
@@ -98,8 +97,6 @@ UrlVideo.prototype.loadVideo = function() {
 		this.video.pause()
 		delete this.video
 	}
-
-	console.log('create video element')
 
 	this.waitingToLoad = true
 

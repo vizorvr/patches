@@ -460,7 +460,7 @@ Graph.prototype.findNodeByUid = function(nuid) {
 	return node
 }
 
-Graph.prototype.findNodeByPlugin = function(name, recurse) {
+Graph.prototype.findNodeByPlugin = function(name) {
 	var node
 
 	this.nodes.some(function(n) {
@@ -468,9 +468,6 @@ Graph.prototype.findNodeByPlugin = function(name, recurse) {
 			node = n
 			return true
 		}
-
-		if (recurse && E2.GRAPH_NODES.indexOf(n.plugin.id) !== -1)
-			node = n.plugin.graph.findNodeByPlugin(name, recurse)
 	})
 
 	if (!node)

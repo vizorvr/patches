@@ -83,8 +83,8 @@ var VizorPlayerUI = function() {
 	this._stylePlayButton = function() {
 		var playBtn = this.dom.playBtn
 
-		if (!playBtn)	 // tests
-			return console.warn ('! no Play button')
+		if (!playBtn) // tests
+			return
 
 		var playSpan = playBtn.querySelector('span')
 		var isReadyStage = this.stage === 'readyStage'
@@ -182,12 +182,12 @@ var VizorPlayerUI = function() {
 
 		// provisions for chrome/android
 		$body
-		.on(events.vrInstructionsShown, function () {
-			$canvas.hide()
-		})
-		.on(events.vrInstructionsHidden, function () {
-			$canvas.show()
-		})
+			.on(events.vrInstructionsShown, function () {
+				$canvas.hide()
+			})
+			.on(events.vrInstructionsHidden, function () {
+				$canvas.show()
+			})
 
 		if (siteUI.hasOrientationChange && VizorUI.isMobile.any()) {
 			function allowExtraHeightOnLandscape() {
