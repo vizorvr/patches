@@ -39,13 +39,12 @@ GraphService.prototype._listWithOwners = function(filter, sort, select, paging) 
 	return this.countAndFind(filter, sort, select, paging)
 		.then((data) => {
 			listData = data
-			var creatorIds = {}
-			// only interested in unique ids
-			for (var row of data.list) {
-				if (row._creator)
-					creatorIds[row._creator] = true
+			var creatorIds = []
+			for (var graph of data.list) {
+				if (graph._creator)
+					creatorIds.push(graph._creator)
 			}
-			return that.getOwnersInfo(Object.keys(creatorIds))
+			return that.getOwnersInfo(creatorIds)
 		})
 		.then((ownersInfo) => {
 			listData.owners = ownersInfo
@@ -54,7 +53,7 @@ GraphService.prototype._listWithOwners = function(filter, sort, select, paging) 
 }
 
 
-// admin
+//  /admin/list
 GraphService.prototype.listWithPreviews = function(paging) {
 	var filter = {deleted: false}
 	var select = '_creator owner name previewUrlSmall previewUrlLarge updatedAt stat views'
