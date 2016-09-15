@@ -1,8 +1,11 @@
 var when = require('when')
 var util = require('util')
 var _ = require('lodash')
+
 var AssetService = require('./assetService')
 var GraphOptimizer = require('../lib/graphOptimizer')
+
+var User = require('../models/user')
 
 var fs = require('fs')
 var packageJson = JSON.parse(fs.readFileSync(__dirname+'/../package.json'))
@@ -35,7 +38,8 @@ GraphService.prototype.findByPath = function(path) {
  */
 GraphService.prototype._listWithOwners = function(filter, sort, select, paging) {
 	var that = this
-	var listData=[]
+	var listData = {}
+
 	return this.countAndFind(filter, sort, select, paging)
 		.then((data) => {
 			listData = data
@@ -44,10 +48,11 @@ GraphService.prototype._listWithOwners = function(filter, sort, select, paging) 
 				if (graph._creator)
 					creatorIds.push(graph._creator)
 			}
-			return that.getOwnersInfo(creatorIds)
+
+			return User.findUsersMappedByIds(_.uniq(creatorIds))
 		})
-		.then((ownersInfo) => {
-			listData.owners = ownersInfo
+		.then((owners) => {
+			listData.owners = owners
 			return Promise.resolve(listData)
 		})
 }

@@ -2,6 +2,8 @@ var mongoose = require('mongoose')
 var bcrypt = require('bcrypt-nodejs')
 var crypto = require('crypto')
 var when = require('when')
+var _ = require('lodash')
+var ObjectId = require('mongoose').Types.ObjectId
 
 var userSchema = new mongoose.Schema({
 	name: { type: String, required: false, unique: false },
@@ -167,6 +169,27 @@ userSchema.methods.decreaseProjectsCount = function() {
 	
 	return dfd.promise
 }
+
+/*
+ * static methods
+ */
+
+userSchema.statics.findUsersMappedByIds = function(ids) {
+	return this
+		.find({ _id: { $in: ids } })
+		.exec()
+		.then(function(users) {
+			var map = {}
+			users.map(function(user) {
+				map[user.id] = user.toPublicJSON()
+			})
+			return map
+		})
+}
+
+/*
+ * virtuals
+ */
 
 userSchema.virtual('gravatar').get(function(size) {
 	if (!size)
