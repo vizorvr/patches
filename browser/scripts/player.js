@@ -1,11 +1,10 @@
 function Player() {
-	var that = this
-	
 	this.state = {
 		STOPPED: 0,
-		PLAYING: 1,
-		PAUSED: 2,
-		LOADING: 3
+		LOADING: 1,
+		READY: 2,
+		PAUSED: 3,
+		PLAYING: 4
 	}
 
 	this.app = E2.app
@@ -155,6 +154,7 @@ Player.prototype.load_from_url = function(url, cb) {
 			that.load_from_json(json, cb)
 		}
 	})
+
 	E2.core.emit('player:loading')
 }
 
@@ -180,29 +180,24 @@ Player.prototype.remove_parameter_listener = function(id, listener) {
 	this.core.variables.unlock(listener, id)
 }
 
-Player.prototype.loadAndPlay = function(url, forcePlay) {
+Player.prototype.loadGraph = function(url) {
 	var dfd = when.defer()
 
 	// if there's an existing anim frame request, cancel it
-	// so that nothing gets rendered until we ask to play() again after
-	// loading
+	// so that nothing gets rendered until we ask to play() again after loading
 	if (this.interval !== null) {
 		cancelAnimFrame(this.interval)
 		this.interval = null
 	}
 
 	if (E2.core.audioContext) {
-		// iOS requires a user interaction to play sound
-		// so as this is called on touchstart,
-		// create a dummy audio source and play it
+		// iOS requires a user interaction to play sound. as this is called 
+		// on touchstart, create a dummy audio source and play it
 		var audioSource = E2.core.audioContext.createBufferSource()
 		audioSource.start()
 	}
 
 	E2.app.player.load_from_url(url, function(err) {
-		if (!err || forcePlay === true)
-			E2.app.player.play()
-
 		if (err)
 			return dfd.reject(err)
 
@@ -210,6 +205,27 @@ Player.prototype.loadAndPlay = function(url, forcePlay) {
 	})
 
 	return dfd.promise
+}
+
+Player.prototype.loadAndPlay = function(url) {
+	var that = this
+
+	return this.loadGraph(url)
+	.catch(function(err) {
+		if (err)
+			console.error(err.stack)
+	})
+	.finally(function() {
+		that.current_state = that.state.READY
+
+		if (Vizor.hasAudio && VizorUI.isMobile.iOS())
+			return
+
+		if (Vizor.hasVideo && VizorUI.isMobile.Android())
+			return
+
+		return E2.app.player.play()
+	})
 }
 
 Player.prototype.getScreenshot = function(width, height) {
