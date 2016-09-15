@@ -58,7 +58,6 @@ var VizorPlayerUI = function() {
     this.overControls = false
     this.headerQueueFadeoutEnabled = true
 
-    this.headerDefaultFadeoutTimeMs = 2500
 	this.fadeoutTimer = null
 
     this.vrCameraEnabled = true
@@ -416,6 +415,9 @@ var VizorPlayerUI = function() {
 	        this.headerFadeIn()
     }
 }
+
+// can be overridden (threesixty.js)
+VizorPlayerUI.headerDefaultFadeoutTimeMs = 2500
 
 VizorPlayerUI.prototype.displayVRPlayerUrl = function() {
 	var url = (window.Vizor && Vizor.shareURL) ? Vizor.shareURL : window.location.href

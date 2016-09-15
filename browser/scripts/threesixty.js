@@ -489,7 +489,7 @@ E2.ui.ui360 = new function() {
 
 	this.init = function() {
 		// scoped above
-		playerUI.headerDefaultFadeoutTimeMs = 3500
+	    VizorPlayerUI.headerDefaultFadeoutTimeMs = 3500
 
 		this.dom.controlsDiv = document.getElementById('topbar').getElementsByTagName('div')[1]
 
