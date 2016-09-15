@@ -1,27 +1,28 @@
 (function() {
 
-window.loadVizorGraph = function() {
-	return E2.app.player.loadAndPlay(readUrl())
-}
-
-function readUrl() {
+window.playVizorFile = function playVizorFile() {
 	var $canvas = $('canvas[data-graph-url]')
-	var url = $canvas.data('graph-url')
-	return url
+    var url = $canvas.data('graph-url')
+    return E2.app.player.loadAndPlay(url)
 }
 
 function onCoreReady() {
+	var $canvas = $('canvas[data-graph-url]')
+	var autoplay = (window.Vizor) ? window.Vizor.autoplay : true
+	var url = $canvas.data('graph-url')
+
 	E2.app.player.on_update()
 
 	E2.track({
 		event: 'playerOpened',
-		path: readUrl()
+		path: url
 	})
 
-	$(window).trigger('vizorLoaded')
+	if (autoplay) {
+		E2.app.player.loadAndPlay(url, autoplay)
+	}
 
-	if (Vizor.autoplay)
-		window.loadVizorGraph()
+	$(window).trigger('vizorLoaded')
 }
 
 $(document).ready(function()  {

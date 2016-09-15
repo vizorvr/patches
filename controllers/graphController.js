@@ -71,7 +71,6 @@ function makeGraphSummary(req, graphModel) {
 		playerVersion: 	graph.version,
 		stat:			graph.stat,
 		hasAudio:		graph.hasAudio,
-		hasVideo:		graph.hasVideo,
 		views: 			graph.views,
 		createdAt:		graph.createdAt,
 		updatedAt:		graph.updatedAt,
@@ -758,7 +757,6 @@ GraphController.prototype._save = function(path, user, req, res, next) {
 			url: url,
 			private: wantsPrivate,
 			hasAudio: !!analysis.hasAudio,
-			hasVideo: !!analysis.hasVideo,
 			editable: req.body.editable === false ? false : true,
 			stat: {
 				size: analysis.size,

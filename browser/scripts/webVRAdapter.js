@@ -310,7 +310,7 @@ VizorWebVRAdapter.prototype.resizeToTarget = function() {
 
 VizorWebVRAdapter.prototype.setTargetSize = function(width, height, devicePixelRatio) {
 	if ((width === 0) || (height === 0)) {
-		console.warn('setTargetSize 0x0')
+		console.error('setTargetSize 0x0')
 		return false
 	}
 

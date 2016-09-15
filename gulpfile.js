@@ -62,7 +62,6 @@ var paths = {
 			'./browser/scripts/loaders/sceneLoader.js',
 			'./browser/scripts/loaders/assetLoader.js',
 			'./browser/scripts/loaders/audioBufferLoader.js',
-			'./browser/scripts/loaders/videoLoader.js',
 			'./browser/scripts/loaders/multiObjectLoader.js',
 
 			'./browser/scripts/documentation/pluginDocsCache.js',

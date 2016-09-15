@@ -105,11 +105,8 @@ GraphService.prototype._save = function(data, user, opts) {
 		if (data.stat)
 			asset.stat = data.stat
 
-		if (data.hasAudio !== undefined)
+		if (data.hasAudio)
 			asset.hasAudio = data.hasAudio
-
-		if (data.hasVideo !== undefined)
-			asset.hasVideo = data.hasVideo
 
 		// by default bumps to latest player version
 		asset.version = opts.version
