@@ -166,6 +166,7 @@ var UiState = function(persistentStorageRef, context) {
 	}
 	this.on('_internal:patch_editor', notifyBuildMode)
 	this.on('_internal:viewCamera', notifyBuildMode)
+	this.on('_internal:visible', notifyBuildMode)
 
 	defineProperty(this, 'visible', {
 		get: function() {
@@ -196,7 +197,6 @@ var UiState = function(persistentStorageRef, context) {
 			emitVisibility('floating_panels', v.floating_panels)
 			emitVisibility('patch_editor', v.patch_editor)
 			emitMain('visible', this.visible)
-			emitMain('mode', this.mode)
 			emitMain('selectedObjects', this.selectedObjects)
 		}
 	})

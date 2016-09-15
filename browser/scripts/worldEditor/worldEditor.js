@@ -1,4 +1,7 @@
 function WorldEditor(domElement) {
+	EventEmitter.apply(this, arguments)
+
+	var that = this
 	this.domElement = domElement
 	this.showEditorHelpers = true
 	var active = false
@@ -36,6 +39,8 @@ function WorldEditor(domElement) {
 	// root for any selection objects
 	this.selectionTree = new THREE.Object3D()
 	this.editorTree.add(this.selectionTree)
+	this.selectedEntityPatch = undefined
+	this.selectedEntityNode = undefined
 
 	// root for 3d handles
 	this.handleTree = new THREE.Object3D()
@@ -61,6 +66,9 @@ function WorldEditor(domElement) {
 	E2.ui.on('dragMoved', this.onDragMoved.bind(this))
 	E2.ui.on('dragDropped', this.onDragDropped.bind(this))
 }
+WorldEditor.prototype = Object.create(EventEmitter.prototype)
+WorldEditor.prototype.constructor = WorldEditor
+
 
 WorldEditor.prototype.setTransformMode = function(mode) {
 	this.transformMode = mode
@@ -237,16 +245,14 @@ WorldEditor.prototype.setSelection = function(selected) {
 	for (var i = 0; i < selected.length; ++i) {
 		var obj = selected[i]
 		if (obj && obj.backReference !== undefined) {
-			this.selectedEntityPatch = obj.backReference.node.parent_graph
-			this.selectedEntityNode = this.selectedEntityPatch.plugin.node
+			if (obj.type && obj.type !== 'Group') {
+				this.selectedEntityPatch = obj.backReference.node.parent_graph
+				this.selectedEntityNode = this.selectedEntityPatch.plugin.node
+			} else {
+				this.selectedEntityNode = obj.backReference.node
+			}
 			this.cameraSelector.transformControls.attach(obj)
 			this.selectionTree.add(this.cameraSelector.transformControls)
-
-			// set the active graph to the entity selected
-			if (E2.app.isWorldEditorActive()) {
-				E2.app.onGraphSelected(this.selectedEntityPatch)
-				E2.app.markNodeAsSelected(this.selectedEntityNode)
-			}
 
 			anySelected = true
 			// only attach to first valid item
@@ -257,7 +263,7 @@ WorldEditor.prototype.setSelection = function(selected) {
 	if (!anySelected)
 		this.clearSelection()
 
-	E2.ui.emit('worldEditor:selectionSet')
+	this.emit('selectionSet', this.getSelectedNodes())
 }
 
 WorldEditor.prototype.clearSelection = function() {
@@ -790,4 +796,26 @@ WorldEditor.prototype.frameSelection = function() {
 WorldEditor.prototype.getSelectedObjectPlugin = function() {
     var activePlugin = this.cameraSelector.transformControls.plugin
     return activePlugin
+}
+
+/**
+ * returns an array of selected nodes (entities)
+ */
+WorldEditor.prototype.getSelectedNodes = function() {
+	var selection = []
+	if (this.selectedEntityNode) {
+		if (this.selectedEntityNode.plugin.id === 'three_group') {
+			var conns = this.selectedEntityNode.getConnections()
+			if (conns) {
+				conns.forEach(function (c) {
+					if (c.dst_slot.dynamic)
+						selection.push(c.src_node)
+				})
+			}
+		}
+		else
+			selection = [this.selectedEntityNode]
+	}
+
+	return selection
 }

@@ -26,8 +26,7 @@ var UIObjectProperties = function UIObjectProperties(domElement) {
 
 	this.controls = {}
 
-	// the world editor does not emit its own events
-	E2.ui.on('worldEditor:selectionSet', this.onObjectPicked.bind(this))
+	E2.app.worldEditor.on('selectionSet', this.onObjectPicked.bind(this))
 
 	this.emit('created')
 	this.render()
