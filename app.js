@@ -362,7 +362,7 @@ function setupModelRoutes(mongoConnection) {
 
 			if (req.headers.range) {
 				// stream partial file range
-				var parts = req.headers.range.replace(/bytes=/, "").split("-");
+				var parts = req.headers.range.replace(/bytes[=:]/, "").split("-");
 				var partialstart = parts[0];
 				var partialend = parts[1];
 
@@ -371,7 +371,7 @@ function setupModelRoutes(mongoConnection) {
 				var end = partialend ? parseInt(partialend, 10) : (stat.length - 1);
 
 				var chunksize = (end - start) + 1;
-				
+
 				res.writeHeader(206, {
 					'Content-Range': 'bytes ' + start + '-' + end + '/' + stat.length,
 					'Accept-Ranges': 'bytes',

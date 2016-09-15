@@ -74,7 +74,8 @@ var local = request.agent(localHttp)
 function sendGraph(path, graphData, cb) {
 	return local.post('/graph').send({
 		path: path,
-		private: false,
+		private: 'false',
+		editable: true,
 		graph: JSON.stringify(graphData)
 	})
 	.expect(200)
