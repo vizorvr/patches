@@ -16,6 +16,10 @@ function getForkName(path) {
 function ForkCommand() {}
 
 ForkCommand.prototype.fork = function() {
+	var oldPlayerState = E2.app.player.current_state
+
+	E2.app.player.stop()
+
 	// dispatch the old graph as a snapshot in the log
 	E2.app.channel.snapshot()
 
@@ -32,6 +36,9 @@ ForkCommand.prototype.fork = function() {
 				fromName: oldName,
 				forkName: forkName 
 			})
+
+			if (oldPlayerState === E2.app.player.state.PLAYING)
+				E2.app.player.play()
 		})
 }
 
