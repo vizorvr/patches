@@ -396,5 +396,18 @@ describe('Multiuser', function() {
 
 
 
+	it('maintains a keepalive interval', function(done) {
+		var channel = 'test'+Math.random()
+		s1 = createClient(channel)
+		s1.once('ready', function() {
+			assert.ok(s1.pingInterval)
+			s1.wsChannel.emit('disconnected')
+			assert.ok(!s1.pingInterval)
+			done()
+		})
+	})
+
+
+
 })
 

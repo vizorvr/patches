@@ -184,7 +184,7 @@ var siteUI = new function() {
 		}
 		VizorUI.replaceSVGButtons($('footer'))
 		// auto popovers
-		$('[data-toggle="popover"]').popover()
+		$('[data-toggle="popover"]').popover({trigger: 'hover'})
 
 		jQuery('button#mobileMenuOpenButton').on('mousedown touchdown', function(e){
 			e.preventDefault();

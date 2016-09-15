@@ -65,7 +65,6 @@ UINodeProperties.prototype.getAdapter = function() {
 				var n = that.selectedGraphNode
 				if (!n) return null
 				E2.app.graphApi.renameNode(E2.core.active_graph, n, v);
-				E2.ui.refreshBreadcrumb()
 				return v
 			}
 		}

@@ -940,6 +940,10 @@ Application.prototype.onDelete = function(e) {
 		return;
 
 	if (this.isWorldEditorActive()) {
+		if (!this.worldEditor.selectedEntityPatch)	{
+			E2.app.growl('could not delete')
+			return
+		}
 		var sn = this.worldEditor.selectedEntityNode
 		this.setActiveGraph(this.worldEditor.selectedEntityPatch.parent_graph)
 		this.selectedNodes = []
@@ -1334,7 +1338,8 @@ Application.prototype.markConnectionAsSelected = function(conn) {
 	this.selectedConnections.push(conn)
 }
 
-Application.prototype.clearSelection = function() {
+Application.prototype.clearSelection = function(alsoClearWorldEditor) {
+	alsoClearWorldEditor = (typeof alsoClearWorldEditor === 'undefined') ? true : !!alsoClearWorldEditor
 	var sn = this.selectedNodes;
 	var sc = this.selectedConnections;
 
@@ -1355,7 +1360,8 @@ Application.prototype.clearSelection = function() {
 
 	this.clearNodeSelection()
 
-	this.worldEditor.clearSelection()
+	if (alsoClearWorldEditor)
+		this.worldEditor.clearSelection()
 }
 
 Application.prototype.clearNodeSelection = function() {
@@ -1480,37 +1486,29 @@ Application.prototype.changeControlState = function() {
 	if (cs !== s.PLAYING) {
 		E2.dom.playPauseIcon.attr('xlink:href','#icon-play')
 		E2.dom.stop.addClass('disabled')
-		E2.dom.stop.parent().addClass('active');
-		E2.dom.play.parent().removeClass('active');
+		E2.dom.stop.parent().addClass('active')
+		E2.dom.play.parent().removeClass('active')
 	} else {
 		E2.dom.playPauseIcon.attr('xlink:href','#icon-pause')
 		E2.dom.stop.removeClass('disabled')
-		E2.dom.stop.parent().removeClass('active');
-		E2.dom.play.parent().addClass('active');
+		E2.dom.stop.parent().removeClass('active')
+		E2.dom.play.parent().addClass('active')
 	}
 }
 
 Application.prototype.onPlayClicked = function() {
 	if (this.player.current_state === this.player.state.PLAYING)
-		this.player.pause();
+		this.player.pause()
 	else
-		this.player.play();
-		
-	E2.dom.stop.parent().removeClass('active');
-	E2.dom.play.parent().addClass('active');
-	
-	this.changeControlState();
+		this.player.play()
 }
 
 Application.prototype.onPauseClicked = function() {
 	this.player.pause()
-	this.changeControlState()
 }
 
 Application.prototype.onStopClicked = function() {
 	this.player.schedule_stop(this.changeControlState.bind(this))
-	E2.dom.stop.parent().addClass('active');
-	E2.dom.play.parent().removeClass('active');
 }
 
 Application.prototype.onOpenClicked = function() {
@@ -1759,7 +1757,6 @@ Application.prototype.onGraphSelected = function(graph) {
 	this.scrollOffset[0] = this.scrollOffset[1] = 0
 
 	E2.dom.breadcrumb.children().remove()
-
 	E2.ui.buildBreadcrumb(E2.core.active_graph)
 
 	E2.core.active_graph.create_ui()
@@ -1952,8 +1949,6 @@ Application.prototype.setupEditorBindings = function() {
 			wasPlayingOnBlur = that.player.state.PLAYING === that.player.current_state
 			that.player.pause()
 		}
-
-		E2.app.changeControlState()
 	})
 
 	window.addEventListener('blur', function() {
@@ -2084,6 +2079,8 @@ Application.prototype.onCoreReady = function(loadGraphUrl) {
 	that.setupStoreListeners()
 	this.setupEditorBindings()
 
+	E2.core.on('player:stateChanged', this.changeControlState.bind(this))
+
 	if (!loadGraphUrl && !boot.hasEdits) {
 		loadGraphUrl = '/data/graphs/default.json'
 		E2.app.snapshotPending = true
@@ -2139,7 +2136,6 @@ Application.prototype.startPlaying = function() {
 
 	this.player.play()
 
-	this.changeControlState()
 	this.onWindowResize()
 
 	E2.ui.setPageTitle()
@@ -2176,7 +2172,6 @@ Application.prototype.setupEditorChannel = function() {
 
 		var readableName = that.path 
 		that.channel.join(that.path, readableName, function() {
-			E2.track({ event: 'editorOpened', path: that.path })
 			dfd.resolve()
 		})
 	}
@@ -2186,9 +2181,13 @@ Application.prototype.setupEditorChannel = function() {
 	if (!this.channel) {
 		this.channel = new E2.EditorChannel()
 		this.channel.connect(wsUrl)
-		this.channel.on('ready', function() { 
+		this.channel.once('ready', function() { 
 			that.setupChat()
 			that.peopleStore.initialize()
+			joinChannel()
+			E2.track({ event: 'editorOpened', path: that.path })
+		})
+		this.channel.on('reconnected', function() { 
 			joinChannel()
 		})
 	} else 
@@ -2373,6 +2372,11 @@ E2.InitialiseEngi = function(loadGraphUrl) {
 	E2.core.renderer = new THREE.WebGLRenderer({context: E2.core.glContext, canvas: E2.dom.webgl_canvas[0]})
 
 	E2.core.on('ready', E2.app.onCoreReady.bind(E2.app, loadGraphUrl))
+
+	window.onpopstate = function() {
+		window.location.href = window.location.href
+		return
+	}
 }
 
 if (typeof(module) !== 'undefined')

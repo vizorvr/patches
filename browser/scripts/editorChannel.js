@@ -1,6 +1,7 @@
 (function() {
 
-var RECONNECT_INTERVAL = 5000
+var RECONNECT_INTERVAL = 5 * 1000
+var KEEPALIVE_INTERVAL = 30 * 1000
 
 function hydrate(pl) {
 	var m = _.clone(pl)
@@ -129,6 +130,7 @@ EditorChannel.prototype.connect = function(wsUrl, options) {
 			reconnecting = true
 			
 			setTimeout(that.reconnectFn, RECONNECT_INTERVAL)
+			that.pingInterval = clearInterval(that.pingInterval)
 
 			that.emit('disconnected')
 		})
@@ -137,6 +139,13 @@ EditorChannel.prototype.connect = function(wsUrl, options) {
 			that.uid = uid
 
 			that.connected = true
+			
+			that.pingInterval = setInterval(function() {
+				that.sendPayload({
+					channel: '__internal',
+					actionType: '__ping'
+				})
+			}, KEEPALIVE_INTERVAL)
 
 			if (reconnecting) {
 				reconnecting = false

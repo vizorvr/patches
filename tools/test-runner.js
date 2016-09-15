@@ -17,9 +17,11 @@ items.map(function(item) {
 	try {
 		var tp = fsPath.join(testFolder, item)
 		console.log('----- Running ', tp)
-		var sout = execSync('./node_modules/mocha/bin/mocha --timeout 8000 --full-trace --verbose --colors ' + tp)
-
-		console.log(sout.toString())
+		execSync('./node_modules/mocha/bin/mocha ' +
+			'--timeout 8000 --full-trace --verbose --colors ' +
+			tp, {
+				stdio: [ 0, 1, 2 ]
+		})
 	} catch(e) {
 		// the error was already logged, just exit
 		process.exit(1)

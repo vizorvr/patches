@@ -1,3 +1,4 @@
+
 var testId = rand()
 process.env.MONGODB = 'mongodb://localhost:27017/graphsave'+testId
 process.env.RETHINKDB_NAME = 'graphsave' + testId
@@ -7,6 +8,7 @@ var app = require('../../app.js')
 var fs = require('fs')
 var assert = require('assert')
 var expect = require('chai').expect
+var jpeg = __dirname+'/../fixtures/te-2rb.jpg'
 
 var graphFile = __dirname+'/../../browser/data/graphs/default.json'
 var graphData = fs.readFileSync(graphFile).toString('utf8')
@@ -24,6 +26,13 @@ describe('Graph', function() {
 
 	var agent = request.agent(app)
 	var anonymousAgent = request.agent(app)
+
+	function setAvatar(cb) {
+		return agent.post('/account/profile/avatar')
+				.attach('file', jpeg)
+				.expect(200)
+				.end(cb)
+	}
 
 	function sendGraph(path, cb) {
 		return agent.post('/graph').send({
@@ -211,6 +220,26 @@ describe('Graph', function() {
 		})
 	})
 
+	it('should return avatar with graph', function(done) {
+		var name = 'button-'+rand()
+		var path = '/'+username+'/'+name+'.json'
+		var expectedPath = '/'+username+'/'+name
+		var expectedAvatar = '/data/'+username+'/profile/avatar/'+(jpeg.split('/').pop().replace('.jpg', '-scaled.jpg'))
+		setAvatar(function(err, res){
+			if (err) return done(err)
+			sendGraph(name, function(err, res) {
+				if (err) return done(err)
+				request(app).get(path)
+				.expect(200).end(function(err, res)
+				{
+					if (err) return done(err)
+					expect(res.body._creator.profile.avatar).to.equal(expectedAvatar)
+					done()
+				})
+			})
+		})
+	})
+
 	it('should save graph version', function(done) {
 		var name = 'button-'+rand()
 		var path = '/'+username+'/'+name+'.json'
@@ -287,7 +316,7 @@ describe('Graph', function() {
 
 				expect(autoplay.endScriptTag
 					.split('Vizor.autoplay = false').length)
-					.to.equal(2)
+					.to.equal(3)
 				done()
 			})
 		})
@@ -364,32 +393,9 @@ describe('Graph', function() {
 	"gAF3C+ZweAAAAABJRU5ErkJggg=="
 
 	// converted data
-	var convertedTestPngData440x330 = "iVBORw0KGgoAAAANSUhEUgAAAbgAAAFKCAIAAA" +
-	"Dg8t32AAAACW9GRnMAAABJAAAAAADyfe1qAAACSElEQVR42u3cMWoDMRRF0SdpDJ6BmBC8CJ" +
-	"cmTZrsf0cpw6RKZ3eGrzjnrOAipA9SoQQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
-	"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
-	"AAAAAAAAAAAAAAAAAAAAAAAAAA/rBRHQBw15rjnn3PXpvRq9cB4Lae/pmPt7xWhwBMbM1xuP" +
-	"gCAABT6Vu2i6dneCwn6rm0kXFKa9UdAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
-	"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
-	"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
-	"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABWW5NzSqzOYhJ0AN6wt7y" +
-	"NLq+4AmNmoDgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
-	"AAAAAAAAAAAAAAAAD+oVEdADyjy5be8vVd3fEYvToAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmN" +
-	"Gh5XxIq84A5uOH81+nJdeXdJMS4J6WDFMSAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
-	"AAAAAAAAAAAAAAAAAAAAAAHuUHbOoIJX3zO+IAAAAASUVORK5CYII="
+	var convertedTestPngData440x330 = "77+9UE5HDQoaCgAAAA1JSERSAAAFAAAAAu+/vQQDAAAAPVPvv71lAAAAD1BMVEUAAAAA77+9IwAh77+977+9AHvvv70IAGwmUScAAAJfSURBVHjvv73vv73vv70xAQAACAPvv73vv73vv73vv71p77+977+9P++/vUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASu+/vQbvv70EBAAAAAAAAAAA77+92LtjGgAAAAZh77+9XU/vv70M77+9VgM/AAAAAAAAAAAAAAAAAAAA77+977+9BS0CBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGDvv73vv70hAQAACAMwBO+/veifigp3N1vvv70BAAAAAAAAAAAAAAAAAAAAAAAAAFDvv703EBMQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAO+/vdmDAwEAAAAAIO+/ve+/vUZQVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVRXvv73vv71AAAAAAADvv73vv73vv70RVFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVXvv71dOu+/vQEABgEARjYjSO+/ve+/vToscELvv71qKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAbO+/vTJgTEAAAAAAAO+/ve+/vVfvv73vv73vv70AAAAAAAAAAAAAAAAAAAAAAAAANHtwIAAAAAAA77+977+977+9CO+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/ve+/vR4cEgAAAAAI77+977+977+9GwYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABOAhvvv70Bdwvvv71weAAAAABJRU5E77+9QmDvv70="
 
-	var convertedTestPngData1280x720 = "iVBORw0KGgoAAAANSUhEUgAABQAAAALQBAMAA" +
-	"AA9U8BlAAAAD1BMVEUAAAAAiSMAIYmJAHuJCABsJlEnAAACBklEQVR42u3dSQ3AMBRDwXQBU" +
-	"AiFEAjljyoEcqsiK/ozCHx4d7cGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
-	"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
-	"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAO7p6egGlCRAAAAAAYJnzTS+gNAECAAAAAAAAAAAAA" +
-	"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
-	"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
-	"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
-	"AAAAAAAAAAAAAAAAAAAAADwy/2lF1CaAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
-	"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAICFjie9gNIECAAAAAAAAAAAAAAAA" +
-	"AAAAAAAAAAAAAAAW3I5QJQAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
-	"AAAAAAAAAAAAAAAAJgYs2sBd9eN6WAAAAAASUVORK5CYII="
+	var convertedTestPngData1280x720 = '77+9UE5HDQoaCgAAAA1JSERSAAAFAAAAAu+/vQQDAAABSlTvv73vv70AAAAPUExURQAAAADvv70jACHvv73vv70Ae++/vQgAbCZRJwAAAiBJREFUeO+/ve+/ve+/vUsN77+9QBRFQX4C77+9BCQg77+977+977+9Yu+/ve+/ve+/vRkSbmjvv70UHANnGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA77+9aU4HAAAAAAAAAAAAAAAA77+9SEsHAAAAAO+/ve+/vXQAAM+rdAAAAAAAAAAAAAAAAAAAAAAAAO+/vWFKBwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABDvv73vv70DAO+/vdOaDgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA77+9My0dAAAAAAAAAAAAAAAAAAAAAO+/ve+/vUoHAAAAAAAAHe+/vXQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAO+/vWHvv73vv70FAADvv70Z05ouAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA477+977+9dAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFfvv73vv70uAAAAAAAAAAAAAAAA77+977+977+9AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAO+/ve+/vR05DgHvv70a77+9K++/vQAAAABJRU5E77+9QmDvv70='
 
 	it('uploads preview images', function(done) {
 		var path = 'graph-with-preview-image-good-'+process.pid
@@ -419,15 +425,14 @@ describe('Graph', function() {
 
 				// check small preview
 				request(app).get(expectedSmallImagePath)
-				.expect(200).end(function(err, res)
-				{
+				.expect(200).end(function(err, res) {
 					if (err) return done(err)
 
 					var gotData = new Buffer(res.text).toString()
 					var expectedData = new Buffer(convertedTestPngData440x330, 'base64').toString()
 
-					assert.ok(gotData.length > expectedData.length - 10 && gotData.length <= expectedData.length)
-					//assert.equal(gotData, expectedData)
+					assert.ok(gotData.length > expectedData.length - 20 &&
+						gotData.length <= expectedData.length)
 
 					// check large preview
 					request(app).get(expectedLargeImagePath)

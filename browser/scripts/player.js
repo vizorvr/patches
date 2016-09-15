@@ -1,11 +1,10 @@
 function Player() {
-	var that = this
-	
 	this.state = {
 		STOPPED: 0,
-		PLAYING: 1,
-		PAUSED: 2,
-		LOADING: 3
+		LOADING: 1,
+		READY: 2,
+		PAUSED: 3,
+		PLAYING: 4
 	}
 
 	this.app = E2.app
@@ -17,10 +16,10 @@ function Player() {
 
 	this._current_state = this.state.STOPPED
 	Object.defineProperty(this, 'current_state', {
-		get : function() {
+		get: function() {
 			return this._current_state
 		},
-		set : function(newState) {
+		set: function(newState) {
 			var oldState = this._current_state
 			this._current_state = newState
 			E2.core.emit('player:stateChanged', newState, oldState)
@@ -29,6 +28,8 @@ function Player() {
 
 	this.frames = 0
 	this.scheduled_stop = null
+
+	this.current_state = this.state.STOPPED
 	
 	this.core.active_graph = this.core.root_graph = new Graph(this.core, null, 'root')
 	this.core.graphs.push(this.core.root_graph)
@@ -123,8 +124,9 @@ Player.prototype.load_from_json = function(json, cb) {
 
 Player.prototype.load_from_object = function(obj, cb) {
 	var c = this.core
-
 	c.deserialiseObject(obj)
+
+	this.current_state = this.state.LOADING
 
 	E2.core.assetLoader
 		.loadAssetsForGraph(obj.root)
@@ -155,6 +157,9 @@ Player.prototype.load_from_url = function(url, cb) {
 			that.load_from_json(json, cb)
 		}
 	})
+
+	this.current_state = this.state.LOADING
+
 	E2.core.emit('player:loading')
 }
 
@@ -180,29 +185,24 @@ Player.prototype.remove_parameter_listener = function(id, listener) {
 	this.core.variables.unlock(listener, id)
 }
 
-Player.prototype.loadAndPlay = function(url, forcePlay) {
+Player.prototype.loadGraph = function(url) {
 	var dfd = when.defer()
 
 	// if there's an existing anim frame request, cancel it
-	// so that nothing gets rendered until we ask to play() again after
-	// loading
+	// so that nothing gets rendered until we ask to play() again after loading
 	if (this.interval !== null) {
 		cancelAnimFrame(this.interval)
 		this.interval = null
 	}
 
 	if (E2.core.audioContext) {
-		// iOS requires a user interaction to play sound
-		// so as this is called on touchstart,
-		// create a dummy audio source and play it
+		// iOS requires a user interaction to play sound. as this is called 
+		// on touchstart, create a dummy audio source and play it
 		var audioSource = E2.core.audioContext.createBufferSource()
 		audioSource.start()
 	}
 
 	E2.app.player.load_from_url(url, function(err) {
-		if (!err || forcePlay === true)
-			E2.app.player.play()
-
 		if (err)
 			return dfd.reject(err)
 
@@ -210,6 +210,24 @@ Player.prototype.loadAndPlay = function(url, forcePlay) {
 	})
 
 	return dfd.promise
+}
+
+Player.prototype.loadAndPlay = function(url) {
+	var that = this
+
+	return this.loadGraph(url)
+	.catch(function(err) {
+		if (err)
+			console.error(err.stack)
+	})
+	.finally(function() {
+		that.current_state = that.state.READY
+
+		if (Vizor.hasVideo && VizorUI.isMobile.Android())
+			return
+
+		return E2.app.player.play()
+	})
 }
 
 Player.prototype.getScreenshot = function(width, height) {

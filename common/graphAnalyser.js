@@ -14,6 +14,10 @@ var audioPlugins = [
 	'url_audio_generator'
 ]
 
+var videoPlugins = [
+	'url_video_generator'
+]
+
 function GraphAnalyser(gfs) {
 	if (!gfs)
 		throw new Error('GraphAnalyser needs a GridFS instance.')
@@ -22,14 +26,12 @@ function GraphAnalyser(gfs) {
 
 GraphAnalyser.prototype.parseAssets = function(graph) {
 	var that = this
-	var assets = {}
-	var totalSize = 0
-	var assetsFound = 0
 	var stat = {
 		size: 0,
 		numAssets: 0,
 		numNodes: 0,
 		hasAudio: false,
+		hasVideo: false,
 		type: 'patch'
 	}
 
@@ -88,6 +90,11 @@ GraphAnalyser.prototype.parseAssets = function(graph) {
 
 			if (audioPlugins.indexOf(id) > -1)
 				stat.hasAudio = true
+
+			if (videoPlugins.indexOf(id) > -1) {
+				stat.hasAudio = true
+				stat.hasVideo = true
+			}
 
 			// on server, remove /data from path
 			if (isNode)
