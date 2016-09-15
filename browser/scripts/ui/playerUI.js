@@ -541,7 +541,7 @@ VizorPlayerUI.prototype.queueHeaderFadeOut = function(timeoutMs, forceIfAutoDisa
 		this.headerIsVisible = false
 	}
 	if (this.fadeoutTimer) clearTimeout(this.fadeoutTimer)
-	this.fadeoutTimer = setTimeout(this.headerFadeOut.bind(this), timeoutMs || this.headerDefaultFadeoutTimeMs)
+	this.fadeoutTimer = setTimeout(this.headerFadeOut.bind(this), timeoutMs || VizorPlayerUI.headerDefaultFadeoutTimeMs)
 	return true
 }
 
