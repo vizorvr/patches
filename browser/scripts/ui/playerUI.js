@@ -443,11 +443,11 @@ VizorPlayerUI.prototype.onPlayButtonClicked = function() {
 	}
 }
 
-VizorPlayerUI.prototype.setStageFromPlayerState = function(newState) {
+VizorPlayerUI.prototype.setStageFromPlayerState = function(playerState) {
 	var newStage = 'errorStage'
 	var state = E2.app.player.state
 
-	switch(newState) {
+	switch(playerState) {
 		case state.READY:
 			newStage = 'readyStage'
 			break;

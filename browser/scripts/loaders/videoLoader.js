@@ -13,7 +13,7 @@ function VideoLoader(url) {
 		video.preload = 'auto'
 		video.controls = false
 
-		video.addEventListener('loadeddata', function() {
+		video.addEventListener('loadstart', function() {
 			return dfd.resolve({
 				video: video
 			})
