@@ -48,7 +48,6 @@ var graphSchema = new mongoose.Schema({
 	rank: { type: Number, default: 0 },
 
 	hasAudio: { type: Boolean, default: false },
-	hasVideo: { type: Boolean, default: false },
 
 	version: { type: String, default: currentPlayerVersion },
 

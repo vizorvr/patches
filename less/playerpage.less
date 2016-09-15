@@ -62,23 +62,9 @@ body.bPlayer {
   &.playing .noplaying,
   &.paused .nopaused,
   &.stopped .nopaused,
-  &.autoplay:not(.stopped) .noautoplay
+  &.autoplay .noautoplay
   {display: none}
 
-  #playButton.btn {
-	svg {
-	  display: none;
-	}
-	background: none;
-	border-radius: 4px;
-	border: 1px solid white;
-	text-transform: uppercase;
-	font-size: 14px;
-	color: white;
-	letter-spacing: 0.2ex;
-	padding-left: 20px;
-	padding-right: 20px;
-  }
 
 
   #playerWrap {
@@ -131,7 +117,7 @@ body.b360 #playerpage {
 	  -webkit-flex-direction: column;
   }
 
-  #playingStage, #playerWrap .stage {
+  #stage, #playerWrap .stage {
 	  -webkit-flex: 1;
 	  -webkit-flex-order: 2;
 	  flex:1;
