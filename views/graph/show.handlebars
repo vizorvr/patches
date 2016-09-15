@@ -104,6 +104,9 @@
         Vizor.hasAudio = false
     {{/if}}
 
+        if (Vizor.hasAudio && VizorUI.isMobile.iOS())
+            Vizor.autoplay = false
+
     {{#if graph.hasVideo}}
         Vizor.hasVideo = {{graph.hasVideo}}
     {{else}}

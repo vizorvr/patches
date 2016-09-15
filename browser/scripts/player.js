@@ -16,10 +16,10 @@ function Player() {
 
 	this._current_state = this.state.STOPPED
 	Object.defineProperty(this, 'current_state', {
-		get : function() {
+		get: function() {
 			return this._current_state
 		},
-		set : function(newState) {
+		set: function(newState) {
 			var oldState = this._current_state
 			this._current_state = newState
 			E2.core.emit('player:stateChanged', newState, oldState)
@@ -28,6 +28,8 @@ function Player() {
 
 	this.frames = 0
 	this.scheduled_stop = null
+
+	this.current_state = this.state.STOPPED
 	
 	this.core.active_graph = this.core.root_graph = new Graph(this.core, null, 'root')
 	this.core.graphs.push(this.core.root_graph)
@@ -122,8 +124,9 @@ Player.prototype.load_from_json = function(json, cb) {
 
 Player.prototype.load_from_object = function(obj, cb) {
 	var c = this.core
-
 	c.deserialiseObject(obj)
+
+	this.current_state = this.state.LOADING
 
 	E2.core.assetLoader
 		.loadAssetsForGraph(obj.root)
@@ -154,6 +157,8 @@ Player.prototype.load_from_url = function(url, cb) {
 			that.load_from_json(json, cb)
 		}
 	})
+
+	this.current_state = this.state.LOADING
 
 	E2.core.emit('player:loading')
 }
@@ -217,9 +222,6 @@ Player.prototype.loadAndPlay = function(url) {
 	})
 	.finally(function() {
 		that.current_state = that.state.READY
-
-		if (Vizor.hasAudio && VizorUI.isMobile.iOS())
-			return
 
 		if (Vizor.hasVideo && VizorUI.isMobile.Android())
 			return

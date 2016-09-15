@@ -82,7 +82,6 @@ var VizorPlayerUI = function() {
 
 	this._stylePlayButton = function() {
 		var playBtn = this.dom.playBtn
-
 		if (!playBtn) // tests
 			return
 
@@ -98,7 +97,11 @@ var VizorPlayerUI = function() {
 		playBtn.classList.toggle('btn', isReadyStage)
 		playBtn.classList.toggle('svg', !isReadyStage)
 
-		$(playBtn).toggle(this.stage !== 'playingStage')
+		var showButton = true
+		if (this.stage === 'playingStage' || this.stage === 'loadingStage')
+			showButton = false
+
+		$(playBtn).toggle(showButton)
 	}
 
 	this.onPlayerStateChanged = function(newState) {
@@ -467,7 +470,6 @@ VizorPlayerUI.prototype.setStageFromPlayerState = function(newState) {
 }
 
 VizorPlayerUI.prototype.selectStage = function(stageName) {
-
 	if (stageName === this.stage)
 		return;
 
