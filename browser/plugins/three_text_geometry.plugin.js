@@ -123,45 +123,43 @@
 
 	ThreeTextGeometry.prototype.update_state = function() {
 		if (!this.font || !this.font.font || (this.state.fontId !== this.font.font.id)) {
-			if (!this.loadPromise) {
-				this.font = this.fontSelector.getById(this.state.fontId)
-
-				if (!this.font.font) {
-					var that = this
-
-					var dfd = when.defer()
-
-					var doLoad = function() {
-						that.fontSelector.fontLoader.load(that.font.url, function(font) {
-							that.font.font = font
-							that.reconstructGeometry()
-
-							dfd.resolve()
-						})
-					}
-
-					if (this.loadPromise) {
-						this.loadPromise.then(doLoad)
-					}
-					else {
-						this.loadPromise = dfd.promise
-
-						doLoad()
-					}
-
-					this.loadPromise.then(function() {
-						that.loadPromise = undefined
-					})
-				}
-				else {
-					this.reconstructGeometry()
-				}
+			if (this.loadPromise) {
+				return
 			}
 
-			return
-		}
+			this.font = this.fontSelector.getById(this.state.fontId)
 
-		if (!this.dirty) {
+			if (!this.font.font) {
+				var that = this
+
+				var dfd = when.defer()
+
+				var doLoad = function() {
+					that.fontSelector.fontLoader.load(that.font.url, function(font) {
+						that.font.font = font
+						that.reconstructGeometry()
+
+						dfd.resolve()
+					})
+				}
+
+				if (this.loadPromise) {
+					this.loadPromise.then(doLoad)
+				}
+				else {
+					this.loadPromise = dfd.promise
+
+					doLoad()
+				}
+
+				this.loadPromise.then(function() {
+					that.loadPromise = undefined
+				})
+
+				return
+			}
+		}
+		else if (!this.dirty) {
 			return
 		}
 

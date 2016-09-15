@@ -5,8 +5,8 @@ var FontSelector = function() {
 		id: 'source sans',
 		url: '/data/fonts/Source Sans Pro_Regular.json'
 	}, {
-		name: 'Source Sans',
-		id: 'source sans',
+		name: 'Source Sans Bold',
+		id: 'source sans bold',
 		url: '/data/fonts/Source Sans Pro_Bold.json'
 	}, {
 		name: 'Helvetiker',
