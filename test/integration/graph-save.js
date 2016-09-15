@@ -287,7 +287,7 @@ describe('Graph', function() {
 
 				expect(autoplay.endScriptTag
 					.split('Vizor.autoplay = false').length)
-					.to.equal(2)
+					.to.equal(3)
 				done()
 			})
 		})
