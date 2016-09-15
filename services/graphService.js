@@ -1,8 +1,11 @@
 var when = require('when')
 var util = require('util')
 var _ = require('lodash')
+
 var AssetService = require('./assetService')
 var GraphOptimizer = require('../lib/graphOptimizer')
+
+var User = require('../models/user')
 
 var fs = require('fs')
 var packageJson = JSON.parse(fs.readFileSync(__dirname+'/../package.json'))
@@ -28,19 +31,46 @@ GraphService.prototype.findByPath = function(path) {
 	})
 }
 
+/**
+ * @param paging
+ * @return {list, meta, owners}
+ * @private
+ */
+GraphService.prototype._listWithOwners = function(filter, sort, select, paging) {
+	var that = this
+	var listData = {}
+
+	return this.countAndFind(filter, sort, select, paging)
+		.then((data) => {
+			listData = data
+			var creatorIds = []
+			for (var graph of data.list) {
+				if (graph._creator)
+					creatorIds.push(graph._creator)
+			}
+
+			return User.findUsersMappedByIds(_.uniq(creatorIds))
+		})
+		.then((owners) => {
+			listData.owners = owners
+			return Promise.resolve(listData)
+		})
+}
+
+
+//  /admin/list
 GraphService.prototype.listWithPreviews = function(paging) {
 	var filter = {deleted: false}
-	var select = '_creator owner name previewUrlSmall previewUrlLarge updatedAt stat'
+	var select = '_creator owner name previewUrlSmall previewUrlLarge updatedAt stat views'
 	var sort = '-updatedAt'
-	return this.countAndFind(filter, sort, select, paging)
+	return this._listWithOwners(filter, sort, select, paging)
 }
 
 GraphService.prototype.publicRankedList = function(paging) {
 	var filter = { private: false, deleted: false }
 	var sort = {'rank': -1, 'updatedAt': -1}
-	var select = '_creator private owner name previewUrlSmall updatedAt stat rank'
-
-	return this.countAndFind(filter, sort, select, paging)
+	var select = '_creator private owner name previewUrlSmall updatedAt stat rank views'
+	return this._listWithOwners(filter, sort, select, paging)
 }
 
 /**

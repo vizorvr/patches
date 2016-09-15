@@ -35,10 +35,10 @@
 @margin-asset-card	:   15px;
 @margin-asset-card-h	:   10px;
 @card-asset-width	:  229px;
-@card-asset-height	:  255px;
+@card-asset-height	:  235px;
 
 @card-asset-width-mobile	:  308px;
-@card-asset-height-mobile	:  284px;
+@card-asset-height-mobile	:  269px;
 
 @card-asset-width-mobile-se	:  278px;
 @card-asset-height-mobile-se:  284px;
@@ -657,7 +657,7 @@ body.bUserpage p.more {
 	color: @color-action;
   }
 }
-article.asset.card {
+article.asset.card {		// ##graph
   	background: white;
   	border-radius: 4px;
   	position:relative;
@@ -677,17 +677,6 @@ article.asset.card {
 		div.image {
 		  background: #0597cd;
 		}
-	  }
-	}
-
-  	&.featured {
-	  div.meta h4>a:after {
-		content: "★";
-		color: #999;
-		display: inline-block;
-		text-align: center;
-		font-size: 60%;
-		vertical-align: 40%;
 	  }
 	}
 
@@ -743,14 +732,16 @@ article.asset.card {
 		font-size: 12px;
 		color: rgba(255, 255, 255, 0.5)
 	  }
+
+	  span.stat.views {
+		margin-left: 1ex;
+		>span {
+		  display: none;
+		}
+	  }
 	}
 
-  span.stat.views {
-	margin-left: 1ex;
-	>span {
-	  display: none;
-	}
-  }
+
 
   button.action, a.btn.action {
 	&.delete,
@@ -866,25 +857,58 @@ article.asset.card {
 	  left: 0;
 	  right: 0;
 	}
+
+
+	&:not(.new) div.meta h4 {
+	  margin-left: 45px;
+	}
+
   	div.meta {
-	  padding: 5px 20px;
+	  padding: 10px 15px;
 	  padding-bottom:0;
 	  bottom:0;
+	  .clearfix;
 
 	  overflow: auto;
+	  a.avatar {
+		width: 32px;
+		height: 32px;
+		float: left;
+		&.vizor img {
+		  background: #0597cd;
+		}
+	  }
+	  img.avatar, a.avatar img {
+		width: 32px;
+		height: 32px;
+		border-radius: 50% 50%;
+		border: 0;
+	  }
+	  img.avatar {
+		float: left;
+	  }
+	  .avatar {
+		margin-top: 7px;
+	  }
 	  h4 {
-		font-size: 110%;
+		margin-top: 7px;
+		font-size: 105%;
 		font-weight: 500;
 		color: @color-asset-card-title;
 		margin-bottom: 10px;
-		span.user {
-		  .by {
-			display: none;
-		  }
+		>a:hover {
+		  text-decoration: none;
+		  color: #0b6b9b;
+		}
+		span.description {
+		  margin-top:3px;
+		  padding-left: 1px;
+		  padding-right: 1px;
 		  display: block;
 		  font-size: 1.2rem;
-		  margin-top: 10px;
-		  margin-bottom: -8px;
+		}
+		span.stat {
+		  display: none;
 		}
 	  }
 	  p {
@@ -894,6 +918,36 @@ article.asset.card {
 		margin-bottom: 0;
 	  }
 	}
+
+  	// looking at own tiles
+  	body.bGraphlistSummary &,
+  	body.bGraphlistPublic &,
+  	body.bGraphlistPrivate & {
+	  div.meta h4 {
+		margin-left: 0;
+	  }
+	  .avatar, span.description.user  {
+		display: none;
+	  }
+	  span.description.stat {
+		color: #a3a3a3;
+		display: block;
+		span {
+		  display: inline;
+		  padding-right: 5px;
+		}
+		span+span:before {
+			content: "|";
+			padding-right: 5px;
+		}
+	  }
+	  div.overlay:hover, div.overlay.focus {
+		span.stat {
+		  display: none;
+		}
+	  }
+	}
+
   	div.image, div.overlay {
 	  // safari..
 	  border-top-left-radius: 4px;
@@ -941,6 +995,9 @@ article.asset.card {
   	div.actions button, div.actions label {
 	  margin-left: 10px;
 	  height: 24px;
+	  input[type='checkbox'] {
+		margin-top:0.6ex;
+	  }
 	}
 	div.actions>* {
 	  flex-grow: 0;
@@ -1428,6 +1485,9 @@ body.bMain {
 body.bUserpage, body.bAccount, body.bProfile {
   section form.panel {
 	margin-bottom: 0;
+  }
+  img.vizor.avatar {
+	background: #0597cd;
   }
   header #profileheader div.meta.userinfo p.strapline {
 		line-height: 1.4;

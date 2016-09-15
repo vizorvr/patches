@@ -1,3 +1,4 @@
+
 var testId = rand()
 process.env.MONGODB = 'mongodb://localhost:27017/graphsave'+testId
 process.env.RETHINKDB_NAME = 'graphsave' + testId
@@ -7,6 +8,7 @@ var app = require('../../app.js')
 var fs = require('fs')
 var assert = require('assert')
 var expect = require('chai').expect
+var jpeg = __dirname+'/../fixtures/te-2rb.jpg'
 
 var graphFile = __dirname+'/../../browser/data/graphs/default.json'
 var graphData = fs.readFileSync(graphFile).toString('utf8')
@@ -24,6 +26,13 @@ describe('Graph', function() {
 
 	var agent = request.agent(app)
 	var anonymousAgent = request.agent(app)
+
+	function setAvatar(cb) {
+		return agent.post('/account/profile/avatar')
+				.attach('file', jpeg)
+				.expect(200)
+				.end(cb)
+	}
 
 	function sendGraph(path, cb) {
 		return agent.post('/graph').send({
@@ -207,6 +216,26 @@ describe('Graph', function() {
 				if (err) return done(err)
 				expect(res.body.path).to.equal(expectedPath)
 				done()
+			})
+		})
+	})
+
+	it('should return avatar with graph', function(done) {
+		var name = 'button-'+rand()
+		var path = '/'+username+'/'+name+'.json'
+		var expectedPath = '/'+username+'/'+name
+		var expectedAvatar = '/data/'+username+'/profile/avatar/'+(jpeg.split('/').pop().replace('.jpg', '-scaled.jpg'))
+		setAvatar(function(err, res){
+			if (err) return done(err)
+			sendGraph(name, function(err, res) {
+				if (err) return done(err)
+				request(app).get(path)
+				.expect(200).end(function(err, res)
+				{
+					if (err) return done(err)
+					expect(res.body._creator.profile.avatar).to.equal(expectedAvatar)
+					done()
+				})
 			})
 		})
 	})

@@ -6,7 +6,13 @@
                 {{#if avatar}}
                     <img class="user avatar" src="{{avatar}}" />
                 {{else}}
-                    <img class="user gr avatar" src="{{../gravatar}}" />
+                    {{#eq ../username 'v'}}
+                        <img class="user vizor avatar" src="/images/v2/avatar-360.svg" />
+                    {{else eq ../username 'examples'}}
+                        <img class="user vizor avatar" src="/images/v2/avatar-vizor.svg" />
+                    {{else}}
+                        <img class="user default avatar" src="/images/v2/avatar-head.png" />
+                    {{/eq}}
                 {{/if}}
             </a>
         {{/with}}

@@ -10,53 +10,49 @@ AssetService.prototype.list = function() {
 	return this.find()
 }
 
-AssetService.prototype.count = function(filter, cb) {
+AssetService.prototype.count = function(filter) {
 	var dfd = when.defer()
 
-	this._model
-		.count(filter, function(err, count) {
-			if (err)
-				return dfd.reject(err)
+	this._model.count(filter, function(err, count) {
+		if (err)
+			return dfd.reject(err)
 
-			dfd.resolve(cb(count))
-		})
+		dfd.resolve(count)
+	})
 
 	return dfd.promise
 }
 
 AssetService.prototype.countAndFind = function(filter, sort, select, paging) {
+	var that = this
 	paging = paging || {limit: 0, offset: 0}
 	var limit = paging.limit || 0
 	var offset = paging.offset || 0
-
-	var query = this._model
-
 	var totalCount
-	function getData(count) {
-		totalCount = count
-		return query.find(filter)
-			.sort(sort)
-			.skip(offset)
-			.limit(limit)
-			.select(select)
-	}
-	function returnData(list) {
-		return {
-			meta: _.extend(paging, {
-				totalCount: totalCount,
-				listCount : list.length,
-				limit	: limit,
-				offset	: offset,
-				displayStart : 1 + offset,
-				displayEnd	:  offset + list.length
-			}),
-			list: list
-		}
-	}
 
-	return query.count(filter)
-		.then(getData)
-		.then(returnData)
+	return this.count(filter)
+		.then(function(count) {
+			totalCount = count
+
+			return that._model.find(filter)
+				.sort(sort)
+				.skip(offset)
+				.limit(limit)
+				.select(select)
+		})
+		.then(function(list) {
+			return {
+				meta: _.extend(paging, {
+					totalCount: totalCount,
+					listCount: list.length,
+					limit: limit,
+					offset: offset,
+					displayStart: 1 + offset,
+					displayEnd: offset + list.length
+				}),
+				list: list
+			}
+		})
 }
 
 AssetService.prototype.buildQuery = function(find, options) {

@@ -53,11 +53,12 @@ function makeHashid(serial) {
 	return hashids.encode(serial)
 }
 
-function prettyPrintList(list) {
+function prettyPrintList(list, owners) {
 	if (!list || !list.length)
 		return list
+	owners = owners || {}
 	return list.map(function(graph) {
-		return graph.getPrettyInfo()
+		return graph.getPrettyInfo(owners[graph._creator])
 	})
 }
 
@@ -145,8 +146,8 @@ GraphController.prototype.publicRankedIndex = function(req, res, next) {
 	var paging = parsePaging(req)
 	this._service.publicRankedList(paging)
 	.then((data) => {
-
-		data.list = prettyPrintList(data.list)
+		data.list = prettyPrintList(data.list, data.owners)
+		delete (data.owners)
 		var listmeta = data.meta
 		if (listmeta)
 			listmeta.baseUrl = '/browse/'
@@ -186,7 +187,7 @@ GraphController.prototype._userOwnIndex = function(user, req, res, next) {
 			privateHasMoreLink: false,
 			isSummaryPage: false,
 			withProjectListFilter : true,
-			meta : {
+			meta: {
 				header: 'srv/userpage/userpageHeader',
 				footer: 'srv/home/_footer',
 				title: 'Your Files',
@@ -232,6 +233,10 @@ GraphController.prototype._userOwnIndex = function(user, req, res, next) {
 
 	var profile = user.toJSON()
 
+	// setup prettyPrintList
+	var ownerInfo = {}
+	ownerInfo[user.id] = user.toPublicJSON()
+
 	var maxNumOnFront = 7	// allow for "create new" card
 	// front page, two lists
 	var data = {}
@@ -242,41 +247,35 @@ GraphController.prototype._userOwnIndex = function(user, req, res, next) {
 		that._service.userGraphsWithPrivacy(username, 0, maxNumOnFront, false)
 			.then((results)=>{
 				if (results.list) {
-					results.list = prettyPrintList(results.list)
+					results.list = prettyPrintList(results.list, ownerInfo)
 					publicResults = results
 				}
 				return that._service.userGraphsWithPrivacy(username, 0, maxNumOnFront, true)
 			})
 			.then((privateResults) => {
 				if (privateResults.list) {
-					privateResults.list = prettyPrintList(privateResults.list)
+					privateResults.list = prettyPrintList(privateResults.list, ownerInfo)
 				}
 				return render(publicResults, privateResults, profile, data)
 			})
-			.catch((err)=>{
-				console.error(err)
-				render(null, null, profile, data)
-			})
+			.catch(next)
 	} else {
 		// "Public" or "Private" lists
 		var paging = parsePaging(req)
 		data.isSummaryPage = false
 		that._service.userGraphsWithPrivacy(username, paging.offset, paging.limit, wantPrivate)
-			.then(function(result){
+			.then(function(result) {
 
 				data.bodyclass = (wantPrivate) ? 'bGraphlistPrivate' : 'bGraphlistPublic'
 
-				result.list = prettyPrintList(result.list)
+				result.list = prettyPrintList(result.list, ownerInfo)
 
 				if (wantPrivate)
 					render(null, result, profile, data)
 				else
 					render(result, null, profile, data)
 			})
-			.catch((err) => {
-				console.error(err)
-				render(null,null,profile,data)
-			})
+			.catch(next)
 	}
 
 }
@@ -295,46 +294,51 @@ GraphController.prototype._userPublicIndex = function(user, req, res, next) {
 		graphs = that._service.userGraphsWithPrivacy(username, paging.offset, paging.limit, false)	// public
 
 	graphs
-		.then((result) => {
-			// no files found, but if there is a user
-			// then show empty userpage
-			if (!result)
-				return next()
+	.then((result) => {
+		// no files found, but if there is a user
+		// then show empty userpage
+		if (!result)
+			return next()
 
-			var list = result.list
-			if (!user && (!list || !list.length)) {
-				return next()
+		var list = result.list
+		if (!user && (!list || !list.length)) {
+			return next()
+		}
+
+		var ownerInfo = {}
+		if (user) {
+			ownerInfo[user.id] = user.toPublicJSON()
+		}
+		result.list = prettyPrintList(result.list, ownerInfo)
+
+		var data = {
+			profile: user ? user.toPublicJSON() : {},
+			graphs: result
+		}
+
+		if (req.xhr) {
+			return res.status(200).json(
+				helper.responseStatusSuccess("OK", data))
+		}
+
+		_.extend(data, {
+			isSummaryPage: false,
+			withProjectListFilter : false,
+			meta : {
+				header: 'srv/userpage/userpageHeader',
+				footer: 'srv/home/_footer',
+				title: username+'\'s Files',
+				bodyclass: 'bUserpage bUserpublic',
+				scripts : [
+					helper.metaScript('site/userpages.js'),
+					helper.metaScript('ui/pagination.js')
+				]
 			}
-
-			result.list = prettyPrintList(result.list)
-
-			var data = {
-				profile: user ? user.toPublicJSON() : {},
-				graphs: result
-			}
-
-			if (req.xhr) {
-				return res.status(200).json(
-					helper.responseStatusSuccess("OK", data))
-			}
-
-			_.extend(data, {
-				isSummaryPage: false,
-				withProjectListFilter : false,
-				meta : {
-					header: 'srv/userpage/userpageHeader',
-					footer: 'srv/home/_footer',
-					title: username+'\'s Files',
-					bodyclass: 'bUserpage bUserpublic',
-					scripts : [
-						helper.metaScript('site/userpages.js'),
-						helper.metaScript('ui/pagination.js')
-					]
-				}
-			})
-
-			res.render('server/pages/userpage', data)
 		})
+
+		res.render('server/pages/userpage', data)
+	})
+	.catch(next)
 }
 
 
@@ -355,16 +359,17 @@ GraphController.prototype.userIndex = function(req, res, next) {
 }
 
 // GET /graph
-GraphController.prototype.adminIndex = function(req, res) {
+GraphController.prototype.adminIndex = function(req, res, next) {
 	var user = req.user
 
 	var paging = parsePaging(req)
+
 	this._service.listWithPreviews(paging)
 	.then((result) => {
 		if (req.xhr || req.path.slice(-5) === '.json')
 			return res.json(result.list);
 
-		result.list = prettyPrintList(result.list)
+		result.list = prettyPrintList(result.list, result.owners)
 
 		var data = {
 			graphs: result
@@ -383,6 +388,7 @@ GraphController.prototype.adminIndex = function(req, res) {
 
 		res.render('graph/index', data)
 	})
+	.catch(next)
 }
 
 function renderEditor(res, graph, hasEdits) {
@@ -439,11 +445,12 @@ GraphController.prototype.edit = function(req, res, next) {
 
 
 // GET /~latest-graph
-GraphController.prototype.latest = function(req, res) {
+GraphController.prototype.latest = function(req, res, next) {
 	this._service.publicList()
 	.then(function(list) {
 		res.redirect(list[0].path)
 	})
+	.catch(next)
 }
 
 function renderPlayer(graph, req, res, options) {
@@ -564,24 +571,17 @@ GraphController.prototype.graphModify = function(req, res, next) {
 			updatedAt: graph.updatedAt
 		}
 		
-		that._service.save(graph, req.user, opts)
-			.then(function(savedGraph, err){
-				if (err) {
-					res.status(500).json(helper.responseStatusError('could not save graph', err))
-				}
-
-				var data = makeGraphSummary(req, savedGraph)
-				if (wantXhr)
-					return res.json(helper.responseStatusSuccess('OK', data))
-				// else
-				return res.redirect(req.params.path)
-			})
-
-
-
-	}).catch(next)
+		return that._service.save(graph, req.user, opts)
+		.then(function(savedGraph) {
+			var data = makeGraphSummary(req, savedGraph)
+			if (wantXhr)
+				return res.json(helper.responseStatusSuccess('OK', data))
+			// else
+			return res.redirect(req.params.path)
+		})
+	})
+	.catch(next)
 }
-
 
 
 // GET /fthr/dunes-world/graph.json
@@ -618,7 +618,8 @@ GraphController.prototype.canWriteUpload = function(req, res, next) {
 				.json({message: 'Sorry, permission denied'});
 
 		next();
-	});
+	})
+	.catch(next)
 } 
 
 // POST /graph with file upload
@@ -657,10 +658,8 @@ GraphController.prototype.upload = function(req, res, next) {
 			});
 		})
 	})
-	.catch(function(err) {
-		return next(err);
-	});
-};
+	.catch(next)
+}
 
 // POST /graph/delete
 GraphController.prototype.delete = function(req, res, next) {
@@ -675,7 +674,7 @@ GraphController.prototype.delete = function(req, res, next) {
 			})
 		}
 
-		that._service.findByPath(path)
+		return that._service.findByPath(path)
 		.then(function(graph) {
 			if (!graph || graph.deleted) {
 				return res.status(404).json(helper.responseStatusError('not found'))
@@ -687,9 +686,6 @@ GraphController.prototype.delete = function(req, res, next) {
 			.then(function(asset) {
 				req.user.decreaseProjectsCount()
 				res.json(asset)
-			})
-			.catch(function(err) {
-				next(err)
 			})
 		})
 	})
@@ -772,10 +768,8 @@ GraphController.prototype._save = function(path, user, req, res, next) {
 		.then(function(asset) {
 			res.json(asset)
 		})
-		.catch(function(err) {
-			next(err)
-		})
 	})
+	.catch(next)
 
 }
 

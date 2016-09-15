@@ -142,7 +142,7 @@ function getPrettyName(cardName) {
 	return name
 }
 
-function getPrettyInfo() {
+function getPrettyInfo(ownerInfo) {
 	var graph = this.toJSON()
 
 	// Get displayed values for graph and owner
@@ -155,10 +155,12 @@ function getPrettyInfo() {
 	// Figure out if the graph owner has a fullname
 	// Use that if does, else use the username for display
 	var graphOwner
-	var creator = graph._creator
-	if (creator && creator.name && !isStringEmpty(creator.name)) {
-		graphOwner = creator.name
-		graph.username = creator.username
+	if (ownerInfo) {
+		graph.ownerInfo = ownerInfo
+		graph.username = ownerInfo.username
+		graph.avatar = ownerInfo.avatar
+
+		graphOwner = ownerInfo.username
 	} else {
 		if (graph.owner)
 			graphOwner = graph.owner
@@ -166,7 +168,6 @@ function getPrettyInfo() {
 			graphOwner = 'anonymous'
 		graph.username = graphOwner
 	}
-
 	graph.prettyOwner = graphOwner
 	graph.prettyName = getPrettyName(graphName)
 
