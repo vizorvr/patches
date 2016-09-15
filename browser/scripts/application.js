@@ -2167,7 +2167,6 @@ Application.prototype.setupEditorChannel = function() {
 
 		var readableName = that.path 
 		that.channel.join(that.path, readableName, function() {
-			E2.track({ event: 'editorOpened', path: that.path })
 			dfd.resolve()
 		})
 	}
@@ -2177,9 +2176,13 @@ Application.prototype.setupEditorChannel = function() {
 	if (!this.channel) {
 		this.channel = new E2.EditorChannel()
 		this.channel.connect(wsUrl)
-		this.channel.on('ready', function() { 
+		this.channel.once('ready', function() { 
 			that.setupChat()
 			that.peopleStore.initialize()
+			joinChannel()
+			E2.track({ event: 'editorOpened', path: that.path })
+		})
+		this.channel.on('reconnected', function() { 
 			joinChannel()
 		})
 	} else 
