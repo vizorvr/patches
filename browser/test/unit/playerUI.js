@@ -84,7 +84,7 @@ describe('PlayerUI', function() {
 	})
 
 	it('loads the graph on play button click in beforeLoadingStage', function(done) {
-		global.loadVizorGraph = function() {
+		global.playVizorFile = function() {
 			done()
 			return when.resolve()
 		}
