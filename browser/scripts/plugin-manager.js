@@ -28,7 +28,7 @@ function PluginManager(core, base_url) {
 					$.each(data[category], function(title, id)  {
 						var url = that.base_url + '/' + id + '.plugin.js';
 						if (!Vizor.releaseMode)
-							load_script(url, that.onload.bind(that), that.onerror.bind(that));
+							E2.util.loadScript(url, that.onload.bind(that), that.onerror.bind(that));
 						that.register_plugin(pg_root, category+'/'+title, id);
 					})
 				})

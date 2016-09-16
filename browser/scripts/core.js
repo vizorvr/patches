@@ -375,17 +375,28 @@ Core.prototype.rebuild_structure_tree = function() {
 };
 
 Core.prototype.add_aux_script = function(script_url, onload) {
-	if(this.aux_scripts.hasOwnProperty(script_url)) {
-		if (onload)
+	var that = this
+	var dfd = when.defer()
+
+	if (this.aux_scripts.hasOwnProperty(script_url)) {
+		if (onload) 
 			onload()
-		return
+
+		dfd.resolve()
+	} else {
+		E2.util.loadScript('/plugins/' + script_url, function() {
+			that.aux_scripts[script_url] = true
+
+			if (onload)
+				onload()
+
+			dfd.resolve()
+		}, function(err) {
+			dfd.reject(err)
+		})
 	}
-	
-	load_script('/plugins/' + script_url, function() {
-		this.aux_scripts[script_url] = true;
-		if (onload)
-			onload()
-	}.bind(this));
+
+	return dfd.promise
 };
 
 Core.prototype.add_aux_style = function(style_url) {
