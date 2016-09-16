@@ -431,7 +431,7 @@ VizorPlayerUI.prototype.onPlayButtonClicked = function() {
 
 	switch(this.stage) {
 		case 'beforeLoadingStage':
-			window.loadVizorGraph()
+			window.playVizorFile()
 			.catch(function(err) {
 				console.error(err.stack)
 				var $err = that.selectStage('errorStage')

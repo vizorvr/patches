@@ -1,6 +1,6 @@
 (function() {
 
-window.loadVizorGraph = function() {
+window.playVizorFile = function() {
 	return E2.app.player.loadAndPlay(readUrl())
 }
 
@@ -21,7 +21,7 @@ function onCoreReady() {
 	$(window).trigger('vizorLoaded')
 
 	if (Vizor.autoplay)
-		window.loadVizorGraph()
+		window.playVizorFile()
 }
 
 $(document).ready(function()  {
