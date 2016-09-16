@@ -136,24 +136,25 @@ function ExpandableTextfield(node, tf, def_width)
 	tf.keyup(handler);
 }
 
-function load_script(url, onload, onerror) {
-	var script = document.createElement('script');
-
-	script.src = url;
-	
-	if (!onload)
-		throw new Error('load_script without listener')
-
-	script.onload = onload;
-	script.onerror = onerror;
-	
-	document.getElementsByTagName('head')[0].appendChild(script);	
-}
-
 E2.util = {
+	loadScript: function(url, onload, onerror) {
+		var script = document.createElement('script')
+
+		script.src = url
+		
+		if (!onload)
+			throw new Error('load_script without listener')
+
+		script.onload = onload
+		script.onerror = onerror
+		
+		document.getElementsByTagName('head')[0].appendChild(script)
+	},
+
 	isFirstTime: function() {
 		return Cookies.get('vizor100') === undefined
 	},
+
 	isMobile: function() {
 		var check = false;
 		
