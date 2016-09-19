@@ -2,6 +2,10 @@
  * GET /threesixty
  * Threesixty site
  */
+
+const FRONT_PATH = 'kschzt/featured'
+var FRONT_URL = '/data/graph/'+FRONT_PATH+'.json'
+
 exports.index = function(req, res) {
 	var releaseMode = process.env.NODE_ENV === 'production'
 	var layout = releaseMode ? 'threesixty-bundled' : 'threesixty'
@@ -10,8 +14,8 @@ exports.index = function(req, res) {
 	res.render('graph/show', {
 		layout: layout,
 		site: 'threesixty',
-		graphSrc: '/threesixty/featured',
-		graphMinUrl: '/threesixty/featured',
+		graphSrc: '/featured',
+		graphMinUrl: '/featured',
 		autoplay: true,
 		hideEditButton: false,
 		hideShareButton: false,
@@ -28,14 +32,5 @@ exports.index = function(req, res) {
 }
 
 exports.featured = function(req,res) {
-	var featuredGraph = '/data/graph/kschzt/jamaica.json'
-	switch (process.env.FQDN) {
-		case '360.vizor.io':
-		case 'rc.vizor.io':
-		case 'vizor.io':
-		case '360vr.io':
-			featuredGraph = '/data/graph/kschzt/jamaica.json'
-			break;
-	}
-	res.redirect(featuredGraph)
+	res.redirect(FRONT_URL)
 }

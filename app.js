@@ -179,64 +179,28 @@ app.use(function(req, res, next) {
 });
 
 // Return 404 instead of opening a new editor instance
-// for old (pre-asm 2015) vizor experiences
-// These are explicitly disabled so that links to old vizor experiences
-// don't display a new editor page.
 app.use(function(req, res, next) {
-  // list of old vizor exprience ids (http://vizor.io/id)
-	var disallowedPaths = [
-		"m1Z1rgbbrfoj",
-		"7QoQGaYKgfkv",
-		"p7x4d4dnKf1G",
-		"m1xg7KpelHAp",
-		"QyvZxVz9nUkz",
-		"WxAGbablMTZz",
-		"yrx7nGxLQcge",
-		"NqkY4O6vauLg",
-		"JYW906AZbt9Z",
-		"6ZgdNYeDZi2K",
-		"h0p4lonG912",
-		"hTgRn7Hj9LkG",
-		"iK4tHiUb7K1k",
-		"vrplanetchase",
-		"vihartmonkeys",
-		"hASd9e904vjr",
-		"i3YxLp4XgQ7",
-		"o1FxLjP5tW3Z",
-		"2EuZis012ikL",
-		"6ov3r4ND4D3z",
-		"83jed8JAne93",
-		"k3hf8ek4jfue",
-		"oculusrex123",
-		"riftsketch12",
-		"streetview12",
-		"he3jei29fjE7",
-		"ue8JeioSleJa",
-		"Ai4y2hI4jY06",
-		"u49fE6zHXiEj",
-		"j48xnto7psj2",
-		"389cjto69djw",
-		"hr84jshtwu39"];
+	var disallowedPaths = []
 
   var path = req.url.split('/')[1];
 	
-  if (disallowedPaths.indexOf(path) > -1)
-	{
-		var err = new Error('Not found: '+path);
-		err.status = 404;
-
-		return next(err);
+  if (disallowedPaths.indexOf(path) > -1) {
+		var err = new Error('Not found: ' + path)
+		err.status = 404
+		return next(err)
 	}
 
-	next();
-});
+	next()
+})
 
 app.use(function(req, res, next) {
 	res.header('Access-Control-Allow-Origin', '*')
+
 	if (req.headers['access-control-request-headers'])
 		res.header('Access-Control-Allow-Headers', req.headers['access-control-request-headers'])
-	next();
-});
+	
+	next()
+})
 
 app.use(function(req, res, next) {
 	// redirect all create urls to vizor.io 
@@ -286,34 +250,25 @@ app.post('/account/delete', passportConf.isAuthenticated, userController.postDel
 app.get('/account/unlink/:provider', passportConf.isAuthenticated, userController.getOauthUnlink);
 
 switch (process.env.FQDN) {
-	case '360vr.io':
-	case '360.vizor.io':
-	case '360.vizor.lol':
-		// 360 photo site
+	default:
+		// 360 site
 		app.get('/', threesixtyController.index);
 		app.get('/featured', threesixtyController.featured)
 		app.get('/v/:graph', function(req, res, next) {
 			res.locals.layout = 'threesixty'
 			next()
 		})
-	default:
-		// default site
-		app.get('/', homeController.index);
-		app.get('/about', homeController.about);
-		app.get('/threesixty', threesixtyController.index);
-		app.get('/threesixty/featured', threesixtyController.featured);
 		break;
 }
 
 var gfs
-
 
 mongoose.connect(secrets.db);
 mongoose.connection.on('error', function(err) {
 	throw err
 })
 
-mongoose.connection.on('connected', (connection) => {	
+mongoose.connection.on('connected', () => {	
 	gfs = new GridFsStorage('/data')
 	gfs.on('ready', function() {
 		setupModelRoutes(mongoose.connection.db)

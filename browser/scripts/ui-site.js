@@ -229,9 +229,7 @@ var siteUI = new function() {
 			VizorUI.enableScrollToLinks($mobileMenu);
 
 			return false;
-		});
-
-		
+		})
 	}
 
 	this.initCollapsible = function($container) {
