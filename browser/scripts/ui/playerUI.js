@@ -472,6 +472,7 @@ VizorPlayerUI.prototype.setStageFromPlayerState = function(playerState) {
 }
 
 VizorPlayerUI.prototype.selectStage = function(stageName) {
+console.log('selectStage', stageName)
 	if (stageName === this.stage)
 		return;
 
