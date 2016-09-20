@@ -57,7 +57,6 @@ E2.ui.ui360 = new function() {
 		$('#threesixty-image-input').val('')	// force clear
 
 		clearBodyClass()
-		playerUI.selectStage('stage')
 		E2.app.player.play()
 		window.Vizor.disableHeaderClick = false
 		return false
@@ -68,7 +67,6 @@ E2.ui.ui360 = new function() {
 		that.displayError(message, details)
 	}
 
-
 	// STEP 4
 	this.loadGraphAndPlay = function(asset, data) {
 		if (!asset) {
@@ -77,7 +75,6 @@ E2.ui.ui360 = new function() {
 
 		// Load from the JSON url in the asset
 		clearBodyClass()
-		playerUI.selectStage('stage')
 
 		E2.core.once('player:stateChanged', function(s){
 			if (s === E2.app.player.state.PLAYING) {
@@ -222,10 +219,6 @@ E2.ui.ui360 = new function() {
 
 	this.beforeGraphPublish = function() {
 		window.Vizor.disableHeaderClick = false
-	}
-
-	this.beforePlay = function() {
-		playerUI.selectStage('stage')
 	}
 
 	// STEP 1
@@ -535,4 +528,4 @@ E2.ui.ui360 = new function() {
 	}
 }
 
-document.addEventListener('DOMContentLoaded', E2.ui.ui360.init.bind(E2.ui.ui360))
+$(window).on('playerUiReady', E2.ui.ui360.init.bind(E2.ui.ui360))
