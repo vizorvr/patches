@@ -472,6 +472,7 @@ VizorPlayerUI.prototype.setStageFromPlayerState = function(playerState) {
 }
 
 VizorPlayerUI.prototype.selectStage = function(stageName) {
+console.log('selectStage', stageName)
 	if (stageName === this.stage)
 		return;
 
@@ -565,7 +566,9 @@ VizorPlayerUI.prototype.headerFadeOut = function (duration) {
 }
 
 VizorPlayerUI.prototype.headerFadeIn = function () {
-	if (this.fadingIn) return
+	if (this.fadingIn)
+		return
+
 	this.fadingIn = true
 	this.clearFadeoutTimer()
 
@@ -585,6 +588,7 @@ $(window).on('vizorLoaded', function() {
 	if (have_webgl) {
 		playerUI.init()
 		playerUI.onPlayerLoaded()
+		$(window).trigger('playerUiReady')
 	} else {
 		var $err = playerUI.selectStage('errorStage')
 		$err.html(E2.views.partials.noWebGL({embed: siteUI.isEmbedded}))
