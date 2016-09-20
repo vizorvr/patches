@@ -535,4 +535,4 @@ E2.ui.ui360 = new function() {
 	}
 }
 
-document.addEventListener('DOMContentLoaded', E2.ui.ui360.init.bind(E2.ui.ui360))
+$(window).on('playerUiReady', E2.ui.ui360.init.bind(E2.ui.ui360))
