@@ -74,10 +74,9 @@ body.b360 {
 	}
   }
 
-  &.assetsLoaded.playing #progressbar {
-	display: none;
+  #progressbar[value='0'], #progressbar[value='100'] {
+  	display:none
   }
-
 
   #shareDialog {
 	input {
@@ -304,7 +303,7 @@ body.b360 {
 	top: 55%;
 	margin-left: -6ex;
 	margin-top: -20px;
-	width: 12ex;
+	padding: 0 20px;
 	.roundbutton
   }
   &.uploading #cancelbutton {
