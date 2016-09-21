@@ -13,6 +13,26 @@ ThreeSixtyUploader.prototype.cancelledUploading = function() {
 	return false
 }
 
+ThreeSixtyUploader.prototype.readFileAsDataURL = function(filePath) {
+	return new Promise(function(resolve, reject){
+		var reader = new FileReader()
+		
+		reader.onload = function(e) {
+			var base64 = e.target.result
+			console.info(' got base64 (' + base64.length + ' bytes)')
+			resolve(base64)
+		}
+		reader.onabort = function(e) {
+			reject(e)
+		}
+		reader.onerror = function(e) {
+			reject(e)
+		}
+		
+		reader.readAsDataURL(filePath)
+	})
+}
+
 ThreeSixtyUploader.prototype.errorHandler = function(err) {
 	this.cancelledUploading()
 	this.emit('error', err)
