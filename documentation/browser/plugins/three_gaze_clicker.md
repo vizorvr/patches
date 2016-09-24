@@ -16,8 +16,12 @@ Gaze Clicker
 ###show icon
 
 
-###eye distance
-Eye Distance for Gaze Clicker icon in VR
+###icon depth
+Gaze Clicker icon distance from camera in meters
+
+
+###icon size
+Gaze Clicker icon size in world meters
 
 ##Outputs
 ###scene
