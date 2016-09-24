@@ -299,5 +299,7 @@ function CreatePlayer(cb) {
 		canvas: E2.dom.webgl_canvas[0]
 	})
 
+	E2.core.renderer.setPixelRatio(window.devicePixelRatio)
+
 	E2.core.on('ready', cb)
 }

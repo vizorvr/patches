@@ -78,8 +78,6 @@ var paths = {
 			'./browser/vendor/three/OrbitControls.js',
 			'./browser/vendor/three/SceneLoader.js',
 			'./browser/vendor/three/MorphAnimMesh.js',
-			'./browser/vendor/three/Font.js',
-			'./browser/vendor/three/FontLoader.js',
 
 			'./browser/vendor/three/loaders/FBXLoader.js',
 			'./browser/vendor/three/loaders/ColladaLoader2.js',
