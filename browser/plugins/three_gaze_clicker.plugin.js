@@ -294,8 +294,6 @@
 			return
 		}
 
-		this.isInHMDMode = E2.core.webVRAdapter.hmd.isPresenting
-
 		var isActive = true
 
 		if (isActive) {
@@ -321,11 +319,26 @@
 	}
 
 	ThreeGazeClicker.prototype.mouseDown = function(event) {
+		var rect = this.domElement.getBoundingClientRect();
+		var pointer = event.changedTouches ? event.changedTouches[ 0 ] : event;
+		var x = ( pointer.clientX - rect.left ) / rect.width;
+		var y = ( pointer.clientY - rect.top) / rect.height;
+
+		if (this.isInHMDMode) {
+			this.cursorPosition.set(0, 0, 0)
+		}
+		else {
+			this.cursorPosition.set(x * 2 - 1, - y * 2 + 1, 0)
+		}
+
 		this.dragContext = {startX: event.pageX, startY: event.pageY}
 	}
 
 	ThreeGazeClicker.prototype.mouseUp = function(event) {
 		if (this.dragContext && event.pageX === this.dragContext.startX && event.pageY === this.dragContext.startY) {
+			event.preventDefault();
+			event.stopPropagation();
+
 			var rect = this.domElement.getBoundingClientRect();
 			var pointer = event.changedTouches ? event.changedTouches[0] : event;
 			var x = ( pointer.clientX - rect.left ) / rect.width;
