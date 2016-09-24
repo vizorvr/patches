@@ -336,9 +336,6 @@
 
 	ThreeGazeClicker.prototype.mouseUp = function(event) {
 		if (this.dragContext && event.pageX === this.dragContext.startX && event.pageY === this.dragContext.startY) {
-			event.preventDefault();
-			event.stopPropagation();
-
 			var rect = this.domElement.getBoundingClientRect();
 			var pointer = event.changedTouches ? event.changedTouches[0] : event;
 			var x = ( pointer.clientX - rect.left ) / rect.width;
