@@ -284,6 +284,8 @@ exports.reset = function() {
 	E2.dom.canvas_parent.scrollTop = E2.dom.canvas_parent.scrollLeft = 
 		function() { return 0; }
 
+    global.AudioContext = function() {}
+
 	global.E2.app = new Application()
 	global.E2.app.updateCanvas = function() {}
 	global.E2.app.getSlotPosition = function() {}
@@ -310,6 +312,7 @@ exports.reset = function() {
 	E2.core.renderer = {
 		render: function() {},
 		clear: function() {},
+		getPixelRatio: function() {},
 		setPixelRatio: function() {},
 		domElement: {parentElement:{style:{}}},
 		setSize: function(){},
