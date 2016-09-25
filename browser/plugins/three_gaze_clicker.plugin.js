@@ -32,13 +32,9 @@
 
 		this.invProjectionMatrix = new THREE.Matrix4()
 
-		this.isGazeClicker = false
 		this.defaultCursorPosition = new THREE.Vector3(0, 0, 0)
 		this.cursorPosition = this.defaultCursorPosition.clone()
 
-		if (!this.isGazeClicker) {
-			this.setupClickAndTap()
-		}
 	}
 
 	ThreeGazeClicker.prototype = Object.create(Plugin.prototype)
@@ -98,7 +94,16 @@
 
 	ThreeGazeClicker.prototype.state_changed = function(ui) {
 		if (!ui) {
+			this.domElement = E2.dom.webgl_canvas[0]
 
+			this.domElement.addEventListener( 'mousedown', this.mouseDown.bind(this), false );
+			this.domElement.addEventListener( 'touchstart', this.mouseDown.bind(this), false );
+
+			this.domElement.addEventListener( 'mouseup', this.mouseUp.bind(this), false );
+			this.domElement.addEventListener( 'touchstop', this.mouseUp.bind(this), false );
+
+			this.domElement.addEventListener( 'mousemove', this.mouseMove.bind(this), false );
+			this.domElement.addEventListener( 'touchmove', this.mouseMove.bind(this), false );
 		}
 	}
 
@@ -361,16 +366,4 @@
 		}
 	}
 
-	ThreeGazeClicker.prototype.setupClickAndTap = function() {
-		this.domElement = E2.dom.webgl_canvas[0]
-
-		this.domElement.addEventListener( 'mousedown', this.mouseDown.bind(this), false );
-		this.domElement.addEventListener( 'touchstart', this.mouseDown.bind(this), false );
-
-		this.domElement.addEventListener( 'mouseup', this.mouseUp.bind(this), false );
-		this.domElement.addEventListener( 'touchstop', this.mouseUp.bind(this), false );
-
-		this.domElement.addEventListener( 'mousemove', this.mouseMove.bind(this), false );
-		this.domElement.addEventListener( 'touchmove', this.mouseMove.bind(this), false );
-	}
 })()
