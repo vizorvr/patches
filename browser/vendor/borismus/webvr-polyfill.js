@@ -1174,9 +1174,16 @@ VRDisplay.prototype.requestPresent = function(layer) {
       return;
     }
 
+    // pick the first array item if we've been given an array as 'layer'
+    // otherwise, use the layer
+    var actualLayer = layer
+    if (!actualLayer.source && actualLayer[0]) {
+        actualLayer = actualLayer[0]
+    }
+
     self.waitingForPresent_ = false;
-    if (layer && layer.source) {
-      var fullscreenElement = self.wrapForFullscreen(layer.source);
+    if (actualLayer && actualLayer.source) {
+      var fullscreenElement = self.wrapForFullscreen(actualLayer.source);
 
       function onFullscreenChange() {
         var actualFullscreenElement = Util.getFullscreenElement();
