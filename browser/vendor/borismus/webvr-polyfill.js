@@ -7596,7 +7596,7 @@ module.exports = TouchPanner;
  */
 var Util = window.Util || {};
 
-Util.MIN_TIMESTEP = 0.001;
+Util.MIN_TIMESTEP = 0.0007;
 Util.MAX_TIMESTEP = 1;
 
 Util.base64 = function(mimeType, base64) {
