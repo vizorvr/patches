@@ -22,8 +22,8 @@ var VizorPlayerUI = function() {
 		controlsDisplayed	: 'controlsDisplayed',
 		controlsHidden		: 'controlsHidden',
 
-		vrInstructionsShown : 'VRInstructionsShown',
-		vrInstructionsHidden: 'VRInstructionsHidden',
+		vrInstructionsShown : 'VRManInstructionsShown',
+		vrInstructionsHidden: 'VRManInstructionsHidden',
 		loadingProgress		: 'progress',
 
 		playerStateChanged	: 'player:stateChanged',

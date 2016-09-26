@@ -161,6 +161,7 @@
 		if (!ui) {
 			this.domElement = E2.dom.webgl_canvas[0]
 			this.renderer = E2.core.renderer
+			this.renderer.setPixelRatio(window.devicePixelRatio)
 
 			var gl = this.domElement.getContext('webgl')
 			this.stats = new WGLUStats(gl)

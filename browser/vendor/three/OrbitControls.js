@@ -123,7 +123,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 		var lastPosition = new THREE.Vector3();
 		var lastQuaternion = new THREE.Quaternion();
 
-		return function () {
+		return function update () {
 
 			var position = scope.object.position;
 
@@ -212,7 +212,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 		scope.domElement.removeEventListener( 'contextmenu', onContextMenu, false );
 		scope.domElement.removeEventListener( 'mousedown', onMouseDown, false );
-		scope.domElement.removeEventListener( 'mousewheel', onMouseWheel, false );
+		scope.domElement.removeEventListener( 'wheel', onMouseWheel, false );
 		scope.domElement.removeEventListener( 'MozMousePixelScroll', onMouseWheel, false ); // firefox
 
 		scope.domElement.removeEventListener( 'touchstart', onTouchStart, false );
@@ -324,7 +324,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 		var offset = new THREE.Vector3();
 
-		return function( deltaX, deltaY ) {
+		return function pan ( deltaX, deltaY ) {
 
 			var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
 
@@ -893,7 +893,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 	scope.domElement.addEventListener( 'contextmenu', onContextMenu, false );
 
 	scope.domElement.addEventListener( 'mousedown', onMouseDown, false );
-	scope.domElement.addEventListener( 'mousewheel', onMouseWheel, false );
+	scope.domElement.addEventListener( 'wheel', onMouseWheel, false );
 	scope.domElement.addEventListener( 'MozMousePixelScroll', onMouseWheel, false ); // firefox
 
 	scope.domElement.addEventListener( 'touchstart', onTouchStart, false );

@@ -1,4 +1,97 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
+// shim for using process in browser
+
+var process = module.exports = {};
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = setTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    clearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        setTimeout(drainQueue, 0);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+},{}],2:[function(_dereq_,module,exports){
 (function (process,global){
 /*!
  * @overview es6-promise - a tiny implementation of Promises/A+.
@@ -956,141 +1049,7 @@
 
 
 }).call(this,_dereq_('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":3}],2:[function(_dereq_,module,exports){
-/* eslint-disable no-unused-vars */
-'use strict';
-var hasOwnProperty = Object.prototype.hasOwnProperty;
-var propIsEnumerable = Object.prototype.propertyIsEnumerable;
-
-function toObject(val) {
-	if (val === null || val === undefined) {
-		throw new TypeError('Object.assign cannot be called with null or undefined');
-	}
-
-	return Object(val);
-}
-
-module.exports = Object.assign || function (target, source) {
-	var from;
-	var to = toObject(target);
-	var symbols;
-
-	for (var s = 1; s < arguments.length; s++) {
-		from = Object(arguments[s]);
-
-		for (var key in from) {
-			if (hasOwnProperty.call(from, key)) {
-				to[key] = from[key];
-			}
-		}
-
-		if (Object.getOwnPropertySymbols) {
-			symbols = Object.getOwnPropertySymbols(from);
-			for (var i = 0; i < symbols.length; i++) {
-				if (propIsEnumerable.call(from, symbols[i])) {
-					to[symbols[i]] = from[symbols[i]];
-				}
-			}
-		}
-	}
-
-	return to;
-};
-
-},{}],3:[function(_dereq_,module,exports){
-// shim for using process in browser
-
-var process = module.exports = {};
-var queue = [];
-var draining = false;
-var currentQueue;
-var queueIndex = -1;
-
-function cleanUpNextTick() {
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-    } else {
-        queueIndex = -1;
-    }
-    if (queue.length) {
-        drainQueue();
-    }
-}
-
-function drainQueue() {
-    if (draining) {
-        return;
-    }
-    var timeout = setTimeout(cleanUpNextTick);
-    draining = true;
-
-    var len = queue.length;
-    while(len) {
-        currentQueue = queue;
-        queue = [];
-        while (++queueIndex < len) {
-            if (currentQueue) {
-                currentQueue[queueIndex].run();
-            }
-        }
-        queueIndex = -1;
-        len = queue.length;
-    }
-    currentQueue = null;
-    draining = false;
-    clearTimeout(timeout);
-}
-
-process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
-    }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
-        setTimeout(drainQueue, 0);
-    }
-};
-
-// v8 likes predictible objects
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
-}
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-process.version = ''; // empty string to avoid regexp issues
-process.versions = {};
-
-function noop() {}
-
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-};
-
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-process.umask = function() { return 0; };
-
-},{}],4:[function(_dereq_,module,exports){
+},{"_process":1}],3:[function(_dereq_,module,exports){
 /*
  * Copyright 2015 Google Inc. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -1202,6 +1161,10 @@ VRDisplay.prototype.removeFullscreenWrapper = function() {
 };
 
 VRDisplay.prototype.requestPresent = function(layer) {
+  // Always use document.body for the fullscreen element, since we want to be
+  // able to render UI on top of the WebGL canvas.
+  //var fullscreenElement = layer.source;
+
   var self = this;
   this.layer_ = layer;
 
@@ -1221,16 +1184,14 @@ VRDisplay.prototype.requestPresent = function(layer) {
         self.isPresenting = (fullscreenElement === actualFullscreenElement);
         self.fireVRDisplayPresentChange_();
         if (self.isPresenting) {
-          if (screen.orientation && screen.orientation.lock) {
+          if (screen.orientation && screen.orientation.lock)
             screen.orientation.lock('landscape-primary');
-          }
           self.waitingForPresent_ = false;
           self.beginPresent_();
           resolve();
         } else {
-          if (screen.orientation && screen.orientation.unlock) {
+          if (screen.orientation && screen.orientation.unlock)
             screen.orientation.unlock();
-          }
           self.removeFullscreenWrapper();
           self.wakelock_.release();
           self.endPresent_();
@@ -1238,9 +1199,8 @@ VRDisplay.prototype.requestPresent = function(layer) {
         }
       }
       function onFullscreenError() {
-        if (!self.waitingForPresent_) {
+        if (!self.waitingForPresent_)
           return;
-        }
 
         self.removeFullscreenWrapper();
         self.removeFullscreenListeners_();
@@ -1387,7 +1347,6 @@ VRDisplay.prototype.getEyeParameters = function(whichEye) {
  * The base class for all VR devices. (Deprecated)
  */
 function VRDevice() {
-  this.isPolyfilled = true;
   this.hardwareUnitId = 'webvr-polyfill hardwareUnitId';
   this.deviceId = 'webvr-polyfill deviceId';
   this.deviceName = 'webvr-polyfill deviceName';
@@ -1412,7 +1371,7 @@ module.exports.VRDevice = VRDevice;
 module.exports.HMDVRDevice = HMDVRDevice;
 module.exports.PositionSensorVRDevice = PositionSensorVRDevice;
 
-},{"./util.js":24,"./wakelock.js":26}],5:[function(_dereq_,module,exports){
+},{"./util.js":23,"./wakelock.js":25}],4:[function(_dereq_,module,exports){
 /*
  * Copyright 2016 Google Inc. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -1468,7 +1427,7 @@ function CardboardDistorter(gl) {
   this.meshWidth = 20;
   this.meshHeight = 20;
 
-  this.bufferScale = WebVRConfig.BUFFER_SCALE;
+  this.bufferScale = WebVRConfig.BUFFER_SCALE ? WebVRConfig.BUFFER_SCALE : 1.0;
 
   this.bufferWidth = gl.drawingBufferWidth;
   this.bufferHeight = gl.drawingBufferHeight;
@@ -1480,11 +1439,8 @@ function CardboardDistorter(gl) {
   this.realColorMask = gl.colorMask;
   this.realClearColor = gl.clearColor;
   this.realViewport = gl.viewport;
-
-  if (!Util.isIOS()) {
-    this.realCanvasWidth = Object.getOwnPropertyDescriptor(gl.canvas.__proto__, 'width');
-    this.realCanvasHeight = Object.getOwnPropertyDescriptor(gl.canvas.__proto__, 'height');
-  }
+  this.realCanvasWidth = Object.getOwnPropertyDescriptor(gl.canvas.__proto__, 'width');
+  this.realCanvasHeight = Object.getOwnPropertyDescriptor(gl.canvas.__proto__, 'height');
 
   this.isPatched = false;
 
@@ -1533,7 +1489,6 @@ function CardboardDistorter(gl) {
   this.onResize();
 
   this.cardboardUI = new CardboardUI(gl);
-
 };
 
 /**
@@ -1649,37 +1604,32 @@ CardboardDistorter.prototype.patch = function() {
   var canvas = this.gl.canvas;
   var gl = this.gl;
 
-  if (!Util.isIOS()) {
+  canvas.width = Util.getScreenWidth() * this.bufferScale;
+  canvas.height = Util.getScreenHeight() * this.bufferScale;
 
-    /*
-    canvas.width = Util.getScreenWidth() * this.bufferScale;
-    canvas.height = Util.getScreenHeight() * this.bufferScale;
-    */
+  Object.defineProperty(canvas, 'width', {
+    configurable: true,
+    enumerable: true,
+    get: function() {
+      return self.bufferWidth;
+    },
+    set: function(value) {
+      self.bufferWidth = value;
+      self.onResize();
+    }
+  });
 
-    Object.defineProperty(canvas, 'width', {
-      configurable: true,
-      enumerable: true,
-      get: function() {
-        return self.bufferWidth;
-      },
-      set: function(value) {
-        self.bufferWidth = value;
-        self.onResize();
-      }
-    });
-
-    Object.defineProperty(canvas, 'height', {
-      configurable: true,
-      enumerable: true,
-      get: function() {
-        return self.bufferHeight;
-      },
-      set: function(value) {
-        self.bufferHeight = value;
-        self.onResize();
-      }
-    });
-  }
+  Object.defineProperty(canvas, 'height', {
+    configurable: true,
+    enumerable: true,
+    get: function() {
+      return self.bufferHeight;
+    },
+    set: function(value) {
+      self.bufferHeight = value;
+      self.onResize();
+    }
+  });
 
   this.lastBoundFramebuffer = gl.getParameter(gl.FRAMEBUFFER_BINDING);
 
@@ -1701,7 +1651,7 @@ CardboardDistorter.prototype.patch = function() {
   this.stencilTest = gl.getParameter(gl.STENCIL_TEST);
 
   gl.enable = function(pname) {
-    switch (pname) {
+    switch(pname) {
       case gl.CULL_FACE: self.cullFace = true; break;
       case gl.DEPTH_TEST: self.depthTest = true; break;
       case gl.BLEND: self.blend = true; break;
@@ -1712,7 +1662,7 @@ CardboardDistorter.prototype.patch = function() {
   };
 
   gl.disable = function(pname) {
-    switch (pname) {
+    switch(pname) {
       case gl.CULL_FACE: self.cullFace = false; break;
       case gl.DEPTH_TEST: self.depthTest = false; break;
       case gl.BLEND: self.blend = false; break;
@@ -1760,12 +1710,10 @@ CardboardDistorter.prototype.unpatch = function() {
   var gl = this.gl;
   var canvas = this.gl.canvas;
 
-  if (!Util.isIOS()) {
-    Object.defineProperty(canvas, 'width', this.realCanvasWidth);
-    Object.defineProperty(canvas, 'height', this.realCanvasHeight);
-  }
-  // canvas.width = this.bufferWidth;
-  // canvas.height = this.bufferHeight;
+  Object.defineProperty(canvas, 'width', this.realCanvasWidth);
+  Object.defineProperty(canvas, 'height', this.realCanvasHeight);
+  canvas.width = this.bufferWidth;
+  canvas.height = this.bufferHeight;
 
   gl.bindFramebuffer = this.realBindFramebuffer;
   gl.enable = this.realEnable;
@@ -1784,13 +1732,11 @@ CardboardDistorter.prototype.unpatch = function() {
 };
 
 CardboardDistorter.prototype.setTextureBounds = function(leftBounds, rightBounds) {
-  if (!leftBounds) {
+  if (!leftBounds)
     leftBounds = [0, 0, 0.5, 1];
-  }
 
-  if (!rightBounds) {
+  if (!rightBounds)
     rightBounds = [0.5, 0, 0.5, 1];
-  }
 
   // Left eye
   this.viewportOffsetScale[0] = leftBounds[0]; // X
@@ -1839,7 +1785,7 @@ CardboardDistorter.prototype.submitFrame = function() {
 
     // If the backbuffer has an alpha channel clear every frame so the page
     // doesn't show through.
-    if (self.ctxAttribs.alpha || Util.isIOS()) {
+    if (self.ctxAttribs.alpha) {
       self.realClearColor.call(gl, 0, 0, 0, 1);
       gl.clear(gl.COLOR_BUFFER_BIT);
     }
@@ -1892,19 +1838,6 @@ CardboardDistorter.prototype.submitFrame = function() {
       self.realClearColor.apply(gl, self.clearColor);
     }
   });
-
-  // Workaround for the fact that Safari doesn't allow us to patch the canvas
-  // width and height correctly. After each submit frame check to see what the
-  // real backbuffer size has been set to and resize the fake backbuffer size
-  // to match.
-  if (Util.isIOS()) {
-    var canvas = gl.canvas;
-    if (canvas.width != self.bufferWidth || canvas.height != self.bufferHeight) {
-      self.bufferWidth = canvas.width;
-      self.bufferHeight = canvas.height;
-      self.onResize();
-    }
-  }
 };
 
 /**
@@ -2030,30 +1963,11 @@ CardboardDistorter.prototype.computeMeshIndices_ = function(width, height) {
     }
   }
   return indices;
-};
-
-CardboardDistorter.prototype.getOwnPropertyDescriptor_ = function(proto, attrName) {
-  var descriptor = Object.getOwnPropertyDescriptor(proto, attrName);
-  // In some cases (ahem... Safari), the descriptor returns undefined get and
-  // set fields. In this case, we need to create a synthetic property
-  // descriptor. This works around some of the issues in
-  // https://github.com/borismus/webvr-polyfill/issues/46
-  if (descriptor.get === undefined || descriptor.set === undefined) {
-    descriptor.configurable = true;
-    descriptor.enumerable = true;
-    descriptor.get = function() {
-      return this.getAttribute(attrName);
-    };
-    descriptor.set = function(val) {
-      this.setAttribute(attrName, val);
-    };
-  }
-  return descriptor;
-};
+}
 
 module.exports = CardboardDistorter;
 
-},{"./cardboard-ui.js":6,"./deps/wglu-preserve-state.js":8,"./util.js":24}],6:[function(_dereq_,module,exports){
+},{"./cardboard-ui.js":5,"./deps/wglu-preserve-state.js":7,"./util.js":23}],5:[function(_dereq_,module,exports){
 /*
  * Copyright 2016 Google Inc. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -2160,9 +2074,8 @@ function CardboardUI(gl) {
 CardboardUI.prototype.destroy = function() {
   var gl = this.gl;
 
-  if (this.listener) {
+  if (this.listener)
     gl.canvas.removeEventListener('click', this.listener, false);
-  }
 
   gl.deleteProgram(this.program);
   gl.deleteBuffer(this.vertexBuffer);
@@ -2204,7 +2117,7 @@ CardboardUI.prototype.onResize = function() {
   WGLUPreserveGLState(gl, glState, function(gl) {
     var vertices = [];
 
-    var midline = gl.drawingBufferWidth / 2;
+    var midline = gl.drawingBufferWidth/2;
 
     // Assumes your canvas width and height is scaled proportionately.
     // TODO(smus): The following causes buttons to become huge on iOS, but seems
@@ -2282,6 +2195,8 @@ CardboardUI.prototype.onResize = function() {
     // Buffer data
     gl.bindBuffer(gl.ARRAY_BUFFER, self.vertexBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+
+
   });
 };
 
@@ -2342,8 +2257,7 @@ CardboardUI.prototype.renderNoState = function() {
 };
 
 module.exports = CardboardUI;
-
-},{"./deps/wglu-preserve-state.js":8,"./util.js":24}],7:[function(_dereq_,module,exports){
+},{"./deps/wglu-preserve-state.js":7,"./util.js":23}],6:[function(_dereq_,module,exports){
 /*
  * Copyright 2016 Google Inc. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -2360,7 +2274,6 @@ module.exports = CardboardUI;
  */
 
 var CardboardDistorter = _dereq_('./cardboard-distorter.js');
-var CardboardUI = _dereq_('./cardboard-ui.js');
 var DeviceInfo = _dereq_('./device-info.js');
 var Dpdb = _dereq_('./dpdb/dpdb.js');
 var FusionPoseSensor = _dereq_('./sensor-fusion/fusion-pose-sensor.js');
@@ -2384,7 +2297,7 @@ function CardboardVRDisplay() {
   this.capabilities.canPresent = true;
 
   // "Private" members.
-  this.bufferScale_ = WebVRConfig.BUFFER_SCALE;
+  this.bufferScale_ = WebVRConfig.BUFFER_SCALE ? WebVRConfig.BUFFER_SCALE : 1.0;
   this.poseSensor_ = new FusionPoseSensor();
   this.distorter_ = null;
   this.cardboardUI_ = null;
@@ -2482,10 +2395,10 @@ CardboardVRDisplay.prototype.beginPresent_ = function() {
     this.exitPresent();
   }.bind(this));
 
-  if (Util.isLandscapeMode() && Util.isMobile()) {
+  if (!Util.isLandscapeMode() && Util.isMobile()) {
     // In landscape mode, temporarily show the "put into Cardboard"
     // interstitial. Otherwise, do the default thing.
-    this.rotateInstructions_.showTemporarily(3000, this.layer_.source.parentElement);
+    this.rotateInstructions_.showTemporarily(3000, this.fullscreenWrapper_);
   } else {
     this.rotateInstructions_.update();
   }
@@ -2504,10 +2417,6 @@ CardboardVRDisplay.prototype.endPresent_ = function() {
     this.distorter_.destroy();
     this.distorter_ = null;
   }
-  if (this.cardboardUI_) {
-    this.cardboardUI_.destroy();
-    this.cardboardUI_ = null;
-  }
 
   this.rotateInstructions_.hide();
   this.viewerSelector_.hide();
@@ -2524,6 +2433,7 @@ CardboardVRDisplay.prototype.submitFrame = function(pose) {
 };
 
 CardboardVRDisplay.prototype.onOrientationChange_ = function(e) {
+  console.log('onOrientationChange_');
 
   // Hide the viewer selector.
   this.viewerSelector_.hide();
@@ -2553,14 +2463,9 @@ CardboardVRDisplay.prototype.fireVRDisplayDeviceParamsChange_ = function() {
   window.dispatchEvent(event);
 };
 
-// returns the object that handles manual orientation/panning/rotation on behalf of this display
-CardboardVRDisplay.prototype.getManualPannerRef = function() {
-  return this.poseSensor_.touchPanner
-};
-
 module.exports = CardboardVRDisplay;
 
-},{"./base.js":4,"./cardboard-distorter.js":5,"./cardboard-ui.js":6,"./device-info.js":9,"./dpdb/dpdb.js":13,"./rotate-instructions.js":17,"./sensor-fusion/fusion-pose-sensor.js":19,"./util.js":24,"./viewer-selector.js":25}],8:[function(_dereq_,module,exports){
+},{"./base.js":3,"./cardboard-distorter.js":4,"./device-info.js":8,"./dpdb/dpdb.js":12,"./rotate-instructions.js":16,"./sensor-fusion/fusion-pose-sensor.js":18,"./util.js":23,"./viewer-selector.js":24}],7:[function(_dereq_,module,exports){
 /*
 Copyright (c) 2016, Brandon Jones.
 
@@ -2725,7 +2630,7 @@ function WGLUPreserveGLState(gl, bindings, callback) {
 }
 
 module.exports = WGLUPreserveGLState;
-},{}],9:[function(_dereq_,module,exports){
+},{}],8:[function(_dereq_,module,exports){
 /*
  * Copyright 2015 Google Inc. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -3110,7 +3015,7 @@ function CardboardViewer(params) {
 // Export viewer information.
 DeviceInfo.Viewers = Viewers;
 module.exports = DeviceInfo;
-},{"./distortion/distortion.js":11,"./three-math.js":22,"./util.js":24}],10:[function(_dereq_,module,exports){
+},{"./distortion/distortion.js":10,"./three-math.js":21,"./util.js":23}],9:[function(_dereq_,module,exports){
 /*
  * Copyright 2016 Google Inc. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -3176,7 +3081,7 @@ function VRDisplayPositionSensorDevice(display) {
   this.display = display;
 
   this.hardwareUnitId = display.displayId;
-  this.deviceId = 'webvr-polyfill:PositionSensor: ' + display.displayId;
+  this.deviceId = 'webvr-pollyfill:PositionSensor: ' + display.displayId;
   this.deviceName = display.displayName + ' (PositionSensor)';
 }
 VRDisplayPositionSensorDevice.prototype = new PositionSensorVRDevice();
@@ -3202,7 +3107,7 @@ module.exports.VRDisplayHMDDevice = VRDisplayHMDDevice;
 module.exports.VRDisplayPositionSensorDevice = VRDisplayPositionSensorDevice;
 
 
-},{"./base.js":4}],11:[function(_dereq_,module,exports){
+},{"./base.js":3}],10:[function(_dereq_,module,exports){
 /**
  * TODO(smus): Implement coefficient inversion.
  */
@@ -3251,7 +3156,7 @@ Distortion.prototype.distort = function(radius) {
 }
 
 module.exports = Distortion;
-},{}],12:[function(_dereq_,module,exports){
+},{}],11:[function(_dereq_,module,exports){
 /*
  * Copyright 2015 Google Inc. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -4222,7 +4127,7 @@ var DPDB_CACHE = {
 
 module.exports = DPDB_CACHE;
 
-},{}],13:[function(_dereq_,module,exports){
+},{}],12:[function(_dereq_,module,exports){
 /*
  * Copyright 2015 Google Inc. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -4412,7 +4317,7 @@ function DeviceParams(params) {
 }
 
 module.exports = Dpdb;
-},{"../util.js":24,"./dpdb-cache.js":12}],14:[function(_dereq_,module,exports){
+},{"../util.js":23,"./dpdb-cache.js":11}],13:[function(_dereq_,module,exports){
 /*
  * Copyright 2015 Google Inc. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -4456,7 +4361,7 @@ Emitter.prototype.on = function(eventName, callback) {
 
 module.exports = Emitter;
 
-},{}],15:[function(_dereq_,module,exports){
+},{}],14:[function(_dereq_,module,exports){
 /*
  * Copyright 2015 Google Inc. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -4471,61 +4376,20 @@ module.exports = Emitter;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var Util = _dereq_('./util.js');
 var WebVRPolyfill = _dereq_('./webvr-polyfill.js');
 
 // Initialize a WebVRConfig just in case.
-window.WebVRConfig = Util.extend({
-  // Forces availability of VR mode, even for non-mobile devices.
-  FORCE_ENABLE_VR: false,
-
-  // Complementary filter coefficient. 0 for accelerometer, 1 for gyro.
-  K_FILTER: 0.98,
-
-  // How far into the future to predict during fast motion (in seconds).
-  PREDICTION_TIME_S: 0.040,
-
-  // Flag to disable touch panner. In case you have your own touch controls.
-  TOUCH_PANNER_DISABLED: false,
-
-  // Enable yaw panning only, disabling roll and pitch. This can be useful
-  // for panoramas with nothing interesting above or below.
-  YAW_ONLY: false,
-
-  // To disable keyboard and mouse controls, if you want to use your own
-  // implementation.
-  MOUSE_KEYBOARD_CONTROLS_DISABLED: false,
-
-  // Prevent the polyfill from initializing immediately. Requires the app
-  // to call InitializeWebVRPolyfill() before it can be used.
-  DEFER_INITIALIZATION: false,
-
-  // Enable the deprecated version of the API (navigator.getVRDevices).
-  ENABLE_DEPRECATED_API: false,
-
-  // Scales the recommended buffer size reported by WebVR, which can improve
-  // performance.
-  BUFFER_SCALE: 1.0,
-
-  // Allow VRDisplay.submitFrame to change gl bindings, which is more
-  // efficient if the application code will re-bind its resources on the
-  // next frame anyway. This has been seen to cause rendering glitches with
-  // THREE.js.
-  // Dirty bindings include: gl.FRAMEBUFFER_BINDING, gl.CURRENT_PROGRAM,
-  // gl.ARRAY_BUFFER_BINDING, gl.ELEMENT_ARRAY_BUFFER_BINDING,
-  // and gl.TEXTURE_BINDING_2D for texture unit 0.
-  DIRTY_SUBMIT_FRAME_BINDINGS: false
-}, window.WebVRConfig);
+window.WebVRConfig = window.WebVRConfig || {};
 
 if (!window.WebVRConfig.DEFER_INITIALIZATION) {
-  window._webVRPolyfill = new WebVRPolyfill();
+  new WebVRPolyfill();
 } else {
   window.InitializeWebVRPolyfill = function() {
-    window._webVRPolyfill = new WebVRPolyfill();
+   new WebVRPolyfill();
   }
 }
 
-},{"./util.js":24,"./webvr-polyfill.js":27}],16:[function(_dereq_,module,exports){
+},{"./webvr-polyfill.js":26}],15:[function(_dereq_,module,exports){
 /*
  * Copyright 2016 Google Inc. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -4720,7 +4584,7 @@ MouseKeyboardVRDisplay.prototype.canInitiateRotation = function(e) {
 
 module.exports = MouseKeyboardVRDisplay;
 
-},{"./base.js":4,"./three-math.js":22,"./util.js":24}],17:[function(_dereq_,module,exports){
+},{"./base.js":3,"./three-math.js":21,"./util.js":23}],16:[function(_dereq_,module,exports){
 /*
  * Copyright 2015 Google Inc. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -4788,7 +4652,6 @@ function RotateInstructions() {
   var snackbarButton = document.createElement('a');
   snackbarButton.href = 'https://www.google.com/get/cardboard/get-cardboard/';
   snackbarButton.innerHTML = 'get one';
-  snackbarButton.target = '_blank';
   var s = snackbarButton.style;
   s.float = 'right';
   s.fontWeight = 600;
@@ -4832,12 +4695,13 @@ RotateInstructions.prototype.show = function(parent) {
     s.marginTop = '25%';
   }
 
-  document.body.dispatchEvent(new CustomEvent('VRInstructionsShown'))
+  document.body.dispatchEvent(new CustomEvent('VRManInstructionsShown'))
 };
 
 RotateInstructions.prototype.hide = function() {
   this.overlay.style.display = 'none';
-  document.body.dispatchEvent(new CustomEvent('VRInstructionsHidden'))
+
+  document.body.dispatchEvent(new CustomEvent('VRManInstructionsHidden'))
 };
 
 RotateInstructions.prototype.showTemporarily = function(ms, parent) {
@@ -4867,7 +4731,7 @@ RotateInstructions.prototype.loadIcon_ = function() {
 
 module.exports = RotateInstructions;
 
-},{"./util.js":24}],18:[function(_dereq_,module,exports){
+},{"./util.js":23}],17:[function(_dereq_,module,exports){
 /*
  * Copyright 2015 Google Inc. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -5035,7 +4899,7 @@ ComplementaryFilter.prototype.gyroToQuaternionDelta_ = function(gyro, dt) {
 
 module.exports = ComplementaryFilter;
 
-},{"../three-math.js":22,"../util.js":24,"./sensor-sample.js":21}],19:[function(_dereq_,module,exports){
+},{"../three-math.js":21,"../util.js":23,"./sensor-sample.js":20}],18:[function(_dereq_,module,exports){
 /*
  * Copyright 2015 Google Inc. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -5060,17 +4924,32 @@ var Util = _dereq_('../util.js');
  * The pose sensor, implemented using DeviceMotion APIs.
  */
 function FusionPoseSensor() {
+  var that = this;
+
   this.deviceId = 'webvr-polyfill:fused';
   this.deviceName = 'VR Position Device (webvr-polyfill:fused)';
 
   this.accelerometer = new THREE.Vector3();
   this.gyroscope = new THREE.Vector3();
 
-  window.addEventListener('devicemotion', this.onDeviceMotionChange_.bind(this));
-  window.addEventListener('orientationchange', this.onScreenOrientationChange_.bind(this));
+  window.addEventListener('message', function(e) {
+    if (e.data.orientation) {
+      that.onScreenOrientationChange_(e.data.orientation)
+      $(window).trigger('orientationchange')
+    }
 
-  this.filter = new ComplementaryFilter(WebVRConfig.K_FILTER);
-  this.posePredictor = new PosePredictor(WebVRConfig.PREDICTION_TIME_S);
+    if (e.data.devicemotion) {
+      that.onDeviceMotionChange_(e.data.devicemotion)
+    }
+  })
+
+  window.addEventListener('devicemotion', this.onDeviceMotionChange_.bind(this));
+  window.addEventListener('orientationchange', function() {
+    that.onScreenOrientationChange_(window.orientation);
+  });
+
+  this.filter = new ComplementaryFilter(WebVRConfig.K_FILTER || 0.98);
+  this.posePredictor = new PosePredictor(WebVRConfig.PREDICTION_TIME_S || 0.040);
   this.touchPanner = new TouchPanner();
 
   this.filterToWorldQ = new THREE.Quaternion();
@@ -5192,8 +5071,8 @@ FusionPoseSensor.prototype.onScreenOrientationChange_ = function(e) {
 };
 
 FusionPoseSensor.prototype.setScreenTransform_ = function(orientation) {
-  orientation = orientation || window.orientation;
   this.worldToScreenQ.set(0, 0, 0, 1);
+  orientation = orientation || window.orientation
   switch (orientation) {
     case 0:
       break;
@@ -5212,7 +5091,7 @@ FusionPoseSensor.prototype.setScreenTransform_ = function(orientation) {
 
 module.exports = FusionPoseSensor;
 
-},{"../three-math.js":22,"../touch-panner.js":23,"../util.js":24,"./complementary-filter.js":18,"./pose-predictor.js":20}],20:[function(_dereq_,module,exports){
+},{"../three-math.js":21,"../touch-panner.js":22,"../util.js":23,"./complementary-filter.js":17,"./pose-predictor.js":19}],19:[function(_dereq_,module,exports){
 /*
  * Copyright 2015 Google Inc. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -5295,7 +5174,7 @@ PosePredictor.prototype.getPrediction = function(currentQ, gyro, timestampS) {
 
 module.exports = PosePredictor;
 
-},{"../three-math.js":22}],21:[function(_dereq_,module,exports){
+},{"../three-math.js":21}],20:[function(_dereq_,module,exports){
 function SensorSample(sample, timestampS) {
   this.set(sample, timestampS);
 };
@@ -5311,7 +5190,7 @@ SensorSample.prototype.copy = function(sensorSample) {
 
 module.exports = SensorSample;
 
-},{}],22:[function(_dereq_,module,exports){
+},{}],21:[function(_dereq_,module,exports){
 /*
  * A subset of THREE.js, providing mostly quaternion and euler-related
  * operations, manually lifted from
@@ -7606,7 +7485,7 @@ THREE.Math = {
 
 module.exports = THREE;
 
-},{}],23:[function(_dereq_,module,exports){
+},{}],22:[function(_dereq_,module,exports){
 /*
  * Copyright 2015 Google Inc. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -7693,7 +7572,7 @@ TouchPanner.prototype.canInitiateRotation = function(e) {
 
 module.exports = TouchPanner;
 
-},{"./three-math.js":22,"./util.js":24}],24:[function(_dereq_,module,exports){
+},{"./three-math.js":21,"./util.js":23}],23:[function(_dereq_,module,exports){
 /*
  * Copyright 2015 Google Inc. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -7708,12 +7587,9 @@ module.exports = TouchPanner;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-var objectAssign = _dereq_('object-assign');
-
 var Util = window.Util || {};
 
-Util.MIN_TIMESTEP = 0.0007;
+Util.MIN_TIMESTEP = 0.001;
 Util.MAX_TIMESTEP = 1;
 
 Util.base64 = function(mimeType, base64) {
@@ -7728,27 +7604,22 @@ Util.lerp = function(a, b, t) {
   return a + ((b - a) * t);
 };
 
-Util.isIOS = (function() {
-  var isIOS = /iPad|iPhone|iPod/.test(navigator.platform);
-  return function() {
-    return isIOS;
-  };
-})();
+Util.pingPong = function(t, length) {
+  if (t < 0) t = -t;
 
-Util.isSafari = (function() {
-  var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-  return function() {
-    return isSafari;
-  };
-})();
+  var mult = Math.floor(t / length);
+  var mod = t - (length * mult);
+  return mult % 2 ? length - mod : mod;
+};
 
-Util.isFirefoxAndroid = (function() {
-  var isFirefoxAndroid = navigator.userAgent.indexOf('Firefox') !== -1 &&
+Util.isIOS = function() {
+  return /iPad|iPhone|iPod/.test(navigator.platform);
+};
+
+Util.isFirefoxAndroid = function() {
+  return navigator.userAgent.indexOf('Firefox') !== -1 &&
       navigator.userAgent.indexOf('Android') !== -1;
-  return function() {
-    return isFirefoxAndroid;
-  };
-})();
+};
 
 Util.isLandscapeMode = function() {
   return (window.orientation == 90 || window.orientation == -90);
@@ -7883,11 +7754,10 @@ Util.isMobile = function() {
   return check;
 };
 
-Util.extend = objectAssign;
 
 module.exports = Util;
 
-},{"object-assign":2}],25:[function(_dereq_,module,exports){
+},{}],24:[function(_dereq_,module,exports){
 /*
  * Copyright 2015 Google Inc. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -7922,7 +7792,6 @@ function ViewerSelector() {
   try {
     this.selectedKey = localStorage.getItem(VIEWER_KEY) || DEFAULT_VIEWER;
   } catch (error) {
-    this.selectedKey = DEFAULT_VIEWER;
     console.error('Failed to load viewer profile: %s', error);
   }
   this.dialog = this.createDialog_(DeviceInfo.Viewers);
@@ -8089,7 +7958,7 @@ ViewerSelector.prototype.createButton_ = function(label, onclick) {
 
 module.exports = ViewerSelector;
 
-},{"./device-info.js":9,"./emitter.js":14,"./util.js":24}],26:[function(_dereq_,module,exports){
+},{"./device-info.js":8,"./emitter.js":13,"./util.js":23}],25:[function(_dereq_,module,exports){
 /*
  * Copyright 2015 Google Inc. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -8164,7 +8033,7 @@ function getWakeLock() {
 }
 
 module.exports = getWakeLock();
-},{"./util.js":24}],27:[function(_dereq_,module,exports){
+},{"./util.js":23}],26:[function(_dereq_,module,exports){
 /*
  * Copyright 2015 Google Inc. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -8200,6 +8069,7 @@ function WebVRPolyfill() {
   this.nativeWebVRAvailable = this.isWebVRAvailable();
   this.nativeLegacyWebVRAvailable = this.isDeprecatedWebVRAvailable();
 
+  window.vizorNativeWebVRAvailable = this.nativeWebVRAvailable || this.nativeLegacyWebVRAvailable;
   if (!this.nativeLegacyWebVRAvailable) {
     if (!this.nativeWebVRAvailable) {
       this.enablePolyfill();
@@ -8295,21 +8165,25 @@ WebVRPolyfill.prototype.getVRDevices = function() {
     try {
       if (!self.devicesPopulated) {
         if (self.nativeWebVRAvailable) {
-          return navigator.getVRDisplays(function(displays) {
+          return navigator.getVRDisplays()
+		  .then(function(displays) {
             for (var i = 0; i < displays.length; ++i) {
               self.devices.push(new VRDisplayHMDDevice(displays[i]));
               self.devices.push(new VRDisplayPositionSensorDevice(displays[i]));
             }
             self.devicesPopulated = true;
             resolve(self.devices);
-          }, reject);
+          })
+		  .catch(function (e) {
+		  	reject()
+		  });
         }
 
         if (self.nativeLegacyWebVRAvailable) {
           return (navigator.getVRDDevices || navigator.mozGetVRDevices)(function(devices) {
             for (var i = 0; i < devices.length; ++i) {
               if (devices[i] instanceof HMDVRDevice) {
-                self.devices.push(devices[i]);
+                self.devices.push(displays[i]);
               }
               if (devices[i] instanceof PositionSensorVRDevice) {
                 self.devices.push(devices[i]);
@@ -8345,4 +8219,4 @@ WebVRPolyfill.prototype.isCardboardCompatible = function() {
 
 module.exports = WebVRPolyfill;
 
-},{"./base.js":4,"./cardboard-vr-display.js":7,"./display-wrappers.js":10,"./mouse-keyboard-vr-display.js":16,"es6-promise":1}]},{},[15]);
+},{"./base.js":3,"./cardboard-vr-display.js":6,"./display-wrappers.js":9,"./mouse-keyboard-vr-display.js":15,"es6-promise":2}]},{},[14]);
