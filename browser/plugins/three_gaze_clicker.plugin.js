@@ -5,18 +5,15 @@
 
 		this.core = core
 
-		this.iconDepth = -1.0
-		this.iconSize = 0.07
+		this.iconDistance = 0.030
 
 		this.input_slots = [
 			{name: 'camera', dt: core.datatypes.CAMERA},
 			{name: 'scene', dt: core.datatypes.SCENE},
 			{name: 'delay', dt: core.datatypes.FLOAT, def: 1.0},
 			{name: 'show icon', dt: core.datatypes.BOOL, def: true},
-			{name: 'icon depth', dt: core.datatypes.FLOAT, def: this.iconDepth,
-				desc: 'Gaze Cursor icon distance from camera'},
-			{name: 'icon size', dt: core.datatypes.FLOAT, def: this.iconSize,
-				desc: 'Gaze Cursor icon size'}
+			{name: 'eye distance', dt: core.datatypes.FLOAT, def: this.iconDistance,
+			 desc: 'Eye Distance for Gaze Clicker icon in VR'}
 		]
 
 		this.output_slots = [
@@ -29,21 +26,12 @@
 		this.clickDelay = 1.0
 
 		this.showIcon = true
-
-		this.invProjectionMatrix = new THREE.Matrix4()
-
-		this.isGazeClicker = false
-		this.defaultCursorPosition = new THREE.Vector3(0, 0, 0)
-		this.cursorPosition = this.defaultCursorPosition.clone()
-
-		if (!this.isGazeClicker) {
-			this.setupClickAndTap()
-		}
 	}
 
 	ThreeGazeClicker.prototype = Object.create(Plugin.prototype)
 
 	ThreeGazeClicker.prototype.reset = function() {
+		this.clickFactor = 0.0
 		this.clickTime = 0.0
 	}
 
@@ -53,7 +41,6 @@
 		switch (slot.index) {
 		case 0: // camera
 			this.camera = data
-			this.invProjectionMatrix.getInverse(this.camera.projectionMatrix, false)
 			break
 		case 1: // scene
 			this.scene = data
@@ -68,18 +55,9 @@
 			break
 		}
 
-		if (slot.name === 'icon depth') {
-			this.iconDepth = data
-
-			if (this.scene.children[1].children.indexOf(this.object3d) >= 0) {
-				this.scene.children[1].remove(this.object3d)
-			}
-			this.object3d = undefined
-		}
-
-		if (slot.name === 'icon size') {
-			this.iconSize = data
-
+		// 'debug' option to move the gaze clicker eye distance
+		if (slot.name === 'eye distance') {
+			this.iconDistance = data
 			if (this.scene.children[1].children.indexOf(this.object3d) >= 0) {
 				this.scene.children[1].remove(this.object3d)
 			}
@@ -106,8 +84,8 @@
 	ThreeGazeClicker.prototype.GeometryGenerator = function(parent) {
 		this.type = 'Gaze Aim'
 
-		this.segments = 24
-		this.radialMarkers = [0.5, 1.0]
+		this.segments = 16
+		this.radialMarkers = [0, 0.3, 0.8, 1.0]
 
 		var that = this
 
@@ -146,40 +124,28 @@
 		this.update = function(fillfactor, fadeoutfactor) {
 			var idx = 0
 
-			var pos
-
-			if (!this.isInHMDMode) {
-				pos = parent.cursorPosition.clone().applyMatrix4(parent.invProjectionMatrix)
-			}
-			else {
-				pos = {x: 0, y: 0}
-			}
-			var baseX = pos.x
-			var baseY = pos.y
-
 			var radialMarkers = this.radialMarkers.slice(0)
 
-			/*if (fadeoutfactor >= 1) {
+			if (fadeoutfactor >= 1) {
 				radialMarkers[2] = this.radialMarkers[2] + (this.radialMarkers[1] - this.radialMarkers[2]) * fillfactor
 			}
 			else {
 				radialMarkers[2] = this.radialMarkers[1] + (this.radialMarkers[3] - this.radialMarkers[1]) * (1 - fadeoutfactor)
-			}*/
+			}
 
 			var i, j
 
-			var clickerDepth = parent.iconDepth // slightly farther away than camera near plane to prevent z fighting
-			var clickerRadius = parent.iconSize
+			var clickerDepth = -0.0111 // slightly farther away than camera near plane to prevent z fighting
+			var clickerRadius = 0.0008
 
 			for (j = 0; j < that.segments + 1; j++) {
 				for (i = 0; i < radialMarkers.length; i++) {
 					var angle = j / that.segments
 
 					// clamp outer ring
-					//if (i > 1) {
-					//	angle = Math.min(angle, fillfactor)
-					//}
-					angle = (angle + fillfactor * 0.05 * (i < 2 ? -1 : 1)) % 1
+					if (i > 1) {
+						angle = Math.min(angle, fillfactor)
+					}
 
 					angle *= 3.14159 * 2
 
@@ -187,18 +153,12 @@
 					var y = Math.cos(angle)
 
 					var f = radialMarkers[i]
-					if ((((j/2) & 1) || (j & 1)) && i < 1) {
-						f *= 2.0
-					}
-					else if (((!((j / 2) & 1)) && !(j & 1)) && i === 1) {
-						f *= 0.95
-					}
 
 					//if (i > 1) {
 					//	f *= fadeoutfactor
 					//}
 
-					that.vertices[idx].set(baseX + x * f * clickerRadius, baseY + y * f * clickerRadius, clickerDepth)
+					that.vertices[idx].set(x * f * clickerRadius, y * f * clickerRadius, clickerDepth)
 
 					idx++
 				}
@@ -216,29 +176,47 @@
 	ThreeGazeClicker.prototype.get_mesh = function() {
 		if (!this.object3d) {
 			this.geometry = new this.GeometryGenerator(this)
-			this.material = new THREE.ShaderMaterial({
-				depthFunc: THREE.AlwaysDepth,
-				vertexShader: 'void main() {\n\tgl_Position = projectionMatrix * vec4( position, 1.0 );\n}',
-				fragmentShader: 'void main() {\n\tgl_FragColor = vec4( 1.0, 1.0, 1.0, 0.5 );\n}'})
+			this.material = new THREE.MeshBasicMaterial({color:0xffffff})
+
+			var group = new THREE.Group()
+			group.matrixAutoUpdate = false
 
 			// mono eye icon
 			var monoEyeIcon = new THREE.Mesh(this.geometry, this.material)
 			monoEyeIcon.matrixAutoUpdate = false
+			monoEyeIcon.layers.set(3)
+			group.add(monoEyeIcon)
 
-			this.object3d = monoEyeIcon
+			// left eye icon
+			var leftEyeIcon = new THREE.Mesh(this.geometry, this.material)
+			leftEyeIcon.layers.set(1)
+			leftEyeIcon.position.x = -this.iconDistance
+			leftEyeIcon.updateMatrix()
+			leftEyeIcon.updateMatrixWorld()
+			group.add(leftEyeIcon)
+
+			// right eye icon
+			var rightEyeIcon = new THREE.Mesh(this.geometry, this.material)
+			rightEyeIcon.layers.set(2)
+			rightEyeIcon.position.x = this.iconDistance
+			rightEyeIcon.updateMatrix()
+			rightEyeIcon.updateMatrixWorld()
+			group.add(rightEyeIcon)
+
+			this.object3d = group
 		}
 
 		return this.object3d
 	}
 
-	ThreeGazeClicker.prototype.updateClick = function(updateContext, forceClick) {
+	ThreeGazeClicker.prototype.update_click = function(updateContext) {
 		if (!this.raycaster) {
 			this.raycaster = new THREE.Raycaster()
 		}
 
 		this.camera.updateMatrixWorld()
 
-		this.raycaster.setFromCamera(this.isInHMDMode ? this.defaultCursorPosition : this.cursorPosition, this.camera)
+		this.raycaster.setFromCamera(new THREE.Vector3(0, 0, 0), this.camera)
 		var intersects = this.raycaster.intersectObjects(this.scene.children[0].children, /*recursive =*/ true)
 
 		var hadObj = false
@@ -276,15 +254,19 @@
 
 		if (this.lastObj) {
 			this.clickTime = updateContext.abs_t - this.objTimer
+			var clickFactor = Math.min(this.clickTime, this.clickDelay) / this.clickDelay // 0..1
 
-			if (forceClick) {
+			if (this.clickFactor < 1 && clickFactor >= 1) {
 				// only click once when the timer passes this.clickDelay (default 1 second)
 				if (this.lastObj.onClick)
 					this.lastObj.onClick()
 
 				E2.core.runtimeEvents.emit('gazeClicked:'+this.lastObj.uuid)
 			}
+
+			this.clickFactor = clickFactor
 		} else {
+			this.clickFactor = 0
 			this.clickTime = 0
 		}
 	}
@@ -294,20 +276,18 @@
 			return
 		}
 
-		this.isInHMDMode = E2.core.webVRAdapter.hmd.isPresenting
-
 		var isActive = true
 
 		if (isActive) {
-			this.updateClick(updateContext)
+			this.update_click(updateContext)
 		}
 
 		var mesh = this.get_mesh()
 
-		if (isActive && this.clickTime > 0 && this.scene.hasClickableObjects && this.showIcon !== false) {
+		if (isActive && this.scene.hasClickableObjects && this.showIcon !== false) {
 			mesh.matrix.copy(this.camera.matrixWorld)
 
-			this.geometry.update(this.clickTime, Math.max(1.0 - Math.max(0.0, this.clickTime - this.clickDelay) * 10.0, 0.0))
+			this.geometry.update(this.clickFactor, Math.max(1.0 - Math.max(0.0, this.clickTime - this.clickDelay) * 10.0, 0.0))
 
 			if (this.scene.children[1].children.indexOf(mesh) < 0) {
 				this.scene.children[1].add(mesh)
@@ -318,49 +298,5 @@
 				this.scene.children[1].remove(mesh)
 			}
 		}
-	}
-
-	ThreeGazeClicker.prototype.mouseDown = function(event) {
-		this.dragContext = {startX: event.pageX, startY: event.pageY}
-	}
-
-	ThreeGazeClicker.prototype.mouseUp = function(event) {
-		if (this.dragContext && event.pageX === this.dragContext.startX && event.pageY === this.dragContext.startY) {
-			var rect = this.domElement.getBoundingClientRect();
-			var pointer = event.changedTouches ? event.changedTouches[0] : event;
-			var x = ( pointer.clientX - rect.left ) / rect.width;
-			var y = ( pointer.clientY - rect.top) / rect.height;
-			console.log('mouse down', x, y)
-
-			this.updateClick({abs_t: 0}, /*forceClick = */true)
-		}
-		this.dragContext = undefined
-	}
-
-	ThreeGazeClicker.prototype.mouseMove = function(event) {
-		var rect = this.domElement.getBoundingClientRect();
-		var pointer = event.changedTouches ? event.changedTouches[ 0 ] : event;
-		var x = ( pointer.clientX - rect.left ) / rect.width;
-		var y = ( pointer.clientY - rect.top) / rect.height;
-
-		if (this.isInHMDMode) {
-			this.cursorPosition.set(0, 0, 0)
-		}
-		else {
-			this.cursorPosition.set(x * 2 - 1, - y * 2 + 1, 0)
-		}
-	}
-
-	ThreeGazeClicker.prototype.setupClickAndTap = function() {
-		this.domElement = E2.dom.webgl_canvas[0]
-
-		this.domElement.addEventListener( 'mousedown', this.mouseDown.bind(this), false );
-		this.domElement.addEventListener( 'touchstart', this.mouseDown.bind(this), false );
-
-		this.domElement.addEventListener( 'mouseup', this.mouseUp.bind(this), false );
-		this.domElement.addEventListener( 'touchstop', this.mouseUp.bind(this), false );
-
-		this.domElement.addEventListener( 'mousemove', this.mouseMove.bind(this), false );
-		this.domElement.addEventListener( 'touchmove', this.mouseMove.bind(this), false );
 	}
 })()
