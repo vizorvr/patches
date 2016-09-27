@@ -1,6 +1,16 @@
 /**
  * wraps around and tweaks webvr boilerplate to work with Vizor
  * @emits VizorWebVRAdapter.events
+ *
+ * NB:
+ *
+ *  The adapter can listen to and relay proxy messages containing devicemotion and deviceorientation.
+ *  It does so automatically on iOS
+ *
+ *  VREffect needs to have been new()-d with the renderer's devicePixelRatio already set
+ *  when polyfilled, VRDisplay wraps the domElement for fullscreen, otherwise the (Cardboard's) back and gear buttons do not work
+ *
+ *
  */
 function VizorWebVRAdapter() {
 	var that = this
@@ -25,25 +35,29 @@ function VizorWebVRAdapter() {
 
 VizorWebVRAdapter.prototype = Object.create(EventEmitter.prototype)
 
+/**
+ * @param domElement
+ * @param effect THREE.VREffect
+ * @param renderer THREE.WebGLRenderer (typically E2.core.renderer)
+ * @param options {} passed on to WebVRManager
+ */
 VizorWebVRAdapter.prototype.initialise = function(domElement, renderer, effect, options) {
 	var that = this
 
 	// only stored here for convenience/debugging
-	this._renderer = renderer
 	this._effect = effect
-	this.modes = WebVRManager.Modes
 
+	this.modes = WebVRManager.Modes
+	this.renderer = renderer
 	this.domElement = domElement	// typically a canvas
 
 	this.configure()
 
 	this.proxyOrientationChange = true
-	this.proxyDeviceMotion = (typeof VizorUI !== 'undefined') 
-		&& VizorUI.isMobile.iOS()
+	this.proxyDeviceMotion = this.iOS
 
 	this.options = options || {
-		hideButton: 	true,
-		isVRCompatible: true
+		hideButton: 	true
 	}
 
 	this.options.isVRCompatible = this.haveVRDevices
@@ -81,7 +95,7 @@ VizorWebVRAdapter.events = Object.freeze({
 })
 
 VizorWebVRAdapter.prototype.canInitiateCameraMove = function(e) {
-	if (E2 && E2.app && E2.app.canInitiateCameraMove)
+	if (e && E2 && E2.app && E2.app.canInitiateCameraMove)
 		return E2.app.canInitiateCameraMove(e)
 
 	// default
@@ -127,7 +141,8 @@ VizorWebVRAdapter.prototype.configure = function() {
 			})
 		})
 
-	var r = E2.core.renderer
+	var r = this.renderer
+
 	if (typeof r.setSizeNoResize === 'undefined') {
 		console.error('please patch THREE.WebGLRenderer to include a setSizeNoResize method.')
 	}
@@ -218,10 +233,10 @@ VizorWebVRAdapter.prototype.onScroll = function() {
 	this._scrollTimeout = setTimeout(function(){
 		that._scheduleResize(
 			function(){
-				if (!this._renderer)
+				if (!this.renderer)
 					return
 				var size = this.getTargetSize()
-				var rendererSize = this._renderer.getSize()
+				var rendererSize = this.renderer.getSize()
 
 				if ((size.width !== rendererSize.width) || (size.height !== rendererSize.height)) {
 					this.resizeToTarget()
@@ -374,7 +389,6 @@ VizorWebVRAdapter.prototype.getTargetSize = function() {
 	}
 
 	size.isPresenting = !!isPresenting
-
 	return size
 }
 

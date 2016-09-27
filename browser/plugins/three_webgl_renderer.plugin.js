@@ -160,13 +160,13 @@
 	ThreeWebGLRendererPlugin.prototype.state_changed = function(ui) {
 		if (!ui) {
 			this.domElement = E2.dom.webgl_canvas[0]
+			// kk/gm: the order here is important
 			this.renderer = E2.core.renderer
 			this.renderer.setPixelRatio(window.devicePixelRatio)
+			this.effect = new THREE.VREffect(this.renderer)     // stores renderer's dpr
 
 			var gl = this.domElement.getContext('webgl')
 			this.stats = new WGLUStats(gl)
-
-			this.effect = new THREE.VREffect(this.renderer)
 
 			this.manager = E2.core.webVRAdapter
 			var events = this.manager.events
