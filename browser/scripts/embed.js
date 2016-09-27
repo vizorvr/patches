@@ -4,6 +4,8 @@
 
 	var iframeWindow = {}, iframeElement = {}
 
+	var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+
 	var getId = function() {
 		var t = (new Date()).getTime()
 		while ((new Date()).getTime() === t) {}
@@ -87,23 +89,29 @@
 		setTimeout(resizeIframe, 500)
 	}, true)
 	window.addEventListener('resize', resizeIframe)
-	window.addEventListener('devicemotion', function(deviceMotion) {
-		iframeWindow.postMessage({
-			devicemotion: {
-				accelerationIncludingGravity: {
-					x: deviceMotion.accelerationIncludingGravity.x,
-					y: deviceMotion.accelerationIncludingGravity.y,
-					z: deviceMotion.accelerationIncludingGravity.z
-				},
-				rotationRate: {
-					alpha: deviceMotion.rotationRate.alpha,
-					beta: deviceMotion.rotationRate.beta,
-					gamma: deviceMotion.rotationRate.gamma
-				},
-				timeStamp: deviceMotion.timeStamp
+
+	if (iOS) {
+		window._dm = window._dm || {}
+		window.addEventListener('devicemotion', function (deviceMotion) {
+			window._dm[iframeId] = {
+				devicemotion: {
+					accelerationIncludingGravity: {
+						x: deviceMotion.accelerationIncludingGravity.x,
+						y: deviceMotion.accelerationIncludingGravity.y,
+						z: deviceMotion.accelerationIncludingGravity.z
+					},
+					rotationRate: {
+						alpha: deviceMotion.rotationRate.alpha,
+						beta: deviceMotion.rotationRate.beta,
+						gamma: deviceMotion.rotationRate.gamma
+					},
+					timeStamp: deviceMotion.timeStamp
+				}
 			}
-		}, '*')
-	}, false)
+			iframeWindow.postMessage(window._dm[iframeId], '*')
+			return true
+		}, false)
+	}
 
 	// log us
 	window._v_urls = window._v_urls || []
