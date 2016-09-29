@@ -78,14 +78,7 @@ VizorWebVRAdapter.prototype.initialise = function(domElement, renderer, effect, 
 	window.addEventListener('vrdisplaypresentchange', this._onVRPresentChange.bind(this), false)
 	window.addEventListener('vrdisplaydeviceparamschange', this._onVRDisplayDeviceParamsChange.bind(this), false)
 	this._manager = new WebVRManager(renderer, effect, this.options)
-	this._manager.on('initialized', function() {
-
-		that.attach()
-		that.patchWebVRManager()
-
-		// initial sizing
-		that.resizeToTarget()
-	})
+	that.attach()
 }
 
 VizorWebVRAdapter.events = Object.freeze({
@@ -428,6 +421,9 @@ VizorWebVRAdapter.prototype._onVRPresentChange = function(e) {
 }
 
 VizorWebVRAdapter.prototype._onManagerInitialised = function(e) {
+	that.patchWebVRManager()
+	// initial sizing
+	that.resizeToTarget()
 	this.emit(this.events.managerInitialised, {
 		domElement: this.domElement,
 		size: this.getDomElementDimensions(),
