@@ -7,14 +7,36 @@ var VizorWebVRAdapter = require('../../scripts/webVRAdapter.js')	// respect mock
 
 var mockWebVRManager = function() {
 	var modes = WebVRManager.Modes
+	global.window.listeners={}
+	global.window.dispatchEvent = function(name, event) {
+		if (!this.listeners[name])
+			this.listeners[name] = []
+
+		this.listeners[name].forEach(function(listener) {
+			listener(event)
+		})
+	}
+	global.window.addEventListener = function(name, listener) {
+		if (!this.listeners[name])
+			this.listeners[name] = []
+		this.listeners[name].push(listener)
+	}
 	global.WebVRManager = function (renderer, effect, params) {
 		var that = this
+		this.listeners = {}
 		this.renderer = renderer
 		this.effect = effect
 		this.params = params
 		this.mode = null
+		this.hmd = {
+			requestPresent: function() {
+				window.dispatchEvent('vrdisplaypresentchange', {detail: {hmd: this}})
+			}
+		}
 		this.setMode_ = function (mode) {
 			that.mode = mode
+			this.hmd.requestPresent()
+			that.emit('modechange', mode)
 		}
 		this.fsClickCalled = false
 		this.vrClickCalled = false
@@ -32,7 +54,20 @@ var mockWebVRManager = function() {
 			that.exitFullScreenCalled = true
 		}
 
-		this.on = function(){}
+		this.on = function(name, listener){
+			if (!this.listeners[name])
+				this.listeners[name] = []
+			this.listeners[name].push(listener)
+		}
+
+		this.emit = function(name, event) {
+			if (!this.listeners[name])
+				this.listeners[name] = []
+
+			this.listeners[name].forEach(function(listener) {
+				listener(event)
+			})
+		}
 	}
 	global.WebVRManager.Modes = modes
 }
@@ -120,6 +155,7 @@ describe('Web VR Manager', function() {
 		a.on(a.events.modeChanged, function(){
 			modeChangeTriggered = true
 		})
+
 
 		a.setMode(modes.VR)
 		assert.ok(modeChangeTriggered, 'expected mode change event')
