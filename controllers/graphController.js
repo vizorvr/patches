@@ -528,9 +528,15 @@ GraphController.prototype.graphLanding = function(req, res, next) {
 			var data = makeGraphSummary(req, graph)
 			return res.json(helper.responseStatusSuccess('OK', data))
 		}
-		
+
+		// for the sake of consistency we respect what the webvrmanager will do here as well (not just in /embed)
+		// webvrmanager/boilerplate
+		var startMode = parseInt(req.query.start_mode)
+		if (isNaN(startMode)) startMode = 1
+
 		return renderPlayer(graph, req, res, {
-			autoplay: true
+			autoplay: true,
+			startMode : startMode
 		})
 	}).catch(next)
 }

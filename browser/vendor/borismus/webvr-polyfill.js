@@ -1175,8 +1175,14 @@ VRDisplay.prototype.requestPresent = function(layer) {
       actualLayer = actualLayer[0]
   }
 
+
   // this.layer_ = layer;
-  this.layer_ = actualLayer;
+
+    if (this.layer_ && (this.layer_.source === actualLayer.source)) {
+        return console.warn('already presenting on same layer source', actualLayer)
+    }
+
+    this.layer_ = actualLayer
 
   return new Promise(function(resolve, reject) {
     if (!self.capabilities.canPresent) {
@@ -2438,6 +2444,10 @@ CardboardVRDisplay.prototype.endPresent_ = function() {
   this.rotateInstructions_.hide();
   this.viewerSelector_.hide();
 
+  if (this.cardboardUI_) {
+      this.cardboardUI_.destroy()
+      this.cardboardUI_ = null
+  }
   window.removeEventListener('orientationchange', this.orientationHandler);
 };
 
@@ -2450,7 +2460,7 @@ CardboardVRDisplay.prototype.submitFrame = function(pose) {
 };
 
 CardboardVRDisplay.prototype.onOrientationChange_ = function(e) {
-  console.log('onOrientationChange_');
+
 
   // Hide the viewer selector.
   this.viewerSelector_.hide();
