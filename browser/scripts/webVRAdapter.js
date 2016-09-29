@@ -78,6 +78,7 @@ VizorWebVRAdapter.prototype.initialise = function(domElement, renderer, effect, 
 	window.addEventListener('vrdisplaypresentchange', this._onVRPresentChange.bind(this), false)
 	window.addEventListener('vrdisplaydeviceparamschange', this._onVRDisplayDeviceParamsChange.bind(this), false)
 	this._manager = new WebVRManager(renderer, effect, this.options)
+	this._onManagerInitialised()
 	that.attach()
 }
 
@@ -167,7 +168,6 @@ VizorWebVRAdapter.prototype.patchWebVRManager = function() {
 VizorWebVRAdapter.prototype.attach = function() {
 	// events emitted by boilerplate/polyfill
 	window.addEventListener('message', this.onMessageReceived.bind(this), false)
-	this._manager.on('initialized', this._onManagerInitialised.bind(this))
 	this._manager.on('modechange', this._onManagerModeChanged.bind(this))
 
 	this.listenToBrowserEvents()
@@ -421,9 +421,9 @@ VizorWebVRAdapter.prototype._onVRPresentChange = function(e) {
 }
 
 VizorWebVRAdapter.prototype._onManagerInitialised = function(e) {
-	that.patchWebVRManager()
+	this.patchWebVRManager()
 	// initial sizing
-	that.resizeToTarget()
+	this.resizeToTarget()
 	this.emit(this.events.managerInitialised, {
 		domElement: this.domElement,
 		size: this.getDomElementDimensions(),
