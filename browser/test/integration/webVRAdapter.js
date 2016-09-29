@@ -82,12 +82,22 @@ describe('Web VR Manager', function() {
 	})
 
 	it('instantiates a webvr adapter', function(done){
-		E2.core.webAdapter = null
 		E2.app.instantiatePlugin('three_webgl_renderer')
 		assert.ok(E2.core.webVRAdapter, 'found a web vr adapter')
 		assert.ok(E2.core.webVRAdapter instanceof global.VizorWebVRAdapter, 'found a VizorWebVRAdapter')
 		done()
 	})
+
+	it('initialises', function(done) {
+		var count = 0;
+		E2.core.webVRAdapter.on(VizorWebVRAdapter.events.managerInitialised, function(){
+			count++
+		})
+		E2.app.instantiatePlugin('three_webgl_renderer')
+		assert.equal(count, 1, 'must call init exactly once')
+		done()
+	})
+
 
 	it('gets and sets mode', function(done){
 

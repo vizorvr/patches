@@ -1176,8 +1176,6 @@ VRDisplay.prototype.requestPresent = function(layer) {
   }
 
 
-  // this.layer_ = layer;
-
     if (this.layer_ && (this.layer_.source === actualLayer.source)) {
         return console.warn('already presenting on same layer source', actualLayer)
     }

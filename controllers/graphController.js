@@ -497,7 +497,8 @@ GraphController.prototype.embed = function(req, res, next) {
 
 		// webvrmanager/boilerplate
 		var startMode = parseInt(req.query.start_mode)
-		if (isNaN(startMode)) startMode = 1
+		if (isNaN(startMode))
+			startMode = 1
 
 		return renderPlayer(graph, req, res, {
 			isEmbedded: true,
@@ -529,10 +530,10 @@ GraphController.prototype.graphLanding = function(req, res, next) {
 			return res.json(helper.responseStatusSuccess('OK', data))
 		}
 
-		// for the sake of consistency we respect what the webvrmanager will do here as well (not just in /embed)
 		// webvrmanager/boilerplate
 		var startMode = parseInt(req.query.start_mode)
-		if (isNaN(startMode)) startMode = 1
+		if (isNaN(startMode))
+			startMode = 1
 
 		return renderPlayer(graph, req, res, {
 			autoplay: true,
