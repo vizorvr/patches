@@ -504,7 +504,7 @@ GraphController.prototype.embed = function(req, res, next) {
 			isEmbedded: true,
 			autoplay: req.query.autoplay || autoplay,
 			noHeader: req.query.noheader || false,
-			startMode : startMode
+			startMode: startMode
 		})
 	}).catch(next)
 }
@@ -537,7 +537,7 @@ GraphController.prototype.graphLanding = function(req, res, next) {
 
 		return renderPlayer(graph, req, res, {
 			autoplay: true,
-			startMode : startMode
+			startMode: startMode
 		})
 	}).catch(next)
 }
