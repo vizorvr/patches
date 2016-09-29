@@ -233,7 +233,6 @@ var VizorPlayerUI = function() {
             }
 
 			E2.core.webVRAdapter.enterVR()
-            siteUI.tagBodyClass()
         }
 
 		function share(e) {
@@ -472,7 +471,7 @@ VizorPlayerUI.prototype.setStageFromPlayerState = function(playerState) {
 }
 
 VizorPlayerUI.prototype.selectStage = function(stageName) {
-console.log('selectStage', stageName)
+
 	if (stageName === this.stage)
 		return;
 

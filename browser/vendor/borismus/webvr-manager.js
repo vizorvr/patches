@@ -556,8 +556,8 @@ WebVRManager.prototype.getContainerDimensions = function() {	  // gm #896
 	}
 }
 
-WebVRManager.prototype.requestFullscreen_ = function() {
-  var canvas = this.renderer.domElement;
+WebVRManager.prototype.requestFullscreen_ = function(domElement) {
+  var canvas = domElement || this.renderer.domElement;
   if (canvas.requestFullscreen) {
     canvas.requestFullscreen();
   } else if (canvas.mozRequestFullScreen) {

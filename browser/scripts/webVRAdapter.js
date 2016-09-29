@@ -1,6 +1,16 @@
 /**
  * wraps around and tweaks webvr boilerplate to work with Vizor
  * @emits VizorWebVRAdapter.events
+ *
+ * NB:
+ *
+ *  The adapter can listen to and relay proxy messages containing devicemotion and deviceorientation.
+ *  It does so automatically on iOS
+ *
+ *  VREffect needs to have been new()-d with the renderer's devicePixelRatio already set
+ *  when polyfilled, VRDisplay wraps the domElement for fullscreen, otherwise the (Cardboard's) back and gear buttons do not work
+ *
+ *
  */
 function VizorWebVRAdapter() {
 	var that = this
@@ -25,25 +35,29 @@ function VizorWebVRAdapter() {
 
 VizorWebVRAdapter.prototype = Object.create(EventEmitter.prototype)
 
+/**
+ * @param domElement
+ * @param effect THREE.VREffect
+ * @param renderer THREE.WebGLRenderer (typically E2.core.renderer)
+ * @param options {} passed on to WebVRManager
+ */
 VizorWebVRAdapter.prototype.initialise = function(domElement, renderer, effect, options) {
 	var that = this
 
 	// only stored here for convenience/debugging
-	this._renderer = renderer
 	this._effect = effect
-	this.modes = WebVRManager.Modes
 
+	this.modes = WebVRManager.Modes
+	this.renderer = renderer
 	this.domElement = domElement	// typically a canvas
 
 	this.configure()
 
 	this.proxyOrientationChange = true
-	this.proxyDeviceMotion = (typeof VizorUI !== 'undefined') 
-		&& VizorUI.isMobile.iOS()
+	this.proxyDeviceMotion = this.iOS
 
 	this.options = options || {
-		hideButton: 	true,
-		isVRCompatible: true
+		hideButton: 	true
 	}
 
 	this.options.isVRCompatible = this.haveVRDevices
@@ -60,16 +74,12 @@ VizorWebVRAdapter.prototype.initialise = function(domElement, renderer, effect, 
 		if (e.keyCode === 27)
 			this.exitVROrFullscreen()
 	}.bind(this)
-	
+
+	window.addEventListener('vrdisplaypresentchange', this._onVRPresentChange.bind(this), false)
+	window.addEventListener('vrdisplaydeviceparamschange', this._onVRDisplayDeviceParamsChange.bind(this), false)
 	this._manager = new WebVRManager(renderer, effect, this.options)
-	this._manager.on('initialized', function() {
-		that.patchWebVRManager()
-
-		that.attach()
-
-		// initial sizing
-		that.resizeToTarget()
-	})
+	this._initialiseManager()
+	that.attach()
 }
 
 VizorWebVRAdapter.events = Object.freeze({
@@ -81,7 +91,7 @@ VizorWebVRAdapter.events = Object.freeze({
 })
 
 VizorWebVRAdapter.prototype.canInitiateCameraMove = function(e) {
-	if (E2 && E2.app && E2.app.canInitiateCameraMove)
+	if (e && E2 && E2.app && E2.app.canInitiateCameraMove)
 		return E2.app.canInitiateCameraMove(e)
 
 	// default
@@ -127,7 +137,8 @@ VizorWebVRAdapter.prototype.configure = function() {
 			})
 		})
 
-	var r = E2.core.renderer
+	var r = this.renderer
+
 	if (typeof r.setSizeNoResize === 'undefined') {
 		console.error('please patch THREE.WebGLRenderer to include a setSizeNoResize method.')
 	}
@@ -145,9 +156,6 @@ VizorWebVRAdapter.prototype.patchWebVRManager = function() {
 	var that = this
 	var m = this._manager
 
-	if (m.mode !== this.modes.NORMAL)
-		m.setMode_(this.modes.NORMAL)
-
 	if (m.requestFullscreen__)
 		return
 
@@ -160,12 +168,10 @@ VizorWebVRAdapter.prototype.patchWebVRManager = function() {
 VizorWebVRAdapter.prototype.attach = function() {
 	// events emitted by boilerplate/polyfill
 	window.addEventListener('message', this.onMessageReceived.bind(this), false)
-	window.addEventListener('vrdisplaypresentchange', this._onVRPresentChange.bind(this), false)
-	window.addEventListener('vrdisplaydeviceparamschange', this._onVRDisplayDeviceParamsChange.bind(this), false)
-	this._manager.on('initialized', this._onManagerInitialised.bind(this))
 	this._manager.on('modechange', this._onManagerModeChanged.bind(this))
 
 	this.listenToBrowserEvents()
+	this._onManagerModeChanged(this._manager.mode, -1)
 }
 
 VizorWebVRAdapter.prototype.listenToBrowserEvents = function() {
@@ -186,6 +192,9 @@ VizorWebVRAdapter.prototype.listenToBrowserEvents = function() {
 	document.addEventListener('webkitfullscreenchange', resizeHandler, true)
 	document.addEventListener('mozfullscreenchange', resizeHandler, true)
 	document.addEventListener('fullscreenchange', resizeHandler, true)
+	document.body.addEventListener('VRManInstructionsHidden', function(){
+		this.onBrowserResize()      // hack our way around webVR-polyfill
+	}.bind(this))
 
 	if (this.iOS) {
 		var scrollHandler = this._onScroll
@@ -218,10 +227,10 @@ VizorWebVRAdapter.prototype.onScroll = function() {
 	this._scrollTimeout = setTimeout(function(){
 		that._scheduleResize(
 			function(){
-				if (!this._renderer)
+				if (!this.renderer)
 					return
 				var size = this.getTargetSize()
-				var rendererSize = this._renderer.getSize()
+				var rendererSize = this.renderer.getSize()
 
 				if ((size.width !== rendererSize.width) || (size.height !== rendererSize.height)) {
 					this.resizeToTarget()
@@ -374,7 +383,6 @@ VizorWebVRAdapter.prototype.getTargetSize = function() {
 	}
 
 	size.isPresenting = !!isPresenting
-
 	return size
 }
 
@@ -412,7 +420,10 @@ VizorWebVRAdapter.prototype._onVRPresentChange = function(e) {
 	return true
 }
 
-VizorWebVRAdapter.prototype._onManagerInitialised = function(e) {
+VizorWebVRAdapter.prototype._initialiseManager = function(e) {
+	this.patchWebVRManager()
+	// initial sizing
+	this.resizeToTarget()
 	this.emit(this.events.managerInitialised, {
 		domElement: this.domElement,
 		size: this.getDomElementDimensions(),
@@ -622,7 +633,6 @@ VizorWebVRAdapter.prototype.setMode = function(mode) {
 
 	var manager = this._manager
 	var modes = this.modes
-	var oldMode = manager.mode
 
 	if (!this._instructionsChanged)
 		this.amendVRManagerInstructions()
@@ -645,7 +655,7 @@ VizorWebVRAdapter.prototype.setMode = function(mode) {
 			break
 	}
 
-	this._onManagerModeChanged(mode, oldMode)
+	// manager will emit back at us
 }
 
 VizorWebVRAdapter.prototype.getHmdRotateInstructions = function() {

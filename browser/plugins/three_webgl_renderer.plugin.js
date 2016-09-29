@@ -158,24 +158,29 @@
 	}
 
 	ThreeWebGLRendererPlugin.prototype.state_changed = function(ui) {
-		if (!ui) {
-			this.domElement = E2.dom.webgl_canvas[0]
-			this.renderer = E2.core.renderer
-			this.renderer.setPixelRatio(window.devicePixelRatio)
+		if (this.renderer === E2.core.renderer
+			&& this.manager === E2.core.webVRAdapter
+			&& this.domElement === E2.dom.webgl_canvas[0]
+			&& this.effect) {
 
-			var gl = this.domElement.getContext('webgl')
-			this.stats = new WGLUStats(gl)
-
-			this.effect = new THREE.VREffect(this.renderer)
-
-			this.manager = E2.core.webVRAdapter
-			var events = this.manager.events
-
-			this.manager.on(events.targetResized, this.onTargetResized.bind(this))
-
-			this.manager.initialise(this.domElement, this.renderer, this.effect)
-
+			return
 		}
+
+		this.domElement = E2.dom.webgl_canvas[0]
+		// kk/gm: the order here is important
+		this.renderer = E2.core.renderer
+		this.renderer.setPixelRatio(window.devicePixelRatio)
+		this.effect = new THREE.VREffect(this.renderer)     // stores renderer's dpr
+
+		var gl = this.domElement.getContext('webgl')
+		this.stats = new WGLUStats(gl)
+
+		this.manager = E2.core.webVRAdapter
+		var events = this.manager.events
+
+		this.manager.on(events.targetResized, this.onTargetResized.bind(this))
+
+		this.manager.initialise(this.domElement, this.renderer, this.effect)
 	}
 
 })()

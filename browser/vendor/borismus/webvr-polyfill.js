@@ -1166,7 +1166,21 @@ VRDisplay.prototype.requestPresent = function(layer) {
   //var fullscreenElement = layer.source;
 
   var self = this;
-  this.layer_ = layer;
+
+  // pick the first array item if we've been given an array as 'layer'
+  // otherwise, use the layer
+
+  var actualLayer = layer
+  if (!actualLayer.source && actualLayer[0]) {
+      actualLayer = actualLayer[0]
+  }
+
+
+    if (this.layer_ && (this.layer_.source === actualLayer.source)) {
+        return console.warn('already presenting on same layer source', actualLayer)
+    }
+
+    this.layer_ = actualLayer
 
   return new Promise(function(resolve, reject) {
     if (!self.capabilities.canPresent) {
@@ -1174,12 +1188,7 @@ VRDisplay.prototype.requestPresent = function(layer) {
       return;
     }
 
-    // pick the first array item if we've been given an array as 'layer'
-    // otherwise, use the layer
-    var actualLayer = layer
-    if (!actualLayer.source && actualLayer[0]) {
-        actualLayer = actualLayer[0]
-    }
+    actualLayer = self.layer_
 
     self.waitingForPresent_ = false;
     if (actualLayer && actualLayer.source) {
@@ -2321,7 +2330,11 @@ function CardboardVRDisplay() {
   this.rotateInstructions_ = new RotateInstructions();
 }
 CardboardVRDisplay.prototype = new VRDisplay();
+CardboardVRDisplay.prototype.constructor = CardboardVRDisplay
 
+CardboardVRDisplay.prototype.getManualPannerRef = function() {
+    return this.poseSensor_.touchPanner
+}
 CardboardVRDisplay.prototype.getImmediatePose = function() {
   return {
     position: this.poseSensor_.getPosition(),
@@ -2402,11 +2415,12 @@ CardboardVRDisplay.prototype.beginPresent_ = function() {
     this.exitPresent();
   }.bind(this));
 
-  if (!Util.isLandscapeMode() && Util.isMobile()) {
+  if (Util.isLandscapeMode() && Util.isMobile()) {
     // In landscape mode, temporarily show the "put into Cardboard"
     // interstitial. Otherwise, do the default thing.
     this.rotateInstructions_.showTemporarily(3000, this.fullscreenWrapper_);
   } else {
+    // shows instructions indefinitely until the device is put into landscape
     this.rotateInstructions_.update();
   }
 
@@ -2428,6 +2442,10 @@ CardboardVRDisplay.prototype.endPresent_ = function() {
   this.rotateInstructions_.hide();
   this.viewerSelector_.hide();
 
+  if (this.cardboardUI_) {
+      this.cardboardUI_.destroy()
+      this.cardboardUI_ = null
+  }
   window.removeEventListener('orientationchange', this.orientationHandler);
 };
 
@@ -2440,7 +2458,7 @@ CardboardVRDisplay.prototype.submitFrame = function(pose) {
 };
 
 CardboardVRDisplay.prototype.onOrientationChange_ = function(e) {
-  console.log('onOrientationChange_');
+
 
   // Hide the viewer selector.
   this.viewerSelector_.hide();
@@ -4460,6 +4478,7 @@ function MouseKeyboardVRDisplay() {
   this.orientationOut_ = new Float32Array(4);
 }
 MouseKeyboardVRDisplay.prototype = new VRDisplay();
+MouseKeyboardVRDisplay.prototype.constructor = MouseKeyboardVRDisplay
 
 MouseKeyboardVRDisplay.prototype.getImmediatePose = function() {
   this.euler_.set(this.phi_, this.theta_, 0, 'YXZ');
@@ -4938,17 +4957,6 @@ function FusionPoseSensor() {
 
   this.accelerometer = new THREE.Vector3();
   this.gyroscope = new THREE.Vector3();
-
-  window.addEventListener('message', function(e) {
-    if (e.data.orientation) {
-      that.onScreenOrientationChange_(e.data.orientation)
-      $(window).trigger('orientationchange')
-    }
-
-    if (e.data.devicemotion) {
-      that.onDeviceMotionChange_(e.data.devicemotion)
-    }
-  })
 
   window.addEventListener('devicemotion', this.onDeviceMotionChange_.bind(this));
   window.addEventListener('orientationchange', function() {
