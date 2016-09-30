@@ -528,10 +528,10 @@ WebVRManager.prototype.onVRClick_ = function() {
     top.location.href = url;
     return;
   }
-  this.hmd.requestPresent({
+  this.hmd.requestPresent([{
     source: this.renderer.domElement,
     predistorted: this.isUndistorted
-  });
+  }]);
   this.setMode_(Modes.VR);
 };
 

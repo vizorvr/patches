@@ -1203,6 +1203,10 @@ VRDisplay.prototype.removeFullscreenWrapper = function() {
 
 VRDisplay.prototype.requestPresent = function(layer) {
   var self = this;
+
+  if (layer instanceof Array)
+    layer = layer[0];
+
   this.layer_ = layer;
 
   return new Promise(function(resolve, reject) {
