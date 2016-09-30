@@ -237,6 +237,7 @@ var VizorPlayerUI = function() {
 
 		function share(e) {
 			e.preventDefault()
+			e.stopPropagation()
 			var data = {
 				origin	: Vizor.origin,
 				shareURL : Vizor.shareURL,
