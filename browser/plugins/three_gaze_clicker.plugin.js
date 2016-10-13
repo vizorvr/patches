@@ -96,14 +96,15 @@
 		if (!ui) {
 			this.domElement = E2.dom.webgl_canvas[0]
 
-			this.domElement.addEventListener( 'mousedown', this.mouseDown.bind(this), false );
-			this.domElement.addEventListener( 'touchstart', this.mouseDown.bind(this), false );
+			this.domElement.addEventListener('mousedown', this.mouseDown.bind(this), false );
+			this.domElement.addEventListener('touchstart', this.mouseDown.bind(this), false );
 
-			this.domElement.addEventListener( 'mouseup', this.mouseUp.bind(this), false );
-			this.domElement.addEventListener( 'touchstop', this.mouseUp.bind(this), false );
+			this.domElement.addEventListener('mouseup', this.mouseUp.bind(this), false );
+			this.domElement.addEventListener('touchend', this.mouseUp.bind(this), false );
+			this.domElement.addEventListener('touchcancel', this.mouseUp.bind(this), false );
 
-			this.domElement.addEventListener( 'mousemove', this.mouseMove.bind(this), false );
-			this.domElement.addEventListener( 'touchmove', this.mouseMove.bind(this), false );
+			this.domElement.addEventListener('mousemove', this.mouseMove.bind(this), false );
+			this.domElement.addEventListener('touchmove', this.mouseMove.bind(this), false );
 		}
 	}
 
@@ -236,18 +237,16 @@
 		return this.object3d
 	}
 
-	ThreeGazeClicker.prototype.updateClick = function(updateContext, forceClick) {
+	ThreeGazeClicker.prototype.getClickableIntersect = function() {
 		if (!this.raycaster) {
 			this.raycaster = new THREE.Raycaster()
 		}
 
 		this.camera.updateMatrixWorld()
-
 		this.raycaster.setFromCamera(this.isInHMDMode ? this.defaultCursorPosition : this.cursorPosition, this.camera)
+
 		var intersects = this.raycaster.intersectObjects(this.scene.children[0].children, /*recursive =*/ true)
-
-		var hadObj = false
-
+		
 		if (intersects.length > 0) {
 			var obj = intersects[0].object
 
@@ -259,16 +258,31 @@
 				obj = obj.parent
 			}
 
-			if (obj && obj.gazeClickerCount) {
-				if (obj !== this.lastObj) {
-					this.objTimer = updateContext.abs_t
-					this.lastObj = obj
+			if (obj && obj.gazeClickerCount)
+				return obj
+		}
 
-					E2.core.runtimeEvents.emit('gazeIn:'+this.lastObj.uuid)
-				}
+		return undefined
+	}
 
-				hadObj = true
+	ThreeGazeClicker.prototype.updateClick = function(updateContext, forceClick, event) {
+		var hadObj = false
+
+		var obj = this.getClickableIntersect()
+		if (obj) {
+			if (event) {
+				event.stopPropagation()
+				event.preventDefault()
 			}
+
+			if (obj !== this.lastObj) {
+				this.objTimer = updateContext.abs_t
+				this.lastObj = obj
+
+				E2.core.runtimeEvents.emit('gazeIn:'+this.lastObj.uuid)
+			}
+
+			hadObj = true
 		}
 
 		if (!hadObj) {
@@ -331,24 +345,24 @@
 
 		if (this.isInHMDMode) {
 			this.cursorPosition.set(0, 0, 0)
-		}
-		else {
+		} else {
 			this.cursorPosition.set(x * 2 - 1, - y * 2 + 1, 0)
 		}
 
 		this.dragContext = {startX: event.pageX, startY: event.pageY}
+
+		var intersect = this.getClickableIntersect()
+		if (intersect) {
+			event.preventDefault()
+			event.stopPropagation()
+		}
 	}
 
 	ThreeGazeClicker.prototype.mouseUp = function(event) {
 		if (this.dragContext && event.pageX === this.dragContext.startX && event.pageY === this.dragContext.startY) {
-			var rect = this.domElement.getBoundingClientRect();
-			var pointer = event.changedTouches ? event.changedTouches[0] : event;
-			var x = ( pointer.clientX - rect.left ) / rect.width;
-			var y = ( pointer.clientY - rect.top) / rect.height;
-			console.log('mouse down', x, y)
-
-			this.updateClick({abs_t: 0}, /*forceClick = */true)
+			this.updateClick({ abs_t: 0 }, /*forceClick = */true, event)
 		}
+
 		this.dragContext = undefined
 	}
 
