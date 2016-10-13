@@ -1960,15 +1960,19 @@ Application.prototype.setupEditorBindings = function() {
 			return true
 
 		that.onCut(e)
+
 		e.preventDefault()
-	})
+
+		return true
+	}, true)
 
 	document.addEventListener('copy', function(e) {
 		if (e && E2.util.isTextInputInFocus(e))
 			return true
 
-		return that.onCopy(e)
-	})
+		that.onCopy(e)
+		return true
+	}, true)
 
 	window.addEventListener('paste', function(e) {
 		if (e && E2.util.isTextInputInFocus(e))
@@ -1977,7 +1981,8 @@ Application.prototype.setupEditorBindings = function() {
 		var data = e.clipboardData.getData('text/plain')
 		that.pasteJson(data)
 		e.preventDefault()
-	}, false)
+		return true
+	}, true)
 
 	E2.core.on('resize', function() {
 		that.onWindowResize()
