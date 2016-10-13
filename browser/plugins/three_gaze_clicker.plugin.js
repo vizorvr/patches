@@ -152,15 +152,14 @@
 
 		this.update = function(fillfactor, fadeoutfactor) {
 			var idx = 0
-
 			var pos
 
-			if (!this.isInHMDMode) {
+			if (!E2.core.webVRAdapter.isHmdPresenting) {
 				pos = parent.cursorPosition.clone().applyMatrix4(parent.invProjectionMatrix)
+			} else {
+				pos = { x: 0, y: 0 }
 			}
-			else {
-				pos = {x: 0, y: 0}
-			}
+
 			var baseX = pos.x
 			var baseY = pos.y
 
@@ -244,7 +243,7 @@
 		}
 
 		this.camera.updateMatrixWorld()
-		this.raycaster.setFromCamera(this.isInHMDMode ? this.defaultCursorPosition : this.cursorPosition, this.camera)
+		this.raycaster.setFromCamera(E2.core.webVRAdapter.isHmdPresenting ? this.defaultCursorPosition : this.cursorPosition, this.camera)
 
 		var intersects = this.raycaster.intersectObjects(this.scene.children[0].children, /*recursive =*/ true)
 		
@@ -348,7 +347,7 @@
 		var x = ( pointer.clientX - rect.left ) / rect.width;
 		var y = ( pointer.clientY - rect.top) / rect.height;
 
-		if (this.isInHMDMode) {
+		if (E2.core.webVRAdapter.isHmdPresenting) {
 			this.cursorPosition.set(0, 0, 0)
 		} else {
 			this.cursorPosition.set(x * 2 - 1, - y * 2 + 1, 0)
@@ -377,7 +376,7 @@
 		var x = ( pointer.clientX - rect.left ) / rect.width;
 		var y = ( pointer.clientY - rect.top) / rect.height;
 
-		if (this.isInHMDMode) {
+		if (E2.core.webVRAdapter.isHmdPresenting) {
 			this.cursorPosition.set(0, 0, 0)
 		}
 		else {

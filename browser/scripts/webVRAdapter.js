@@ -56,6 +56,8 @@ VizorWebVRAdapter.prototype.initialise = function(domElement, renderer, effect, 
 	this.proxyOrientationChange = true
 	this.proxyDeviceMotion = this.iOS
 
+	this.isHmdPresenting = false
+
 	this.options = options || {
 		hideButton: 	true
 	}
@@ -432,7 +434,6 @@ VizorWebVRAdapter.prototype._initialiseManager = function(e) {
 }
 
 VizorWebVRAdapter.prototype._onManagerModeChanged = function(mode, oldMode) {
-
 	if (typeof siteUI !== 'undefined') {
 		siteUI.tagBodyClass()
 
@@ -443,6 +444,8 @@ VizorWebVRAdapter.prototype._onManagerModeChanged = function(mode, oldMode) {
 				this._removeViewportMeta()
 		}
 	}
+
+	this.isHmdPresenting = (mode === WebVRManager.Modes.VR)
 
 	// remove popovers
 	var tooltips = document.body.getElementsByClassName('popover')
@@ -456,7 +459,6 @@ VizorWebVRAdapter.prototype._onManagerModeChanged = function(mode, oldMode) {
 
 	// fix iOS bug
 	this.onBrowserResize()
-
 }
 
 VizorWebVRAdapter.prototype.amendVRManagerInstructions = function() {
