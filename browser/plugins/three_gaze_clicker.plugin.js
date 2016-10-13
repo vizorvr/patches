@@ -94,6 +94,7 @@
 
 	ThreeGazeClicker.prototype.state_changed = function(ui) {
 		if (!ui) {
+			this.$domElement = E2.dom.webgl_canvas
 			this.domElement = E2.dom.webgl_canvas[0]
 
 			this.domElement.addEventListener('mousedown', this.mouseDown.bind(this), false );
@@ -280,14 +281,18 @@
 				this.lastObj = obj
 
 				E2.core.runtimeEvents.emit('gazeIn:'+this.lastObj.uuid)
+				this.$domElement.css('cursor', 'pointer')
 			}
 
 			hadObj = true
 		}
 
 		if (!hadObj) {
-			if (this.lastObj)
+			if (this.lastObj) {
 				E2.core.runtimeEvents.emit('gazeOut:'+this.lastObj.uuid)
+			}
+
+			this.$domElement.css('cursor', 'auto')
 
 			this.lastObj = undefined
 			this.objTimer = undefined
