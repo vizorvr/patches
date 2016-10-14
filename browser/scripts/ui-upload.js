@@ -126,6 +126,8 @@ function instantiateTemplateForUpload(asset, position) {
 	var templateName
 	var templateData = _.clone(asset)
 
+	var isEquiRectangular = asset.tags.indexOf('equirectangular') !== -1
+
 	function fixupCallback(node) {
 		if (node.plugin.id === 'three_mesh') {
 			node.plugin.postLoadCallback = new TexturePlacementHelper()
@@ -147,7 +149,7 @@ function instantiateTemplateForUpload(asset, position) {
 	switch(asset.modelName) {
 		case 'image':
 			templateName = 'texture-plane.hbs'
-			if (asset.tags.indexOf('equirectangular') !== -1) {
+			if (isEquiRectangular) {
 				templateName = '360photo.hbs'
 			}
 			break;
@@ -177,7 +179,9 @@ function instantiateTemplateForUpload(asset, position) {
 
 		// if there is already a 360 photo in the scene,
 		// replace it with this one
-		E2.app.removeEntityFromScene('threesixty_photo_entity')
+		if (isEquiRectangular) {
+			E2.app.removeEntityFromScene('threesixty_photo_entity')
+		}
 
 		E2.track({
 			event: 'patchAdded', 
