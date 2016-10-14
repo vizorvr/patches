@@ -996,8 +996,10 @@ Application.prototype.onCut = function(e) {
 
 Application.prototype.removeEntityFromScene = function(entityName) {
 	var node = E2.core.root_graph.findNodeByPlugin(entityName)
+
 	if (!node)
-		return;
+		return
+
 	this.graphApi.removeNode(E2.core.root_graph, node)
 }
 
