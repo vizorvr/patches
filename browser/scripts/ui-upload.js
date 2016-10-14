@@ -147,6 +147,8 @@ function instantiateTemplateForUpload(asset, position) {
 	switch(asset.modelName) {
 		case 'image':
 			templateName = 'texture-plane.hbs'
+			if (asset.tags.indexOf('equirectangular') !== -1)
+				templateName = 'skysphere.hbs'
 			break;
 		case 'scene':
 			templateName = 'scene.hbs'
