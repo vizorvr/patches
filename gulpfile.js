@@ -34,6 +34,7 @@ var paths = {
 			'./browser/scripts/subGraphPlugin.js',
 			'./browser/scripts/threeObject3dPlugin.js',
 			'./browser/scripts/abstractPlugins/abstractGraphPlugin.js',
+			'./browser/scripts/abstractPlugins/abstractEntityPlugin.js',
 			'./browser/scripts/abstractPlugins/abstractTextAreaPlugin.js',
 			'./browser/scripts/abstractPlugins/abstractObjectGazePlugin.js',
 			'./browser/scripts/abstractPlugins/abstractThreeLoaderObjPlugin.js',

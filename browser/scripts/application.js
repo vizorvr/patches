@@ -994,6 +994,13 @@ Application.prototype.onCut = function(e) {
 	}
 }
 
+Application.prototype.removeEntityFromScene = function(entityName) {
+	var node = E2.core.root_graph.findNodeByPlugin(entityName)
+	if (!node)
+		return;
+	this.graphApi.removeNode(E2.core.root_graph, node)
+}
+
 Application.prototype.pasteFromClipboard = function() {
 	return this.pasteJson(this.clipboard)
 }

@@ -51,7 +51,8 @@ E2.erase_color = '#ff3b3b';
 E2.COLOR_COMPATIBLE_SLOT = '#080';
 
 E2.WORLD_PATCHES = [
-	'entity', 'entity_component'
+	'entity', 'threesixty_photo',
+	'entity_component'
 ]
 
 E2.GRAPH_NODES = [

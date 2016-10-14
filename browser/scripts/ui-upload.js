@@ -147,8 +147,9 @@ function instantiateTemplateForUpload(asset, position) {
 	switch(asset.modelName) {
 		case 'image':
 			templateName = 'texture-plane.hbs'
-			if (asset.tags.indexOf('equirectangular') !== -1)
-				templateName = 'skysphere.hbs'
+			if (asset.tags.indexOf('equirectangular') !== -1) {
+				templateName = '360photo.hbs'
+			}
 			break;
 		case 'scene':
 			templateName = 'scene.hbs'
@@ -173,6 +174,10 @@ function instantiateTemplateForUpload(asset, position) {
 		}
 
 		E2.app.undoManager.begin('Drag & Drop Upload')
+
+		// if there is already a 360 photo in the scene,
+		// replace it with this one
+		E2.app.removeEntityFromScene('threesixty_photo_entity')
 
 		E2.track({
 			event: 'patchAdded', 
@@ -253,6 +258,10 @@ VizorUI.prototype.initDropUpload = function() {
 		})
 		.then(function(uploadedFiles) {
 			return when.map(uploadedFiles, function(uploaded) {
+				// dropping into root graph, you want it in the scene
+				if (E2.core.active_graph === E2.core.root_graph)
+					return instantiateTemplateForUpload(uploaded, dropPosition)
+
 				if (E2.ui.isPatchEditorVisible()) {
 					return instantiatePluginForUpload(uploaded, dropPosition)
 				} else {
