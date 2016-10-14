@@ -13,6 +13,6 @@ Feature: Forking feature
     And I select all nodes
     And I copypaste
     Then the project is forked
-    And I see 24 nodes
+    And I see 16 nodes
 
 
