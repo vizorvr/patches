@@ -1,4 +1,6 @@
-var AbstractEntityPlugin = function() {
+(function() {
+
+function AbstractEntityPlugin() {
 	AbstractGraphPlugin.apply(this, arguments)
 }
 
@@ -16,3 +18,10 @@ AbstractEntityPlugin.prototype.getObject3D = function() {
 
 	return meshNode.plugin.getObject3D()
 }
+
+window.AbstractEntityPlugin = AbstractEntityPlugin
+
+if (typeof(module) !== 'undefined')
+	module.exports = AbstractEntityPlugin
+
+})()

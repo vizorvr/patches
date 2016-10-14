@@ -23,7 +23,7 @@ exports.slot = function slot(index, type, dt) {
 		index: index,
 		type: type,
 		dt: dt
-	};
+	}
 }
 
 exports.mockE2Classes = function() {
@@ -57,8 +57,6 @@ exports.mockE2Classes = function() {
 	global.E2.track = function() {}
 
 	global.E2.GridFsClient = function() {}
-
-	global.E2.EnvironmentSettings = function(){}
 
 	global.E2.EnvironmentSettings = function(){}
 	global.E2.Noise = function() {this.noise2D = function(){}}

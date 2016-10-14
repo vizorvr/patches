@@ -2,7 +2,6 @@
 	- "input node" refers to input proxy
 	- input_nodes is a map of graph node slot uid -> input proxy node
 		inside the graph
-
  */
 function SubGraphPlugin(core, node) {
 	Plugin.apply(this, arguments)
@@ -19,6 +18,7 @@ function SubGraphPlugin(core, node) {
 	this.ui = null
 	this.isGraph = true
 }
+
 SubGraphPlugin.prototype = Object.create(Plugin.prototype)
 SubGraphPlugin.prototype.constructor = SubGraphPlugin
 
