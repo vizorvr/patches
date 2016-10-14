@@ -41,6 +41,7 @@ var uiNodeCategoryMap = {};
 		'loop': 			c.compound,
 		'array_function': 	c.compound,
 		'entity': 			c.compound,
+		'threesixty_photo':	c.compound,
 		'entity_component': c.compound,
 
 		'three_scene' : 				c.environment,
