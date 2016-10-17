@@ -938,7 +938,7 @@
 
 		function onPointerHover( event ) {
 
-			if ( scope.object === undefined || _dragging === true || ( event.button !== undefined && event.button !== 0 ) ) return;
+			if ( scope.plugin === undefined || _dragging === true || ( event.button !== undefined && event.button !== 0 ) ) return;
 
 			var pointer = event.changedTouches ? event.changedTouches[ 0 ] : event;
 
