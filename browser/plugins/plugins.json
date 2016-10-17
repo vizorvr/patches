@@ -159,11 +159,15 @@
 
         "Nested Patch": "graph",
 
-        "Entity": "entity",
-        "Entity Component": "entity_component",
-
         "Loop": "loop",
         "Array Function": "array_function"
+    },
+
+    "ENTITIES / COMPONENTS": {
+        "Entity": "entity",
+        "360 Photo Entity": "threesixty_photo_entity",
+
+        "Component for Entity": "entity_component"
     },
 
     "CAMERAS": {
