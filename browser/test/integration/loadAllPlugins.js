@@ -48,8 +48,14 @@ describe('loadAllPlugins', function() {
 			}
 
 			for(var i = 0; i < plugins.length; ++i) {
+				console.log(plugins[i])
 				assert.doesNotThrow(function() {
-					pluginInstances.push(E2.app.instantiatePlugin(plugins[i]))
+					try {
+						pluginInstances.push(E2.app.instantiatePlugin(plugins[i]))
+					} catch(e) {
+						console.error(e.stack)
+						throw e
+					}
 				})
 			}
 

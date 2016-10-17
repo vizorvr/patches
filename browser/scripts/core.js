@@ -51,14 +51,14 @@ E2.erase_color = '#ff3b3b';
 E2.COLOR_COMPATIBLE_SLOT = '#080';
 
 E2.WORLD_PATCHES = [
-	'entity', 'entity_component'
+	'entity', 'threesixty_photo_entity',
+	'entity_component'
 ]
 
 E2.GRAPH_NODES = [
 	'graph', 'loop', 
-	'entity', 'entity_component',
 	'array_function', 'spawner'
-]
+].concat(E2.WORLD_PATCHES)
 
 E2.LOADING_NODES = {
 	'three_loader_model': 'model',
