@@ -1,21 +1,6 @@
 if (typeof(E2) === 'undefined')
 	E2 = {}
 
-// Monkey-patch the window object with a request/cancelAnimationFrame shims.
-window.requestAnimFrame = (function()
-{
-	return window.requestAnimationFrame       || 
-		window.webkitRequestAnimationFrame || 
-		window.mozRequestAnimationFrame
-})();
-
-window.cancelAnimFrame = (function()
-{
-	return window.cancelAnimationFrame       || 
-		window.webkitCancelAnimationFrame || 
-		window.mozCancelAnimationFrame
-})();
-
 function clone_recursive(from, to)
 {
     if (from == null || typeof from != "object") return from;
@@ -261,6 +246,26 @@ E2.util = {
 
 			return check
 		}
+	}
+}
+
+E2.util.requestAnimationFrame = function(cb) {
+	var hmd = E2.core.webVRAdapter.hmd
+
+	if (hmd && !hmd.isPolyfilled) {
+		return hmd.requestAnimationFrame(cb)
+	}
+
+	return window.requestAnimationFrame(cb)
+}
+
+E2.util.cancelAnimationFrame = function(interval) {
+	var hmd = E2.core.webVRAdapter.hmd
+
+	if (hmd && !hmd.isPolyfilled) {
+		return hmd.cancelAnimationFrame(interval)
+	} else {
+		return window.cancelAnimationFrame(interval)
 	}
 }
 

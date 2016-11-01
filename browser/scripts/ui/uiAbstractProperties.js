@@ -74,16 +74,21 @@ UIAbstractProperties.prototype.onRedo = UIAbstractProperties.prototype.onUndo
 
 // sometimes we need to wait the graph to complete a cycle so we request a call on next frame
 UIAbstractProperties.prototype.queueUpdate = function() {
-	if (this.updateQueued) return
-	this.updateQueued = true
 	var that = this
-	requestAnimFrame(function(){
+
+	if (this.updateQueued)
+		return
+
+	this.updateQueued = true
+
+	setTimeout(function() {
 		that.updateQueued = false
+
 		if (that.attached)
 			that.update()
 		else
 			console.error('queueUpdate() not attached?')
-	})
+	}, 0)
 }
 
 // resets panel, clearing container, refreshing adapter, and controls, and rerendering template
