@@ -158,10 +158,14 @@ VizorWebVRAdapter.prototype.patchWebVRManager = function() {
 }
 
 VizorWebVRAdapter.prototype.attach = function() {
-	// events emitted by boilerplate/polyfill
+	// events emitted by browser/boilerplate/polyfill
 	window.addEventListener('message', this.onMessageReceived.bind(this), false)
 	window.addEventListener('vrdisplaypresentchange', this._onVRPresentChange.bind(this), false)
 	window.addEventListener('vrdisplaydeviceparamschange', this._onVRDisplayDeviceParamsChange.bind(this), false)
+
+	// window.addEventListener('vrdisplayactivate', this.enterVR.bind(this))
+	// window.addEventListener('vrdisplaydeactivate', this.exitVROrFullscreen.bind(this))
+
 	this._manager.on('initialized', this._onManagerInitialised.bind(this))
 	this._manager.on('modechange', this._onManagerModeChanged.bind(this))
 
@@ -408,6 +412,7 @@ VizorWebVRAdapter.prototype._onVRDisplayDeviceParamsChange = function(e) {
 }
 
 VizorWebVRAdapter.prototype._onVRPresentChange = function(e) {
+	this.onBrowserResize()
 	this.emit(this.events.displayPresentChanged, e)
 	return true
 }
@@ -445,16 +450,13 @@ VizorWebVRAdapter.prototype._onManagerModeChanged = function(mode, oldMode) {
 
 	// fix iOS bug
 	this.onBrowserResize()
-
 }
 
 VizorWebVRAdapter.prototype.amendVRManagerInstructions = function() {
 	var r = this.getHmdRotateInstructions()
 
-	if (!r) {
-		console.log('no rotate instructions found')
+	if (!r)
 		return
-	}
 
 	var o = r.overlay
 
@@ -482,7 +484,7 @@ VizorWebVRAdapter.prototype.amendVRManagerInstructions = function() {
 	s.display = 'block'
 
 	o.style.height = '100%'
-	o.insertBefore(svg, o.firstChild)
+o.insertBefore(svg, o.firstChild)
 
 
 	r.text.innerHTML = r.text.innerHTML.replace("Cardboard viewer", "VR viewer")

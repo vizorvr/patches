@@ -33,6 +33,8 @@ function Player() {
 	
 	this.core.active_graph = this.core.root_graph = new Graph(this.core, null, 'root')
 	this.core.graphs.push(this.core.root_graph)
+
+	this.boundOnAnimFrame = this.on_anim_frame.bind(this)
 }
 
 Player.prototype.play = function() {
@@ -48,7 +50,7 @@ Player.prototype.play = function() {
 	E2.core.emit('player:playing')
 
 	if (!this.interval) {
-		this.interval = requestAnimFrame(this.on_anim_frame.bind(this))
+		this.interval = E2.util.requestAnimationFrame(this.boundOnAnimFrame)
 	}
 }
 
@@ -63,8 +65,8 @@ Player.prototype.schedule_stop = function(delegate) {
 }
 
 Player.prototype.stop = function() {
-	if(this.interval !== null) {
-		cancelAnimFrame(this.interval)
+	if (this.interval !== null) {
+		E2.util.cancelAnimationFrame(this.interval)
 		this.interval = null
 	}
 	
@@ -82,7 +84,8 @@ Player.prototype.stop = function() {
 }
 
 Player.prototype.on_anim_frame = function() {
-	this.interval = requestAnimFrame(this.on_anim_frame.bind(this))
+	this.interval = E2.util.requestAnimationFrame(this.boundOnAnimFrame)
+
 	this.on_update()
 
 	if (this.first_frame) {
@@ -191,7 +194,7 @@ Player.prototype.loadGraph = function(url) {
 	// if there's an existing anim frame request, cancel it
 	// so that nothing gets rendered until we ask to play() again after loading
 	if (this.interval !== null) {
-		cancelAnimFrame(this.interval)
+		E2.util.cancelAnimationFrame(this.interval)
 		this.interval = null
 	}
 
@@ -261,10 +264,9 @@ function CreatePlayer(cb) {
 	E2.core = new Core()
 	
 	E2.dom.webgl_canvas = $('#webgl-canvas')
+
 	if (E2.dom.webgl_canvas.length < 1)
 		return
-
-	E2.core = new Core()
 
 	E2.app = {}
 	E2.app.player = new Player()
