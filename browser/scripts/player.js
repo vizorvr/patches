@@ -198,7 +198,7 @@ Player.prototype.loadGraph = function(url) {
 		this.interval = null
 	}
 
-	if (E2.core.audioContext) {
+	if (E2.core.audioContext && E2.util.isMobile.iOS()) {
 		// iOS requires a user interaction to play sound. as this is called 
 		// on touchstart, create a dummy audio source and play it
 		var audioSource = E2.core.audioContext.createBufferSource()
