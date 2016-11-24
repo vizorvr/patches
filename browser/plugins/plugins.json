@@ -1,6 +1,6 @@
 {
     "VALUES": {
-        "Action": "action_button",
+        "Action Button": "action_button",
         "Color picker": "color_picker",
         "Code Editor": "text_editor_generator",
         "Number": "const_float_generator",
