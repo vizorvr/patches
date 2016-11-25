@@ -44,7 +44,7 @@ VizorUI.showHelpScreen = function(activeTab) {
 		function loadExamples(domEl) {
 			if (loaded.examples)
 				return
-			var url = '/examples'
+			var url = '/examples?public=1'
 			domEl.classList.add('loading')
 			$.get(url)
 				.success(function(response){

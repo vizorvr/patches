@@ -287,11 +287,17 @@ GraphController.prototype._userPublicIndex = function(user, req, res, next) {
 	var graphs
 
 	var paging = parsePaging(req)
+	var isAdmin = req.user && req.user.isAdmin
+	var wantPrivate = (req.query.public === '0')
 
-	if (req.user && req.user.isAdmin)
+	// if admin didn't say which graphs
+	if (isAdmin && !('public' in req.query)) {
 		graphs = that._service.userGraphs(username, paging.offset, paging.limit)
-	else
-		graphs = that._service.userGraphsWithPrivacy(username, paging.offset, paging.limit, false)	// public
+	} else {
+		// only respect wantPrivate if admin, false for everyone else
+		graphs = that._service.userGraphsWithPrivacy(username, paging.offset, paging.limit, (isAdmin && wantPrivate))
+	}
+
 
 	graphs
 	.then((result) => {
