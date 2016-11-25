@@ -281,35 +281,31 @@ var VizorPlayerUI = function() {
 		})
 	}
 
+	// display the header temporarily, and for longer if over header
+	this.headerHandler = function(e) {
+		if (['INPUT','TEXTAREA','BUTTON','SVG','USE'].indexOf(e.target.tagName) > -1 ) return true
+		if (siteUI.isInVR() || siteUI.isDragging) return true
+		if (siteUI.isModalOpen()) return true
+		if (window.Vizor && (window.Vizor.disableHeaderClick || window.Vizor.noHeader )) return true
+
+		if (!that.headerIsVisible) {
+			if (e.touches) {
+				e.stopPropagation()
+				e.preventDefault()
+			}
+			that.headerFadeIn()
+			that.queueHeaderFadeOut()
+		} else {
+			that.queueHeaderFadeOut(100, true)  // give any button some time to react
+		}
+
+		return true
+	}
+
 	this.bindHeaderBehaviour = function() {
 		var $body = that.$body,
 			$controls = that.$controls,
 			$header = that.$header
-
-		// display the header temporarily, and for longer if over header
-		function headerHandler(e) {
-			if (['INPUT','TEXTAREA','BUTTON', 'SVG', 'USE'].indexOf(e.target.tagName) > -1 ) return true
-			if (siteUI.isInVR() || siteUI.isDragging) return true
-			if (siteUI.isModalOpen()) return true
-			if (window.Vizor && (window.Vizor.disableHeaderClick || window.Vizor.noHeader )) return true
-
-			if (!that.headerIsVisible) {
-				if (e.touches) {
-					e.stopPropagation()
-					e.preventDefault()
-				}
-				that.headerFadeIn()
-				that.queueHeaderFadeOut()
-			} else {
-				that.queueHeaderFadeOut(100, true)  // give any button some time to react
-			}
-
-			return true
-		}
-
-		// dibs on these
-		document.body.addEventListener('touchend', headerHandler, true)
-		document.body.addEventListener('mouseup', headerHandler, true)
 
 		// track mouse hover on header
 		$controls
@@ -489,6 +485,9 @@ VizorPlayerUI.prototype.selectStage = function(stageName) {
 		.find('#' + stageName)
 		.addClass('front')
 
+	document.body.removeEventListener('touchend', this.headerHandler, false)
+	document.body.removeEventListener('mouseup', this.headerHandler, false)
+
 	switch (stageName) {
 		case 'readyStage':
 			$body.addClass('paused')
@@ -496,6 +495,8 @@ VizorPlayerUI.prototype.selectStage = function(stageName) {
 		case 'playingStage':
 			$body.removeClass('paused')
 			$body.addClass('playing')
+			document.body.addEventListener('touchend', this.headerHandler, false)
+			document.body.addEventListener('mouseup', this.headerHandler, false)
 			break;
 	}
 }
