@@ -288,7 +288,7 @@ function CreatePlayer(cb) {
 		alpha: true,
 		depth: true,
 		stencil: true,
-		antialias: false,
+		antialias: true,
 		premultipliedAlpha: true,
 		preserveDrawingBuffer: false
 	}
@@ -297,6 +297,7 @@ function CreatePlayer(cb) {
 		E2.dom.webgl_canvas[0].getContext('experimental-webgl', gl_attributes)
 	
 	E2.core.renderer = new THREE.WebGLRenderer({
+		antialias: true,
 		context: E2.core.glContext,
 		canvas: E2.dom.webgl_canvas[0]
 	})
