@@ -1,6 +1,7 @@
 var assert = require('assert');
 var when = require('when')
 
+global._ = require('lodash')
 global.VizorUI = require('../../scripts/ui/pageStore')
 global.EventEmitter = require('events').EventEmitter
 global.CustomEvent = function(name, opts) {
@@ -16,7 +17,26 @@ global.uniq = new Date().getTime()
 
 // note: refer to store limitations
 
+
 describe('pageStore', function() {
+
+	var creatorId = '1234abcd'
+	var profile = {
+		// must work without id
+		name: 'somename'
+	}
+	var graphWithProfile = {
+		_creator: creatorId,
+		_id : 'someid',
+		path: '/some/path',
+		profile: profile
+	}
+	var graphWithoutProfile = {
+		_creator: creatorId,
+		_id: 'someotherid',
+		path: '/some/otherpath'
+		// no profile
+	}
 
 	beforeEach(function() {
 		document.removeAllListeners()
@@ -120,5 +140,43 @@ describe('pageStore', function() {
 		done();
 	})
 
+	it('adds a graph', function(done) {
+		Vizor.pageObjects = {}
+		VizorUI.pageStore()     // makes Vizor.pageObjects into a new store
+		var page = Vizor.pageObjects
+		var graph = graphWithoutProfile
+		page.addGraph(graph)
+
+		assert.equal((graph._id in page.graphs), true, 'could not find graphs[id]')
+		assert.equal(page.graphs[graph._id].path, graph.path, 'not the same data?')
+		done()
+	})
+
+
+	it('adds a profile from graph', function(done) {
+		Vizor.pageObjects = {}
+		VizorUI.pageStore()
+		var page = Vizor.pageObjects
+		var graph = graphWithProfile
+		page.addGraph(graph)
+
+		assert.equal((graph._creator in page.profiles), true, 'could not find profiles[graph._creator]')
+		assert.equal(page.profiles[creatorId].name, profile.name, 'not the same data?')
+		done()
+	})
+
+
+	it('would keep a known creator profile if graph supplied no profile', function(done) {
+		Vizor.pageObjects = {}
+		VizorUI.pageStore()
+		var page = Vizor.pageObjects
+
+		page.addGraph(graphWithProfile)
+
+		page.addGraph(graphWithoutProfile)
+		assert.equal(page.profiles[creatorId].name, profile.name, 'profile should not have changed')
+
+		done()
+	})
 
 })

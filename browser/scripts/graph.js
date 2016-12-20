@@ -470,9 +470,6 @@ Graph.prototype.findNodeByPlugin = function(name) {
 		}
 	})
 
-	if (!node)
-		console.warn('Could not find node by plugin ('+name+') in graph(' + this.uid + ')')
-
 	return node
 }
 

@@ -51,14 +51,14 @@ E2.erase_color = '#ff3b3b';
 E2.COLOR_COMPATIBLE_SLOT = '#080';
 
 E2.WORLD_PATCHES = [
-	'entity', 'entity_component'
+	'entity', 'threesixty_photo_entity',
+	'entity_component'
 ]
 
 E2.GRAPH_NODES = [
 	'graph', 'loop', 
-	'entity', 'entity_component',
 	'array_function', 'spawner'
-]
+].concat(E2.WORLD_PATCHES)
 
 E2.LOADING_NODES = {
 	'three_loader_model': 'model',
@@ -375,17 +375,28 @@ Core.prototype.rebuild_structure_tree = function() {
 };
 
 Core.prototype.add_aux_script = function(script_url, onload) {
-	if(this.aux_scripts.hasOwnProperty(script_url)) {
-		if (onload)
+	var that = this
+	var dfd = when.defer()
+
+	if (this.aux_scripts.hasOwnProperty(script_url)) {
+		if (onload) 
 			onload()
-		return
+
+		dfd.resolve()
+	} else {
+		E2.util.loadScript('/plugins/' + script_url, function() {
+			that.aux_scripts[script_url] = true
+
+			if (onload)
+				onload()
+
+			dfd.resolve()
+		}, function(err) {
+			dfd.reject(err)
+		})
 	}
-	
-	load_script('/plugins/' + script_url, function() {
-		this.aux_scripts[script_url] = true;
-		if (onload)
-			onload()
-	}.bind(this));
+
+	return dfd.promise
 };
 
 Core.prototype.add_aux_style = function(style_url) {
