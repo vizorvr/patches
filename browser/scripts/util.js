@@ -143,7 +143,7 @@ E2.util = {
 		script.src = url
 		
 		if (!onload)
-			throw new Error('load_script without listener')
+			throw new Error('loadScript without listener')
 
 		script.onload = onload
 		script.onerror = onerror
@@ -269,6 +269,3 @@ E2.util.cancelAnimationFrame = function(interval) {
 		return window.cancelAnimationFrame(interval)
 	}
 }
-
-if (typeof(module) !== 'undefined')
-	module.exports.load_script = load_script
