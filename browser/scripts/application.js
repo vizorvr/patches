@@ -2162,15 +2162,6 @@ Application.prototype.startPlaying = function() {
 	}
 }
 
-Application.prototype.setupChat = function() {
-	if (this.chat)
-		return
-
-	this.chatStore = new E2.ChatStore()
-	this.chat = new E2.Chat(E2.dom.chatTab)
-	this.chat.start()
-}
-
 /**
  * Connect to the EditorChannel for this document
  */
@@ -2196,7 +2187,6 @@ Application.prototype.setupEditorChannel = function() {
 		this.channel = new E2.EditorChannel()
 		this.channel.connect(wsUrl)
 		this.channel.once('ready', function() { 
-			that.setupChat()
 			that.peopleStore.initialize()
 			joinChannel()
 			E2.track({ event: 'editorOpened', path: that.path })

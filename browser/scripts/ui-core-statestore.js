@@ -115,7 +115,7 @@ var UiState = function(persistentStorageRef, context) {
 	_.extend(this._internal.visibility._internal,
 		{
 			floating_panels : true,
-			panel_chat : true,
+			panel_chat : false,
 			panel_patches : true,
 			panel_assets : true,
 			patch_editor : false,

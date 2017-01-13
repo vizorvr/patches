@@ -143,6 +143,40 @@
 
 </div>
 
+
+<div class="chat-users floating-box uiopen" id="chat-window">
+	<div class="chat-tabs block-header">
+		<button class="toggle-button" id="chat-toggle" type="button">
+			<svg class="icon-arrow-vertical"><use xlink:href="#icon-arrow-vertical"></use></svg>
+		</button>
+		<ul class="nav nav-tabs" role="tablist">
+			<li class="active">
+				<a href="#chatTab" id="chatTabBtn">Chat</a>
+			</li>
+			<li>
+				<a href="#peopleTab" id="peopleTabBtn">Users</a>
+			</li>
+		</ul>
+		<button class="close-button" id="chat-close" type="button">
+			<svg class="icon-chat-close"><use xlink:href="#icon-close"></use></svg>
+		</button>
+	</div>
+	<div class="tab-content">
+		<div role="tabpanel" class="tab-pane" id="chatTab">
+			<div class="chat-nav">
+				<a href="#globalchat">Global</a><svg class="breadcrumb-separator"><use xlink:href="#breadcrumb-separator"></use></svg><span>Graph</span>
+			</div>
+			<div class="messages scrollbar"></div>
+			<div class="composer">
+				<input type="text" name="message" id="new-message-input" maxlength="1000">
+			</div>
+		</div>
+		<div role="tabpanel" class="tab-pane" id="peopleTab">
+		</div>
+	</div>
+	<div class="resize-handle"></div>
+</div>
+
 	<canvas id="webgl-canvas"
 		class="webgl-canvas-normal"
 		width="940"
