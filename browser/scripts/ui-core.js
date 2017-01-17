@@ -28,7 +28,6 @@ var uiKeys = {
 	modifyModeMove		: 'M',
 	modifyModeScale 	: 'S',
 	modifyModeRotate	: 'R',
-	focusChatPanel		: '@',
 	viewHelp 			: '?',
 
 	toggleEditorHelpers                 : 'H',
@@ -526,13 +525,6 @@ VizorUI.prototype.onKeyPress = function(e) {
 				that.dom.tabObjects.find('a').trigger('click')
 				that.dom.objectsList.find('.searchbox input').focus().select();
 			}
-			e.preventDefault();
-			e.stopPropagation();
-			break;
-		case uiKeys.focusChatPanel:
-		case 'shift+'+uiKeys.focusChatPanel:
-			state.visibility.panel_chat = true;
-			this.dom.chatWindow.find('#new-message-input').focus();
 			e.preventDefault();
 			e.stopPropagation();
 			break;

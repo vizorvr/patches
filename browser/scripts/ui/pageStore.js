@@ -161,6 +161,7 @@ VizorUI.pageStore = function() {
 	}
 
 	page.addProfile = function(profile) {
+		profile = _.cloneDeep(profile)
 		if (profile.id)
 			page.profiles._add_(profile.id, profile)
 		else
@@ -171,19 +172,20 @@ VizorUI.pageStore = function() {
 		if (!graph)
 			return console.info('addGraph but no graph')
 
+		graph = _.cloneDeep(graph)
+
 		var key = graph._id || graph.path
 		if (!key)
 			return console.error('no key for graph', graph)
 
 		if (graph._creator) {
-			var profile
-			if (graph.profile && graph.profile.id && !page.profiles[id])
-				profile = graph.profile
-			else
-				profile = {}
-
-			profile['_id'] = graph._creator
-			page.profiles._add_(graph._creator, profile)
+			if (!page.profiles[graph._creator])
+				page.profiles._add_(graph._creator, {'_id': graph._creator})
+			var profile = graph.profile
+			if (profile) {
+				profile['_id'] = graph._creator
+				page.profiles[profile._id] = profile
+			}
 		}
 
 		delete graph.profile

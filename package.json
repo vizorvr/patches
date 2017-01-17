@@ -1,6 +1,6 @@
 {
   "name": "Vizor",
-  "version": "0.14.10",
+  "version": "0.14.11",
   "description": "",
   "main": "server.js",
   "dependencies": {
@@ -112,8 +112,5 @@
   },
   "author": "Pixelface, Ltd <info@vizor.io>",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/vizorvr/vizor.git"
-  }
+  "repository": "vizorvr/vizor"
 }

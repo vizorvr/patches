@@ -994,6 +994,15 @@ Application.prototype.onCut = function(e) {
 	}
 }
 
+Application.prototype.removeEntityFromScene = function(entityName) {
+	var node = E2.core.root_graph.findNodeByPlugin(entityName)
+
+	if (!node)
+		return
+
+	this.graphApi.removeNode(E2.core.root_graph, node)
+}
+
 Application.prototype.pasteFromClipboard = function() {
 	return this.pasteJson(this.clipboard)
 }
@@ -1960,15 +1969,19 @@ Application.prototype.setupEditorBindings = function() {
 			return true
 
 		that.onCut(e)
+
 		e.preventDefault()
-	})
+
+		return true
+	}, true)
 
 	document.addEventListener('copy', function(e) {
 		if (e && E2.util.isTextInputInFocus(e))
 			return true
 
-		return that.onCopy(e)
-	})
+		that.onCopy(e)
+		return true
+	}, true)
 
 	window.addEventListener('paste', function(e) {
 		if (e && E2.util.isTextInputInFocus(e))
@@ -1977,7 +1990,8 @@ Application.prototype.setupEditorBindings = function() {
 		var data = e.clipboardData.getData('text/plain')
 		that.pasteJson(data)
 		e.preventDefault()
-	}, false)
+		return true
+	}, true)
 
 	E2.core.on('resize', function() {
 		that.onWindowResize()
@@ -2148,15 +2162,6 @@ Application.prototype.startPlaying = function() {
 	}
 }
 
-Application.prototype.setupChat = function() {
-	if (this.chat)
-		return
-
-	this.chatStore = new E2.ChatStore()
-	this.chat = new E2.Chat(E2.dom.chatTab)
-	this.chat.start()
-}
-
 /**
  * Connect to the EditorChannel for this document
  */
@@ -2182,7 +2187,6 @@ Application.prototype.setupEditorChannel = function() {
 		this.channel = new E2.EditorChannel()
 		this.channel.connect(wsUrl)
 		this.channel.once('ready', function() { 
-			that.setupChat()
 			that.peopleStore.initialize()
 			joinChannel()
 			E2.track({ event: 'editorOpened', path: that.path })

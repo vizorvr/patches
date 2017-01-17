@@ -1,6 +1,6 @@
 {
     "VALUES": {
-        "Action": "action_button",
+        "Action Button": "action_button",
         "Color picker": "color_picker",
         "Code Editor": "text_editor_generator",
         "Number": "const_float_generator",
@@ -159,11 +159,15 @@
 
         "Nested Patch": "graph",
 
-        "Entity": "entity",
-        "Entity Component": "entity_component",
-
         "Loop": "loop",
         "Array Function": "array_function"
+    },
+
+    "ENTITIES / COMPONENTS": {
+        "Entity": "entity",
+        "360 Photo Entity": "threesixty_photo_entity",
+
+        "Component for Entity": "entity_component"
     },
 
     "CAMERAS": {
@@ -334,7 +338,8 @@
         "Stereo Cube Map (old)": "stereo_cube_map",
         "Photosphere Orientation": "photosphere_orientation_reader",
         "Spatial Audio Listener": "audio_spatial_listener",
-        "Spatial Audio Panner": "audio_spatial_panner"
+        "Spatial Audio Panner": "audio_spatial_panner",
+        "Streamr Client": "streamr_client"
     }
 
 }

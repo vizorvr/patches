@@ -1,24 +1,27 @@
 {{!--
     // adds this graph card's data to Vizor.pageObjects.graphs{}
     // also places graph._creator data in Vizor.pageObjects.profiles{}
-    // note, see also userpages.js
+    // NB it is highly likely that Vizor.pageObjects is not a store yet
+    // NB also see userpages.js
 --}}
 <script>
     (function() {
         var j = {{{json this deleteKeys="withActions,allowAllActions,withLinks,withActionEdit,withActionView,withActionChoose"}}}
-
+        var page = window.Vizor.pageObjects
         {{#if _id}}
-            window.Vizor.pageObjects.graphs['{{_id}}'] = j
+            page.graphs['{{_id}}'] = j
         {{else}}
-            window.Vizor.pageObjects.graphs['{{{path}}}'] = j
+            page.graphs['{{{path}}}'] = j
         {{/if}}
 
         {{#if _creator}}
-            window.Vizor.pageObjects.profiles['{{_creator}}'] = {}
+            if (!page.profiles['{{_creator}}'])
+                page.profiles['{{_creator}}'] = {}
+
             {{#if profile}}
-                window.Vizor.pageObjects.profiles['{{_creator}}'] = {{{json profile}}}
+                page.profiles['{{_creator}}'] = {{{json profile}}}
             {{/if}}
-            window.Vizor.pageObjects.profiles['{{_creator}}']['_id'] = j._creator
+            page.profiles['{{_creator}}']['_id'] = j._creator
         {{/if}}
 
     })();
