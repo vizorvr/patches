@@ -20,7 +20,7 @@ var UiState = function(persistentStorageRef, context) {
 	EventEmitter.apply(this, arguments)
 	var that = this
 
-	var persistentStorageKey = 'uiState105'
+	var persistentStorageKey = 'uiState105b'
 
 	var defineProperty = function(obj, prop, options, callback) {
 		options = _.extend({
