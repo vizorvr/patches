@@ -551,6 +551,10 @@ VizorWebVRAdapter.prototype.isVRCompatible = function() {
 	return this.haveVRDevices
 }
 
+VizorWebVRAdapter.prototype.cameraHasPosition = function() {
+	return this._manager.hmd.hasPosition
+}
+
 VizorWebVRAdapter.prototype._addViewportMeta = function() {
 	var meta = document.getElementById('viewportmeta')
 

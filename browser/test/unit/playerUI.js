@@ -30,6 +30,11 @@ describe('PlayerUI', function() {
 				}
 			},
 			uid: function() { return dateNow },
+			util: {
+				isBrowser: {
+					Carmel: function() { return false }
+				}
+			},
 			app: {
 				player: {
 					state: {

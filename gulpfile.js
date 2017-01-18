@@ -104,7 +104,8 @@ var paths = {
 
 			'./browser/scripts/plugin-manager-bundled.js',
 		
-			'./browser/vendor/toji/webgl-utils/src/wglu-stats.js'
+			'./browser/vendor/toji/webgl-utils/src/wglu-stats.js',
+        	'./browser/vendor/borismus/ray-input.js'
 		],
 
 		player: [

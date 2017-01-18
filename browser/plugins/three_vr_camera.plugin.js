@@ -55,7 +55,7 @@
 			that.offset.set(that.state.position.x, that.state.position.y, that.state.position.z)
 		})
 
-		E2.app.player.camera = this
+		E2.app.player.cameraPlugin = this
 	}
 
 	ThreeVRCameraPlugin.prototype = Object.create(Plugin.prototype)
@@ -93,16 +93,7 @@
 			this.dolly = new THREE.PerspectiveCamera()
 
 		if (!this.vrControlCamera) {
-			// try to find out default fov from the device
-			// use hardware here for early detection
-			if (hardware.hmd) {
-			}
-
-			this.vrControlCamera = new THREE.PerspectiveCamera(
-				this.defaultFOV,
-				this.domElement.clientWidth / this.domElement.clientHeight,
-				0.001,
-				1000)
+			this.vrControlCamera = E2.app.player.vrControlCamera
 
 			// layer is for mono camera only
 			this.vrControlCamera.layers.enable(3)
@@ -146,6 +137,8 @@
 	}
 
 	ThreeVRCameraPlugin.prototype.update_state = function() {
+		var concatenatedCamera = E2.app.player.concatenatedCamera
+
 		this.object3d.position.set(
 			this.positionFromGraph.x + this.state.position.x,
 			this.positionFromGraph.y + this.state.position.y,
@@ -161,6 +154,18 @@
 			this.controls.update(new THREE.Vector3(), new THREE.Quaternion())
 
 		this.object3d.updateMatrixWorld()
+
+		concatenatedCamera.position.copy(this.object3d.position)
+
+		if (E2.core.webVRAdapter.cameraHasPosition) {
+			concatenatedCamera.quaternion.copy(this.object3d.quaternion)
+		} else {
+			concatenatedCamera.quaternion.multiplyQuaternions(
+				this.object3d.quaternion,
+				this.vrControlCamera.quaternion)
+		}
+
+		concatenatedCamera.updateMatrixWorld()
 
 		this.updated = true
 	}
@@ -209,9 +214,7 @@
 		} else if (slot.index === 1) { // offset
 			return this.offset
 		} else if (slot.index === 2) { // position
-			this.outputPosition.copy(this.vrControlCamera.position)
-			this.outputPosition.applyMatrix4(this.vrControlCamera.matrixWorld)
-			return this.outputPosition
+			return E2.app.player.concatenatedCamera.position.clone()
 		}
 		else if (slot.index === 3) { // rotation
 			var tempQuaternion = this.vrControlCamera.quaternion.clone()

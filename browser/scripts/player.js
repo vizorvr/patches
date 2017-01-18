@@ -34,7 +34,55 @@ function Player() {
 	this.core.active_graph = this.core.root_graph = new Graph(this.core, null, 'root')
 	this.core.graphs.push(this.core.root_graph)
 
+	var canvas = E2.dom.webgl_canvas[0]
+	this.vrControlCamera = new THREE.PerspectiveCamera(
+				90,
+				canvas.clientWidth / canvas.clientHeight,
+				0.001,
+				1000)
+
+	this.concatenatedCamera = this.vrControlCamera.clone()
+
+	this.setupInput()
+
 	this.boundOnAnimFrame = this.on_anim_frame.bind(this)
+}
+
+Player.prototype.setupInput = function() {
+	this.rayInput = new RayInput.default(this.concatenatedCamera, E2.dom.webgl_canvas[0])
+	
+	var el = document.body
+
+	this.rayInput.on('raydown', function(mesh) {
+		if (!mesh || E2.app.worldEditor.isActive())
+			return;
+
+		E2.core.runtimeEvents.emit('gazeClicked:'+mesh.uuid)
+	})
+
+	this.rayInput.on('rayup', function(mesh) {})
+
+	this.rayInput.on('rayover', function(mesh) {
+		if (!mesh || E2.app.worldEditor.isActive())
+			return;
+
+		el.style.cursor = 'pointer'
+
+		E2.core.runtimeEvents.emit('gazeIn:'+mesh.uuid)
+	})
+
+	this.rayInput.on('rayout', function(mesh) {
+		if (!mesh || E2.app.worldEditor.isActive())
+			return;
+
+		el.style.cursor = ''
+
+		E2.core.runtimeEvents.emit('gazeOut:'+mesh.uuid)
+	})
+
+	E2.core.on('resize', function(evt) {
+		E2.app.player.rayInput.setSize(evt)
+	})
 }
 
 Player.prototype.play = function() {
@@ -105,7 +153,7 @@ Player.prototype.on_update = function() {
 	var time = this.current_state !== this.state.PAUSED ? Date.now() : this.last_time
 	var delta_t = (time - this.last_time) * 0.001
 	
-	if(this.core.update(this.abs_time, delta_t) && E2.app.updateCanvas)
+	if (this.core.update(this.abs_time, delta_t) && E2.app.updateCanvas)
 		E2.app.updateCanvas(false)
 
 	E2.app.worldEditor.update()
@@ -236,7 +284,7 @@ Player.prototype.loadAndPlay = function(url) {
 Player.prototype.getScreenshot = function(width, height) {
 	width = width || 1280
 	height = height || 720
-	var ssr = new ScreenshotRenderer(this.scene, this.camera.vrControlCamera)
+	var ssr = new ScreenshotRenderer(this.scene, this.vrControlCamera)
 	return ssr.capture(width, height)
 }
 

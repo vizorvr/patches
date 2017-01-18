@@ -65,9 +65,7 @@
 		this.boundSetupChosenObject = this.setupChosenObject.bind(this)
 		this.boundOnGraphNodesChanged = this.onGraphNodesChanged.bind(this)
 
-		this.node.on('pluginStateChanged', function() {
-			that.setupChosenObject()
-		})
+		this.node.on('pluginStateChanged', this.boundSetupChosenObject)
 
 		this.state.nodeRef = null
 		this.state.type = 0
@@ -93,6 +91,11 @@
 		if (!this.object3d.gazeClickers)
 			this.object3d.gazeClickers = {}
 
+		if (this.object3d.gazeClickers[this.node.uid])
+			return;
+
+		E2.app.player.rayInput.add(this.object3d)
+
 		this.object3d.gazeClickers[this.node.uid] = true
 		this.object3d.gazeClickerCount = Object.keys(this.object3d.gazeClickers).length
 
@@ -116,6 +119,11 @@
 	AbstractObjectGazePlugin.prototype.clearClickerOnObject = function() {
 		if (!this.object3d)
 			return;
+
+		if (!this.object3d.gazeClickers || !this.object3d.gazeClickers[this.node.uid])
+			return;
+
+		E2.app.player.rayInput.remove(this.object3d)
 
 		delete this.object3d.gazeClickers[this.node.uid]
 
@@ -280,8 +288,18 @@
 			if (this.state.nodeRef)
 				ui.find('.object-sel').val(this.state.nodeRef)
 		} else {
-			if (this.state.nodeRef)
+			if (this.state.nodeRef) {
 				this.setupChosenObject()
+			} else {
+				// default to containing Entity
+				if (this.node.parent_graph.plugin instanceof AbstractEntityPlugin) {
+					var meshNodes = findMeshNodes(this.node.parent_graph)
+					if (!meshNodes.length)
+						return;
+					this.state.nodeRef = meshNodes[0].getFullUid()
+					this.setupChosenObject()
+				}
+			}
 		}
 	}
 

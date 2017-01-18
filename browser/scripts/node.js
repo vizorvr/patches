@@ -343,8 +343,8 @@ Node.prototype.findInputSlotByName = function(name) {
 		}
 	})
 
-	if (!slot) {
-		this.plugin.dyn_inputs.some(function(s) {
+	if (!slot && this.dyn_inputs) {
+		this.dyn_inputs.some(function(s) {
 			if (s.name === name) {
 				slot = s
 				return true
