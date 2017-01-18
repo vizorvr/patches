@@ -10,12 +10,16 @@ function VizorWebVRAdapter() {
 
 	Object.defineProperty(this, 'mode', {
 		get: function() {
+			if (!that._manager)
+				return null
 			return that._manager.mode
 		}
 	})
 
 	Object.defineProperty(this, 'hmd', {
 		get: function() {
+			if (!that._manager)
+				return null
 			return that._manager.hmd
 		}
 	})
