@@ -71,7 +71,7 @@ Node.prototype.set_plugin = function(plugin) {
 		if (!slot.dt)
 			msg('ERROR: The slot \'' + slot.name + '\' does not declare a datatype.');
 	}
-	
+
 	// Decorate the slots with their index to make this immediately resolvable
 	// from a slot reference, allowing for faster code elsewhere.
 	// Additionally tagged with the type (0 = input, 1 = output) for similar reasons.

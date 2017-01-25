@@ -270,8 +270,7 @@ Core.prototype.create_dialog = function(diag, title, w, h, done_func, open_func)
 	$('button:last', modal).click(ok);
 };
 
-Core.prototype.get_default_value = function(dt)
-{
+Core.prototype.get_default_value = function(dt) {
 	var dts = this.datatypes;
 	
 	if(dt === dts.FLOAT)
@@ -281,7 +280,6 @@ Core.prototype.get_default_value = function(dt)
 	else if(dt === dts.MATRIX) {
 		return new THREE.Matrix4()
 	} else if(dt === dts.VECTOR)
-
 		return new THREE.Vector3(0, 0, 0)
 	else if(dt === dts.CAMERA)
 		return new THREE.PerspectiveCamera()

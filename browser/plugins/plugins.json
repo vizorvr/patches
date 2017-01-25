@@ -180,10 +180,11 @@
     },
 
     "AUDIO": {
+        "One-shot audio player": "audio_oneshot_on_trigger",
         "Audio player": "audio_player",
         "Audio source player": "audio_source_player",
         "Analyse": "audio_analyse_modulator",
-        "Buffer source": "audio_buffer_source_modulator",
+        "Audio source from buffer": "audio_buffer_source_modulator",
         "Delay": "audio_delay_modulator",
         "Current time": "audio_get_current_time_modulator",
         "Duration": "audio_get_duration_modulator",
