@@ -404,7 +404,6 @@ exports.connect = function connect(graph, a, aidx, b, bidx, dyn) {
 	conn.patch_up()
 	E2.app.graphApi.connect(graph, conn)
 	E2.app.onLocalConnectionChanged(conn)
-	conn.signal_change(true)
 
 	return conn
 }
@@ -412,5 +411,4 @@ exports.connect = function connect(graph, a, aidx, b, bidx, dyn) {
 exports.disconnect = function disconnect(graph, conn) {
 	E2.app.graphApi.disconnect(graph, conn)
 	E2.app.onLocalConnectionChanged(conn)
-	conn.signal_change(false)
 }
