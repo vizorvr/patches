@@ -121,7 +121,7 @@
 		})
 		.catch(function() {
 			that.texture = that.defaultTexture
-			this.texture.needsUpdate = true
+			that.texture.needsUpdate = true
 			that.waitingToLoad = false
 		})
 		.finally(function() {
