@@ -66,7 +66,7 @@ VariableLocalWriteConditional.prototype.update_input = function(slot, data) {
 VariableLocalWriteConditional.prototype.target_reg = function(id) {
 	var dslot = this.node.find_dynamic_slot(E2.slot_type.input, this.slotId)
 	
-	this.variables.lock(this, id, this.node.outputs.length)
+	this.variables.lock(this, id, this.node.getSlotConnections(dslot).length)
 
 	var r = this.variables.variables[id]
 	
