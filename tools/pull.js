@@ -115,7 +115,7 @@ function findAssets(subgraph) {
 		return
 
 	subgraph.nodes.map(function(node) {
-		if (node.plugin === 'graph')
+		if (E2.GRAPH_NODES.indexOf(node.plugin) > -1)
 			return findAssets(node.graph)
 
 		if (loadingPlugins.indexOf(node.plugin) === -1)
