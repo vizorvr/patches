@@ -10,6 +10,8 @@ var AudioOneShotPlayer = E2.plugins.audio_oneshot_on_trigger = function(core) {
 		{ name: 'trigger', dt: core.datatypes.BOOL, desc: 'Play the sound.', def: false }
 	]
 
+	this.output_slots = []
+
 	this.shouldPlay = false
 }
 

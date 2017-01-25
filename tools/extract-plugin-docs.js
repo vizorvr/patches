@@ -68,12 +68,10 @@ function captureStrings(pluginId, pluginName, plugin) {
 
 	md += '##Outputs\n'
 
-	if (plugin.output_slots) {
-		for (var i = 0; i < plugin.output_slots.length; ++i) {
-			var s = plugin.output_slots[i]
-			md += '###' + s.name + '\n'
-			md += toMarkdown(s.desc || "") + '\n\n'
-		}
+	for (var i = 0; i < plugin.output_slots.length; ++i) {
+		var s = plugin.output_slots[i]
+		md += '###' + s.name + '\n'
+		md += toMarkdown(s.desc || "") + '\n\n'
 	}
 
 	md += '##Detail\n\n'
