@@ -1,0 +1,167 @@
+{
+    "abs_t": 24.291,
+    "active_graph": "root",
+    "graph_uid": "TXDgBc0JJtS3",
+    "root": {
+        "uid": "root",
+        "parent_uid": -1,
+        "open": true,
+        "nodes": [{
+            "plugin": "float_display",
+            "x": 591,
+            "y": 512,
+            "uid": "PPWUuJJAfA9d"
+        }, {
+            "plugin": "variable_local_read",
+            "x": 358,
+            "y": 554,
+            "uid": "h2Nc2JAuRTAj",
+            "title": "a",
+            "dyn_out": [{
+                "name": "value",
+                "dt": 0,
+                "uid": "qavppWBQBNVP",
+                "dynamic": true,
+                "type": 1,
+                "index": 0,
+                "is_connected": true
+            }]
+        }, {
+            "plugin": "const_float_generator",
+            "x": 394,
+            "y": 206,
+            "uid": "fAZW4hvpgS94",
+            "open": false,
+            "state": {
+                "val": 1
+            }
+        }, {
+            "plugin": "variable_local_write",
+            "x": 616,
+            "y": 206,
+            "uid": "2wTJQPVu6hfh",
+            "title": "a",
+            "dyn_in": [{
+                "name": "value",
+                "dt": 0,
+                "uid": "vAf24AGrKSkb",
+                "dynamic": true,
+                "type": 0,
+                "index": 0,
+                "is_connected": true
+            }]
+        }, {
+            "plugin": "const_float_generator",
+            "x": 351,
+            "y": 356,
+            "uid": "FejYhVsMPXYw",
+            "open": false,
+            "state": {
+                "val": 1
+            }
+        }, {
+            "plugin": "variable_local_write_conditional",
+            "x": 613,
+            "y": 308,
+            "uid": "u2B9S2sjSYx8",
+            "title": "a",
+            "dyn_in": [{
+                "name": "value",
+                "dt": 0,
+                "uid": "rj7XZfmB7pRk",
+                "dynamic": true,
+                "type": 0,
+                "index": 0,
+                "is_connected": true
+            }]
+        }, {
+            "plugin": "const_float_generator",
+            "x": 359,
+            "y": 665,
+            "uid": "5DrW5taVbkdw",
+            "open": false,
+            "state": {
+                "val": 1
+            }
+        }, {
+            "plugin": "variable_local_write_conditional",
+            "x": 624,
+            "y": 657,
+            "uid": "VQgedjNUNCrZ",
+            "title": "a",
+            "dyn_in": [{
+                "name": "value",
+                "dt": 0,
+                "uid": "rj7XZfmB7pRk",
+                "dynamic": true,
+                "type": 0,
+                "index": 0,
+                "is_connected": true
+            }]
+        }, {
+            "plugin": "const_float_generator",
+            "x": 368,
+            "y": 795,
+            "uid": "tn5BSNZd5CKS",
+            "open": false,
+            "state": {
+                "val": 1
+            }
+        }, {
+            "plugin": "variable_local_write_conditional",
+            "x": 633,
+            "y": 787,
+            "uid": "RztLT7vcH62U",
+            "title": "a",
+            "dyn_in": [{
+                "name": "value",
+                "dt": 0,
+                "uid": "rj7XZfmB7pRk",
+                "dynamic": true,
+                "type": 0,
+                "index": 0,
+                "is_connected": true
+            }]
+        }],
+        "conns": [{
+            "src_nuid": "h2Nc2JAuRTAj",
+            "dst_nuid": "PPWUuJJAfA9d",
+            "src_slot": 0,
+            "dst_slot": "float",
+            "uid": "X2dXj4785as4",
+            "src_dyn": true
+        }, {
+            "src_nuid": "fAZW4hvpgS94",
+            "dst_nuid": "2wTJQPVu6hfh",
+            "src_slot": "value",
+            "dst_slot": 0,
+            "uid": "fWL3rPkeQQjq",
+            "dst_dyn": true
+        }, {
+            "src_nuid": "FejYhVsMPXYw",
+            "dst_nuid": "u2B9S2sjSYx8",
+            "src_slot": "value",
+            "dst_slot": 0,
+            "uid": "tw4DY3krEgkK",
+            "dst_dyn": true
+        }, {
+            "src_nuid": "5DrW5taVbkdw",
+            "dst_nuid": "VQgedjNUNCrZ",
+            "src_slot": "value",
+            "dst_slot": 0,
+            "uid": "WSmkZmS4tZWm",
+            "dst_dyn": true
+        }, {
+            "src_nuid": "tn5BSNZd5CKS",
+            "dst_nuid": "RztLT7vcH62U",
+            "src_slot": "value",
+            "dst_slot": 0,
+            "uid": "FmaZC4Y3ztP3",
+            "dst_dyn": true
+        }],
+        "variables": [{
+            "id": "a",
+            "dt": 0
+        }]
+    }
+}

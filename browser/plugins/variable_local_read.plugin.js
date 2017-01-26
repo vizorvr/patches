@@ -51,7 +51,7 @@ VariableLocalRead.prototype.update_output = function() {
 }
 
 VariableLocalRead.prototype.target_reg = function(id) {
-	this.variables.lock(this, id, this.node.getConnections().length)
+	this.variables.lock(this, id, this.node.outputs.length)
 	
 	var r = this.variables.variables[id]
 
