@@ -45,7 +45,7 @@ VariableLocalWrite.prototype.update_input = function(slot, data) {
 VariableLocalWrite.prototype.target_reg = function(id) {
 	var dslot = this.node.find_dynamic_slot(E2.slot_type.input, this.slotId)
 	
-	this.variables.lock(this, id, this.node.getConnections().length)
+	this.variables.lock(this, id, this.node.inputs.length)
 
 	var r = this.variables.variables[id]
 	
