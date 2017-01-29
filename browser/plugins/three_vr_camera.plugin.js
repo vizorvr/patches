@@ -138,6 +138,7 @@
 
 	ThreeVRCameraPlugin.prototype.update_state = function() {
 		var concatenatedCamera = E2.app.player.concatenatedCamera
+		var hmd = E2.core.webVRAdapter.hmd
 
 		this.object3d.position.set(
 			this.positionFromGraph.x + this.state.position.x,
@@ -157,7 +158,7 @@
 
 		concatenatedCamera.position.copy(this.object3d.position)
 
-		if (E2.core.webVRAdapter.cameraHasPosition) {
+		if (hmd.capabilities.hasPosition) {
 			concatenatedCamera.quaternion.copy(this.object3d.quaternion)
 		} else {
 			concatenatedCamera.quaternion.multiplyQuaternions(
