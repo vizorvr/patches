@@ -245,6 +245,7 @@ var VizorPlayerUI = function() {
 			e.preventDefault()
 			var data = {
 				origin	: Vizor.origin,
+				embedOrigin: Vizor.embedOrigin,
 				shareURL : Vizor.shareURL,
 				embedSrc : Vizor.embedSrc
 			}

@@ -76,14 +76,15 @@
             window.Vizor = {}
 
         Vizor.origin = window.location.origin
+        Vizor.embedOrigin = Vizor.origin.replace('https://','//').replace('http://','//')
         Vizor.isEditor = false
 
     {{#if graph.owner}}
-        Vizor.shareURL = window.location.origin + '/{{graph.owner}}/{{graph.name}}'
-        Vizor.embedSrc = window.location.origin + '/embed/{{graph.owner}}/{{graph.name}}'
+        Vizor.shareURL = Vizor.origin + '/{{graph.owner}}/{{graph.name}}'
+        Vizor.embedSrc = Vizor.embedOrigin + '/embed/{{graph.owner}}/{{graph.name}}'
     {{else}}
-        Vizor.shareURL = window.location.origin
-        Vizor.embedSrc = window.location.origin
+        Vizor.shareURL = Vizor.origin
+        Vizor.embedSrc = Vizor.embedOrigin
     {{/if}}
 
     {{#if autoplay}}
