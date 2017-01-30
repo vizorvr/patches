@@ -212,6 +212,11 @@
 
 		var $ui = make('div')
 
+		var $selectObject = 
+			this.$selectObject = $('<select class="object-sel" title="Select Object"/>')
+
+		this.populateObjectSelector()
+
 		$selectObject.change(function() {
 			var selection = $selectObject.val()
 			if (selection === 0)
