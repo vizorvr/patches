@@ -134,6 +134,9 @@
 
 		this.vrControlCamera.aspect = wh.width / wh.height
 		this.vrControlCamera.updateProjectionMatrix()
+
+		concatenatedCamera.aspect = this.vrControlCamera.aspect
+		concatenatedCamera.projectionMatrix = this.vrControlCamera.projectionMatrix.clone()
 	}
 
 	ThreeVRCameraPlugin.prototype.update_state = function() {
