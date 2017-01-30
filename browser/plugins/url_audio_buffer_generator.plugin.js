@@ -53,6 +53,9 @@ UrlAudioBuffer.prototype.update_state = function() {
 		E2.core.assetLoader
 		.loadAsset('audiobuffer', this.state.url)
 		.then(function(buffer) {
+			if (!buffer)
+				return;
+
 			that.buffer = buffer
 			that.updated = true
 		})

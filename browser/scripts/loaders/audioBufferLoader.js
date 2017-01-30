@@ -20,6 +20,8 @@ function AudioBufferLoader(url) {
 		E2.core.audioContext
 		.decodeAudioData(this.response, function(buffer) {
 			that.onLoaded(buffer)
+		}, function() {
+			that.onLoaded()
 		})
 	}
 
