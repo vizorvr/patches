@@ -315,9 +315,8 @@ var VizorPlayerUI = function() {
 			return true
 		}
 
-		// dibs on these
-		document.body.addEventListener('touchend', headerHandler, false)
-		document.body.addEventListener('mouseup', headerHandler, false)
+		document.body.addEventListener('touchend', headerHandler)
+		document.body.addEventListener('mouseup', headerHandler)
 
 		// track mouse hover on header
 		$controls
