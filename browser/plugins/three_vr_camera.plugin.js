@@ -162,7 +162,7 @@
 
 		concatenatedCamera.position.copy(this.object3d.position)
 
-		if (hmd.capabilities.hasPosition) {
+		if (hmd && hmd.capabilities.hasPosition) {
 			concatenatedCamera.quaternion.copy(this.object3d.quaternion)
 		} else {
 			concatenatedCamera.quaternion.multiplyQuaternions(
