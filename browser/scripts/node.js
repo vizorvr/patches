@@ -343,8 +343,8 @@ Node.prototype.findInputSlotByName = function(name) {
 		}
 	})
 
-	if (!slot) {
-		this.plugin.dyn_inputs.some(function(s) {
+	if (!slot && this.dyn_inputs) {
+		this.dyn_inputs.some(function(s) {
 			if (s.name === name) {
 				slot = s
 				return true
@@ -731,6 +731,9 @@ Node.prototype.deserialise = function(guid, d) {
 	var idMap = {
 		'register_local_read': 'variable_local_read',
 		'register_local_write': 'variable_local_write',
+		'on_three_object_gaze_clicked': 'on_three_object_rayup',
+		'on_three_object_gaze_in': 'on_three_object_rayover',
+		'on_three_object_gaze_out': 'on_three_object_rayout'
 	}
 
 	if (idMap[d.plugin])

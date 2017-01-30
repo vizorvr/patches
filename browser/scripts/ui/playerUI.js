@@ -66,6 +66,11 @@ var VizorPlayerUI = function() {
     var loadingComplete = false
 	var enforceStartMode = Vizor.autoplay && !siteUI.isInIframe()
 
+	if (typeof(E2) !== 'undefined' && E2.util.isBrowser.Carmel && E2.util.isBrowser.Carmel()) {
+		enforceStartMode = true
+		Vizor.startMode = 3
+	}
+
     this.onProgress = function(pct) {
         var progressNode = document.getElementById('progressbar')
         if (progressNode) progressNode.value = pct
@@ -240,6 +245,7 @@ var VizorPlayerUI = function() {
 			e.preventDefault()
 			var data = {
 				origin	: Vizor.origin,
+				embedOrigin: Vizor.embedOrigin,
 				shareURL : Vizor.shareURL,
 				embedSrc : Vizor.embedSrc
 			}
@@ -293,6 +299,9 @@ var VizorPlayerUI = function() {
 			if (siteUI.isModalOpen()) return true
 			if (window.Vizor && (window.Vizor.disableHeaderClick || window.Vizor.noHeader )) return true
 
+			if (e.defaultPrevented)
+				return true
+
 			if (!that.headerIsVisible) {
 				if (e.touches) {
 					e.stopPropagation()
@@ -307,9 +316,8 @@ var VizorPlayerUI = function() {
 			return true
 		}
 
-		// dibs on these
-		document.body.addEventListener('touchend', headerHandler, true)
-		document.body.addEventListener('mouseup', headerHandler, true)
+		document.body.addEventListener('touchend', headerHandler)
+		document.body.addEventListener('mouseup', headerHandler)
 
 		// track mouse hover on header
 		$controls
@@ -472,7 +480,6 @@ VizorPlayerUI.prototype.setStageFromPlayerState = function(playerState) {
 }
 
 VizorPlayerUI.prototype.selectStage = function(stageName) {
-console.log('selectStage', stageName)
 	if (stageName === this.stage)
 		return;
 

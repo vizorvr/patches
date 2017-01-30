@@ -390,7 +390,7 @@ function WebVRManager(renderer, effect, params) {
   }
 
   this.isFullscreenDisabled = !!Util.getQueryParameter('no_fullscreen');
-  this.startMode = Modes.NORMAL;
+  this.startMode = Vizor.startMode;
   var startModeParam = parseInt(Util.getQueryParameter('start_mode'));
   if (!isNaN(startModeParam)) {
     this.startMode = startModeParam;

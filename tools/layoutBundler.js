@@ -20,7 +20,7 @@ if (!layoutName) {
 
 var htmlPath = __dirname+'/../views/layouts/'+layoutName+'.handlebars'
 var htmlOutPath = __dirname+'/../views/layouts/'+layoutName+'-bundled.handlebars'
-var scriptName = layoutName+'-' + currentVersion + '.min.js'
+var scriptName = layoutName+'-layout-' + currentVersion + '.min.js'
 
 function errorHandler(err) {
 	console.error(err.message, err.lineNumber, err.stack)
