@@ -98,11 +98,12 @@ function pullAsset(gridFsUrl) {
 	gfs.createWriteStream(dpath)
 		.then(function(writeStream) {
 			remote.get(gridFsUrl)
-				.expect(200)
-				.pipe(writeStream)
-				.on('close', function() {
-					dfd.resolve()
-				})
+			.expect(200)
+			.pipe(writeStream)
+			.on('close', function() {
+				console.log('OK', gridFsUrl)
+				dfd.resolve()
+			})
 		})
 
 	return dfd.promise
@@ -122,6 +123,9 @@ function findAssets(subgraph) {
 			return;
 
 		assets.push(node.state.url)
+
+		var metaUrl = '/meta' + node.state.url
+		assets.push(metaUrl)
 	})
 
 	assets = _.uniq(assets)

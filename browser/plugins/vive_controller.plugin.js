@@ -92,7 +92,7 @@ ViveController.prototype.update_state = function() {
 		pad.pose.position[1],
 		pad.pose.position[2])
 
-	this.position.add(E2.app.player.camera.offset)
+	this.position.add(E2.app.player.cameraPlugin.offset)
 
 	this.rotation.setFromQuaternion(
 		this.rotationQuaternion.fromArray(pad.pose.orientation),

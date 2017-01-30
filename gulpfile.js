@@ -36,7 +36,7 @@ var paths = {
 			'./browser/scripts/abstractPlugins/abstractGraphPlugin.js',
 			'./browser/scripts/abstractPlugins/abstractEntityPlugin.js',
 			'./browser/scripts/abstractPlugins/abstractTextAreaPlugin.js',
-			'./browser/scripts/abstractPlugins/abstractObjectGazePlugin.js',
+			'./browser/scripts/abstractPlugins/abstractObjectRayPlugin.js',
 			'./browser/scripts/abstractPlugins/abstractThreeLoaderObjPlugin.js',
 			'./browser/scripts/abstractPlugins/abstractThreeMaterialPlugin.js',
 			'./browser/scripts/abstractPlugins/abstractThreeMeshPlugin.js',
@@ -104,7 +104,8 @@ var paths = {
 
 			'./browser/scripts/plugin-manager-bundled.js',
 		
-			'./browser/vendor/toji/webgl-utils/src/wglu-stats.js'
+			'./browser/vendor/toji/webgl-utils/src/wglu-stats.js',
+        	'./browser/vendor/borismus/ray-input.js'
 		],
 
 		player: [

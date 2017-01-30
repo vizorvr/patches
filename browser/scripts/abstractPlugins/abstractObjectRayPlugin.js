@@ -48,9 +48,7 @@
 		return selectables
 	}
 
-	function AbstractObjectGazePlugin(core) {
-		var that = this
-
+	function AbstractObjectRayPlugin(core) {
 		Plugin.apply(this, arguments)
 
 		this.input_slots = []
@@ -59,42 +57,47 @@
 			{ name: 'trigger', dt: core.datatypes.BOOL }
 		]
 
-		this.boundOnGazeIn = this.onGazeIn.bind(this)
-		this.boundOnGazeOut = this.onGazeOut.bind(this)
-		this.boundOnGazeClicked = this.onGazeClicked.bind(this)
+		this.boundOnRayOver = this.onRayOver.bind(this)
+		this.boundOnRayOut = this.onRayOut.bind(this)
+		this.boundOnRayUp = this.onRayUp.bind(this)
+		this.boundOnRayDown = this.onRayDown.bind(this)
 		this.boundSetupChosenObject = this.setupChosenObject.bind(this)
 		this.boundOnGraphNodesChanged = this.onGraphNodesChanged.bind(this)
 
-		this.node.on('pluginStateChanged', function() {
-			that.setupChosenObject()
-		})
+		this.node.on('pluginStateChanged', this.boundSetupChosenObject)
 
 		this.state.nodeRef = null
-		this.state.type = 0
 
 		this.triggerState = false
+		this.lastState = false
 	}
 
-	AbstractObjectGazePlugin.prototype = Object.create(Plugin.prototype)
+	AbstractObjectRayPlugin.prototype = Object.create(Plugin.prototype)
 
-	AbstractObjectGazePlugin.prototype.reset = function() {
+	AbstractObjectRayPlugin.prototype.onRayOver = function() {}
+	AbstractObjectRayPlugin.prototype.onRayOut = function() {}
+	AbstractObjectRayPlugin.prototype.onRayUp = function() {}
+	AbstractObjectRayPlugin.prototype.onRayDown = function() {}
+
+	AbstractObjectRayPlugin.prototype.reset = function() {
 		this.graph = this.node.parent_graph
 	}
 
-	AbstractObjectGazePlugin.prototype.onGazeIn = function() {}
-	AbstractObjectGazePlugin.prototype.onGazeOut = function() {}
-	AbstractObjectGazePlugin.prototype.onGazeClicked = function() {}
-
-	AbstractObjectGazePlugin.prototype.destroy = function() {
+	AbstractObjectRayPlugin.prototype.destroy = function() {
 		this.clearClickerOnObject()
 	}
 
-	AbstractObjectGazePlugin.prototype.installClickerOnObject = function() {
+	AbstractObjectRayPlugin.prototype.installClickerOnObject = function() {
 		if (!this.object3d.gazeClickers)
 			this.object3d.gazeClickers = {}
 
+		if (this.object3d.gazeClickers[this.node.uid])
+			return;
+
 		this.object3d.gazeClickers[this.node.uid] = true
 		this.object3d.gazeClickerCount = Object.keys(this.object3d.gazeClickers).length
+
+		E2.app.player.rayInput.add(this.object3d)
 
 		var obj = this.object3d
 		while(obj) {
@@ -108,14 +111,20 @@
 
 		E2.app.player.scene.hasClickableObjects = true
 
-		E2.core.runtimeEvents.on('gazeOut:'+this.object3d.uuid, this.boundOnGazeOut)
-		E2.core.runtimeEvents.on('gazeIn:'+this.object3d.uuid, this.boundOnGazeIn)
-		E2.core.runtimeEvents.on('gazeClicked:'+this.object3d.uuid, this.boundOnGazeClicked)
+		E2.core.runtimeEvents.on('rayout:'+this.object3d.uuid, this.boundOnRayOut)
+		E2.core.runtimeEvents.on('rayover:'+this.object3d.uuid, this.boundOnRayOver)
+		E2.core.runtimeEvents.on('raydown:'+this.object3d.uuid, this.boundOnRayDown)
+		E2.core.runtimeEvents.on('rayup:'+this.object3d.uuid, this.boundOnRayUp)
 	}
 
-	AbstractObjectGazePlugin.prototype.clearClickerOnObject = function() {
+	AbstractObjectRayPlugin.prototype.clearClickerOnObject = function() {
 		if (!this.object3d)
 			return;
+
+		if (!this.object3d.gazeClickers || !this.object3d.gazeClickers[this.node.uid])
+			return;
+
+		E2.app.player.rayInput.remove(this.object3d)
 
 		delete this.object3d.gazeClickers[this.node.uid]
 
@@ -129,14 +138,15 @@
 
 		this.targetNode.plugin.updated = true
 
-		E2.core.runtimeEvents.off('gazeOut:'+this.object3d.uuid, this.boundOnGazeOut)
-		E2.core.runtimeEvents.off('gazeIn:'+this.object3d.uuid, this.boundOnGazeIn)
-		E2.core.runtimeEvents.off('gazeClicked:'+this.object3d.uuid, this.boundOnGazeClicked)
+		E2.core.runtimeEvents.off('rayout:'+this.object3d.uuid, this.boundOnRayOut)
+		E2.core.runtimeEvents.off('rayover:'+this.object3d.uuid, this.boundOnRayOver)
+		E2.core.runtimeEvents.off('raydown:'+this.object3d.uuid, this.boundOnRayDown)
+		E2.core.runtimeEvents.off('rayup:'+this.object3d.uuid, this.boundOnRayUp)
 
 		this.object3d = undefined
 	}
 
-	AbstractObjectGazePlugin.prototype.setupChosenObject = function() {
+	AbstractObjectRayPlugin.prototype.setupChosenObject = function() {
 		if (!this.state.nodeRef)
 			return this.clearClickerOnObject()
 
@@ -146,7 +156,7 @@
 		var graph = Graph.lookup(guid)
 
 		if (!graph) {
-			console.warn('AbstractObjectGazePlugin.setupChosenObject() could not find Graph', guid)
+			console.warn('AbstractObjectRayPlugin.setupChosenObject() could not find Graph', guid)
 			return;
 		}
 
@@ -173,7 +183,7 @@
 		this.targetNode.plugin.updated = true 
 	}
 
-	AbstractObjectGazePlugin.prototype.populateObjectSelector = function() {
+	AbstractObjectRayPlugin.prototype.populateObjectSelector = function() {
 		var that = this
 
 		that.$selectObject.empty()
@@ -193,23 +203,19 @@
 		})
 	}
 
-	AbstractObjectGazePlugin.prototype.onGraphNodesChanged = function() {
+	AbstractObjectRayPlugin.prototype.onGraphNodesChanged = function() {
 		this.populateObjectSelector()
 	}
 
-	AbstractObjectGazePlugin.prototype.create_ui = function() {
+	AbstractObjectRayPlugin.prototype.create_ui = function() {
 		var that = this
 
 		var $ui = make('div')
 
-		var $selectType = $('<select class="trigger-type-sel" title="Select Trigger Type"/>')
 		var $selectObject = 
 			this.$selectObject = $('<select class="object-sel" title="Select Object"/>')
 
 		this.populateObjectSelector()
-
-		$('<option>', { value: 0, text: 'Impulse' }).appendTo($selectType)
-		$('<option>', { value: 1, text: 'Continuous' }).appendTo($selectType)
 
 		$selectObject.change(function() {
 			var selection = $selectObject.val()
@@ -218,14 +224,7 @@
 			that.undoableSetState('nodeRef', selection, that.state.nodeRef)
 		})
 
-		$selectType.change(function() {
-			that.undoableSetState('type', 
-				parseInt($selectType.val(), 10), 
-				that.state.type)
-		})
-
 		$ui.append(this.$selectObject)
-		$ui.append($selectType)
 
 		// if nodes change in this current graph, update selector
 		this.graph.on('nodeAdded', this.boundOnGraphNodesChanged)
@@ -235,59 +234,46 @@
 		return $ui
 	}
 
-	AbstractObjectGazePlugin.prototype.destroy_ui = function() {
+	AbstractObjectRayPlugin.prototype.destroy_ui = function() {
 		this.graph.off('nodeAdded', this.boundOnGraphNodesChanged)
 		this.graph.off('nodeRemoved', this.boundOnGraphNodesChanged)
 		this.graph.off('nodeRenamed', this.boundOnGraphNodesChanged)
 	}
 
-	AbstractObjectGazePlugin.prototype.update_output = function() {
+	AbstractObjectRayPlugin.prototype.update_output = function() {
 		return this.triggerState
 	}
 
-	AbstractObjectGazePlugin.prototype.onGazeIn = function() {
-		this.focused = true
-		this.updated = true
-	}
-
-	AbstractObjectGazePlugin.prototype.onGazeOut = function() {
-		this.focused = false
-		this.updated = true
-	}
-
-	AbstractObjectGazePlugin.prototype.onGazeClicked = function() {
-		this.triggerState = true
-		this.updated = true
-		this.node.queued_update = 1
-	}
-
-	AbstractObjectGazePlugin.prototype.update_state = function() {
-		if (this.lastState === this.triggerState && this.state.type === 0) {
-			this.triggerState = false
-		}
-
-		if (!this.focused)
+	AbstractObjectRayPlugin.prototype.update_state = function() {
+		if (this.lastState)
 			this.triggerState = false
 
 		this.lastState = this.triggerState
 	}
 
-	AbstractObjectGazePlugin.prototype.state_changed = function(ui) {
+	AbstractObjectRayPlugin.prototype.state_changed = function(ui) {
 		if (ui) {
-			if (this.state.type)
-				ui.find('.trigger-type-sel').val(this.state.type)
-	
 			if (this.state.nodeRef)
 				ui.find('.object-sel').val(this.state.nodeRef)
 		} else {
-			if (this.state.nodeRef)
+			if (this.state.nodeRef) {
 				this.setupChosenObject()
+			} else {
+				// default to containing Entity
+				if (this.node.parent_graph.plugin instanceof AbstractEntityPlugin) {
+					var meshNodes = findMeshNodes(this.node.parent_graph)
+					if (!meshNodes.length)
+						return;
+					this.state.nodeRef = meshNodes[0].getFullUid()
+					this.setupChosenObject()
+				}
+			}
 		}
 	}
 
-	window.AbstractObjectGazePlugin = AbstractObjectGazePlugin
+	window.AbstractObjectRayPlugin = AbstractObjectRayPlugin
 
 	if (typeof(module) !== 'undefined')
-		module.exports = AbstractObjectGazePlugin
+		module.exports = AbstractObjectRayPlugin
 })();
 

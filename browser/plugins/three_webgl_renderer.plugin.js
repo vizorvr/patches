@@ -54,11 +54,7 @@
 
 		this.scene = new THREE.Scene()
 
-		this.perspectiveCamera = new THREE.PerspectiveCamera(
-			90,
-			this.domElement.clientWidth / this.domElement.clientHeight,
-			0.1,
-			1000)
+		this.perspectiveCamera = E2.app.player.vrControlCamera
 	}
 
 	ThreeWebGLRendererPlugin.prototype.update_input = function(slot, data) {
@@ -68,6 +64,7 @@
 				return
 			case 1:
 				this.scene = data
+				E2.app.player.scene = this.scene
 				this.patchSceneForWorldEditor(this.scene)
 				return
 			case 2:

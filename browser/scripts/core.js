@@ -64,6 +64,7 @@ E2.LOADING_NODES = {
 	'three_loader_model': 'model',
 	'three_loader_scene': 'scene',
 	'url_texture_generator': 'texture',
+	'url_cubemap_generator': 'image',
 	'url_stereo_cubemap_generator': 'image',
 	'url_stereo_latlongmap_generator': 'image',
 	'url_audio_buffer_generator': 'audiobuffer',
