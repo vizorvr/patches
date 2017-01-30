@@ -66,7 +66,7 @@ var VizorPlayerUI = function() {
     var loadingComplete = false
 	var enforceStartMode = Vizor.autoplay && !siteUI.isInIframe()
 
-	if (typeof(E2) !== 'undefined' && E2.util && E2.util.isBrowser && E2.util.isBrowser.Carmel()) {
+	if (typeof(E2) !== 'undefined' && E2.util.isBrowser.Carmel && E2.util.isBrowser.Carmel()) {
 		enforceStartMode = true
 		Vizor.startMode = 3
 	}
