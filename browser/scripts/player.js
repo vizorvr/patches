@@ -50,6 +50,7 @@ function Player() {
 
 Player.prototype.setupInput = function() {
 	this.rayInput = new RayInput.default(this.concatenatedCamera, E2.dom.webgl_canvas[0])
+	this.rayInput.setSize({ width: 0, height: 0 })
 	
 	var el = document.body
 
@@ -57,10 +58,16 @@ Player.prototype.setupInput = function() {
 		if (!mesh || E2.app.worldEditor.isActive())
 			return;
 
-		E2.core.runtimeEvents.emit('gazeClicked:'+mesh.uuid)
+		E2.core.runtimeEvents.emit('raydown:'+mesh.uuid)
 	})
 
-	this.rayInput.on('rayup', function(mesh) {})
+	this.rayInput.on('rayup', function(mesh) {
+		if (!mesh || E2.app.worldEditor.isActive())
+			return;
+
+		E2.core.runtimeEvents.emit('rayup:'+mesh.uuid)
+
+	})
 
 	this.rayInput.on('rayover', function(mesh) {
 		if (!mesh || E2.app.worldEditor.isActive())
@@ -68,7 +75,7 @@ Player.prototype.setupInput = function() {
 
 		el.style.cursor = 'pointer'
 
-		E2.core.runtimeEvents.emit('gazeIn:'+mesh.uuid)
+		E2.core.runtimeEvents.emit('rayover:'+mesh.uuid)
 	})
 
 	this.rayInput.on('rayout', function(mesh) {
@@ -77,7 +84,7 @@ Player.prototype.setupInput = function() {
 
 		el.style.cursor = ''
 
-		E2.core.runtimeEvents.emit('gazeOut:'+mesh.uuid)
+		E2.core.runtimeEvents.emit('rayout:'+mesh.uuid)
 	})
 
 	E2.core.on('resize', function(evt) {
