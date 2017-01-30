@@ -20,7 +20,6 @@
 	}
 
 	OnThreeObjectRayUp.prototype.update_output = function() {
-		console.log('RAYUP OUTPUT', this.triggerState)
 		return this.triggerState
 	}
 
