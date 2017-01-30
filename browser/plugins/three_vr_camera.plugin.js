@@ -135,6 +135,7 @@
 		this.vrControlCamera.aspect = wh.width / wh.height
 		this.vrControlCamera.updateProjectionMatrix()
 
+		var concatenatedCamera = E2.app.player.concatenatedCamera
 		concatenatedCamera.aspect = this.vrControlCamera.aspect
 		concatenatedCamera.projectionMatrix = this.vrControlCamera.projectionMatrix.clone()
 	}
