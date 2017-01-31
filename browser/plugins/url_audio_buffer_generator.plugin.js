@@ -56,7 +56,7 @@ UrlAudioBuffer.prototype.update_state = function() {
 	if (this.core.audioContext) {
 		var noextname = this.state.url.substring(0, this.state.url.lastIndexOf('.'))
 
-		if (E2.util.isMobile.iOS())
+		if (E2.util.isMobile.iOS() || E2.util.isBrowser.Safari())
 			this.state.url = noextname + '.m4a'
 		else
 			this.state.url = noextname + '.ogg'
