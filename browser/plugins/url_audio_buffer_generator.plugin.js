@@ -1,4 +1,5 @@
 (function(){
+
 var UrlAudioBuffer = E2.plugins.url_audio_buffer_generator = function(core, node) {
 	Plugin.apply(this, arguments)
 	this.desc = 'Load an audio sample from an URL.'
@@ -25,14 +26,14 @@ UrlAudioBuffer.prototype.reset = function() {
 
 UrlAudioBuffer.prototype.create_ui = function() {
 	var inp = makeButton('Source', 'No audio selected.', 'url')
-	var self = this
+	var that = this
 
 	inp.click(function() {
-		FileSelectControl
-			.createAudioSelector(self.state.url)
-			.onChange(function(v) {
-				self.undoableSetState('url', v, self.state.url)
-			})
+		var fsc = FileSelectControl.createAudioSelector(that.state.url)
+		fsc.onChange(function(v) {
+			var actualFile = fsc.getFileMetadata(v)
+			that.undoableSetState('url', actualFile.path, that.state.url)
+		})
 	})
 
 	return inp
@@ -49,12 +50,22 @@ UrlAudioBuffer.prototype.update_state = function() {
 	if (!this.dirty)
 		return
 	
+	if (!this.state.url)
+		return
+
 	if (this.core.audioContext) {
+		var noextname = this.state.url.substring(0, this.state.url.lastIndexOf('.'))
+
+		if (E2.util.isMobile.iOS())
+			this.state.url = noextname + '.m4a'
+		else
+			this.state.url = noextname + '.ogg'
+
 		E2.core.assetLoader
 		.loadAsset('audiobuffer', this.state.url)
 		.then(function(buffer) {
 			if (!buffer)
-				return;
+				return
 
 			that.buffer = buffer
 			that.updated = true

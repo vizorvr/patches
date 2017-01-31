@@ -2,6 +2,7 @@ var User = require('../models/user');
 var fsPath = require('path')
 var checksum = require('checksum')
 var assetHelper = require('../models/asset-helper')
+var streamFile = require('../lib/streamFile');
 
 function AssetController(modelClass, assetService, fs) {
 	this._model = modelClass
@@ -20,6 +21,21 @@ AssetController.prototype.validate = function(req, res, next) {
 		next()
 	})
 } 
+
+AssetController.prototype.streamFile = function(req, res, next) {
+	this._service.findByPath(req.path)
+	.then(asset => {
+		if (!asset)
+			return next()
+
+		let fakereq = {
+			path: asset.url,
+			headers: req.headers,
+			header: req.header,
+		}
+		return streamFile(fakereq, res, next, this._fs).catch(next)
+	})
+}
 
 // GET /:model
 AssetController.prototype.userIndex = function(req, res, next) {

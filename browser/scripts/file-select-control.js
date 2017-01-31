@@ -89,6 +89,19 @@ FileSelectControl.prototype.files = function(files) {
 	return this
 }
 
+FileSelectControl.prototype.getFileMetadata = function(path) {
+	var meta 
+
+	this._fileList.get('files').some(function(file) {
+		if (file.url === path) {
+			meta = file
+			return true
+		}
+	})
+
+	return meta
+}
+
 FileSelectControl.prototype.selected = function(file) {
 	this._original = file
 	this._selected = file
@@ -130,7 +143,7 @@ FileSelectControl.prototype._renderFiles = function() {
 			if (!file.url)
 				file.url = file.path
 
-			file.selected = (file.path === that._selected)
+			file.selected = (file.url === that._selected)
 			if (!file.name)
 				file.name = file.path.substring(file.path.lastIndexOf('/')+1)
 			file.updatedAt = moment(file.updatedAt).fromNow()
