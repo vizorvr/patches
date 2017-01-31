@@ -1,3 +1,4 @@
+var fsPath = require('path')
 var temp = require('temp').track();
 var multer = require('multer');
 var path = require('path');
@@ -17,8 +18,7 @@ function requireAdminUser(req, res, next) {
 	res.sendStatus(401)
 }
 
-module.exports = 
-function modelRoutes(
+function setupDefaultRoutes(
 	app,
 	gfs,
 	mongoConnection,
@@ -371,6 +371,17 @@ function modelRoutes(
 		})
 	})
 
+	// stream a file by asset path 
+	// usually done by hash, but for audio, we need ogg and m4a on the same name
+	app.get('/:username/assets/:model/:filename', getController, function(req, res, next) {
+		requireController(req, res, function(err) {
+			if (err)
+				return next(err)
+
+			return req.controller.streamFile(req, res, next)
+		})
+	})
+
 	// list by tag for user
 	app.get('/:username/assets/:model/tag/:tag', requireController, function(req, res, next) {
 		req.controller.findByTagAndUsername(req, res, next)
@@ -409,4 +420,8 @@ function modelRoutes(
 		graphController.edit(req, res, next)
 	})
 
+}
+
+module.exports = {
+	setupDefaultRoutes: setupDefaultRoutes,
 }

@@ -15,6 +15,8 @@ var csrf = require('lusca').csrf();
 var methodOverride = require('method-override');
 var crypto = require('crypto')
 
+var streamFile = require('./lib/streamFile');
+
 var GridFsStorage = require('./lib/gridfs-storage');
 
 var flash = require('express-flash');
@@ -321,6 +323,8 @@ mongoose.connection.on('connected', (connection) => {
 })
 
 function setupModelRoutes(mongoConnection) {
+	var modelRoutes = require('./modelRoutes.js')
+
 	// stat() files in gridfs
 	app.get(/^\/stat\/data\/.*/, function(req, res) {
 		var path = req.path.replace(/^\/stat\/data/, '');
@@ -340,70 +344,7 @@ function setupModelRoutes(mongoConnection) {
 
 	// stream files from fs/gridfs
 	app.get(/^\/data\/.*/, function(req, res, next) {
-		var path = req.path.replace(/^\/data/, '')
-		var extname = fsPath.extname(path)
-		var model = path.split('/')[1]
-		var cacheControl = 'public'
-
-		switch(model) {
-			case 'dist':
-			case 'graph':
-				cacheControl = 'public, must-revalidate'
-				break;
-		}
-
-		gfs.stat(path)
-		.then(function(stat) {
-			if (!stat)
-				return res.status(404).send();
-
-			if (req.header('If-None-Match') === stat.md5)
-				return res.status(304).send();
-
-			if (req.headers.range) {
-				// stream partial file range
-				var parts = req.headers.range.replace(/bytes[=:]/, "").split("-");
-				var partialstart = parts[0];
-				var partialend = parts[1];
-
-				// start&end offset are inclusive, end is optional
-				var start = parseInt(partialstart, 10);
-				var end = partialend ? parseInt(partialend, 10) : (stat.length - 1);
-
-				var chunksize = (end - start) + 1;
-
-				res.writeHeader(206, {
-					'Content-Range': 'bytes ' + start + '-' + end + '/' + stat.length,
-					'Accept-Ranges': 'bytes',
-					'Cache-Control': cacheControl,
-					'Content-Length': chunksize,
-					'Content-Type': stat.contentType
-				});
-
-				var range = {startPos: start, endPos: end};
-				gfs.createReadStream(path, range)
-				.on('error', next)
-				.pipe(res);
-			}
-			else {
-				// stream whole file in a single request
-				res.header('Content-Type', stat.contentType);
-
-				// only accept range-requests on audio and video
-				var rangeableTypes = ['.mp3', '.m4a', '.ogg', '.mp4', '.ogm', '.ogv']
-				if (rangeableTypes.indexOf(extname) !== -1)
-						res.header('Accept-Ranges', 'bytes')
-
-				res.header('ETag', stat.md5);
-				res.header('Content-Length', stat.length)
-				res.header('Cache-Control', cacheControl)
-
-				gfs.createReadStream(path)
-				.on('error', next)
-				.pipe(res)
-
-			}
-		})
+		return streamFile(req, res, next, gfs)
 		.catch(next)
 	});
 
@@ -488,7 +429,7 @@ function setupModelRoutes(mongoConnection) {
 	  * wire up model routes
 	  **/
 
-	require('./modelRoutes.js')(
+	modelRoutes.setupDefaultRoutes(
 		app,
 		gfs,
 		mongoConnection,
