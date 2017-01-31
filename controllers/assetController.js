@@ -28,7 +28,7 @@ AssetController.prototype.streamFile = function(req, res, next) {
 		if (!asset)
 			return next()
 
-		let fakereq = {
+		var fakereq = {
 			path: asset.url,
 			headers: req.headers,
 			header: req.header,
