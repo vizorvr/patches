@@ -204,7 +204,7 @@ E2.util = {
 			return (!!navigator.userAgent.match(/Chrome/)) || (!!navigator.userAgent.match(/CriOS/))
 		},
 		Safari: function () {
-			return !!navigator.userAgent.match(/Safari/)
+			return !E2.util.isBrowser.Chrome() && !!navigator.userAgent.match(/Safari/)
 		},
 		Edge: function () {
 			return !!navigator.userAgent.match(/Edge/)

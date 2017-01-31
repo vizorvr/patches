@@ -337,7 +337,7 @@ THREE.OBJLoader.prototype = {
 
 			} else {
 
-				console.error("Ignoring unexpected line: " + line)
+				// console.error("Ignoring unexpected line: " + line)
 
 			}
 
