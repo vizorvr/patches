@@ -39,18 +39,16 @@ VizorWebVRAdapter.prototype.initialise = function(domElement, renderer, effect, 
 
 	this.domElement = domElement	// typically a canvas
 
-	this.configure()
-
-	this.proxyOrientationChange = true
-	this.proxyDeviceMotion = (typeof VizorUI !== 'undefined') 
-		&& VizorUI.isMobile.iOS()
-
 	this.options = options || {
 		hideButton: 	true,
 		isVRCompatible: true
 	}
 
-	this.options.isVRCompatible = this.haveVRDevices
+	this.configure()
+
+	this.proxyOrientationChange = true
+	this.proxyDeviceMotion = (typeof VizorUI !== 'undefined') 
+		&& VizorUI.isMobile.iOS()
 
 	if (document.body.classList)
 		document.body.classList.toggle('hasHMD', this.haveVRDevices)
@@ -64,16 +62,6 @@ VizorWebVRAdapter.prototype.initialise = function(domElement, renderer, effect, 
 		if (e.keyCode === 27)
 			this.exitVROrFullscreen()
 	}.bind(this)
-	
-	this._manager = new WebVRManager(renderer, effect, this.options)
-	this._manager.on('initialized', function() {
-		that.patchWebVRManager()
-
-		that.attach()
-
-		// initial sizing
-		that.resizeToTarget()
-	})
 }
 
 VizorWebVRAdapter.events = Object.freeze({
@@ -106,36 +94,48 @@ VizorWebVRAdapter.prototype.configure = function() {
 	w.MOUSE_KEYBOARD_CONTROLS_DISABLED	= false
 
 	navigator.getVRDisplays()
-		.then(function(displays){
-			if (!displays.length) {
-				_webVRPolyfill.enablePolyfill()
-				_webVRPolyfill.populateDevices()
-				displays = _webVRPolyfill.displays
+	.then(function(displays){
+		if (!displays.length) {
+			_webVRPolyfill.enablePolyfill()
+			_webVRPolyfill.populateDevices()
+			displays = _webVRPolyfill.displays
+		}
+
+		displays.forEach(function(display) {
+			if (display.capabilities.canPresent)
+				that.haveVRDevices = true
+
+			if (display._vizorPatched)
+				return
+
+			if (typeof display.getManualPannerRef === 'function') {
+				var panner = display.getManualPannerRef()
+				if (!(panner && panner.canInitiateRotation))
+					return
+				panner.canInitiateRotation = function(e){
+					return that.canInitiateCameraMove(e)
+				}
+			} else {
+				console.warn('no display.getManualPannerRef found', display)
 			}
 
-			displays.forEach(function(display) {
-				if (display.capabilities.canPresent)
-					that.haveVRDevices = true
-
-				if (display._vizorPatched)
-					return
-
-				if (typeof display.getManualPannerRef === 'function') {
-					var panner = display.getManualPannerRef()
-					if (!(panner && panner.canInitiateRotation))
-						return
-					panner.canInitiateRotation = function(e){
-						return that.canInitiateCameraMove(e)
-					}
-				} else {
-					console.warn('no display.getManualPannerRef found', display)
-				}
-
-				display._vizorPatched = true
-				// note, if display.wrapForFullscreen (removeFullscreenWrapper) is taken out
-				// then the cardboard selector won't show on Android because it would fullscreen the canvas, not its parent element
-			})
+			display._vizorPatched = true
+			// note, if display.wrapForFullscreen (removeFullscreenWrapper) is taken out
+			// then the cardboard selector won't show on Android because it would fullscreen the canvas, not its parent element
 		})
+
+		that.options.isVRCompatible = that.haveVRDevices
+
+		that._manager = new WebVRManager(that._renderer, that._effect, that.options)
+		that._manager.on('initialized', function() {
+			that.patchWebVRManager()
+
+			that.attach()
+
+			// initial sizing
+			that.resizeToTarget()
+		})		
+	})
 
 	var r = E2.core.renderer
 	if (typeof r.setSizeNoResize === 'undefined') {
