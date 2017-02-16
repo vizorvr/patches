@@ -68,7 +68,7 @@ function makeGraphSummary(req, graphModel) {
 		id:				graph.id,
 		graphMinUrl: 	graph.url,
 		graphName: 		graph.prettyName,
-		previewImage: 	'http://' + req.headers.host + graph.previewUrlLarge,
+		previewImage: 	'//' + req.headers.host + graph.previewUrlLarge,
 		playerVersion: 	graph.version,
 		stat:			graph.stat,
 		hasAudio:		graph.hasAudio,

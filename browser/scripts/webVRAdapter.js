@@ -107,6 +107,10 @@ VizorWebVRAdapter.prototype.configure = function() {
 
 	navigator.getVRDisplays()
 		.then(function(displays){
+			if (!displays.length) {
+				_webVRPolyfill.enablePolyfill()
+			}
+
 			displays.forEach(function(display) {
 				if (display.capabilities.canPresent)
 					that.haveVRDevices = true
