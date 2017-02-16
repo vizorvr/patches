@@ -91,7 +91,7 @@
 
 		this.renderer.shadowMap.enabled = this.inputValues.shadowsEnabled
 
-		if (this.manager.isVRMode()) {
+		if (this.adapter.isVRMode()) {
 			// vr mode doesn't necessarily update the world matrix
 			// could be a bug in new version of three.js
 			this.perspectiveCamera.updateMatrixWorld()
@@ -105,7 +105,7 @@
 		THREE.glTFAnimator.update();
 		THREE.glTFShaders.update(this.scene, activeCamera);
 
-		this.manager.render(this.scene, activeCamera)
+		this.adapter.render(this.scene, activeCamera)
 
 		if (E2.app.debugFpsDisplayVisible) {
 			this.stats.begin()
@@ -129,7 +129,7 @@
 
 	ThreeWebGLRendererPlugin.prototype.play = function() {
 		// one initial resize
-		this.manager.resizeToTarget()
+		this.adapter.resizeToTarget()
 	}
 
 	ThreeWebGLRendererPlugin.prototype.patchSceneForWorldEditor = function() {
@@ -151,27 +151,24 @@
 			updateCamera(E2.app.worldEditor.getCamera(), s)
 
 		this.renderer.setPixelRatio(s.devicePixelRatio)
-		this.effect.setSize(s.width, s.height)
+		this.adapter.effect.setSize(s.width, s.height)
 	}
 
 	ThreeWebGLRendererPlugin.prototype.state_changed = function(ui) {
-		if (!ui) {
-			this.domElement = E2.dom.webgl_canvas[0]
-			this.renderer = E2.core.renderer
+		if (ui) 
+			return;
 
-			var gl = this.domElement.getContext('webgl')
-			this.stats = new WGLUStats(gl)
+		this.domElement = E2.dom.webgl_canvas[0]
+		this.renderer = E2.core.renderer
 
-			this.effect = new THREE.VREffect(this.renderer)
+		var gl = this.domElement.getContext('webgl')
+		var events = E2.core.webVRAdapter.events
 
-			this.manager = E2.core.webVRAdapter
-			var events = this.manager.events
+		this.stats = new WGLUStats(gl)
 
-			this.manager.on(events.targetResized, this.onTargetResized.bind(this))
-
-			this.manager.initialise(this.domElement, this.renderer, this.effect)
-
-		}
+		this.adapter = E2.core.webVRAdapter
+		this.adapter.on(events.targetResized, this.onTargetResized.bind(this))
+		this.adapter.initialise(this.domElement, this.renderer)
 	}
 
 })()

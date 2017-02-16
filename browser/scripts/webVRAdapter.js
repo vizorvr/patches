@@ -29,17 +29,16 @@ function VizorWebVRAdapter() {
 
 VizorWebVRAdapter.prototype = Object.create(EventEmitter.prototype)
 
-VizorWebVRAdapter.prototype.initialise = function(domElement, renderer, effect, options) {
+VizorWebVRAdapter.prototype.initialise = function(domElement, renderer) {
 	var that = this
 
 	// only stored here for convenience/debugging
 	this._renderer = renderer
-	this._effect = effect
 	this.modes = WebVRManager.Modes
 
 	this.domElement = domElement	// typically a canvas
 
-	this.options = options || {
+	this.options = {
 		hideButton: 	true,
 		isVRCompatible: true
 	}
@@ -82,9 +81,14 @@ VizorWebVRAdapter.prototype.canInitiateCameraMove = function(e) {
 
 // configures the polyfill
 VizorWebVRAdapter.prototype.configure = function() {
+	if (this.configured)
+		return;
+
 	window.WebVRConfig = window.WebVRConfig || {}
 	var that = this
 	var w = window.WebVRConfig
+
+	this.configured = true
 
 	// w.FORCE_ENABLE_VR 	= true
 	w.NO_DPDB_FETCH 	= true
@@ -120,13 +124,16 @@ VizorWebVRAdapter.prototype.configure = function() {
 			}
 
 			display._vizorPatched = true
+
 			// note, if display.wrapForFullscreen (removeFullscreenWrapper) is taken out
 			// then the cardboard selector won't show on Android because it would fullscreen the canvas, not its parent element
 		})
 
 		that.options.isVRCompatible = that.haveVRDevices
 
-		that._manager = new WebVRManager(that._renderer, that._effect, that.options)
+		that.effect = new THREE.VREffect(that._renderer)
+
+		that._manager = new WebVRManager(that._renderer, that.effect, that.options)
 		that._manager.on('initialized', function() {
 			that.patchWebVRManager()
 
@@ -135,6 +142,8 @@ VizorWebVRAdapter.prototype.configure = function() {
 			// initial sizing
 			that.resizeToTarget()
 		})		
+
+		that.emit('ready')
 	})
 
 	var r = E2.core.renderer
@@ -530,6 +539,8 @@ VizorWebVRAdapter.prototype.isVRMode = function() {
 }
 
 VizorWebVRAdapter.prototype.render = function(scene, camera) {
+	if (!this._manager)
+		return;
 	return this._manager.render(scene, camera)
 }
 

@@ -1,4 +1,5 @@
 var assert = require('assert')
+var EventEmitter = require('events').EventEmitter
 var helpers = require('./helpers')
 var reset = helpers.reset
 var setupThree = helpers.setupThree
@@ -8,6 +9,7 @@ var VizorWebVRAdapter = require('../../scripts/webVRAdapter.js')	// respect mock
 var mockWebVRManager = function() {
 	var modes = WebVRManager.Modes
 	global.WebVRManager = function (renderer, effect, params) {
+		EventEmitter.call(this)
 		var that = this
 		this.renderer = renderer
 		this.effect = effect
@@ -34,29 +36,29 @@ var mockWebVRManager = function() {
 
 		this.on = function(){}
 	}
+	global.WebVRManager.prototype = Object.create(EventEmitter.prototype)
 	global.WebVRManager.Modes = modes
 }
 
 
 describe('Web VR Manager', function() {
 
-	beforeEach(function(){
+	beforeEach(function(done) {
 		reset()
 		global.E2.core.renderer.setSizeNoResize = function(){}
 		mockWebVRManager()
+		E2.core.webVRAdapter.on('ready', done)
+		console.log('instanti')
+		E2.app.instantiatePlugin('three_webgl_renderer')
 	})
 
 	it('instantiates a webvr adapter', function(done){
-		E2.core.webAdapter = null
-		E2.app.instantiatePlugin('three_webgl_renderer')
 		assert.ok(E2.core.webVRAdapter, 'found a web vr adapter')
 		assert.ok(E2.core.webVRAdapter instanceof global.VizorWebVRAdapter, 'found a VizorWebVRAdapter')
 		done()
 	})
 
 	it('gets and sets mode', function(done){
-
-		E2.app.instantiatePlugin('three_webgl_renderer')
 		var a = E2.core.webVRAdapter, modes = a.modes
 
 		var newMode
@@ -75,7 +77,6 @@ describe('Web VR Manager', function() {
 	})
 
 	it('toggles fullscreen', function(done){
-		E2.app.instantiatePlugin('three_webgl_renderer')
 		var a = E2.core.webVRAdapter, modes = a.modes
 
 		a.setMode(modes.NORMAL)
@@ -91,7 +92,6 @@ describe('Web VR Manager', function() {
 	})
 
 	it('tries to amend vr manager instructions', function(done){
-		E2.app.instantiatePlugin('three_webgl_renderer')
 		var a = E2.core.webVRAdapter, modes = a.modes
 
 		var triedToAmendInstructions = false
@@ -112,8 +112,6 @@ describe('Web VR Manager', function() {
 	})
 
 	it('triggers modechanged events', function(done){
-
-		E2.app.instantiatePlugin('three_webgl_renderer')
 		var a = E2.core.webVRAdapter, modes = a.modes
 
 		var modeChangeTriggered = false
