@@ -2379,6 +2379,8 @@ E2.InitialiseEngi = function(loadGraphUrl) {
 		canvas: E2.dom.webgl_canvas[0]
 	})
 
+	E2.core.webVRAdapter.initialise(E2.dom.webgl_canvas[0], E2.core.renderer)
+
 	E2.core.on('ready', E2.app.onCoreReady.bind(E2.app, loadGraphUrl))
 
 	window.onpopstate = function() {

@@ -357,5 +357,7 @@ function CreatePlayer(cb) {
 		canvas: E2.dom.webgl_canvas[0]
 	})
 
+	E2.core.webVRAdapter.initialise(E2.dom.webgl_canvas[0], E2.core.renderer)
+
 	E2.core.on('ready', cb)
 }

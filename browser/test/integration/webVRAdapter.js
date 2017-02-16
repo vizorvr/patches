@@ -48,8 +48,7 @@ describe('Web VR Manager', function() {
 		global.E2.core.renderer.setSizeNoResize = function(){}
 		mockWebVRManager()
 		E2.core.webVRAdapter.on('ready', done)
-		console.log('instanti')
-		E2.app.instantiatePlugin('three_webgl_renderer')
+		E2.core.webVRAdapter.initialise({}, E2.core.renderer)
 	})
 
 	it('instantiates a webvr adapter', function(done){

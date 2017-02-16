@@ -168,7 +168,6 @@
 
 		this.adapter = E2.core.webVRAdapter
 		this.adapter.on(events.targetResized, this.onTargetResized.bind(this))
-		this.adapter.initialise(this.domElement, this.renderer)
 	}
 
 })()
