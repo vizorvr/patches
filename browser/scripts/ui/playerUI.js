@@ -140,7 +140,9 @@ var VizorPlayerUI = function() {
 				$wrap[0].style.backgroundImage = ''
 			}
 		} else {
-			that.headerFadeIn()
+			if (!Vizor.noHeader)
+				that.headerFadeIn()
+
 			if (newState !== s.PAUSED) {
 				var bgImage = $wrap[0].style.backgroundImage
 				var storedImage = $wrap.attr('data-bgimage')
