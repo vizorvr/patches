@@ -57,10 +57,13 @@ UrlAudioBuffer.prototype.update_state = function() {
 		var noextname = this.state.url.substring(0, this.state.url.lastIndexOf('.'))
 		var extname = this.state.url.substring(this.state.url.lastIndexOf('.'))
 
-		if (extname === '.ogg' && (E2.util.isMobile.iOS() || E2.util.isBrowser.Safari()))
-			this.state.url = noextname + '.m4a'
-		else
-			this.state.url = noextname + '.ogg'
+		// force Safari/iOS to use m4a *only if the asset is an ogg*
+		// allows us to switch between ogg for everything else and m4a for Safari
+		if (extname === '.ogg') {
+			if (E2.util.isMobile.iOS() || E2.util.isBrowser.Safari()) {
+				this.state.url = noextname + '.m4a'
+			}
+		}
 
 		E2.core.assetLoader
 		.loadAsset('audiobuffer', this.state.url)
