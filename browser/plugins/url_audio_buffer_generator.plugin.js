@@ -7,11 +7,11 @@ var UrlAudioBuffer = E2.plugins.url_audio_buffer_generator = function(core, node
 	this.input_slots = [
 		{ name: 'url', dt: core.datatypes.TEXT, desc: 'Use this to load from a URL supplied as a string.', def: '' }
 	]
-	
-	this.output_slots = [ 
+
+	this.output_slots = [
 		{ name: 'buffer', dt: core.datatypes.OBJECT, desc: 'An audio buffer.' }
 	]
-	
+
 	this.state = { url: null }
 	this.core = core
 	this.buffer = null
@@ -49,14 +49,15 @@ UrlAudioBuffer.prototype.update_state = function() {
 
 	if (!this.dirty)
 		return
-	
+
 	if (!this.state.url)
 		return
 
 	if (this.core.audioContext) {
 		var noextname = this.state.url.substring(0, this.state.url.lastIndexOf('.'))
+		var extname = this.state.url.substring(this.state.url.lastIndexOf('.'))
 
-		if (E2.util.isMobile.iOS() || E2.util.isBrowser.Safari())
+		if (extname === '.ogg' && (E2.util.isMobile.iOS() || E2.util.isBrowser.Safari()))
 			this.state.url = noextname + '.m4a'
 		else
 			this.state.url = noextname + '.ogg'
