@@ -36,7 +36,7 @@ ImageController.prototype.upload = function(req, res, next) {
 }
 
 ImageController.prototype.getMetadata = function(req, res, next) {
-	var path = req.path.replace(/^\/meta/, '')
+	var path = req.path.replace(/^\/meta/, '/data')
 
 	this._service.findOne({'scaled.url' : path}).then(function(item) {
 		if (!item) {
@@ -66,7 +66,7 @@ ImageController.prototype._setUserProfileImage = function(req, res, next, imageP
 
 
 	User.findById(req.user.id, function(err, user) {
-		
+
 		if (err || !user)
 			return next(err)
 

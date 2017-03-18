@@ -17,8 +17,6 @@ var crypto = require('crypto')
 
 var streamFile = require('./lib/streamFile');
 
-var GridFsStorage = require('./lib/gridfs-storage');
-
 var flash = require('express-flash');
 
 var fsPath = require('path');
@@ -50,7 +48,13 @@ var passportConf = require('./config/passport');
 var OscServer = require('./lib/osc-server').OscServer;
 var WsChannelServer = require('./lib/wschannel-server').WsChannelServer;
 var EditorChannelServer = require('./lib/editorChannelServer').EditorChannelServer;
-var config = require('./config/config.json');
+var config = require('./config/config.js');
+
+let CloudFileSystemImpl
+if (config.server.useCDN)
+ 	CloudFileSystemImpl = require('./lib/cloudStorage')
+else
+	CloudFileSystemImpl = require('./lib/gridfs-storage')
 
 var argv = require('minimist')(process.argv.slice(2));
 
@@ -114,7 +118,9 @@ app.use(connectAssets({
 	helperContext: app.locals
 }));
 
-app.use(morgan(releaseMode ? 'combined' : 'dev'));
+if (!releaseMode)
+	app.use(morgan('dev'))
+
 app.use(bodyParser.json({
 	limit: 1024 * 1024 * 128
 }));
@@ -161,7 +167,7 @@ app.use(function(req, res, next) {
 		req.session.userId = req.user._id
 	}
 
-	res.locals.user = req.user 
+	res.locals.user = req.user
 	res.locals.KEY_MIXPANEL = process.env.KEY_MIXPANEL
 	res.locals.KEY_GTM = process.env.KEY_GTM
 	next();
@@ -180,59 +186,6 @@ app.use(function(req, res, next) {
 	next();
 });
 
-// Return 404 instead of opening a new editor instance
-// for old (pre-asm 2015) vizor experiences
-// These are explicitly disabled so that links to old vizor experiences
-// don't display a new editor page.
-app.use(function(req, res, next) {
-  // list of old vizor exprience ids (http://vizor.io/id)
-	var disallowedPaths = [
-		"m1Z1rgbbrfoj",
-		"7QoQGaYKgfkv",
-		"p7x4d4dnKf1G",
-		"m1xg7KpelHAp",
-		"QyvZxVz9nUkz",
-		"WxAGbablMTZz",
-		"yrx7nGxLQcge",
-		"NqkY4O6vauLg",
-		"JYW906AZbt9Z",
-		"6ZgdNYeDZi2K",
-		"h0p4lonG912",
-		"hTgRn7Hj9LkG",
-		"iK4tHiUb7K1k",
-		"vrplanetchase",
-		"vihartmonkeys",
-		"hASd9e904vjr",
-		"i3YxLp4XgQ7",
-		"o1FxLjP5tW3Z",
-		"2EuZis012ikL",
-		"6ov3r4ND4D3z",
-		"83jed8JAne93",
-		"k3hf8ek4jfue",
-		"oculusrex123",
-		"riftsketch12",
-		"streetview12",
-		"he3jei29fjE7",
-		"ue8JeioSleJa",
-		"Ai4y2hI4jY06",
-		"u49fE6zHXiEj",
-		"j48xnto7psj2",
-		"389cjto69djw",
-		"hr84jshtwu39"];
-
-  var path = req.url.split('/')[1];
-	
-  if (disallowedPaths.indexOf(path) > -1)
-	{
-		var err = new Error('Not found: '+path);
-		err.status = 404;
-
-		return next(err);
-	}
-
-	next();
-});
-
 app.use(function(req, res, next) {
 	res.header('Access-Control-Allow-Origin', '*')
 	if (req.headers['access-control-request-headers'])
@@ -241,16 +194,7 @@ app.use(function(req, res, next) {
 });
 
 app.use(function(req, res, next) {
-	// redirect all create urls to vizor.io 
-	if (req.hostname === 'create.vizor.io')
-		return res.redirect(301, '//vizor.io'+req.url)
-
-	next()
-})
-
-app.use(function(req, res, next)
-{
-	if(req.url.indexOf('?_') > -1)
+	if (req.url.indexOf('?_') > -1)
 		req.url = req.url.substring(0, req.url.indexOf('?_'));
 
 	next();
@@ -258,7 +202,7 @@ app.use(function(req, res, next)
 
 // old static flat files
 app.use('/data', express.static(
-		fsPath.join(__dirname, 'browser', 'data'), 
+		fsPath.join(__dirname, 'browser', 'data'),
 		{ maxAge: week * 52 }
 	)
 )
@@ -307,29 +251,24 @@ switch (process.env.FQDN) {
 		break;
 }
 
-var gfs
-
-
 mongoose.connect(secrets.db);
 mongoose.connection.on('error', function(err) {
 	throw err
 })
 
-mongoose.connection.on('connected', (connection) => {	
-	gfs = new GridFsStorage('/data')
-	gfs.on('ready', function() {
-		setupModelRoutes(mongoose.connection.db)
-	})
+mongoose.connection.on('connected', (connection) => {
+	setupModelRoutes(mongoose.connection.db)
 })
 
 function setupModelRoutes(mongoConnection) {
 	var modelRoutes = require('./modelRoutes.js')
+	const cloudStorage = new CloudFileSystemImpl()
 
-	// stat() files in gridfs
-	app.get(/^\/stat\/data\/.*/, function(req, res) {
-		var path = req.path.replace(/^\/stat\/data/, '');
+	// stat() files in cloud storage
+	app.get(/^\/stat\/.*/, function(req, res) {
+		var path = req.path.replace(/^\/stat/, '');
 
-		gfs.stat(path)
+		cloudStorage.stat(path)
 		.then(function(stat) {
 			if (!stat)
 				return res.json({ error: 404 })
@@ -342,28 +281,15 @@ function setupModelRoutes(mongoConnection) {
 		})
 	})
 
-	// stream files from fs/gridfs
+	// get files from cloud storage
 	app.get(/^\/data\/.*/, function(req, res, next) {
-		return streamFile(req, res, next, gfs)
-		.catch(next)
-	});
-
-	app.get(/^\/dl\/.*/, function(req, res, next) {
-		var path = req.path.replace(/^\/dl\/data/, '')
-
-		gfs.stat(path)
-		.then(function(stat) {
-			if (!stat)
-				return res.status(404).send();
-
-			res.header('Content-Type', 'application/octet-stream');
-			res.header('Content-Length', stat.length);
-
-			return gfs.createReadStream(path)
-			.on('error', next)
-			.pipe(res);
-		})
-		.catch(next);
+		if (config.server.useCDN) {
+			const cdnPath = req.path.substring('/data'.length)
+			return res.redirect(301, 'https://cdn.vizor.io' + cdnPath)
+		} else {
+			return streamFile(req, res, next, cloudStorage)
+			.catch(next)
+		}
 	});
 
 	// allow strong caching for bundles etc.
@@ -402,7 +328,7 @@ function setupModelRoutes(mongoConnection) {
 		req.url = '/' + req.url.split('/').splice(2).join('/')
 		next()
 	}, express.static(
-		fsPath.join(__dirname, 'browser', 'scripts'), 
+		fsPath.join(__dirname, 'browser', 'scripts'),
 		{ maxAge: week * 52 }
 	))
 
@@ -415,7 +341,7 @@ function setupModelRoutes(mongoConnection) {
 
 	// remap /scripts to /dist in production
 	app.use('/scripts', express.static(
-			fsPath.join(__dirname, 'browser', 'dist'), 
+			fsPath.join(__dirname, 'browser', 'dist'),
 			{ maxAge: week * 52 }
 		)
 	)
@@ -431,7 +357,7 @@ function setupModelRoutes(mongoConnection) {
 
 	modelRoutes.setupDefaultRoutes(
 		app,
-		gfs,
+		cloudStorage,
 		mongoConnection,
 		passportConf
 	)

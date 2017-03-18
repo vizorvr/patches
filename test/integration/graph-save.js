@@ -6,6 +6,7 @@ process.env.RETHINKDB_NAME = 'graphsave' + testId
 var request = require('supertest')
 var app = require('../../app.js')
 var fs = require('fs')
+var mongo = require('mongodb')
 var assert = require('assert')
 var expect = require('chai').expect
 var jpeg = __dirname+'/../fixtures/te-2rb.jpg'
@@ -25,6 +26,7 @@ describe('Graph', function() {
 	var deets
 
 	var agent = request.agent(app)
+	var db
 	var anonymousAgent = request.agent(app)
 
 	function setAvatar(cb) {
@@ -61,8 +63,21 @@ describe('Graph', function() {
 		}
 	}
 
+	after(function() {
+		db.dropDatabase()
+	})
+
 	before(function(done) {
-		app.events.on('ready', done)
+		app.events.on('ready', () => {
+			db = new mongo.Db('graphsave'+testId,
+				new mongo.Server('localhost', 27017),
+				{ safe: true }
+			)
+
+			db.open(function() {
+				done()
+			})
+		})
 	})
 
 	beforeEach(function(done) {
@@ -96,7 +111,7 @@ describe('Graph', function() {
 			expect(json.name).to.not.equal(path)
 			expect(json.owner).to.equal('v')
 			expect(json.path).to.equal('/v/'+json.name)
-			expect(json.url).to.equal('/data/graph/v/'+json.name+'.json')
+			assert.equal(json.url.indexOf('/data/graph/v/'+json.name), 0)
 			done()
 		})
 	})
@@ -110,14 +125,17 @@ describe('Graph', function() {
 			var json = {
 				name: res.body.name,
 				owner: res.body.owner,
-				url: res.body.url,
 				path: res.body.path
 			}
-  			expect({
-				name: path, owner: username,
+  		expect({
+				name: path,
+				owner: username,
 				path: expectedPath,
-				url: '/data/graph'+expectedPath+'.json'
 			}).to.deep.equal(json)
+			// assert expectedPath is in the url
+			assert.equal(res.body.url.indexOf(expectedPath), '/data/graph'.length)
+			// assert hash
+			assert.equal(res.body.url.substring(('/data/graph'+expectedPath+'-'+'.json').length).length, 40)
 			done()
 		})
 	})
@@ -133,14 +151,12 @@ describe('Graph', function() {
 			var json = {
 				name: res.body.name,
 				owner: res.body.owner,
-				url: res.body.url,
 				path: res.body.path
 			}
-  			expect({
+  		expect({
 				name: goodPath,
 				owner: username,
 				path: expectedPath,
-				url: '/data/graph'+expectedPath+'.json'
 			}).to.deep.equal(json)
 			done()
 		})
@@ -190,12 +206,11 @@ describe('Graph', function() {
 		var name = rand()
 		var path = '/blah/quux/bar/'+name+'.png'
 		var expectedPath = '/'+username+'/foo'
-		var optimPath = '/data/graph/'+username+'/'+name+'.min.json'
 		sendGraph(path, function(err, res) {
 			if (err) return done(err)
+			var optimPath = res.body.url.replace('.json', '.min.json')
 			request(app).get(optimPath)
-			.expect(200).end(function(err, res)
-			{
+			.expect(200).end(function(err, res) {
 				if (err) return done(err)
 				assert.equal(res.body.active_graph, 'root')
 				done()
@@ -399,9 +414,9 @@ describe('Graph', function() {
 
 	it('uploads preview images', function(done) {
 		var path = 'graph-with-preview-image-good-'+process.pid
-		var expectedSmallImagePath = '/data/previews/' + username + '/' + path + '-preview-440x330.png'
-		var expectedLargeImagePath = '/data/previews/' + username + '/' + path + '-preview-1280x720.png'
-		var expectedOriginalImagePath = '/data/previews/' + username + '/' + path + '-preview-original.png'
+		var expectedSmallImagePath = '/data/previews/' + username + '/' + path + '-preview-440x330-3b4958f8441df46a51c347c5e1e34736cbea700f.png'
+		var expectedLargeImagePath = '/data/previews/' + username + '/' + path + '-preview-1280x720-3b4958f8441df46a51c347c5e1e34736cbea700f.png'
+		var expectedOriginalImagePath = '/data/previews/' + username + '/' + path + '-preview-original-3b4958f8441df46a51c347c5e1e34736cbea700f.png'
 
 		agent.post('/graph').send({
 			path: path,
@@ -431,7 +446,7 @@ describe('Graph', function() {
 					var gotData = new Buffer(res.text).toString()
 					var expectedData = new Buffer(convertedTestPngData440x330, 'base64').toString()
 
-					assert.ok(gotData.length > expectedData.length - 20 &&
+					assert.ok(gotData.length > expectedData.length - 40 &&
 						gotData.length <= expectedData.length)
 
 					// check large preview
@@ -549,7 +564,7 @@ describe('Graph', function() {
 		.expect(200)
 		.end(function(err, res) {
 			if (err) return done(err)
-			
+
 			agent.get(editPath).expect(200).end(done)
 		})
 	})
@@ -568,7 +583,7 @@ describe('Graph', function() {
 		.expect(200)
 		.end(function(err, res) {
 			if (err) return done(err)
-			
+
 			anonymousAgent.get(editPath).expect(404).end(done)
 		})
 	})
@@ -588,7 +603,7 @@ describe('Graph', function() {
 			if (err) return done(err)
 
 			assert.equal(0, res.body.views)
-	
+
 			request(app).get(viewPath).expect(200).end(function(err) {
 				request(app).get(viewPath).expect(200).end(function(err) {
 					if (err) return done(err)
@@ -655,4 +670,3 @@ describe('Graph', function() {
 
 
 })
-
