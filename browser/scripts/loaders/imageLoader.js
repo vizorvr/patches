@@ -46,8 +46,10 @@ function ImageLoader(url) {
 	function loadMetadata(data) {
 		var dfd = when.defer()
 
+		let metaUrl = '/meta' + url.replace(AssetLoader.CDN_ROOT, '')
+
 		var xhr = new XMLHttpRequest()
-		xhr.open('GET', '/meta' + url, true)
+		xhr.open('GET', metaUrl, true)
 		xhr.crossOrigin = 'Anonymous'
 		xhr.responseType = 'text'
 

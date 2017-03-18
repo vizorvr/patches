@@ -3,4 +3,7 @@ module.exports = {
 	gridFs: process.env.GRIDFS || 'mongodb://localhost:27017/vizor-assets',
 	sessionSecret: process.env.SESSION_SECRET || 'vizor',
 	mandrill: process.env.MANDRILL || 'mandrillSecretNotThere',
+
+	cloudFilesUser: process.env.CLOUDFILES_USER || '',
+	cloudFilesApiKey: process.env.CLOUDFILES_APIKEY || '',
 };

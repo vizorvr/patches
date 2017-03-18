@@ -40,7 +40,9 @@ ModelLoader.prototype.loadObj = function(url) {
 	var that = this
 	var mtlUrl = url.replace('.obj', '.mtl')
 
-	$.get('/stat' + mtlUrl, function(data) {
+	statUrl = '/stat' + mtlUrl.replace(AssetLoader.CDN_ROOT, '')
+
+	$.get(statUrl, function(data) {
 		if (data.error === undefined) {
 			// .mtl exists on server, load .obj and .mtl
 			var mtlLoader = new THREE.MTLLoader()
@@ -66,14 +68,14 @@ ModelLoader.prototype.loadObj = function(url) {
 		}
 	})
 }
-	
+
 ModelLoader.prototype.onObjLoaded = function(geoms, mats) {
 	this.emit('loaded', {
 		geometries: geoms,
 		materials: mats
 	})
 }
-	
+
 ModelLoader.prototype.onJsonLoaded = function(geoms, mats) {
 	return this.onObjLoaded([geoms], mats)
 }

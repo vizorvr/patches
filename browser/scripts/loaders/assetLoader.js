@@ -13,6 +13,8 @@ var loadingPlugins = E2.LOADING_NODES
 function AssetLoader(loaders) {
 	EventEmitter.call(this)
 
+	this.cdnRoot = AssetLoader.CDN_ROOT
+
 	this.loadingTexture = THREE.ImageUtils.loadTexture('/data/textures/loadingtex.png')
 	this.loadingTexture.wrapS = THREE.RepeatWrapping
 	this.loadingTexture.wrapT = THREE.RepeatWrapping
@@ -36,8 +38,9 @@ function AssetLoader(loaders) {
 
 	this.assetsLoaded = 0
 	this.assetsFound = 0
-
 }
+
+AssetLoader.CDN_ROOT = 'https://3bfbb7843bb10c89eee8-15902be5d6bf27cf8f29668a92dcd38e.ssl.cf1.rackcdn.com'
 
 AssetLoader.prototype = Object.create(EventEmitter.prototype)
 
@@ -47,6 +50,9 @@ AssetLoader.prototype = Object.create(EventEmitter.prototype)
 AssetLoader.prototype.loadAsset = function(assetType, assetUrl) {
 	var that = this
 	var dfd = when.defer()
+
+	// fetch ex-GridFS assets from CDN
+	assetUrl = assetUrl.replace(/^\/data/, this.cdnRoot)
 
 	if (this.assetPromises[assetUrl]) {
 		var cache = this.assetPromises[assetUrl]

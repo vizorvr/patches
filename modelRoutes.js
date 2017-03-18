@@ -21,6 +21,7 @@ function requireAdminUser(req, res, next) {
 function setupDefaultRoutes(
 	app,
 	gfs,
+	cloudFiles,
 	mongoConnection,
 	passportConf
 ){
@@ -50,26 +51,26 @@ function setupDefaultRoutes(
 
 	var imageController = new ImageController(
 		new AssetService(require('./models/image')),
-		gfs
+		cloudFiles
 	);
 
 	var sceneController = new SceneController(
 		new AssetService(require('./models/scene')),
-		gfs
+		cloudFiles
 	);
 
 	var AudioModel = require('./models/audio');
 	var audioController = new AssetController(
 		AudioModel,
 		new AssetService(AudioModel),
-		gfs
+		cloudFiles
 	);
 
 	var VideoModel = require('./models/video');
 	var videoController = new AssetController(
 		VideoModel,
 		new AssetService(VideoModel),
-		gfs
+		cloudFiles
 	);
 
 	var patchController = new PatchController(
@@ -81,7 +82,7 @@ function setupDefaultRoutes(
 	var jsonController = new AssetController(
 		JsonModel,
 		new AssetService(JsonModel),
-		gfs
+		cloudFiles
 	);
 
 	var controllers = {
@@ -216,7 +217,7 @@ function setupDefaultRoutes(
 
 	// -----
 	// Admin
-	app.get('/admin/list', 
+	app.get('/admin/list',
 		requireAdminUser,
 		function(req, res, next) {
 			graphController.adminIndex(req, res, next)
@@ -264,7 +265,7 @@ function setupDefaultRoutes(
 
 			if (req.params.model === 'graph')
 				return req.controller.saveAnonymous(req, res, next)
-			
+
 			req.controller.uploadAnonymous(req, res, next)
 		}
 	)
@@ -304,7 +305,7 @@ function setupDefaultRoutes(
 		})
 
 	// DELETE /fthr/dunes-world
-	app.delete('/:username/:graph', 
+	app.delete('/:username/:graph',
 		passportConf.isAuthenticated,
 		function(req, res, next) {
 			req.params.path = '/'+req.params.username+'/'+req.params.graph
@@ -371,7 +372,7 @@ function setupDefaultRoutes(
 		})
 	})
 
-	// stream a file by asset path 
+	// stream a file by asset path
 	// usually done by hash, but for audio, we need ogg and m4a on the same name
 	app.get('/:username/assets/:model/:filename', getController, function(req, res, next) {
 		requireController(req, res, function(err) {
@@ -389,7 +390,7 @@ function setupDefaultRoutes(
 
 	// list by tag for current user
 	app.get('/:model/tag/:tag',
-		requireController, 
+		requireController,
 		function(req, res, next) {
 			if (!req.user || !req.user.username)
 				return res.json([])

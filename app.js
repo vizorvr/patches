@@ -52,6 +52,8 @@ var WsChannelServer = require('./lib/wschannel-server').WsChannelServer;
 var EditorChannelServer = require('./lib/editorChannelServer').EditorChannelServer;
 var config = require('./config/config.json');
 
+const CloudFiles = require('./lib/cloudFiles')
+
 var argv = require('minimist')(process.argv.slice(2));
 
 var listenHost = process.env.ENGI_BIND_IP || argv.i || config.server.host;
@@ -161,7 +163,7 @@ app.use(function(req, res, next) {
 		req.session.userId = req.user._id
 	}
 
-	res.locals.user = req.user 
+	res.locals.user = req.user
 	res.locals.KEY_MIXPANEL = process.env.KEY_MIXPANEL
 	res.locals.KEY_GTM = process.env.KEY_GTM
 	next();
@@ -221,7 +223,7 @@ app.use(function(req, res, next) {
 		"hr84jshtwu39"];
 
   var path = req.url.split('/')[1];
-	
+
   if (disallowedPaths.indexOf(path) > -1)
 	{
 		var err = new Error('Not found: '+path);
@@ -241,7 +243,7 @@ app.use(function(req, res, next) {
 });
 
 app.use(function(req, res, next) {
-	// redirect all create urls to vizor.io 
+	// redirect all create urls to vizor.io
 	if (req.hostname === 'create.vizor.io')
 		return res.redirect(301, '//vizor.io'+req.url)
 
@@ -258,7 +260,7 @@ app.use(function(req, res, next)
 
 // old static flat files
 app.use('/data', express.static(
-		fsPath.join(__dirname, 'browser', 'data'), 
+		fsPath.join(__dirname, 'browser', 'data'),
 		{ maxAge: week * 52 }
 	)
 )
@@ -307,18 +309,18 @@ switch (process.env.FQDN) {
 		break;
 }
 
-var gfs
-
+var gfs, cloudFiles
 
 mongoose.connect(secrets.db);
 mongoose.connection.on('error', function(err) {
 	throw err
 })
 
-mongoose.connection.on('connected', (connection) => {	
+mongoose.connection.on('connected', (connection) => {
 	gfs = new GridFsStorage('/data')
 	gfs.on('ready', function() {
-		setupModelRoutes(mongoose.connection.db)
+		cloudFiles = new CloudFiles()
+		cloudFiles.on('ready', () => setupModelRoutes(mongoose.connection.db))
 	})
 })
 
@@ -326,8 +328,8 @@ function setupModelRoutes(mongoConnection) {
 	var modelRoutes = require('./modelRoutes.js')
 
 	// stat() files in gridfs
-	app.get(/^\/stat\/data\/.*/, function(req, res) {
-		var path = req.path.replace(/^\/stat\/data/, '');
+	app.get(/^\/stat\/.*/, function(req, res) {
+		var path = req.path.replace(/^\/stat/, '');
 
 		gfs.stat(path)
 		.then(function(stat) {
@@ -402,7 +404,7 @@ function setupModelRoutes(mongoConnection) {
 		req.url = '/' + req.url.split('/').splice(2).join('/')
 		next()
 	}, express.static(
-		fsPath.join(__dirname, 'browser', 'scripts'), 
+		fsPath.join(__dirname, 'browser', 'scripts'),
 		{ maxAge: week * 52 }
 	))
 
@@ -415,7 +417,7 @@ function setupModelRoutes(mongoConnection) {
 
 	// remap /scripts to /dist in production
 	app.use('/scripts', express.static(
-			fsPath.join(__dirname, 'browser', 'dist'), 
+			fsPath.join(__dirname, 'browser', 'dist'),
 			{ maxAge: week * 52 }
 		)
 	)
@@ -432,6 +434,7 @@ function setupModelRoutes(mongoConnection) {
 	modelRoutes.setupDefaultRoutes(
 		app,
 		gfs,
+		cloudFiles,
 		mongoConnection,
 		passportConf
 	)

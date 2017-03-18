@@ -3,13 +3,13 @@ The MIT License (MIT)
 
 Copyright (c) 2011 Lasse Jul Nielsen
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
-and associated documentation files (the "Software"), to deal in the Software without restriction, 
-including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+and associated documentation files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
 subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all copies or substantial 
+The above copyright notice and this permission notice shall be included in all copies or substantial
 portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
@@ -56,7 +56,7 @@ E2.WORLD_PATCHES = [
 ]
 
 E2.GRAPH_NODES = [
-	'graph', 'loop', 
+	'graph', 'loop',
 	'array_function', 'spawner'
 ].concat(E2.WORLD_PATCHES)
 
@@ -69,8 +69,8 @@ E2.LOADING_NODES = {
 	'url_stereo_latlongmap_generator': 'image',
 	'url_audio_buffer_generator': 'audiobuffer',
 	'url_video_generator': 'video',
-	// 'url_audio_generator': 'audio',
-	// 'url_json_generator': 'json',
+	'url_audio_generator': 'audio',
+	'url_json_generator': 'json',
 }
 
 E2.dt = {
@@ -97,7 +97,7 @@ E2.dt = {
 	GEOMETRY: { id: 19, name: 'Geometry' },
 	QUATERNION: { id: 20, name: 'Quaternion' },
 	OBJECT3D: { id: 21, name: 'Object3D' },
-	
+
 	VECTOR4: { id: 22, name: 'Vector 4' },
 
 	ENVIRONMENTSETTINGS: { id: 23, name: 'Environment Settings' },
@@ -139,7 +139,7 @@ function Core() {
 	}
 
 	this._listeners = {};
-	
+
 	this.runtimeEvents = new EventEmitter()
 
 	this.assetLoader = new AssetLoader()
@@ -157,7 +157,7 @@ function Core() {
 
 	this.active_graph = this.root_graph = null
 	this.graphs = []
-	
+
 	this.abs_t = 0.0;
 	this.delta_t = 0.0;
 	this.graph_uid = this.get_uid()
@@ -173,10 +173,10 @@ function Core() {
 	this.aux_styles = {};
 	this.resolve_dt = []; // Table for easy reverse lookup of dt reference by id.
 	this.audioContext = null;
-	
+
 	for(var i in this.datatypes) {
 		var dt = this.datatypes[i];
-		
+
 		this.resolve_dt[dt.id] = dt;
 	}
 
@@ -216,11 +216,11 @@ Core.prototype.update = function(abs_t, delta_t)
 	}
 
 	this.root_graph.update(updateContext);
-			
+
 	var dirty = this.active_graph_dirty;
-			
+
 	this.active_graph_dirty = false;
-			
+
 	return dirty; // Did connection state change?
 };
 
@@ -273,7 +273,7 @@ Core.prototype.create_dialog = function(diag, title, w, h, done_func, open_func)
 
 Core.prototype.get_default_value = function(dt) {
 	var dts = this.datatypes;
-	
+
 	if(dt === dts.FLOAT)
 		return 0.0;
 	else if(dt === dts.COLOR)
@@ -294,7 +294,7 @@ Core.prototype.get_default_value = function(dt) {
 		return a;
 	} else if(dt === dts.OBJECT)
 		return {};
-	
+
 	// Shaders, textures, materials, scenes, light and delegates and ALL legally defaults to null.
 	return null;
 };
@@ -305,12 +305,12 @@ Core.prototype.serialise = function() {
 
 Core.prototype.serialiseToObject = function() {
 	var d = {};
-	
+
 	d.abs_t = Math.round(this.abs_t * Math.pow(10, 4)) / Math.pow(10, 4);
 	d.active_graph = this.active_graph.uid;
 	d.graph_uid = this.graph_uid;
 	d.root = this.root_graph.serialise();
-	
+
 	return d
 };
 
@@ -320,17 +320,17 @@ Core.prototype.deserialiseObject = function(d) {
 	this.graph_uid = '' + d.graph_uid;
 
 	this.active_graph.destroy_ui()
-	
+
 	this.graphs = [];
-	
+
 	this.root_graph = new Graph(this, null, null);
 	this.root_graph.deserialise(d.root);
 	this.graphs.push(this.root_graph);
-	
+
 	this.root_graph.patch_up(this.graphs);
 	this.root_graph.initialise(this.graphs);
-	
-	this.active_graph = resolve_graph(this.graphs, ''+d.active_graph); 
+
+	this.active_graph = resolve_graph(this.graphs, ''+d.active_graph);
 
 	if(!this.active_graph) {
 		msg('ERROR: The active graph (ID: ' + d.active_graph + ') is invalid. Using the root graph.');
@@ -347,14 +347,14 @@ Core.prototype.deserialise = function(str) {
 Core.prototype.rebuild_structure_tree = function() {
 	function build(graph, name) {
 		var nodes = graph.nodes;
-		
+
 		if (graph.parent_graph) {
 			var ptn = graph.parent_graph.tree_node;
 			var tnode = new TreeNode(ptn.tree, ptn, name, graph);
-			
+
 			ptn.children.push(tnode);
 		}
-		
+
 		for(var i = 0, len = nodes.length; i < len; i++) {
 			var n = nodes[i];
 
@@ -378,7 +378,7 @@ Core.prototype.add_aux_script = function(script_url, onload) {
 	var dfd = when.defer()
 
 	if (this.aux_scripts.hasOwnProperty(script_url)) {
-		if (onload) 
+		if (onload)
 			onload()
 
 		dfd.resolve()
@@ -401,7 +401,7 @@ Core.prototype.add_aux_script = function(script_url, onload) {
 Core.prototype.add_aux_style = function(style_url) {
 	if(this.aux_styles.hasOwnProperty(style_url))
 		return;
-	
+
 	load_style('/plugins/' + style_url);
 	this.aux_styles[style_url] = true;
 }
