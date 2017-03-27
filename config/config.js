@@ -5,8 +5,8 @@ module.exports = {
 		enableOSC: true,
 		oscPort: 8001,
 		enableFrameDumping: true,
-		useCDN: true,
-		// useCDN: process.env.NODE_ENV === 'production',
+		//useCDN: true,
+		useCDN: process.env.NODE_ENV === 'production',
 		engiPath: './browser/',
 		host: '127.0.0.1',
 		port: 8000
