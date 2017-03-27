@@ -43,10 +43,12 @@ PatchManager.prototype.loadPatches = function() {
 			if (Vizor.releaseMode && patchMeta.type === 'entity_component')
 				return;
 
-			that.add(patchMeta.category, patchMeta.name, patchMeta.type, patchMeta.url)
+			that.add(patchMeta.category, patchMeta.name, patchMeta.type,
+				AssetLoader.getCDNURL(patchMeta.url))
 
 			if (E2.WORLD_PATCHES.indexOf(patchMeta.type) > -1)
-				that.addWorldPatch(patchMeta.type, patchMeta.category, patchMeta.name, patchMeta.url)
+				that.addWorldPatch(patchMeta.type, patchMeta.category, patchMeta.name,
+					AssetLoader.getCDNURL(patchMeta.url))
 		})
 
 		dfd.resolve()
