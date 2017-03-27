@@ -1,31 +1,30 @@
-FROM node:argon
+FROM vizor/boron
 
 ENV HOME=/root \
     ENGI_BIND_IP=0.0.0.0 \
-    REDIS=redis \
     NODE_ENV=production \
-    MONGODB=mongodb://mongo:27017/vizor \
-    GRIDFS=mongodb://mongo:27017/vizor-assets
+    TMPDIR=/tmp
 
 EXPOSE 8000
 
+RUN npm config set loglevel error --silent
+
 # install our dependencies and nodejs
-RUN apt-get -q update && \ 
-    apt-get install -y graphicsmagick exiftool && \ 
-    npm install -g forever
+RUN npm install -g forever
 
 # use changes to package.json to force Docker not to use the cache
 # when we change our application's dependencies:
 ADD package.json /tmp/package.json
 RUN cd /tmp && \
-    npm install --silent --unsafe-perm && \
+    yarn --pure-lockfile && \
+    yarn cache clean && \
     mkdir -p /opt/app && \
-    cp -a /tmp/node_modules /opt/app/
+    mv /tmp/node_modules /opt/app/
 
-ADD . /opt/app
+COPY . /opt/app
 WORKDIR /opt/app
 
-RUN ./node_modules/.bin/gulp golive && \
-    sh bin/bundler.sh
+RUN ./node_modules/.bin/gulp golive \
+  && sh bin/bundler.sh
 
 CMD forever ./app.js

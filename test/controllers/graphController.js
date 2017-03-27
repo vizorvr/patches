@@ -61,9 +61,9 @@ describe('GraphController', function() {
 		}, {
 			json: function(json) {
 				assert.equal(json.path, '/memyselfandi/foo')
-				assert.equal(json.url, '/root/graph/memyselfandi/foo.json')
-				assert.equal(json.previewUrlSmall, '/root/previews/memyselfandi/foo-preview-440x330.png')
-				assert.equal(json.previewUrlLarge, '/root/previews/memyselfandi/foo-preview-1280x720.png')
+				assert.equal(json.url.indexOf('/root/graph/memyselfandi/foo'), 0)
+				assert.equal(json.previewUrlSmall, '/root/previews/memyselfandi/foo-preview-440x330-52ee467b8878a91cce01ab0f2a3e8ff849909ba5.png')
+				assert.equal(json.previewUrlLarge, '/root/previews/memyselfandi/foo-preview-1280x720-52ee467b8878a91cce01ab0f2a3e8ff849909ba5.png')
 				done()
 			}
 		}, done)
@@ -90,4 +90,3 @@ describe('GraphController', function() {
 	});
 
 });
-

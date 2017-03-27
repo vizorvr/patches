@@ -250,16 +250,17 @@
 	boot.hasEdits = {{hasEdits}}
 
 	window.Vizor = {
-        pageObjects: {graphs:{}, profiles:{}},
+		pageObjects: {graphs:{}, profiles:{}},
 		hideWebVRButton: true,
 		isEditor: true,
 		releaseMode: {{releaseMode}},
+		cdnRoot: '{{cdnRoot}}',
 		webSocketHost: '{{webSocketHost}}',
 		useSecureWebSocket: {{useSecureWebSocket}}
 	}
 
 	{{#if graph}}
-        boot.graph = {{{json graph}}}
+		boot.graph = {{{json graph}}}
 		boot.graphUrl = boot.graph.url
 	{{/if}}
 

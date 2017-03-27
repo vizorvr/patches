@@ -22,7 +22,7 @@ if (argv._.length < 1) {
 
 		$ pull [-up] owner/graph-name [local-name]
 			-u local username
-			-p password 
+			-p password
 
 			pulls the 'owner/graph-name' from the remote to local
 			- remote can be full url to the editor, 'user/graph', ...
@@ -43,7 +43,7 @@ var deets = {
 }
 
 var parsed = urlParse(argv._[0])
-var hn = (parsed.hostname || 'vizor.io') 
+var hn = (parsed.hostname || 'vizor.io')
 	+ ':' + (parsed.port || 80)
 
 var userAndGraph = parsed.path
@@ -123,9 +123,6 @@ function findAssets(subgraph) {
 			return;
 
 		assets.push(node.state.url)
-
-		var metaUrl = '/meta' + node.state.url
-		assets.push(metaUrl)
 	})
 
 	assets = _.uniq(assets)
@@ -140,7 +137,7 @@ mongoose.connection.on('error', function(err) {
 	throw err
 })
 
-mongoose.connection.on('connected', (connection) => {	
+mongoose.connection.on('connected', (connection) => {
 	gfs = new GridFsStorage('/data')
 	gfs.on('ready', function() {
 		Step1()
@@ -186,4 +183,3 @@ function Step2() {
 		})
 	})
 }
-
