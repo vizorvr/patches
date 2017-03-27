@@ -123,9 +123,6 @@ function findAssets(subgraph) {
 			return;
 
 		assets.push(node.state.url)
-
-		// var metaUrl = '/meta' + node.state.url
-		// assets.push(metaUrl)
 	})
 
 	assets = _.uniq(assets)

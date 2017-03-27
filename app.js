@@ -50,7 +50,7 @@ var WsChannelServer = require('./lib/wschannel-server').WsChannelServer;
 var EditorChannelServer = require('./lib/editorChannelServer').EditorChannelServer;
 var config = require('./config/config.js');
 
-var CloudFileSystemImpl
+let CloudFileSystemImpl
 if (config.server.useCDN)
  	CloudFileSystemImpl = require('./lib/cloudStorage')
 else
