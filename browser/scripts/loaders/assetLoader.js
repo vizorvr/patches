@@ -38,6 +38,10 @@ function AssetLoader(loaders) {
 	this.assetsFound = 0
 }
 
+AssetLoader.getCDNURL = function(url) {
+	return url.replace(/^\/data/, AssetLoader.getCDNRoot())
+}
+
 AssetLoader.getCDNRoot = function() {
 	return typeof(Vizor) !== 'undefined' ? Vizor.cdnRoot : '/data'
 }

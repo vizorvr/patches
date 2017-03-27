@@ -152,7 +152,7 @@ PatchManager.prototype.renderPatches = function() {
 
 		that.openPatch(selection)
 	})
-	
+
 	var patchSearch = $('#patches-lib .searchbox input')
 	patchSearch.focus(E2.ui.onLibSearchClicked.bind(E2.ui))
 }
@@ -165,7 +165,7 @@ PatchManager.prototype.renderWorldPatches = function() {
 		searchPlaceholderText : 'Search world patches'
 	})
 	.onOpen(this.openPatch.bind(this))
-	
+
 	var objectSearch = $('.searchbox input', E2.dom.objectsList)
 	objectSearch.focus(E2.ui.onLibSearchClicked.bind(E2.ui))
 }
@@ -199,7 +199,7 @@ PatchManager.prototype.openPatch = function(selection) {
 PatchManager.prototype.addWorldPatch = function(typeName, category, title, path) {
 	var patchMeta = {
 		type: typeName || 'patch',
-		category: category, 
+		category: category,
 		title: title,
 		path: path
 	}
@@ -214,7 +214,7 @@ PatchManager.prototype.add = function(category, title, type, path) {
 
 	var patchMeta = {
 		type: type || 'patch',
-		category: category, 
+		category: category,
 		title: title,
 		path: path
 	}
@@ -232,10 +232,9 @@ PatchManager.prototype.openPlugin = function(path, cb) {
 
 	// Add the canvas X position to the mouse X position when double clicking from the patch list to avoid spawning plugins under the list
 	if (canvasX > mouseX)
-		mouseX += canvasX 
-	
+		mouseX += canvasX
+
 	mouseY -= canvasY
-	
+
 	E2.app.instantiatePlugin(id, [mouseX, mouseY])
 }
-
