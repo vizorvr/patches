@@ -45,10 +45,12 @@ ModelLoader.prototype.loadObj = function(url) {
 		if (data.error === undefined) {
 			// .mtl exists on server, load .obj and .mtl
 			var mtlLoader = new THREE.MTLLoader()
+			mtlLoader.crossOrigin = 'anonymous'
 			mtlLoader.setPath('')
 			mtlLoader.setBaseUrl(mtlUrl.substring(0, mtlUrl.lastIndexOf('/')+1))
 			mtlLoader.load(mtlUrl, function(materials) {
 				var objLoader = new THREE.OBJLoader()
+				objLoader.crossOrigin = 'anonymous'
 				objLoader.setMaterials(materials)
 				objLoader.load(url,
 					that.onObjLoaded.bind(that),
@@ -59,7 +61,7 @@ ModelLoader.prototype.loadObj = function(url) {
 		else {
 			// no .mtl on server, load .obj only
 			var loader = new THREE.OBJLoader()
-			loader.crossOrigin = 'Anonymous'
+			loader.crossOrigin = 'anonymous'
 			loader.load(url,
 				that.onObjLoaded.bind(that),
 				that.progressHandler.bind(that),
