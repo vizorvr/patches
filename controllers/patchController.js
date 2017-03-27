@@ -52,7 +52,7 @@ PatchController.prototype.save = function(req, res, next) {
 			}
 
 			return that._fs.writeString(gridFsPath, req.body.graph)
-			.then(function(url) {
+			.then(function() {
 				var url = that._fs.url(gridFsPath)
 
 				var model = {
