@@ -9,7 +9,7 @@ var currentPlayerVersion = packageJson.version.split('.').slice(0,2).join('.')
 module.exports = function() {
 	var dfd = when.defer()
 	var mongoose = require('mongoose')
-	let CloudFileSystemImpl
+	var CloudFileSystemImpl
 	if (config.server.useCDN)
 	 	CloudFileSystemImpl = require('../lib/cloudStorage')
 	else
