@@ -33,7 +33,7 @@ const checksum = require('checksum')
 
 let CDN_ROOT = '/data'
 if (config.server.useCDN)
-	CDN_ROOT = 'https://cdn.vizor.io'
+	CDN_ROOT = config.server.cdnRoot
 
 function cdnUrl(url) {
 	return CDN_ROOT + url.replace(/^\/data/, '')

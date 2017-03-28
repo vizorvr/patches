@@ -5,7 +5,7 @@ const config = require('../config/config')
 
 let CDN_ROOT = '/data'
 if (config.server.useCDN)
-	CDN_ROOT = 'https://cdn.vizor.io'
+	CDN_ROOT = config.server.cdnRoot
 
 const STAFFPICKS_TTL = 30 * 60 * 1000
 
