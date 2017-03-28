@@ -262,6 +262,10 @@ app.get('/', function(req, res, next) {
 			return homeController.index(req, res, next)
 	}
 })
+
+app.get('/threesixty', threesixtyController.index)
+app.get('/threesixty/featured', threesixtyController.featured)
+
 // end 360 routing
 
 mongoose.connect(secrets.db);
