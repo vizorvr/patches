@@ -235,7 +235,7 @@ app.get('/about', homeController.about)
 
 // begin 360 routing
 app.get('/v/:graph', function(req, res, next) {
-	switch (req.host) {
+	switch (req.hostname) {
 		case '360.vizor.io':
 		case '360.vizor.lol':
 			res.locals.layout = 'threesixty'
@@ -243,8 +243,8 @@ app.get('/v/:graph', function(req, res, next) {
 	next()
 })
 
-app.use('/featured', function(req, res, next) {
-	switch (req.host) {
+app.get('/featured', function(req, res, next) {
+	switch (req.hostname) {
 		case '360.vizor.io':
 		case '360.vizor.lol':
 			return threesixtyController.featured(req, res, next)
@@ -253,8 +253,8 @@ app.use('/featured', function(req, res, next) {
 	}
 })
 
-app.use('/', function(req, res, next) {
-	switch (req.host) {
+app.get('/', function(req, res, next) {
+	switch (req.hostname) {
 		case '360.vizor.io':
 		case '360.vizor.lol':
 			return threesixtyController.index(req, res, next)
@@ -262,7 +262,6 @@ app.use('/', function(req, res, next) {
 			return homeController.index(req, res, next)
 	}
 })
-
 // end 360 routing
 
 mongoose.connect(secrets.db);
