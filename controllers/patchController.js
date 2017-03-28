@@ -4,6 +4,7 @@ var fsPath = require('path')
 var assetHelper = require('../models/asset-helper')
 var GraphAnalyser = require('../common/graphAnalyser').GraphAnalyser
 var helper = require('./controllerHelpers')
+var checksum = require('checksum')
 
 function PatchController(patchService, fs) {
 	var args = Array.prototype.slice.apply(arguments)
@@ -16,23 +17,23 @@ function PatchController(patchService, fs) {
 PatchController.prototype = Object.create(AssetController.prototype)
 
 PatchController.prototype._makePath = function(req, name) {
-	return '/' 
+	return '/'
 		+ req.user.username
 		+ '/patches/'
 		+ assetHelper.slugify(
 			fsPath.basename(name, fsPath.extname(name)))
-		+ '.json'
 }
 
 PatchController.prototype._makeGridFsPath = function(req, path) {
-	return this._makePath(req, path)
+	return this._makePath(req, path) + '.json'
 }
 
 // POST /:username/patches
 PatchController.prototype.save = function(req, res, next) {
 	var that = this
 	var path = this._makePath(req, req.body.name)
-	var gridFsPath = this._makeGridFsPath(req, req.body.name)
+	var patchHash = checksum(req.body.graph)
+	var gridFsPath = this._makeGridFsPath(req, req.body.name+'-'+patchHash)
 
 	var tags = that._parseTags(req.body.tags)
 

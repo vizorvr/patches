@@ -126,6 +126,9 @@ GraphService.prototype._save = function(data, user, opts) {
 		if (data.tags)
 			asset.tags = data.tags
 
+		if (data.url)
+			asset.url = data.url
+
 		if (data.previewUrlSmall)
 			asset.previewUrlSmall = data.previewUrlSmall
 
@@ -164,7 +167,7 @@ GraphService.prototype._save = function(data, user, opts) {
 	})
 }
 
-GraphService.prototype.save = function(data, ghash, user, opts) {
+GraphService.prototype.save = function(data, user, opts) {
 	var that = this;
 	var gridFsPath = data.url.substring('/data'.length).replace()
 	var optimisedGfsPath = gridFsPath.replace('.json', '.min.json')
