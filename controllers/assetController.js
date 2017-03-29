@@ -20,7 +20,7 @@ AssetController.prototype.validate = function(req, res, next) {
 
 		next()
 	})
-} 
+}
 
 AssetController.prototype.streamFile = function(req, res, next) {
 	this._service.findByPath(req.path)
@@ -39,14 +39,14 @@ AssetController.prototype.streamFile = function(req, res, next) {
 
 // GET /:model
 AssetController.prototype.userIndex = function(req, res, next) {
-	var dfd 
+	var dfd
 
 	if (req.params.username === 'vizor') {
 		dfd = this._service.findByCreatorName(req.params.username)
 	} else {
 		dfd = this._service.findByCreatorId(req.session.userId)
 	}
-	
+
 	dfd.then(function(list) {
 		res.json(list)
 	})
@@ -194,7 +194,7 @@ AssetController.prototype.canWriteUpload = function(req, res, next) {
 
 		next()
 	})
-} 
+}
 
 AssetController.prototype.canWriteUploadAnonymous = function(req, res, next) {
 	var that = this;
@@ -219,7 +219,7 @@ AssetController.prototype.canWriteUploadAnonymous = function(req, res, next) {
 
 		next()
 	})
-} 
+}
 
 AssetController.prototype.upload = function(req, res, next) {
 	var that = this

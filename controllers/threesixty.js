@@ -1,3 +1,8 @@
+var config = require('../config/config.js')
+
+if (config.server.useCDN)
+	CDN_ROOT = config.server.cdnRoot
+
 /**
  * GET /threesixty
  * Threesixty site
@@ -10,6 +15,7 @@ exports.index = function(req, res) {
 	res.render('graph/show', {
 		layout: layout,
 		site: 'threesixty',
+		cdnRoot: CDN_ROOT,
 		graphSrc: '/threesixty/featured',
 		graphMinUrl: '/threesixty/featured',
 		autoplay: true,

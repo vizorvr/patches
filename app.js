@@ -231,25 +231,42 @@ app.post('/account/password', passportConf.isAuthenticated, userController.postU
 app.post('/account/delete', passportConf.isAuthenticated, userController.postDeleteAccount);
 app.get('/account/unlink/:provider', passportConf.isAuthenticated, userController.getOauthUnlink);
 
-switch (process.env.FQDN) {
-	case '360vr.io':
-	case '360.vizor.io':
-	case '360.vizor.lol':
-		// 360 photo site
-		app.get('/', threesixtyController.index);
-		app.get('/featured', threesixtyController.featured)
-		app.get('/v/:graph', function(req, res, next) {
+app.get('/about', homeController.about)
+
+// begin 360 routing
+app.get('/v/:graph', function(req, res, next) {
+	switch (req.hostname) {
+		case '360.vizor.io':
+		case '360.vizor.lol':
 			res.locals.layout = 'threesixty'
-			next()
-		})
-	default:
-		// default site
-		app.get('/', homeController.index);
-		app.get('/about', homeController.about);
-		app.get('/threesixty', threesixtyController.index);
-		app.get('/threesixty/featured', threesixtyController.featured);
-		break;
-}
+	}
+	next()
+})
+
+app.get('/featured', function(req, res, next) {
+	switch (req.hostname) {
+		case '360.vizor.io':
+		case '360.vizor.lol':
+			return threesixtyController.featured(req, res, next)
+		default:
+			return next()
+	}
+})
+
+app.get('/', function(req, res, next) {
+	switch (req.hostname) {
+		case '360.vizor.io':
+		case '360.vizor.lol':
+			return threesixtyController.index(req, res, next)
+		default:
+			return homeController.index(req, res, next)
+	}
+})
+
+app.get('/threesixty', threesixtyController.index)
+app.get('/threesixty/featured', threesixtyController.featured)
+
+// end 360 routing
 
 mongoose.connect(secrets.db);
 mongoose.connection.on('error', function(err) {
@@ -283,13 +300,8 @@ function setupModelRoutes(mongoConnection) {
 
 	// get files from cloud storage
 	app.get(/^\/data\/.*/, function(req, res, next) {
-		if (config.server.useCDN) {
-			const cdnPath = req.path.substring('/data'.length)
-			return res.redirect(301, 'https://cdn.vizor.io' + cdnPath)
-		} else {
-			return streamFile(req, res, next, cloudStorage)
-			.catch(next)
-		}
+		return streamFile(req, res, next, cloudStorage)
+		.catch(next)
 	});
 
 	// allow strong caching for bundles etc.
