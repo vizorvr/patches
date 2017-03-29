@@ -33,7 +33,6 @@ echo ----------------------------------------
 
 # run provisioning step
 d run --rm \
-	--link mongo:mongo \
 	$FQDN:v1 \
 	node ./node_modules/gulp/bin/gulp push
 
@@ -53,7 +52,8 @@ d run -d --name $FQDN \
      -e "KEY_GTM=$KEY_GTM" \
      -e "WSS_HOST=$WSS_HOST" \
      -e "WSS_SECURE=$WSS_SECURE" \
-     -p 127.0.0.1:$PORT:$PORT \
-     --link mongo:mongo \
-     --link redis:redis $FQDN:v1
+     -e "MONGODB=$MONGODB" \
+     -e "REDIS=$REDIS" \
+     -p 80:$PORT \
+     $FQDN:v1
 

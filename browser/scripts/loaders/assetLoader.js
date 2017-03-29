@@ -36,7 +36,14 @@ function AssetLoader(loaders) {
 
 	this.assetsLoaded = 0
 	this.assetsFound = 0
+}
 
+AssetLoader.getCDNURL = function(url) {
+	return url.replace(/^\/data/, AssetLoader.getCDNRoot())
+}
+
+AssetLoader.getCDNRoot = function() {
+	return typeof(Vizor) !== 'undefined' ? Vizor.cdnRoot : '/data'
 }
 
 AssetLoader.prototype = Object.create(EventEmitter.prototype)
@@ -47,6 +54,10 @@ AssetLoader.prototype = Object.create(EventEmitter.prototype)
 AssetLoader.prototype.loadAsset = function(assetType, assetUrl) {
 	var that = this
 	var dfd = when.defer()
+
+	// fetch assets from CDN in production
+	// MongoDB GridFS in dev/ci
+	assetUrl = assetUrl.replace(/^\/data/, AssetLoader.getCDNRoot())
 
 	if (this.assetPromises[assetUrl]) {
 		var cache = this.assetPromises[assetUrl]

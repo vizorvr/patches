@@ -1,3 +1,4 @@
+
 var _ = require('lodash')
 var Graph = require('../models/graph')
 var AssetController = require('./assetController')
@@ -18,12 +19,25 @@ var EditLog = require('../models/editLog')
 
 var redis = require('redis')
 
+var config = require('../config/config.js')
 var secrets = require('../config/secrets')
 var Hashids = require('hashids')
 var hashids = new Hashids(secrets.sessionSecret)
 
+var parallel = require('when/parallel')
+
 var fs = require('fs')
 var packageJson = JSON.parse(fs.readFileSync(__dirname+'/../package.json'))
+
+const checksum = require('checksum')
+
+let CDN_ROOT = '/data'
+if (config.server.useCDN)
+	CDN_ROOT = config.server.cdnRoot
+
+function cdnUrl(url) {
+	return CDN_ROOT + url.replace(/^\/data/, '')
+}
 
 function renderError(status, res, message) {
 	res.status(status).render('error', {
@@ -66,9 +80,9 @@ function makeGraphSummary(req, graphModel) {
 	var graph = graphModel.getPrettyInfo()
 	return {
 		id:				graph.id,
-		graphMinUrl: 	graph.url,
+		graphMinUrl: 	cdnUrl(graph.url),
 		graphName: 		graph.prettyName,
-		previewImage: 	'//' + req.headers.host + graph.previewUrlLarge,
+		previewImage: 	cdnUrl(graph.previewUrlLarge),
 		playerVersion: 	graph.version,
 		stat:			graph.stat,
 		hasAudio:		graph.hasAudio,
@@ -394,7 +408,7 @@ GraphController.prototype.adminIndex = function(req, res, next) {
 function renderEditor(res, graph, hasEdits) {
 	var releaseMode = process.env.NODE_ENV === 'production'
 	var layout = releaseMode ? 'editor-bundled' : 'editor'
-	
+
 	res.header('Cache-control', 'no-cache, must-revalidate, max-age=0')
 
 	function respond() {
@@ -402,6 +416,7 @@ function renderEditor(res, graph, hasEdits) {
 			layout: layout,
 			graph: graph,
 			hasEdits: hasEdits,
+			cdnRoot: CDN_ROOT,
 			releaseMode: releaseMode,
 			webSocketHost: process.env.WSS_HOST || '',
 			useSecureWebSocket: releaseMode || !!process.env.WSS_SECURE || false
@@ -474,11 +489,12 @@ function renderPlayer(graph, req, res, options) {
 		autoplay: !!(options && options.autoplay),
 		noHeader: options.noHeader || false,
 		isEmbedded: options.isEmbedded || false,
+		cdnRoot: CDN_ROOT,
 		graph: graphJson,
-		graphMinUrl: graphJson.url,
+		graphMinUrl: cdnUrl(graph.url),
 		graphName: graphJson.prettyName,
 		graphOwner: graphJson.prettyOwner,
-		previewImage: 'http://' + req.headers.host + graphJson.previewUrlLarge,
+		previewImage: cdnUrl(graphJson.previewUrlLarge),
 		previewImageWidth: 1280,
 		previewImageHeight: 720,
 		startMode : options.startMode || 1
@@ -528,7 +544,7 @@ GraphController.prototype.graphLanding = function(req, res, next) {
 			var data = makeGraphSummary(req, graph)
 			return res.json(helper.responseStatusSuccess('OK', data))
 		}
-		
+
 		var startMode = parseInt(req.query.start_mode)
 		if (isNaN(startMode))
 			startMode = 1
@@ -575,7 +591,7 @@ GraphController.prototype.graphModify = function(req, res, next) {
 			version: graph.version,
 			updatedAt: graph.updatedAt
 		}
-		
+
 		return that._service.save(graph, req.user, opts)
 		.then(function(savedGraph) {
 			var data = makeGraphSummary(req, savedGraph)
@@ -625,7 +641,7 @@ GraphController.prototype.canWriteUpload = function(req, res, next) {
 		next();
 	})
 	.catch(next)
-} 
+}
 
 // POST /graph with file upload
 GraphController.prototype.upload = function(req, res, next) {
@@ -700,22 +716,24 @@ GraphController.prototype.delete = function(req, res, next) {
 GraphController.prototype._save = function(path, user, req, res, next) {
 	var that = this
 
+	const ghash = checksum(req.body.graph)
+
 	var wantsPrivate = !req.body.isPublic
-	var gridFsGraphPath = '/graph'+path+'.json';
+	var gridFsGraphPath = '/graph'+path+'-'+ghash+'.json';
 
 	if (user.isAnonymous) {
 		wantsPrivate = false
 		req.body.editable = true
 	}
 
-	var gridFsOriginalImagePath = '/previews'+path+'-preview-original.png'
+	var gridFsOriginalImagePath = '/previews'+path+'-preview-original-'+ghash+'.png'
 
 	var previewImageSpecs = [{
-		gridFsPath: '/previews'+path+'-preview-440x330.png',
+		gridFsPath: '/previews'+path+'-preview-440x330-'+ghash+'.png',
 		width: 440,
 		height: 330
 	}, {
-		gridFsPath: '/previews'+path+'-preview-1280x720.png',
+		gridFsPath: '/previews'+path+'-preview-1280x720-'+ghash+'.png',
 		width: 1280,
 		height: 720,
 	}]
@@ -735,12 +753,16 @@ GraphController.prototype._save = function(path, user, req, res, next) {
 			return that.previewImageProcessor.process(path, req.body.previewImage, previewImageSpecs)
 			.then(function(processedImages) {
 				if (processedImages && processedImages.length === 2) {
-					// write small image
-					return that._fs.writeString(previewImageSpecs[0].gridFsPath, processedImages[0], 'base64')
-					.then(function() {
-						// write large image
-						return that._fs.writeString(previewImageSpecs[1].gridFsPath, processedImages[1], 'base64')
-					})
+					return parallel([
+						function() {
+							// write small image
+							return that._fs.writeString(previewImageSpecs[0].gridFsPath, processedImages[0], 'base64')
+						},
+						function() {
+							// write large image
+							return that._fs.writeString(previewImageSpecs[1].gridFsPath, processedImages[1], 'base64')
+						}
+					])
 				}
 			})
 		})

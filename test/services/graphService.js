@@ -137,7 +137,8 @@ describe('GraphService', function() {
 			.then(function(data){
 				assert.equal(data.length, 2)
 				assert.equal(data[0].name, 'testa2')
-				assert.equal(data[1].url, '/data/graph/'+usernameA+'/testa1.json')
+				assert.equal(data[1].url.indexOf('/data/graph/'+usernameA+'/testa1'), 0)
+				assert.equal(data[1].path, '/'+usernameA+'/testa1')
 			})
 	})
 

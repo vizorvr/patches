@@ -28,7 +28,7 @@
     <meta name="og:image" content="/images/vizor_social.png" />
     <meta name="og:restrictions:age" content="13+" />
     <meta name="fb:profile_id" content="980737135276580" />
-    
+
     <!-- Origin Trial Token, feature = WebVR, origin = https://vizor.io, expires = 2017-03-03 -->
     <meta http-equiv="origin-trial" data-feature="WebVR" data-expires="2017-03-03" content="ApAT41IWgJY4CGPMsa/MBNRZJPfd+pEfUcEYSxR0BO+Sf+MoOlJM4KKx//njNhKcL+2KE2jRtT/vR9aY5nefWw0AAABheyJvcmlnaW4iOiAiaHR0cHM6Ly92aXpvci5pbzo0NDMiLCAiaXNTdWJkb21haW4iOiB0cnVlLCAiZmVhdHVyZSI6ICJXZWJWUiIsICJleHBpcnkiOiAxNDg4NTU0NjQ0fQ==">
 
@@ -42,7 +42,7 @@
     <link rel="icon" href="/favicon.ico?v=201608" />
 
     <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700" />
-	<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:200,300,400" />
+	<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:200,300,400" />
 
 	{{{css 'site'}}}
 
@@ -87,6 +87,7 @@
 	<script>
         window.Vizor = {
             pageObjects: {graphs:{}, profiles:{}},
+            cdnRoot: '{{cdnRoot}}',
             hideWebVRButton: true,
             autoplay: true
         }
@@ -144,8 +145,8 @@
 		</div>
 	{{/if}}
 
-	<div id="contentwrap">{{!-- main. for server-rendered html --}}
-          {{{body}}}
+    <div id="contentwrap">{{!-- main. for server-rendered html --}}
+      {{{body}}}
     </div>
 
     {{#not-eq meta.footer false}}

@@ -126,6 +126,9 @@ GraphService.prototype._save = function(data, user, opts) {
 		if (data.tags)
 			asset.tags = data.tags
 
+		if (data.url)
+			asset.url = data.url
+
 		if (data.previewUrlSmall)
 			asset.previewUrlSmall = data.previewUrlSmall
 
@@ -164,11 +167,10 @@ GraphService.prototype._save = function(data, user, opts) {
 	})
 }
 
-
 GraphService.prototype.save = function(data, user, opts) {
 	var that = this;
-	var gridFsPath = '/graph'+data.path+'.json';
-	var optimisedGfsPath = '/graph'+data.path+'.min.json';
+	var gridFsPath = data.url.substring('/data'.length).replace()
+	var optimisedGfsPath = gridFsPath.replace('.json', '.min.json')
 
 	return this._save.apply(this, arguments)
 	.then(function(asset) {
@@ -182,7 +184,7 @@ GraphService.prototype.save = function(data, user, opts) {
 				.graph(JSON.parse(source))
 				.optimize();
 
-			return that._fs.writeString(optimisedGfsPath, 
+			return that._fs.writeString(optimisedGfsPath,
 				JSON.stringify(optimized));
 		})
 		.then(function() {
@@ -192,4 +194,3 @@ GraphService.prototype.save = function(data, user, opts) {
 };
 
 module.exports = GraphService;
-

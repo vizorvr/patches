@@ -43,10 +43,12 @@ PatchManager.prototype.loadPatches = function() {
 			if (Vizor.releaseMode && patchMeta.type === 'entity_component')
 				return;
 
-			that.add(patchMeta.category, patchMeta.name, patchMeta.type, patchMeta.url)
+			that.add(patchMeta.category, patchMeta.name, patchMeta.type,
+				AssetLoader.getCDNURL(patchMeta.url))
 
 			if (E2.WORLD_PATCHES.indexOf(patchMeta.type) > -1)
-				that.addWorldPatch(patchMeta.type, patchMeta.category, patchMeta.name, patchMeta.url)
+				that.addWorldPatch(patchMeta.type, patchMeta.category, patchMeta.name,
+					AssetLoader.getCDNURL(patchMeta.url))
 		})
 
 		dfd.resolve()
@@ -152,7 +154,7 @@ PatchManager.prototype.renderPatches = function() {
 
 		that.openPatch(selection)
 	})
-	
+
 	var patchSearch = $('#patches-lib .searchbox input')
 	patchSearch.focus(E2.ui.onLibSearchClicked.bind(E2.ui))
 }
@@ -165,7 +167,7 @@ PatchManager.prototype.renderWorldPatches = function() {
 		searchPlaceholderText : 'Search world patches'
 	})
 	.onOpen(this.openPatch.bind(this))
-	
+
 	var objectSearch = $('.searchbox input', E2.dom.objectsList)
 	objectSearch.focus(E2.ui.onLibSearchClicked.bind(E2.ui))
 }
@@ -199,7 +201,7 @@ PatchManager.prototype.openPatch = function(selection) {
 PatchManager.prototype.addWorldPatch = function(typeName, category, title, path) {
 	var patchMeta = {
 		type: typeName || 'patch',
-		category: category, 
+		category: category,
 		title: title,
 		path: path
 	}
@@ -214,7 +216,7 @@ PatchManager.prototype.add = function(category, title, type, path) {
 
 	var patchMeta = {
 		type: type || 'patch',
-		category: category, 
+		category: category,
 		title: title,
 		path: path
 	}
@@ -232,10 +234,9 @@ PatchManager.prototype.openPlugin = function(path, cb) {
 
 	// Add the canvas X position to the mouse X position when double clicking from the patch list to avoid spawning plugins under the list
 	if (canvasX > mouseX)
-		mouseX += canvasX 
-	
+		mouseX += canvasX
+
 	mouseY -= canvasY
-	
+
 	E2.app.instantiatePlugin(id, [mouseX, mouseY])
 }
-

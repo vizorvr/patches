@@ -85,7 +85,7 @@
 			this.renderer.clear()
 			return
 		}
-		
+
 		// three.js needs a window.scene
 		window.scene = this.scene
 
@@ -155,7 +155,7 @@
 	}
 
 	ThreeWebGLRendererPlugin.prototype.state_changed = function(ui) {
-		if (ui) 
+		if (ui)
 			return;
 
 		this.domElement = E2.dom.webgl_canvas[0]
@@ -168,7 +168,7 @@
 
 		this.adapter = E2.core.webVRAdapter
 		this.adapter.on(events.targetResized, this.onTargetResized.bind(this))
+		this.adapter.resizeToTarget()
 	}
 
 })()
-

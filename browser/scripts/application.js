@@ -53,15 +53,15 @@ function Application() {
 	this.dispatcher = new Flux.Dispatcher()
 	this.undoManager = new UndoManager()
 	this.graphApi = new GraphApi(this.undoManager)
-	
+
 	this.graphStore = new GraphStore()
 	this.peopleStore = new PeopleStore()
-	
+
 	this.peopleManager = new PeopleManager(this.peopleStore, $('#peopleTab'))
 
 	// Make the UI visible now that we know that we can execute JS
 	$('.nodisplay').removeClass('nodisplay');
-	
+
 }
 
 Application.prototype.getNIDFromSlot = function(id) {
@@ -154,7 +154,7 @@ Application.prototype.instantiatePlugin = function(id, position) {
 	var node = this.createPlugin(id, [newX, newY])
 
 	E2.track({
-		event: 'nodeAdded', 
+		event: 'nodeAdded',
 		id: id
 	})
 
@@ -368,7 +368,7 @@ Application.prototype.updateCanvas = function(clear) {
 	for (var i=0; i < connsLen; i++) {
 		var cui = conns[i].ui
 		if (!cui) {
-			return console.error('Connection', i, 'from', 
+			return console.error('Connection', i, 'from',
 				conns[i].src_node.uid, 'to',
 				conns[i].dst_node.uid, 'has no UI')
 		}
@@ -976,9 +976,9 @@ Application.prototype.onCopy = function(e) {
 	}
 
 	var data = this.stringifySelection()
-	
+
 	this.clipboard = data
-	
+
 	if (e && e.clipboardData)
 		e.clipboardData.setData('text/plain', data)
 
@@ -1172,14 +1172,14 @@ Application.prototype.pasteInGraph = function(targetGraph, srcDoc, offsetX, offs
 
 		var slot = dc.dst_dyn ?
 			destNode.dyn_inputs[dc.dst_slot] :
-			destNode.findInputSlotByName(dc.dst_slot) 
+			destNode.findInputSlotByName(dc.dst_slot)
 
 		if (!slot) {
 			console.warn('Slot not found in', destNode.plugin.id, dc,
 				destNode.dyn_inputs)
 			continue;
 		}
-	
+
 		if (dc.src_nuid === undefined || dc.dst_nuid === undefined) {
 			// not a valid connection, clear it and skip it
 			if (dc.dst_nuid !== undefined) {
@@ -1200,7 +1200,7 @@ Application.prototype.pasteInGraph = function(targetGraph, srcDoc, offsetX, offs
 
 	return {
 		nodes: createdNodes,
-		connections: createdConnections 
+		connections: createdConnections
 	}
 }
 
@@ -1460,7 +1460,7 @@ Application.prototype.isVRCameraActive = function() {
 Application.prototype.isWorldEditorActive = function() {
 	return !this.noodlesVisible && E2.app.worldEditor.isActive()
 }
-	
+
 Application.prototype.toggleFullscreen = function() {
 	var goingToFullscreen = !E2.util.isFullscreen()
 	if (goingToFullscreen) {
@@ -1547,7 +1547,7 @@ Application.prototype.navigateToPublishedGraph = function(graphPath, cb) {
 	}
 
 	history.pushState({}, '', graphPath + '/edit')
-	
+
 	this.loadGraph(graphUrl).then(cb)
 }
 
@@ -1564,7 +1564,7 @@ Application.prototype.loadGraph = function(graphPath) {
 			dfd.resolve()
 		})
 	})
-	
+
 	return dfd.promise
 }
 
@@ -1582,11 +1582,11 @@ Application.prototype.onPublishClicked = function() {
 		return E2.controllers.account.openLoginModal()
 			.then(this.onPublishClicked.bind(this))
 	}
-	
+
 	E2.ui.openPublishGraphModal()
 	.then(function(path) {
 		window.onbeforeunload = null;	// override "you might be leaving work" prompt (release mode)
-		E2.track({ 
+		E2.track({
 			event: 'published',
 			path: path
 		})
@@ -1798,7 +1798,7 @@ Application.prototype.setupPeopleEvents = function() {
 
 		// this can happen when reconnected and own uid changes
 		// and the previous uid gets a `removed` message.
-		if (!$cursor) 
+		if (!$cursor)
 			return;
 
 		$cursor.remove()
@@ -1843,7 +1843,7 @@ Application.prototype.setupPeopleEvents = function() {
 		var cursorIsOutsideViewportX = false;
 		var cursorIsOutsideViewportY = false;
 
-		// Calculate viewport top left and bottom right X/Y 
+		// Calculate viewport top left and bottom right X/Y
 		var viewPortLeftX = E2.app.scrollOffset[0];
 		var viewPortTopY = E2.app.scrollOffset[1];
 
@@ -1875,10 +1875,10 @@ Application.prototype.setupPeopleEvents = function() {
 			adjustedX += cp.offsetLeft - E2.app.scrollOffset[0];
 		}
 
-		if(cursorIsOutsideViewportY) { 
+		if(cursorIsOutsideViewportY) {
 			$cursor.addClass('outside')
 		}
-		else { 
+		else {
 			adjustedY += cp.offsetTop - E2.app.scrollOffset[1];
 		}
 
@@ -1908,7 +1908,7 @@ Application.prototype.setupPeopleEvents = function() {
 			return E2.app.onGraphSelected(Graph.lookup(person.activeGraphUid))
 
 		var $cursor = cursors[person.uid]
-		if (person.activeGraphUid === E2.core.active_graph.uid) 
+		if (person.activeGraphUid === E2.core.active_graph.uid)
 			$cursor.show()
 		else
 			$cursor.hide()
@@ -2128,8 +2128,8 @@ Application.prototype.startWithGraph = function(selectedGraphUrl) {
 		return that.setupEditorChannel().then(start)
 
 	// if we have edits coming in at boot,
-	// or we're already on a channel, 
-	// and switching to a new template, 
+	// or we're already on a channel,
+	// and switching to a new template,
 	// create new url and snapshot it
 	if (boot.hasEdits || (this.channel && this.channel.isOnChannel)) {
 		var path = this.path = E2.uid()
@@ -2175,7 +2175,7 @@ Application.prototype.setupEditorChannel = function() {
 			return dfd.resolve()
 		}
 
-		var readableName = that.path 
+		var readableName = that.path
 		that.channel.join(that.path, readableName, function() {
 			dfd.resolve()
 		})
@@ -2186,19 +2186,19 @@ Application.prototype.setupEditorChannel = function() {
 	if (!this.channel) {
 		this.channel = new E2.EditorChannel()
 		this.channel.connect(wsUrl)
-		this.channel.once('ready', function() { 
+		this.channel.once('ready', function() {
 			that.peopleStore.initialize()
 			joinChannel()
 			E2.track({ event: 'editorOpened', path: that.path })
 		})
-		this.channel.on('reconnected', function() { 
+		this.channel.on('reconnected', function() {
 			joinChannel()
 		})
-	} else 
+	} else
 		joinChannel()
 
 	E2.ui.setPageTitle()
-	
+
 	return dfd.promise
 }
 
@@ -2213,7 +2213,7 @@ Application.prototype.determineWebSocketEndpoint = function(path) {
 	if (secure)
 		wsPort = 443
 
-	var wsUrl = (secure ? 'wss': 'ws') + '://' + 
+	var wsUrl = (secure ? 'wss': 'ws') + '://' +
 	wsHost + ':' + wsPort + path
 
 	return wsUrl
@@ -2223,14 +2223,14 @@ E2.InitialiseEngi = function(loadGraphUrl) {
 	E2.dom.editorHeader = $('.editor-header');
 
 	E2.dom.progressBar = $('#progressbar');
-	
+
 	E2.dom.btnNew = $('#btn-new');
 
 	E2.dom.btnAssets = $('#btn-assets');
 	E2.dom.btnInspector = $('#btn-inspector');
 	E2.dom.btnPatches = $('#btn-patches');
 	E2.dom.btnSavePatch = $('#btn-save-patch');
-	
+
 	E2.dom.btnGraph = $('#btn-graph');
 	E2.dom.btnEditor = $('#btn-editor');
 	E2.dom.btnZoomOut = $('#btn-zoom-out');
@@ -2238,29 +2238,29 @@ E2.InitialiseEngi = function(loadGraphUrl) {
 	E2.dom.btnZoomIn = $('#btn-zoom-in');
 	E2.dom.zoomDisplay = $('#current-zoom');
 	E2.dom.btnChatDisplay = $('#btn-chat-display');
-	
+
 	E2.dom.btnSignIn = $('#btn-sign-in');
 	E2.dom.btnAccountMenu = $('#btn-account-top');
 	E2.dom.userPullDown = $('#userPullDown');
-	
+
 	E2.dom.breadcrumb = $('#breadcrumb');
-	
+
 	E2.dom.uiLayer = $('#ui-layer');
-	
+
 	E2.dom.assetsLib = $('#assets-lib');
 	E2.dom.assetsToggle = $('#assets-toggle');
 	E2.dom.assetsClose = $('#assets-close');
-	
+
 	E2.dom.patchesLib = $('#patches-lib');
 	E2.dom.patches_list = $('#patches');
 	E2.dom.objectsList = $('#objects');
-	
+
 	E2.dom.canvas_parent = $('#canvas_parent');
 	E2.dom.canvas = $('#canvas');
 	E2.dom.canvases = $('#canvases');
 	E2.dom.controls = $('#controls');
 	E2.dom.webgl_canvas = $('#webgl-canvas');
-	
+
 	E2.dom.chatWindow = $('#chat-window');
 	E2.dom.chatTabs = $('#chat-window>.chat-tabs');
 	E2.dom.chatToggleButton = $('#chat-toggle');
@@ -2269,11 +2269,11 @@ E2.InitialiseEngi = function(loadGraphUrl) {
 	E2.dom.peopleTabBtn = $('#peopleTabBtn');
 	E2.dom.chatTab = $('#chatTab');
 	E2.dom.chat = $('#chat');
-	
+
 	E2.dom.peopleTab = $('#peopleTab');
 	E2.dom.patchesToggle = $('#patches-toggle');
 	E2.dom.patchesClose = $('#patches-close');
-	
+
 	E2.dom.dbg = $('#dbg');
 
 	E2.dom.publishButton = $('#btn-publish');
@@ -2294,26 +2294,24 @@ E2.InitialiseEngi = function(loadGraphUrl) {
 	E2.dom.tabs = $('#tabs');
 	E2.dom.graphs_list = $('#graphs-list');
 	E2.dom.filename_input = $('#filename-input');
-	
+
 	E2.dom.dragOverlay = $('#drag-overlay');
 	E2.dom.dropArea = $('#drop-area');
 	E2.dom.dropUploading = $('#drop-uploading');
-	
+
 	E2.dom.bottomBar = $('.bottom-panel');
-	
+
 	E2.dom.btnTimeline = $('#btn-timeline');
-	
+
 	E2.dom.play = $('#play');
 	E2.dom.playPauseIcon = $('#play use');
 	E2.dom.pause = $('#pause');
 	E2.dom.stop = $('#stop');
 	E2.dom.fscreen = $('#fullscreen');
 	E2.dom.vrview = $('#vrview');
-	
+
 	E2.dom.btnVRCam = $('#btn-vrcam');
 	E2.dom.btnEditorCam = $('#btn-editorcam');
-
-	$.ajaxSetup({ cache: false });
 
 	E2.dom.dbg.ajaxError(function(e, jqxhr, settings, ex) {
 		if (settings.dataType === 'script') {
@@ -2369,7 +2367,7 @@ E2.InitialiseEngi = function(loadGraphUrl) {
 		preserveDrawingBuffer: true
 	}
 
-	E2.app.debugFpsDisplayVisible = false 
+	E2.app.debugFpsDisplayVisible = false
 	E2.app.worldEditor = new WorldEditor(E2.dom.webgl_canvas[0])
 
 	E2.core.glContext = E2.dom.webgl_canvas[0].getContext('webgl', gl_attributes) || E2.dom.webgl_canvas[0].getContext('experimental-webgl', gl_attributes)
@@ -2393,4 +2391,3 @@ if (typeof(module) !== 'undefined')
 	module.exports = Application
 
 })()
-

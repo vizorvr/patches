@@ -23,7 +23,7 @@ describe('Upload', function() {
 		password: 'abcd1234',
 		confirmPassword: 'abcd1234'
 	};
-	
+
 	function makePath(model, name) {
 		return '/' + fsPath.join(deets.username, 'assets', model, name)
 	}
@@ -34,21 +34,19 @@ describe('Upload', function() {
 	before(function(done) {
 		var that = this;
 
-		db = new mongo.Db('upload'+testId,
-			new mongo.Server('localhost', 27017),
-			{ safe: true }
-		)
+		app.events.on('ready', () => {
+			db = new mongo.Db('upload'+testId,
+				new mongo.Server('localhost', 27017),
+				{ safe: true }
+			)
 
-		db.open(done);
+			db.open(done);
+		})
 	})
 
 	after(function() {
 		db.dropDatabase();
 	})
-
-	before(function(done) {
-		app.events.on('ready', done)
-	});
 
 	describe('Image', function()
 	{
@@ -84,6 +82,5 @@ describe('Upload', function() {
 			});
 		});
 	});
-	
-});
 
+});
