@@ -28,6 +28,16 @@ const setCache = data => {
 	return cache
 }
 
+function cdnUrl(url) {
+	return CDN_ROOT + url.replace(/^\/data/, '')
+}
+
+function fixGraphUrls(graphModel) {
+	var graph = graphModel.getPrettyInfo()
+	graph.previewUrlSmall =	cdnUrl(graph.previewUrlSmall)
+	return graph
+}
+
 function getHomeStaffPicks() {
 	var staffPicks = {}
 	var dfd = when.defer()
@@ -56,7 +66,7 @@ function getHomeStaffPicks() {
 				if (!staffPicks[tag])
 					staffPicks[tag] = []
 
-				staffPicks[tag].push(graph.getPrettyInfo())
+				staffPicks[tag].push(fixGraphUrls(graph))
 			})
 		})
 
