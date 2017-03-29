@@ -300,13 +300,8 @@ function setupModelRoutes(mongoConnection) {
 
 	// get files from cloud storage
 	app.get(/^\/data\/.*/, function(req, res, next) {
-		if (config.server.useCDN) {
-			const cdnPath = req.path.substring('/data'.length)
-			return res.redirect(301, config.server.cdnRoot + cdnPath)
-		} else {
-			return streamFile(req, res, next, cloudStorage)
-			.catch(next)
-		}
+		return streamFile(req, res, next, cloudStorage)
+		.catch(next)
 	});
 
 	// allow strong caching for bundles etc.
