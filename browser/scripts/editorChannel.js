@@ -1,7 +1,7 @@
 (function() {
 
 var RECONNECT_INTERVAL = 5 * 1000
-var KEEPALIVE_INTERVAL = 30 * 1000
+var KEEPALIVE_INTERVAL = 10 * 1000
 
 function hydrate(pl) {
 	var m = _.clone(pl)
@@ -128,7 +128,7 @@ EditorChannel.prototype.connect = function(wsUrl, options) {
 				E2.app.growl('Disconnected from server. Reconnecting.', 'reconnecting')
 
 			reconnecting = true
-			
+
 			setTimeout(that.reconnectFn, RECONNECT_INTERVAL)
 			that.pingInterval = clearInterval(that.pingInterval)
 
@@ -139,7 +139,7 @@ EditorChannel.prototype.connect = function(wsUrl, options) {
 			that.uid = uid
 
 			that.connected = true
-			
+
 			that.pingInterval = setInterval(function() {
 				that.sendPayload({
 					channel: '__internal',
@@ -312,7 +312,7 @@ EditorChannel.prototype.join = function(channelName, readableName, cb) {
 	function waitForOwnJoin(pl) {
 		if (pl.kind === 'youJoined' && pl.channel === channelName) {
 			that.wsChannel.removeListener(channelName, waitForOwnJoin)
-			
+
 			E2.track({
 				event: 'joinedChannel',
 				channelName: this.channelName
@@ -373,4 +373,3 @@ else
 	E2.EditorChannel = EditorChannel
 
 })();
-
