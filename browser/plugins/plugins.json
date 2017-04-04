@@ -195,7 +195,15 @@
         "Current time": "audio_get_current_time_modulator",
         "Duration": "audio_get_duration_modulator",
         "Module player": "module_player",
-        "Gain (mix)": "audio_gain_modulator"
+        "Gain (mix)": "audio_gain_modulator",
+        "FOAmbisonic decoder": "audio_ambisonic_decoder",
+        "FOAmbisonic rotator": "audio_ambisonic_rotator",
+        "FOAmbisonic mirror": "audio_ambisonic_mirror",
+        "FOAmbisonic converter": "audio_ambisonic_converter",
+        "TOAmbisonic decoder": "audio_ambisonic_toadecoder",
+        "TOAmbisonic rotator": "audio_ambisonic_toarotator",
+        "TOAmbisonic mirror": "audio_ambisonic_toamirror",
+        "TOAmbisonic converter": "audio_ambisonic_toaconverter"
     },
 
     "DEBUG TOOLS": {
