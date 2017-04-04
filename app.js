@@ -101,6 +101,18 @@ templateCache.compile()
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 
+app.use((req, res, next) => {
+	// Google Cloud Load Balancer: redirect to https if not secure
+	var fwdProto = req.get('x-forwarded-proto')
+	if (!fwdProto)
+		return next()
+
+	if (fwdProto !== 'https')
+		return res.redirect('https://' + req.get('host') + req.url)
+
+	next()
+})
+
 app.use((req,res,next) => {	// allow some context through to handlebars engine/helpers automatically
 	hbs.handlebars._request = {}
 	for (var key of ['hostname', 'ip', 'query', 'headers', 'method', 'params', 'secure', 'xhr', 'url', 'originalUrl']) {
