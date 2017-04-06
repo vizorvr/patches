@@ -44,7 +44,7 @@ var deets = {
 
 var parsed = urlParse(argv._[0])
 var hn = (parsed.hostname || 'vizor.io')
-	+ ':' + (parsed.port || 80)
+	+ ':' + (parsed.port || 443)
 
 var userAndGraph = parsed.path
 	.split('.')[0] // remove extensions
@@ -62,14 +62,16 @@ userAndGraph = userAndGraph.join('/')
 var url = '/data/graph/' + userAndGraph +'.json'
 
 var localHttp = 'http://127.0.0.1:8000'
-var remoteHttp = 'http://'+hn
+var remoteHttp = 'https://'+hn
+var cdnHttp = 'https://cdn.vizor.io:443'
+var remote = request.agent(remoteHttp)
+var cdn = request.agent(cdnHttp)
+var local = request.agent(localHttp)
+
 if (localHttp === remoteHttp) {
 	console.error('Not writing to source', localHttp, remoteHttp)
 	process.exit(1)
 }
-
-var remote = request.agent(remoteHttp)
-var local = request.agent(localHttp)
 
 function sendGraph(path, graphData, cb) {
 	return local.post('/graph').send({
@@ -84,27 +86,64 @@ function sendGraph(path, graphData, cb) {
 
 function error(err) {
 	console.error(err)
+	throw err
 }
 
 // --------
 
-function pullAsset(gridFsUrl) {
+function mirror(remoteUrl, i, realName) {
 	var dfd = when.defer()
+	let agent = remoteUrl.indexOf('/data') === 0 ? cdn : remote
+	let getUrl = remoteUrl.replace(/^\/data/, '')
+	let dest = getUrl
+	if (realName)
+		dest = realName
 
-	console.log('	GET ', gridFsUrl)
+	agent.head(getUrl)
+	.end((err, head) => {
+		if (err)
+			return dfd.reject(err)
 
-	var dpath = gridFsUrl.substring('/data'.length)
+		if (head.statusCode !== 200)
+			console.log('  HEAD ', getUrl, head.statusCode)
 
-	gfs.createWriteStream(dpath)
+		if (head.statusCode === 301) {
+			let redUrl = head.headers.location.replace('https://cdn.vizor.io', '/data')
+			console.log('  REDIRECT', redUrl)
+			return mirror(redUrl, 0, getUrl).then(() => { return dfd.resolve(getUrl) })
+		}
+
+		if (head.statusCode === 404)
+			return dfd.resolve()
+
+		console.log('GET ', getUrl, 'from', agent === cdn ? 'cdn' : 'site', dest)
+
+		if (getUrl.indexOf('.obj') !== -1) {
+			var mtlUrl = getUrl.replace('.obj', '.mtl')
+			dfd.promise.then(() => { return mirror(mtlUrl) })
+		}
+
+		if (getUrl.indexOf('.ogg') !== -1) {
+			var m4aUrl = getUrl.replace('.ogg', '.m4a')
+			dfd.promise.then(() => { return mirror(m4aUrl) })
+		}
+
+		if (remoteUrl.indexOf('/data') === 0) {
+			var metaUrl = '/meta' + getUrl
+			dfd.promise.then(() => { return mirror(metaUrl) })
+		}
+
+		gfs.createWriteStream(dest)
 		.then(function(writeStream) {
-			remote.get(gridFsUrl)
-			.expect(200)
+			agent.get(getUrl)
 			.pipe(writeStream)
-			.on('close', function() {
-				console.log('OK', gridFsUrl)
-				dfd.resolve()
+			.on('close', () => {
+				console.log('  OK', remoteUrl)
+				dfd.resolve(getUrl)
 			})
 		})
+
+	})
 
 	return dfd.promise
 }
@@ -161,7 +200,8 @@ function Step1() {
 
 function Step2() {
 	console.log('Retrieving:', hn, url)
-	remote.get(url).expect(200).end(function(err, res) {
+	cdnUrl = url.replace(/^\/data/, '')
+	cdn.get(cdnUrl).expect(200).end(function(err, res) {
 		if (err) return error(err)
 
 		var graph = res.body
@@ -173,9 +213,7 @@ function Step2() {
 
 			var username = deets.email.split('@')[0]
 
-			when.map(assets, function(asset) {
-				return pullAsset(asset)
-			})
+			when.map(assets, mirror)
 			.then(function() {
 				done()
 			})
