@@ -33,6 +33,10 @@ echo ----------------------------------------
 
 # run provisioning step
 d run --rm \
+	-e "NODE_ENV=$NODE_ENV" \
+	-e "MONGODB=$MONGODB" \
+	-e "GRIDFS=$GRIDFS" \
+	--link mongo:mongo \
 	$FQDN:v1 \
 	node ./node_modules/gulp/bin/gulp push
 
@@ -53,7 +57,10 @@ d run -d --name $FQDN \
      -e "WSS_HOST=$WSS_HOST" \
      -e "WSS_SECURE=$WSS_SECURE" \
      -e "MONGODB=$MONGODB" \
+     -e "GRIDFS=$GRIDFS" \
      -e "REDIS=$REDIS" \
-     -p 80:$PORT \
+     -p 127.0.0.1:$PORT:$PORT \
+     --link mongo:mongo \
+     --link redis:redis \
      $FQDN:v1
 
