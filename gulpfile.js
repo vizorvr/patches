@@ -14,6 +14,7 @@ var paths = {
 		editor: './less/build_editor.less',
 		site: 	'./less/build_site.less',
 		site360: './less/build_site360.less',
+		vizor2teaser: './less/build_vizor2teaser.less'
 	},
 	js: {
 		plugins: './browser/plugins/*.plugin.js',
@@ -142,6 +143,10 @@ gulp.task('clean:less:editor', function(cb) {
 	del('./browser/style/editor.css', cb)
 })
 
+gulp.task('clean:less:vizor2teaser', function(cb) {
+	del('./browser/style/vizor2teaser.css', cb)
+})
+
 gulp.task('clean:js', ['clean:js:player', 'clean:js:engine'])
 
 gulp.task('clean', ['clean:js'])
@@ -209,21 +214,32 @@ gulp.task('less:site360', ['clean:less:site360'], function() {
 	.on('error', errorHandler)
 });
 
+gulp.task('less:vizor2teaser', ['clean:less:vizor2teaser'], function() {
+	gulp.src(paths.less.vizor2teaser)
+	.pipe(less({
+		paths: [ path.join(__dirname, 'less') ]
+	}).on('error', errorHandler))
+	.pipe(concat('vizor2teaser.css'))
+	.pipe(gulp.dest(path.join(__dirname, 'browser', 'style')))
+	.on('error', errorHandler)
+});
+
+
 gulp.task('watch', ['default'], function() {
-	gulp.watch('less/**/*', ['less:site', 'less:editor', 'less:site360']);
+	gulp.watch('less/**/*', ['less:site', 'less:editor', 'less:site360', 'less:vizor2teaser']);
 	gulp.watch(paths.js.player.concat(paths.js.engine), ['js:player', 'push'])
 })
 
 
 gulp.task('watch:less', function() {
-	gulp.watch('less/**/*', ['less:site', 'less:editor', 'less:site360']);
+	gulp.watch('less/**/*', ['less:site', 'less:editor', 'less:site360', 'less:vizor2teaser']);
 })
 
 gulp.task('watch:player', function() {
 	gulp.watch(paths.js.player.concat(paths.js.engine), ['js:player', 'push'])
 })
 
-gulp.task('golive', ['less:site', 'less:editor', 'less:site360', 'js'])
+gulp.task('golive', ['less:site', 'less:editor', 'less:site360', 'less:vizor2teaser', 'js'])
 
-gulp.task('default', ['less:site', 'less:editor', 'less:site360', 'js', 'push'])
+gulp.task('default', ['less:site', 'less:editor', 'less:site360', 'less:vizor2teaser', 'js', 'push'])
 

@@ -36,6 +36,7 @@ var templateCache = require('./lib/templateCache').templateCache
 
 // Framework controllers (see below for asset controllers)
 var homeController = require('./controllers/homeController');
+var vizor2TeaserController = require('./controllers/vizor2TeaserController')
 var userController = require('./controllers/userController');
 
 // Threesixty site controller
@@ -275,6 +276,7 @@ app.get('/', function(req, res, next) {
 	}
 })
 
+app.get('/vizor2teaser', vizor2TeaserController.index)
 app.get('/threesixty', threesixtyController.index)
 app.get('/threesixty/featured', threesixtyController.featured)
 
