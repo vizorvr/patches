@@ -8,7 +8,8 @@
 @canvas-color-2: #F3F3F3;
 
 @medium-viewport-width: 600px;
-@large-viewport-width: 1000px;
+@large-viewport-width: 1100px;
+@desktop-width: 1025px; // Treat all viewports below this as touch devices
 
 @input-height-small: 52px;
 @input-height-medium: 60px;
@@ -107,24 +108,8 @@ body {
 .hero {
     position: relative;
     box-sizing: border-box;
-    min-height: 100vh;
-    padding-top: @side-margin;
-    padding-bottom: 140px;
     color: #FFFFFF;
     background-color: @primary-color;
-}
-.hero__logo {
-    display: block;
-    width: @logo-size-small;
-    height: @logo-size-small;
-    @media (min-width: @medium-viewport-width) {
-        width: @logo-size-medium;
-        height: @logo-size-medium;
-    }
-    @media (min-width: @large-viewport-width)  {
-        width: @logo-size-large;
-        height: @logo-size-large;
-    }
 }
 .hero iframe {
     display: block;
@@ -145,17 +130,43 @@ body {
     background: rgba(0, 0, 0, 0.24);
     pointer-events: none;
 }
-.hero__content {
+.hero__wrapper {
     position: relative;
     z-index: 2;
+    display: flex;
+    flex-direction: column;
     pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+    min-height: 100vh;
+    @media (min-width: @medium-viewport-width) {
+        justify-content: center;
+    }
+}
+.hero__content {
+    flex: 0 0 auto;
+    padding-top: 12vh;
+    padding-bottom: 12vh;
+}
+.hero__logo {
+    display: block;
+    width: @logo-size-small;
+    height: @logo-size-small;
+    @media (min-width: @medium-viewport-width) {
+        width: @logo-size-medium;
+        height: @logo-size-medium;
+    }
+    @media (min-width: @large-viewport-width)  {
+        width: @logo-size-large;
+        height: @logo-size-large;
+    }
 }
 .hero__title {
     margin-top: 26px;
-    margin-bottom: 23px;
+    padding-bottom: 23px;
     @media (min-width: @medium-viewport-width) {
         margin-top: 60px;
-        margin-bottom: 32px;
+        padding-bottom: 32px;
     }
     @media (min-width: @large-viewport-width) {
         margin-top: 93px;
@@ -164,17 +175,26 @@ body {
 .hero__body {
     line-height: 24px;
 }
+// Allow scrolling the page when dragging with finger over text on mobile devices
+@media (max-width: (@desktop-width - 1px)) and (pointer: coarse) {
+    .hero__title, .hero__body {
+        pointer-events: all;
+    }
+}
 .hero__scroll-down {
     margin-top: 34px;
     pointer-events: all;
     @media (min-width: @medium-viewport-width) {
+        margin-top: 80px;
+    }
+    @media (min-width: @large-viewport-width) {
         margin-top: 160px;
     }
 }
 
 .scroll-down-button {
+    display: inline-block;
     background: transparent;
-    -webkit-appearance: none;
     outline: none;
     border: none;
     cursor: pointer;
@@ -318,6 +338,7 @@ body {
     border: none;
     border-bottom: 2px solid @primary-color;
     outline: none;
+    border-radius: 0px;
     -webkit-appearance: none;
     @media (min-width: @medium-viewport-width) {
         height: @input-height-medium;
