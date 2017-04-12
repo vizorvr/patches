@@ -113,19 +113,6 @@ body {
     color: #FFFFFF;
     background-color: @primary-color;
 }
-.hero__logo {
-    display: block;
-    width: @logo-size-small;
-    height: @logo-size-small;
-    @media (min-width: @medium-viewport-width) {
-        width: @logo-size-medium;
-        height: @logo-size-medium;
-    }
-    @media (min-width: @large-viewport-width)  {
-        width: @logo-size-large;
-        height: @logo-size-large;
-    }
-}
 .hero iframe {
     display: block;
     position: absolute;
@@ -149,6 +136,19 @@ body {
     position: relative;
     z-index: 2;
     pointer-events: none;
+}
+.hero__logo {
+    display: block;
+    width: @logo-size-small;
+    height: @logo-size-small;
+    @media (min-width: @medium-viewport-width) {
+        width: @logo-size-medium;
+        height: @logo-size-medium;
+    }
+    @media (min-width: @large-viewport-width)  {
+        width: @logo-size-large;
+        height: @logo-size-large;
+    }
 }
 .hero__title {
     margin-top: 26px;
