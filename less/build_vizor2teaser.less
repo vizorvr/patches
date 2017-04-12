@@ -176,7 +176,7 @@ body {
     line-height: 24px;
 }
 // Allow scrolling the page when dragging with finger over text on mobile devices
-@media (max-width: (@desktop-width - 1px)) {
+@media (max-width: (@desktop-width - 1px)) and (pointer: coarse) {
     .hero__title, .hero__body {
         pointer-events: all;
     }
