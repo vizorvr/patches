@@ -135,11 +135,13 @@ body {
     z-index: 2;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     pointer-events: none;
     user-select: none;
     -webkit-user-select: none;
     min-height: 100vh;
+    @media (min-width: @medium-viewport-width) {
+        justify-content: center;
+    }
 }
 .hero__content {
     flex: 0 0 auto;
