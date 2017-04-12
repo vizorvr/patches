@@ -107,9 +107,6 @@ body {
 .hero {
     position: relative;
     box-sizing: border-box;
-    min-height: 100vh;
-    padding-top: @side-margin;
-    padding-bottom: 140px;
     color: #FFFFFF;
     background-color: @primary-color;
 }
@@ -132,10 +129,19 @@ body {
     background: rgba(0, 0, 0, 0.24);
     pointer-events: none;
 }
-.hero__content {
+.hero__wrapper {
     position: relative;
     z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     pointer-events: none;
+    min-height: 100vh;
+}
+.hero__content {
+    flex: 0 0 auto;
+    padding-top: 8vh;
+    padding-bottom: 8vh;
 }
 .hero__logo {
     display: block;
