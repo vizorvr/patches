@@ -13,7 +13,7 @@ class GAPageViewPlugin extends Plugin {
     this.currentPage = null
   }
   update_input(slot, data) {
-    if (!data)
+    if (!data || typeof ga === 'undefined')
       return
 
     var locationHash = '#' + data
