@@ -1,6 +1,6 @@
 {
   "name": "Vizor",
-  "version": "0.15.27",
+  "version": "0.16.0",
   "description": "",
   "main": "server.js",
   "dependencies": {
