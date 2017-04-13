@@ -271,12 +271,13 @@ app.get('/', function(req, res, next) {
 		case '360.vizor.io':
 		case '360.vizor.lol':
 			return threesixtyController.index(req, res, next)
-		default:
+		case 'patches.vizor.io':
 			return homeController.index(req, res, next)
+		default:
+			return vizor2TeaserController.index(req, res, next)
 	}
 })
 
-app.get('/vizor2teaser', vizor2TeaserController.index)
 app.get('/threesixty', threesixtyController.index)
 app.get('/threesixty/featured', threesixtyController.featured)
 
