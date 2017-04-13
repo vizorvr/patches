@@ -114,7 +114,7 @@ var uiNodeCategoryMap = {};
         'object_add' : 				c.value,
         'envelope_modulator' : 		c.value,
 
-		
+
 		'absolute_modulator' : c.math,
         'cos_modulator' 	: c.math,
         'exp_modulator' 	: c.math,
@@ -161,7 +161,7 @@ var uiNodeCategoryMap = {};
         'array_switch_modulator' : c.logic,
         'toggle_modulator'	: c.logic,
         'change_trigger'	: c.logic,
-		
+
         'three_gaze_clicker'	: c.interaction,
 		'three_clickable_object': c.interaction,
 		'key_press_generator'	: c.interaction,
@@ -186,6 +186,8 @@ var uiNodeCategoryMap = {};
         'assets_signal_failed_generator' : c.meta,
         'assets_started_generator' 		: c.meta,
         'assets_signal_started_generator' : c.meta,
+				'ga_pageview'					: c.meta,
+				'google_analytics'		: c.meta,
 
 		'runtime_event_write'			: c.meta,
 		'runtime_event_write_continuous': c.meta,
@@ -243,4 +245,3 @@ var uiPluginsThatAlwaysDisplayInline = [
 	'assets_started_generator',
 	'mouse_wheel_generator'
 ]
-
