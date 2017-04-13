@@ -1,0 +1,89 @@
+{{#*inline 'favicon'}}
+    <link {{#if apple}}rel="apple-touch-icon-precomposed"{{else}}rel="icon"{{/if}} sizes="{{size}}x{{size}}" href="/images/v2/favicons/icon-{{size}}px.png" />
+{{/inline}}
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Vizor is a platform for creating and sharing VR content on the web. All you need is a WebVR capable browser and a headset, although you can use Vizor without one. There is no need to download and install large native applications." />
+    <meta name="keywords" content="vizor, vr, virtual reality, webvr, animation, interactive, 3d editor, webgl, visual programming, world editor" />
+    <meta http-equiv="origin-trial" data-feature="WebVR" data-expires="2017-03-03" content="ApAT41IWgJY4CGPMsa/MBNRZJPfd+pEfUcEYSxR0BO+Sf+MoOlJM4KKx//njNhKcL+2KE2jRtT/vR9aY5nefWw0AAABheyJvcmlnaW4iOiAiaHR0cHM6Ly92aXpvci5pbzo0NDMiLCAiaXNTdWJkb21haW4iOiB0cnVlLCAiZmVhdHVyZSI6ICJXZWJWUiIsICJleHBpcnkiOiAxNDg4NTU0NjQ0fQ==">
+    <meta name="og:description" content="Explore, create and publish VR on the Web using Vizor. All you need is a WebVR capable browser and a headset, although you can use Vizor without one. Nothing to download or install." />
+    <meta name="og:image" content="/images/vizor_social.png" />
+    <meta name="og:restrictions:age" content="13+" />
+    <meta name="fb:profile_id" content="980737135276580" />
+    {{>favicon apple=true size=57}}
+    {{>favicon apple=true size=114}}
+    {{>favicon apple=true size=72}}
+    {{>favicon apple=true size=144}}
+    {{>favicon size=48}}
+    {{>favicon size=32}}
+    {{>favicon size=16}}
+    <link rel="icon" href="/favicon.ico?v=201608" />
+    {{{css 'vizor2teaser'}}}
+    <title>Build the Immersive Web with Vizor</title>
+    <script>{{> mixpanel}}</script>
+</head>
+<body>
+	{{> srv/gtm}}
+
+    <section class="hero section">
+        <script src="//360.vizor.io/scripts/embed.js" data-vizorurl="//360.vizor.io/embed/matt/arctic?autoplay=true&noheader=true" ></script>
+        <div class="hero__wrapper section__wrapper">
+            <div class="hero__content">
+                <svg class="hero__logo" width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M16 0C7.178 0 0 7.178 0 16s7.178 16 16 16 16-7.178 16-16S24.822 0 16 0zm7.004 4.75l-2.786 4.875a6.456 6.456 0 0 0-.553-.025h-7.33c-.187 0-.37.01-.553.025L8.995 4.75A13.177 13.177 0 0 1 16 2.743c2.57 0 4.97.736 7.004 2.006zm-3.339 14.907h-7.33a3.657 3.657 0 0 1 0-7.314h7.33a3.657 3.657 0 0 1 0 7.314zM2.743 16A13.22 13.22 0 0 1 6.81 6.454l2.298 4.021a6.402 6.402 0 0 0 0 11.048l-2.298 4.023A13.22 13.22 0 0 1 2.743 16zm6.252 11.25l2.787-4.875c.182.015.366.025.553.025h7.33c.187 0 .37-.01.553-.025l2.786 4.876A13.177 13.177 0 0 1 16 29.257c-2.57 0-4.97-.736-7.005-2.006zm16.194-1.704l-2.298-4.021a6.402 6.402 0 0 0 0-11.048l2.298-4.023A13.219 13.219 0 0 1 29.257 16a13.22 13.22 0 0 1-4.068 9.546z" fill="#FFF" fill-rule="evenodd"/></svg>
+                <h1 class="hero__title h1">Build the Immersive Web with&nbsp;Vizor</h1>
+                <p class="hero__body">
+                    Create 360 tours, stories, sites and WebVR experiences as easy as drag and drop.
+                </p>
+                <a href="#introduction" class="hero__scroll-down scroll-down-button">
+                    <svg class="scroll-down-button__icon" width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><g transform="rotate(90 16 16)" stroke-width="2" stroke="#FFF" fill="none" fill-rule="evenodd"><ellipse cx="16" cy="16" rx="15" ry="15"/><path d="M6.857 15.857h17.067" stroke-linecap="square"/><path d="M16.49 7.015l9.051 9.051-9.05 9.051"/></g></svg>
+                    <span class="scroll-down-button__label">Show more</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="section introduction" id="introduction">
+        <div class="section__wrapper">
+            <p class="kicker">Introducing the Vizor 360 beta</p>
+            <h2 class="h2">Dead simple WebVR.<br>Drag, drop, publish.</h2>
+            <img class="introduction__screenshot" src="/images/vizor2-teaser/editor-screenshot.jpg" alt="" />
+        </div>
+    </section>
+
+    <section class="section register">
+        <div class="section__wrapper">
+            <p class="kicker">Beta test vizor 360</p>
+            <h2 class="h2">Like a test drive?<br>Register now.</h2>
+            <form action="//vizor.us9.list-manage.com/subscribe/post?u=18aabb3ca7b701a5acacc8aca&amp;id=97a6941be8" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="register__form" novalidate>
+                <div class="register__email-container">
+                	<input type="email" placeholder="Email Address" value="" name="EMAIL" class="register__email text-input" id="mce-EMAIL">
+                    <p class="register__hint">We will not send you any spam, bacn nor any other pork products.</p>
+                </div>
+                <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_18aabb3ca7b701a5acacc8aca_97a6941be8" tabindex="-1" value=""></div>
+                <button class="register__submit button" type="submit">Register</button>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer section">
+        <div class="section__wrapper footer__wrapper">
+            <ul class="footer__link-list">
+                <li><a href="https://vizorvr.herokuapp.com/" target="_blank">Public Slack</a></li>
+                <li><a href="https://twitter.com/Vizor_VR" target="_blank">Twitter</a></li>
+                <li><a href="https://www.facebook.com/vrvizor" target="_blank">Facebook</a></li>
+                <li><a href="mailto:info@vizor.io?subject=hello">Email</a></li>
+                <li><a href="https://angel.co/vizor/jobs" target="_blank">Jobs</a></li>
+            </ul>
+            <p class="footer__info">
+                Our visual programming tool is now called <strong>Patches</strong>, and it lives <a href="https://patches.vizor.io">here</a>.
+            </p>
+        </div>
+    </footer>
+
+    <script src="/node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="/scripts/vizor2Teaser.js"></script>
+</body>
+</html>

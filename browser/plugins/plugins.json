@@ -89,6 +89,11 @@
         "Environment Settings": "three_environment_settings"
     },
 
+    "ANALYTICS": {
+      "Google Analytics Tracking Property": "google_analytics",
+      "Google Analytics Page view": "ga_pageview"
+    },
+
     "3D GEOMETRY AND MESH TOOLS": {
         "Box": "three_geometry_box",
         "Circle": "three_geometry_circle",
