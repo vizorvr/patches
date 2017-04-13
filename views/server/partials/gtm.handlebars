@@ -9,6 +9,8 @@
 		if (evt.event)
 			mixpanel.track(evt.event, evt)
 
+		ga('clientTracker.send', 'event', evt.event, evt)
+
 		dataLayer.push(evt)
 	}
 
