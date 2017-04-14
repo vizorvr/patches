@@ -1,6 +1,6 @@
 (function() {
 
-function GoogleAnalyticsPlugin() {
+function GoogleAnalyticsPlugin(core, node) {
   Plugin.apply(this, arguments)
   this.desc = 'Lets you track views and Vizor events in your own Google Analytics property.'
   this.input_slots = [{

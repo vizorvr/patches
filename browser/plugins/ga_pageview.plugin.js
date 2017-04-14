@@ -1,6 +1,6 @@
 (function() {
 
-function GAPageViewPlugin() {
+function GAPageViewPlugin(core, node) {
   Plugin.apply(this, arguments)
   this.desc = 'Reports a page view (as a hash under the experience URL) to GA any time the input changes. Sets `page` first, then calls `pageview`.'
   this.input_slots = [{
