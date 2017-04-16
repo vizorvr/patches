@@ -3,14 +3,14 @@
 	var UrlTexture = E2.plugins.url_texture_generator = function(core, node) {
 		Plugin.apply(this, arguments)
 		this.desc = 'Load a texture from a URL. JPEG and PNG supported. Hover over the Browse button to select an existing image from the library.'
-		
+
 		this.input_slots = []
 
 		this.output_slots = [
 			{ name: 'texture', dt: core.datatypes.TEXTURE, desc: 'The loaded texture.' }
 		]
-		
-		this.state = { url: '' }
+
+		this.state = { url: '', urllow: null }
 		this.texture = E2.core.assetLoader.defaultTexture
 		this.dirty = true
 		this.thumbnail = null
@@ -29,7 +29,7 @@
 		var that = this
 
 		this.thumbnail = make('div').addClass('p_thumbnail');
-		
+
 		this.thumbnail.css({
 			'background-image': 'url(\'images/no_texture.png\')',
 			'background-size': 'cover'
@@ -66,7 +66,7 @@
 							plugin: 'UrlTexture',
 							url: newValue
 						})
-						
+
 						that.undoableSetState('url', newValue, oldValue)
 
 						that.dirty = true
@@ -79,7 +79,7 @@
 
 		inp.click(clickHandler)
 		this.thumbnail.click(clickHandler)
-		
+
 		container.append(this.thumbnail)
 		container.append(inp)
 
@@ -108,8 +108,14 @@
 		var that = this
 		this.waitingToLoad = true
 
+		var urlToLoad = this.state.url
+
+		if (E2.util.isMobile && E2.util.isMobile.iOS() && this.state.urllow) {
+			urlToLoad = this.state.urllow
+		}
+
 		E2.core.assetLoader
-		.loadAsset('texture', this.state.url)
+		.loadAsset('texture', urlToLoad)
 		.then(function(texture) {
 			that.texture = texture
 			that.waitingToLoad = false
