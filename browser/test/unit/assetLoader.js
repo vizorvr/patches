@@ -19,6 +19,11 @@ describe('Asset loading', function() {
 				cb({})
 			}
 		}
+		global.E2.util = {
+			isMobile: {
+				iOS: () => { return false }
+			}
+		}
 		global.THREE = {
 			DDSLoader: function() {},
 			ImageUtils: {
@@ -98,7 +103,7 @@ describe('Asset loading', function() {
 				done()
 			})
 		})
-		
+
 		it('resolves if there is nothing to load 2', function(done) {
 			var assets = pre.parse(tastyGraph.root)
 			pre.loadAssetsForGraph(tastyGraph.root)
@@ -107,7 +112,7 @@ describe('Asset loading', function() {
 				done()
 			})
 		})
-		
+
 		it('loads assets for graph', function(done) {
 			pre.loadAssetsForGraph(graph.root)
 			.then(function() {
@@ -142,7 +147,6 @@ describe('Asset loading', function() {
 				done()
 			})
 			pre.loadAssetsForGraph(graph.root)
-		})	
+		})
 	})
 })
-
