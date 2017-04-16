@@ -195,7 +195,10 @@ VizorWebVRAdapter.prototype.listenToBrowserEvents = function() {
 	var resizeHandler = this._onBrowserResize
 	if (resizeHandler) {
 		window.removeEventListener('resize', resizeHandler, true)
-		window.removeEventListener('orientationchange', resizeHandler, true)
+
+		if (!this.iOS)
+			window.removeEventListener('orientationchange', resizeHandler, true)
+
 		document.removeEventListener('webkitfullscreenchange', resizeHandler, true)
 		document.removeEventListener('mozfullscreenchange', resizeHandler, true)
 		document.removeEventListener('fullscreenchange', resizeHandler, true)
@@ -205,7 +208,8 @@ VizorWebVRAdapter.prototype.listenToBrowserEvents = function() {
 	}
 
 	window.addEventListener('resize', resizeHandler, true)
-	window.addEventListener('orientationchange', resizeHandler, true)
+	if (!this.iOS)
+		window.addEventListener('orientationchange', resizeHandler, true)
 	document.addEventListener('webkitfullscreenchange', resizeHandler, true)
 	document.addEventListener('mozfullscreenchange', resizeHandler, true)
 	document.addEventListener('fullscreenchange', resizeHandler, true)
@@ -256,7 +260,7 @@ VizorWebVRAdapter.prototype.onScroll = function() {
 
 VizorWebVRAdapter.prototype.onBrowserResize = function() {
 	var that = this
-	var timeout = (this.iOS) ? 200 : 10
+	var timeout = (this.iOS) ? 1000 : 10
 
 	function doResize() {
 		var isFullscreen = E2.util.isFullscreen()
