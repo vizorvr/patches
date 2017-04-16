@@ -103,8 +103,12 @@ Minislides.prototype.init = function(opts) {
 	var that = this
 
 	var sw = this.slideSwitcher
-	sw.classList.add('slideSwitcher')
-	this.container.appendChild(sw)
+	sw.classList.add('minislides-slideSwitcher')
+
+	if (opts.switcherContainer)
+		opts.switcherContainer.appendChild(sw)
+	else
+		this.container.appendChild(sw)
 
 	Array.prototype.forEach.call(this.slides, function(el, ix) {
 		el.classList.add('slide')

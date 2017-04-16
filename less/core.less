@@ -1015,6 +1015,15 @@ body.bEditor #progressbar {
   }
 }
 
+.cols-flex {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	>.col {
+		flex: 1;
+	}
+}
+
 // svgs sometimes prevent button events from triggering (ios), this fixes it
 button.svg>svg, a.btn.svg>svg {
   pointer-events: none;
