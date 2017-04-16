@@ -174,7 +174,13 @@ AssetLoader.prototype.parse = function(graph) {
 			if (!assets[assetType])
 				assets[assetType] = []
 
-			assets[assetType].push(node.state.url)
+			var urlToLoad = node.state.url
+
+			if (E2.util.isMobile && E2.util.isMobile.iOS() && node.state.urllow) {
+				urlToLoad = node.state.urllow
+			}
+
+			assets[assetType].push(urlToLoad)
 		})
 	}
 
