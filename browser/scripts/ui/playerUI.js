@@ -217,7 +217,7 @@ var VizorPlayerUI = function() {
 						$body.css({ height: (1.1*h) + 'px' })
 						$wrap.css({ bottom: (0.1*h) + 'px' })
 					}
-				}, 500)
+				}, 750)
 			}
 
 			$(window).on('orientationchange', allowExtraHeightOnLandscape)
