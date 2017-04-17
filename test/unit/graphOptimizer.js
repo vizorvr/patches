@@ -14,7 +14,7 @@ describe('Graph optimizer', function() {
 			.graph(source)
 			.optimize();
 
-		expect(output).to.deep.equal(optimized);
+		expect(output).to.deep.equal('well nope');
 		process.env.NODE_ENV = oldEnv;
 	});
 
