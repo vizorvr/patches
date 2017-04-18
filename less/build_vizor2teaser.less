@@ -412,3 +412,56 @@ body {
         margin-top: 20px;
     }
 }
+
+.jobs-link {
+    position: relative;
+}
+.jobs-link__balloon {
+    opacity: 0;
+    position: absolute;
+    transform: translate(0, -10%);
+    top: 170%;
+    left: -5px;
+    padding: 6px 0px 5px;
+    width: 124px;
+    text-align: center;
+    font-size: 12px;
+    line-height: 1em;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #FFFFFF;
+    background-color: @accent-color;
+    border-radius: 1000px;
+    pointer-events: none;
+    transition-property: transform, opacity;
+    transition-duration: 0.15s;
+    transition-delay: 0.2s;
+    transition-timing-function: ease-out;
+}
+.jobs-link__balloon:after {
+    content: "";
+    position: absolute;
+    left: 11px;
+    top: -8px;
+    border-width: 0px 4px 8px;
+    border-style: solid;
+    border-color: @accent-color transparent;
+}
+.jobs-link:hover .jobs-link__balloon {
+    opacity: 1;
+    transform: translate(0, 0);
+    transition-delay: 0s;
+}
+@media (min-width: @medium-viewport-width) {
+    .jobs-link__balloon {
+        transform: translate(0, 10%);
+        bottom: 170%;
+        left: -5px;
+        top: auto;
+    }
+    .jobs-link__balloon:after {
+        top: auto;
+        bottom: -8px;
+        border-width: 8px 4px 0;
+    }
+}
