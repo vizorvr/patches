@@ -4575,6 +4575,8 @@ function MouseKeyboardVRDisplay() {
   // "Private" members.
   this.phi_ = 0;
   this.theta_ = 0;
+  this.filteredPhi_ = 0;
+  this.filteredTheta_ = 0;
 
   // Variables for keyboard-based rotation animation.
   this.targetAngle_ = null;
@@ -4591,11 +4593,17 @@ function MouseKeyboardVRDisplay() {
   this.isDragging_ = false;
 
   this.orientationOut_ = new Float32Array(4);
+
+  this.animationFilter_ = setInterval(function() {
+    this.filteredPhi_ = this.filteredPhi_ + (this.phi_ - this.filteredPhi_) / 8;
+    this.filteredTheta_ = this.filteredTheta_ + (this.theta_ - this.filteredTheta_) / 8;
+  }.bind(this), 1000/60);
 }
+
 MouseKeyboardVRDisplay.prototype = new VRDisplay();
 
 MouseKeyboardVRDisplay.prototype.getImmediatePose = function() {
-  this.euler_.set(this.phi_, this.theta_, 0, 'YXZ');
+  this.euler_.set(this.filteredPhi_, this.filteredTheta_, 0, 'YXZ');
   this.orientation_.setFromEuler(this.euler_);
 
   this.orientationOut_[0] = this.orientation_.x;
@@ -4710,6 +4718,8 @@ MouseKeyboardVRDisplay.prototype.isPointerLocked_ = function() {
 MouseKeyboardVRDisplay.prototype.resetPose = function() {
   this.phi_ = 0;
   this.theta_ = 0;
+  this.filteredPhi_ = 0;
+  this.filteredTheta_ = 0;
 };
 
 // returns the object that handles manual orientation/panning/rotation on behalf of this display
