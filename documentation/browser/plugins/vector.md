@@ -1,7 +1,7 @@
 #XYZ to Vector
 
 ##Description
-Create a vector from individual X, Y and Z components.<br><br>Keyboard shortcut&nbsp;&nbsp;&nbsp;`7`
+Create a vector from individual X, Y and Z components.<br><br>Keyboard shortcut&nbsp;&nbsp;&nbsp;<kbd>7</kbd>
 
 ##Inputs
 ###x

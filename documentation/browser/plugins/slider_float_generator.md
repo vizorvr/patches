@@ -1,7 +1,7 @@
 #Slider
 
 ##Description
-Emits a user controllable float value between two specified values.<br><br>Keyboard shortcut&nbsp;&nbsp;&nbsp;`3`
+Emits a user controllable float value between two specified values.<br><br>Keyboard shortcut&nbsp;&nbsp;&nbsp;<kbd>3</kbd>
 
 ##Inputs
 ##Outputs

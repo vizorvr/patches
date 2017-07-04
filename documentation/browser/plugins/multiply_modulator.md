@@ -1,7 +1,7 @@
 #Multiply number
 
 ##Description
-Multiplies the two supplied values and emits the result.<br><br>Keyboard shortcut&nbsp;&nbsp;&nbsp;`6`
+Multiplies the two supplied values and emits the result.<br><br>Keyboard shortcut&nbsp;&nbsp;&nbsp;<kbd>6</kbd>
 
 ##Inputs
 ###a

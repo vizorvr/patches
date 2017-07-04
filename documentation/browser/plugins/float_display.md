@@ -1,7 +1,7 @@
 #Float
 
 ##Description
-Display the supplied float value on the plugin surface.<br><br>Keyboard shortcut&nbsp;&nbsp;&nbsp;`5`
+Display the supplied float value on the plugin surface.<br><br>Keyboard shortcut&nbsp;&nbsp;&nbsp;<kbd>5</kbd>
 
 ##Inputs
 ###float
