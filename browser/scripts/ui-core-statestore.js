@@ -240,7 +240,7 @@ var UiState = function(persistentStorageRef, context) {
 						this._internal.panel_properties)
 					if (noPanelsAreSetToVisible) {
 						// this.panel_assets = true // not in this build
-						this.panel_chat = true
+						this.panel_chat = false // disabled
 						this.panel_patches = true
 						this.panel_properties = true
 					}

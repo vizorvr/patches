@@ -709,7 +709,7 @@ NodeUI.prototype.onShowTooltip = function(e) {
 
 
 	var popovers = jQuery('body div.popover');
-	var timeout = (popovers.length > 0) ? 350 : 2500;
+	var timeout = (popovers.length > 0) ? 300 : 2000;
 
 	if (data._tooltipTimer) clearTimeout(data._tooltipTimer);
 	if (data._tooltipElem) {
