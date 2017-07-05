@@ -1143,3 +1143,20 @@ body {
   margin-left: -@width/2;
   margin-top: -@height/2;
 }
+
+
+.mixin-threecol {
+  .threecol.clearfix {
+	.col {
+	  box-sizing: border-box;
+	  width: 33.3%;
+	  padding: 0;
+	  &.left, &.mid {
+		float:left;
+	  }
+	  &.right {
+		float:right;
+	  }
+	}
+  }
+}
