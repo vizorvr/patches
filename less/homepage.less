@@ -79,10 +79,10 @@ header nav.primary ul>li {
 		margin-bottom: 15px;
 	}
 	img.hero {
-		width: 1075px;
-		height: 382px;
+		max-width: 1075px;
+        width: 99%;
 		display: block;
-		margin: 90px auto;
+		margin: 80px auto 90px auto;
 	}
 	.cols-flex .col {
 		max-width: 430px;
@@ -146,6 +146,7 @@ body.layoutDesktop #contentwrap>section {
 		p.more {
 			text-align: center;
 			margin-top: 100px;
+          margin-bottom: 0;
 		}
 		padding-bottom: 100px;
 	}
@@ -167,10 +168,12 @@ body.bHome.uaSafari[data-dpr="1"] {
 	  }
 	}
 	#getstarted #herotext {
+      pointer-events: none;
 	  h1 {
 		font-weight: 700;
 	  }
 	  a {
+        pointer-events: initial;
 		font-weight: 300;
 		-webkit-text-stroke: 0.4px;
 	  }
@@ -274,8 +277,9 @@ body.bHome #contentwrap {
 			}
 		}
 		img {
-			display: block;
-			margin: 50px auto 0 auto;
+          display: block;
+          margin: 50px auto 0 auto;
+          max-width: 99%;
 		}
 	}
   #featuredVR {
@@ -789,7 +793,6 @@ body.bHome #contentwrap {
 
 	section>div.in img.hero {
 	  padding: 0 20px;
-	  max-width: none;
 	  width: 100%;
 	}
 
