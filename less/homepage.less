@@ -206,6 +206,7 @@ body.bHome #contentwrap {
 
 
 body.bHome #contentwrap {
+	background: #000;
   #getstarted {
     min-height: 100vh;
 	//height: 678px;
@@ -248,7 +249,37 @@ body.bHome #contentwrap {
 	}
   } // /#getstarted
 
+	#homeVizor360 {
+		margin-top: 25px;
+		height: auto;
+		padding-bottom:0;
+		background: @color-bg1;
+		border-top: 1px solid @color-bg1;
+	  border-bottom: 1px solid @color-bg1;
+		h2 {
+			margin-top: 90px;
+		.type(700, 38px);
+		  text-align: center;
+		}
+		p {
+			margin-top: 20px;
+			text-align: center;
+			.type(600,115%, 1.75em);
+			color: #CDCDCD;
+			a {
+				color: #CDCDCD;
+				&:hover {
+					color: white;
+				}
+			}
+		}
+		img {
+			display: block;
+			margin: 50px auto 0 auto;
+		}
+	}
   #featuredVR {
+	  margin-top: 25px;
 	  background: @color-bg2;
 	  border-top: 1px solid @color-bg2;
 	  border-bottom: 1px solid @color-bg2;
