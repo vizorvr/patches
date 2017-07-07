@@ -1193,7 +1193,6 @@ body.bMain {
 
 	nav.primary {
 	  padding-top: 30px;
-
 	  >* {margin:0; padding:0;}
 
 	  >ul {	// top right links
@@ -1221,6 +1220,11 @@ body.bMain {
 	}
 	button+button, button+a.btn {margin-left:1em;}
 
+  }
+
+
+	&.layoutMobile header nav.primary {
+	  padding-top: 20px;
   }
 
   header button, header form button, header a.btn {
@@ -1334,7 +1338,7 @@ body.bMain {
   @media all and (max-width: (@threshold-mobile - 1)) {
 
 	#brandTop {
-	  width: 30px;
+	  width: 65px;
 	  height: 30px;
 	  float:none;
 	}
