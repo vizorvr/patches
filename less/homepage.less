@@ -78,12 +78,18 @@ header nav.primary ul>li {
 		text-transform: uppercase;
 		margin-bottom: 15px;
 	}
-	img.hero {
-		max-width: 1075px;
+
+	div.hero {
         width: 99%;
-		display: block;
 		margin: 80px auto 90px auto;
+		img {
+			display: block;
+			margin: 0 auto;
+			width: 100%;
+			max-width: 1075px;
+		}
 	}
+
 	.cols-flex .col {
 		max-width: 430px;
 	}
@@ -104,6 +110,43 @@ header nav.primary ul>li {
 		}
 
 	}
+
+
+	body.layoutTablet & div.hero {
+		width: 450px;
+		overflow: hidden;
+		img {
+			width: 1075px;
+			margin: 0;
+		}
+	}
+	body.layoutMobile & div.hero {
+		width: 100%;
+		margin: 20px auto 35px auto;
+		img {
+			width: 100%;
+			max-width: 266px;
+		}
+	}
+
+	body.layoutMobile & {
+		text-align: center;
+		font-size: 14px;
+		.cols-flex .col {
+			margin: 0 auto;
+		}
+	}
+
+	body.layoutTablet & {
+		font-size: 16px;
+		.cols-flex {
+			flex-direction: column;
+			.col {
+				margin: 0 auto;
+			}
+		}
+	}
+
 
 }
 body.layoutDesktop #contentwrap>section {
