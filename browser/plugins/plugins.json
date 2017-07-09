@@ -195,6 +195,8 @@
         "Current time": "audio_get_current_time_modulator",
         "Duration": "audio_get_duration_modulator",
         "Module player": "module_player",
+	"Module S3M player": "module_player_s3m",
+	"Module XM player": "module_player_xm",
         "Gain (mix)": "audio_gain_modulator"
     },
 
