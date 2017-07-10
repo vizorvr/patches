@@ -103,7 +103,7 @@ var helper = require('./controllerHelpers')
 		}
 		res.render('server/pages/account/signup', {
 			meta : {
-				title: 'Sign up to Vizor',
+				title: 'Sign up to Patches',
 				scripts: [
 					helper.metaScript('site/accountpages.js')
 				]

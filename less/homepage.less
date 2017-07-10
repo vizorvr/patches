@@ -182,7 +182,7 @@ body.layoutDesktop #contentwrap>section {
 		article.card.asset {
 			flex: 0 1 252px;
 			height: 232px;
-			margin: 0 auto;
+			margin: 0 auto 20px auto;
 		}
 	}
 
@@ -354,8 +354,10 @@ body.bHome #contentwrap {
 			color: #CDCDCD;
 			a {
 				color: #CDCDCD;
+				border-bottom: 1px solid @color-primary;
 				&:hover {
-					color: white;
+					text-decoration: none;
+					color: @color-primary;
 				}
 			}
 		}

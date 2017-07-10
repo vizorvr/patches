@@ -226,7 +226,6 @@ var siteUI = new function() {
 			window.addEventListener('resize', dismissMenu)
 
 			$mobileMenu.fadeIn('fast');
-			jQuery('a', $mobileMenu).on('mousedown touchdown', dismissMenu)
 			VizorUI.enableScrollToLinks($mobileMenu);
 
 			return false;

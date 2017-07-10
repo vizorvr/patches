@@ -234,6 +234,9 @@ Minislides.prototype.initDrag = function() {
 			if (leftPx === null)
 				leftPx = parseFloat(window.getComputedStyle(sc).left.replace("px", ''))
 
+			if (isNaN(leftPx))
+				leftPx = 0
+
 			var newLeft = leftPx + dx
 
 			if (newLeft > 0)

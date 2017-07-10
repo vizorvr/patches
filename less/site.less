@@ -1258,72 +1258,7 @@ body.bMain {
 	}
   }
 
-
-  #mobilemenu {
-	background: @bgcolor-home-footer;
-
-	#brandTop {
-	  margin-left: 20px;
-	  margin-top: 20px;
-	}
-
-	section>h2:first-child {
-	  margin: 16px auto 0 auto;
-	  padding:0 !important;
-	}
-
-	div#menuContainer {
-	  position:absolute;
-	  top: 80px;
-	  bottom:50px;
-	  left:0;
-	  right:0;
-	  width:100%;
-	  border-top: 1px solid rgba(255,255,255,0.1);
-	  border-bottom: 1px solid rgba(255,255,255,0.1);
-	}
-	ul:first-of-type {
-	  float:left;
-	}
-	ul:last-of-type {
-	  float: right;
-	  border-left: 1px solid rgba(255,255,255,0.1);
-	}
-	ul {
-	  width: 50%;
-	  height: 100%;
-	  padding-left: 0;
-	  margin-left: 0;
-	  li {
-		height: 16.65%;
-		display: -webkit-flex;
-		-webkit-justify-content: space-between;
-		-webkit-position:relative;
-		display: flex;
-		justify-content:stretch;
-		position:relative;
-		a {
-		  letter-spacing: 1.75px;
-		  font-size: 16px;
-		  text-transform:uppercase;
-		  color: #c3c3c3;
-		  margin: auto 0;
-		  width: 100%;
-		  min-height: 2.5em;
-		  line-height: 2.5em;
-		  padding: 0 25px;
-		  font-weight: 300;
-		  &:hover {
-			text-decoration: none;
-		  }
-		}
-	  }
-	  li+li {
-		border-top: 1px solid rgba(255,255,255,0.1);
-	  }
-	}
-  } // /#mobileMenu
-
+  @import "mobilemenu";
 
   #brandTop {
 	float:left;
