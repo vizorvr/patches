@@ -9,11 +9,14 @@ Be sure to [watch the tutorials](http://bit.do/vizor) and [read the documentatio
 
 ### Installing
 
-Installing a local instance of Vizor requires [MongoDB](http://mongodb.org), [Redis](http://redis.io) and [node.js](https://nodejs.org) (Get [v6.11](https://nodejs.org/en/download/)). To install the required packages, issue the following commands (on Mac using Homebrew):
+Installing a local instance of Vizor requires [MongoDB](http://mongodb.org), [Redis](http://redis.io), [node.js](https://nodejs.org) (Get [v6.11](https://nodejs.org/en/download/)) and graphicsmagick. To install the required packages, issue the following commands (on Mac using Homebrew):
 
 ```
-    $ npm install && npm install -g gulp
+    $ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
     $ brew install graphicsmagick
+    $ brew install mongodb 
+    $ brew install redis
+    $ npm install && npm install -g gulp
     $ gulp
 ```
 
