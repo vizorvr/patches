@@ -16,6 +16,8 @@ Installing a local instance of Vizor requires [MongoDB](http://mongodb.org), [Re
     $ brew install graphicsmagick
     $ brew install mongodb 
     $ brew install redis
+    $ brew services start mongodb
+    $ brew services start redis
     $ npm install && npm install -g gulp
     $ gulp
 ```
