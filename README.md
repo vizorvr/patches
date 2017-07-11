@@ -3,9 +3,9 @@
 
 Vizor is a visual programming environment for WebGL, WebVR and other HTML5 APIs. It features live preview, data flow visualization, network communication, publishing, unlimited undo, and a catalog of ready-made patches that can be used as modular building blocks. Complex logic can be nested in subgraphs and they can be rendered directly to a specific render target, or simply used as a texture. Loops are modeled as nested graphs that are evaluated once per loop iteration.
 
-**Try the cloud version of Vizor now at [vizor.io](http://vizor.io).**
+**Try the cloud version of Vizor now at [patches.vizor.io](http://patches.vizor.io).**
 
-Be sure to [watch the tutorials](http://bit.do/vizor) and [read the documentation](http://vizor.io/help/introduction.html). [Plugin API documentation](http://vizor.io/help/plugin_api.html) is available, but unstable.
+Be sure to [watch the tutorials](http://bit.do/vizor) and [read the documentation](http://patches.vizor.io/help/introduction.html). [Plugin API documentation](http://patches.vizor.io/help/plugin_api.html) is available, but unstable.
 
 ### Installing
 
@@ -41,8 +41,20 @@ Running the tests:
 
 ### Running
 
+0. Make sure you have the right export for ENGI_BIND_IP configured in your .bash_profile
+```
+    export ENGI_BIND_IP=0.0.0.0
+```
 1. Make sure MongoDB and Redis are running.
-2. Run the server: ``` $ npm start```
+```
+    $ brew services start mongodb
+    $ brew services start redis
+```
+2. Gulp one more time, then run the server:
+``` 
+    $ gulp
+    $ npm start
+```
 3. Open in the browser: [http://localhost:8000/edit](http://localhost:8000/edit)
 
 If you have access to an Oculus Rift DK1 or DK2 and want to play with the VR features, you currently need one of Toji's special Chromium builds. You can find them here: http://blog.tojicode.com/2014/07/bringing-vr-to-chrome.html
@@ -53,7 +65,7 @@ We welcome your contributions! Please create and work in a fork, submitting a pu
 
 # A note on plugins
 
-Vizor features hundreds of plugins, including ways to obtain or create data:
+Patches features hundreds of plugins, including ways to obtain or create data:
 
 * Cameras: Perspective, orthographic and screen space. Obtain aspect radio and viewport size.
 * Input: Gamepad, VR headset, keyboard, mouse position, button state and scroll wheel.
@@ -123,10 +135,11 @@ Created sequences can be imported and exported as JSON, embeddable into any cont
 
 # License
 
-Vizor is released under the [MIT License](http://opensource.org/licenses/MIT)
+Patches is released under the [MIT License](http://opensource.org/licenses/MIT)
 
 # Contact Us
 
-[Twitter](https://twitter.com/vizor_vr)
+[@vizor_vr on Twitter](https://twitter.com/vizor_vr)
+[@VizorPatches on Twitter](https://twitter.com/VizorPatches)
 
 [E-Mail](mailto:info@vizor.io)
