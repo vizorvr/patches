@@ -1,7 +1,7 @@
 #Array Set
 
 ##Description
-
+Select an **index** of the **array** and change the **item** in that array index.
 
 ##Inputs
 ###array
