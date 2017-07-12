@@ -195,7 +195,20 @@
         "Current time": "audio_get_current_time_modulator",
         "Duration": "audio_get_duration_modulator",
         "Module player": "module_player",
-        "Gain (mix)": "audio_gain_modulator"
+        "Gain (mix)": "audio_gain_modulator",
+        "FOAmbisonic encoder": "audio_ambisonic_foaencoder",
+        "FOAmbisonic decoder": "audio_ambisonic_foadecoder",
+        "FOAmbisonic rotator": "audio_ambisonic_foarotator",
+        "FOAmbisonic mirror": "audio_ambisonic_foamirror",
+        "FOAmbisonic converter": "audio_ambisonic_foaconverter",
+        "FOAmbisonic virtual mic": "audio_ambisonic_foavmic",
+        "TOAmbisonic encoder": "audio_ambisonic_toaencoder",
+        "TOAmbisonic decoder": "audio_ambisonic_toadecoder",
+        "TOAmbisonic rotator": "audio_ambisonic_toarotator",
+        "TOAmbisonic mirror": "audio_ambisonic_toamirror",
+        "TOAmbisonic buffer merger": "audio_ambisonic_buffermerger",        
+        "TOAmbisonic converter": "audio_ambisonic_toaconverter",
+        "TOAmbisonic virtual mic": "audio_ambisonic_toavmic"
     },
 
     "DEBUG TOOLS": {
