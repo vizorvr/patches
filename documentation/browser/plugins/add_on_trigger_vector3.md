@@ -1,7 +1,7 @@
 #Add Vectors Conditionally
 
 ##Description
-
+When receiving **True**, will output **A** + **B**, otherwise **A**.
 
 ##Inputs
 ###trigger
