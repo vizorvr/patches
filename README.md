@@ -1,15 +1,15 @@
-# Vizor
+# Patches
 ====
 
-Vizor is a visual programming environment for WebGL, WebVR and other HTML5 APIs. It features live preview, data flow visualization, network communication, publishing, unlimited undo, and a catalog of ready-made patches that can be used as modular building blocks. Complex logic can be nested in subgraphs and they can be rendered directly to a specific render target, or simply used as a texture. Loops are modeled as nested graphs that are evaluated once per loop iteration.
+Patches is a visual programming environment for WebGL, WebVR and other HTML5 APIs. It features live preview, data flow visualization, network communication, publishing, unlimited undo, and a catalog of ready-made patches that can be used as modular building blocks. Complex logic can be nested in subgraphs and they can be rendered directly to a specific render target, or simply used as a texture. Loops are modeled as nested graphs that are evaluated once per loop iteration.
 
-**Try the cloud version of Vizor now at [patches.vizor.io](http://patches.vizor.io).**
+**Try the cloud version of Patches now at [patches.vizor.io](http://patches.vizor.io).**
 
-Be sure to [watch the tutorials](http://bit.do/vizor) and [read the documentation](http://patches.vizor.io/help/introduction.html). [Plugin API documentation](http://patches.vizor.io/help/plugin_api.html) is available, but unstable.
+Be sure to [watch the tutorials](http://bit.do/vizor), [read the documentation](http://patches.vizor.io/help/introduction.html) and [read tutorials on Patches](http://blog.vizor.io/). [Plugin API documentation](http://patches.vizor.io/help/plugin_api.html) is available, but unstable.
 
 ### Installing
 
-Installing a local instance of Vizor requires [MongoDB](http://mongodb.org), [Redis](http://redis.io), [node.js](https://nodejs.org) (Get [v6.11](https://nodejs.org/en/download/)) and graphicsmagick. To install the required packages, issue the following commands (on Mac using Homebrew):
+Installing a local instance of Patches requires [MongoDB](http://mongodb.org), [Redis](http://redis.io), [node.js](https://nodejs.org) (Get [v6.11](https://nodejs.org/en/download/)) and graphicsmagick. To install the required packages, issue the following commands (on Mac using Homebrew):
 
 ```
     $ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
@@ -39,7 +39,7 @@ Running the tests:
     $ npm test
 ```
 
-### Running
+### Running Patches
 
 0. Make sure you have the right export for ENGI_BIND_IP configured in your .bash_profile
 ```
