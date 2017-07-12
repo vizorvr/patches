@@ -1,7 +1,7 @@
 #Add number conditionally
 
 ##Description
-
+When receiving **True**, will output **A** + **B**, otherwise **A**.
 
 ##Inputs
 ###trigger

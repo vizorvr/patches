@@ -1,7 +1,7 @@
 #Array Get
 
 ##Description
-
+Outputs the **item** from the **index** of a specific **array**.
 
 ##Inputs
 ###array

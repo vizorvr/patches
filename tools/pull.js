@@ -30,7 +30,7 @@ if (argv._.length < 1) {
 
 			$ pull fthr/tunnel
 
-			pulls fthr/tunnel from vizor.io to local username/tunnel
+			pulls fthr/tunnel from patches.vizor.io to local username/tunnel
 	`)
 
 	process.exit(1)

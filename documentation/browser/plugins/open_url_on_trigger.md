@@ -8,7 +8,7 @@ Navigates to the URL (away from experience) on trigger
 When trigger is true, the URL will be loaded in the browser
 
 ###url
-Absolute URL to navigate to, eg. http://vizor.io/
+Absolute URL to navigate to, eg. http://patches.vizor.io/
 
 ##Outputs
 ##Detail

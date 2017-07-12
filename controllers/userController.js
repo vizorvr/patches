@@ -550,7 +550,7 @@ exports.getAccount = function(req, res) {
  			var mail = {
  				to: user.email,
  				from: 'info@vizor.io',
- 				subject: 'Your Vizor password has been changed',
+ 				subject: 'Your Patches password has been changed',
  				html: 'Hello,<br><br>' +
 	 				'This is a confirmation that the password for your account ' + user.email + ' has just been changed.<br><br>',
  				text: 'Hello,\n\n' +

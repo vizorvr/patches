@@ -1,7 +1,7 @@
 #Array Clear
 
 ##Description
-Empties given array
+Empties the given array
 
 ##Inputs
 ###array
