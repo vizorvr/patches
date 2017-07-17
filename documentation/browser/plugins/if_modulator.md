@@ -1,18 +1,18 @@
 #If
 
 ##Description
-Allows **value** though if **condition** is true and inhibits futher data-flow otherwise.
+Allows **value** though if _condition_ is **true** and inhibits futher data-flow otherwise.
 
 ##Inputs
 ###condition
 Condition that, if true, allows **value** to be emitted.
 
 ###value
-Value to be emitted if **condition** is true.
+Value to be emitted if _condition_ is **true**.
 
 ##Outputs
 ###value
-Emits **value** if **condition** is true and nothing otherwise.
+Emits **value** if _condition_ is **true** and nothing otherwise.
 
 ##Detail
 

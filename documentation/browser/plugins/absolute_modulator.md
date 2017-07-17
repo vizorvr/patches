@@ -1,7 +1,7 @@
 #Absolute
 
 ##Description
-Emit the absolute value of the input.
+Emit the absolute **value** of the input.
 
 ##Inputs
 ###value

@@ -1,7 +1,7 @@
 #And
 
 ##Description
-Emit true if and only if both inputs are true and false otherwise.
+Emit **true** if _and only if_ both inputs are **true**. **False** otherwise.
 
 ##Inputs
 ###a

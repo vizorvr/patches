@@ -1,7 +1,7 @@
 #Animate Between Input Floats
 
 ##Description
-Set up n inputs, then choose which one to output. The output will animate from the previous input to the currently selected one over time duration and using the selected blending function
+Set up **n** inputs, then choose which one to output. The output will animate from the previous input to the currently selected one over time duration and using the selected blending function
 
 ##Inputs
 ###number

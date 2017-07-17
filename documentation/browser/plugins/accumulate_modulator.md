@@ -5,10 +5,10 @@ Every input **value** is accumulated in an internal buffer (which resets to zero
 
 ##Inputs
 ###value
-A small value to be accumulated in an internal buffer.
+A small **value** to be accumulated in an internal buffer.
 
 ###reset
-Send a value to this slot to reset the accumulator to that value.
+Send a **value** to this slot to **reset** the accumulator to that value.
 
 ##Outputs
 ###value

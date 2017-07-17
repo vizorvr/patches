@@ -1,7 +1,7 @@
 #Object member to bool
 
 ##Description
-Emits a boolean representation of specified member of the supplied object.
+Emits a **boolean** representation of specified member of the supplied object.
 
 ##Inputs
 ###object
