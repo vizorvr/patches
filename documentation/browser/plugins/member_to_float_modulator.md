@@ -1,7 +1,7 @@
 #Object member to float
 
 ##Description
-Emits a float representation of specified member of the supplied object.
+Emits a **float** representation of specified member of the supplied object.
 
 ##Inputs
 ###object
