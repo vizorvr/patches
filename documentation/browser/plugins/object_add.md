@@ -1,21 +1,21 @@
 #Object composition
 
 ##Description
-Object composition
+Object composition.
 
 ##Inputs
 ###object
-Optional existing object
+Optional existing object.
 
 ###key
-The key
+The key.
 
 ###value
 The value: A float, text or object.
 
 ##Outputs
 ###object
-The created object
+The created object.
 
 ##Detail
 

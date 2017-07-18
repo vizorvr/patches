@@ -1,11 +1,11 @@
 #Object
 
 ##Description
-Displays Objects and Arrays.
+Displays **Objects** and **Arrays**.
 
 ##Inputs
 ###object
-Input object to be analyzed.
+Input **object** or **array** to be analyzed.
 
 ##Outputs
 ##Detail

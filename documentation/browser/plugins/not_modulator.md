@@ -1,7 +1,7 @@
 #Not
 
 ##Description
-Emits true if the input is false and vice versa.
+Emits **true** if the input is **false** and vice versa.
 
 ##Inputs
 ###bool
