@@ -7,7 +7,7 @@ Decode an ambisonic spherical recording to headphones.
 ###audio_in
 A 4-channel B-format audio stream to convert.
 
-###convention
+###buffer
 A 4-channel audio buffer containing binaural decoding filters.
 
 ##Outputs
