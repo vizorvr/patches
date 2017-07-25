@@ -43,7 +43,7 @@ var deets = {
 }
 
 var parsed = urlParse(argv._[0])
-var hn = (parsed.hostname || 'vizor.io')
+var hn = (parsed.hostname || 'patches.vizor.io')
 	+ ':' + (parsed.port || 443)
 
 var userAndGraph = parsed.path

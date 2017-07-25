@@ -1,7 +1,7 @@
 #Add color
 
 ##Description
-Adds a constant value to all components of a color. Each channel is clipped to the range 0;1.
+Adds a constant **value** to all components of a color. Each channel is clipped to the range 0;1.
 
 ##Inputs
 ###color

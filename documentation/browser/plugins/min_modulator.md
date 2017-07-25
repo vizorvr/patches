@@ -1,14 +1,14 @@
 #Min
 
 ##Description
-Emit the lesser of the two input values.
+Emit the lesser of the two input **values**.
 
 ##Inputs
 ###a
-The first input value
+The first input **value**
 
 ###b
-The second input value
+The second input **value**
 
 ##Outputs
 ###min

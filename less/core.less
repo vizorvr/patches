@@ -232,8 +232,7 @@ ul.iconic-nav>li.open>button span {
     position: absolute;
     left: 45px;
     top: 50%;
-    margin-top: -12px; 
-    
+    margin-top: -12px;
 }
 
 .info-pane {
@@ -1013,6 +1012,15 @@ body.bEditor #progressbar {
 	}
 
   }
+}
+
+.cols-flex {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	>.col {
+		flex: 1;
+	}
 }
 
 // svgs sometimes prevent button events from triggering (ios), this fixes it

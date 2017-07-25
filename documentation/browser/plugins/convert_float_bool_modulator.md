@@ -1,15 +1,15 @@
 #Float to Bool
 
 ##Description
-Convert a float to a boolean. 0 is false, everything else is true.
+Convert a **float** to a **boolean**. 0 is **false**, everything else is **true**.
 
 ##Inputs
 ###value
-Input float to be converted.
+Input **float** to be converted.
 
 ##Outputs
 ###bool
-Emits false when the input value is zero and true otherwise.
+Emits **false** when the input value is 0 and **true** otherwise.
 
 ##Detail
 

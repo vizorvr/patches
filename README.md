@@ -22,7 +22,7 @@ Installing a local instance of Patches requires [MongoDB](http://mongodb.org), [
     $ gulp
 ```
 
-NOTE: Currently using Web Sockets or OSC requires running Vizor locally.
+NOTE: Currently using Web Sockets or OSC requires running Patches locally.
 
 ### Building
 

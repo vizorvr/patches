@@ -172,6 +172,7 @@ var siteUI = new function() {
 	this.init = function() {
 
 		that.tagBodyClass()
+		that.disableForceTouch()
 		setTimeout(that.tagBodyClass.bind(that), 50)	// Safari
 
 		that.attach()
@@ -225,7 +226,6 @@ var siteUI = new function() {
 			window.addEventListener('resize', dismissMenu)
 
 			$mobileMenu.fadeIn('fast');
-			jQuery('a', $mobileMenu).on('mousedown touchdown', dismissMenu)
 			VizorUI.enableScrollToLinks($mobileMenu);
 
 			return false;
@@ -347,9 +347,11 @@ var siteUI = new function() {
 				var content = document.getElementById('featuredVR').querySelectorAll('div.mobileslides')
 				Array.prototype.forEach.call(content, function(div){
 					var m = new Minislides(div,  {
-						slideQuery:':scope>article',
-						slideContainerQuery:'.side-by-side',
-						transitionMethod: 'horizontal'}
+            slideContainerQuery:'section.list',
+            slideQuery:':scope>article',
+						transitionMethod: 'horizontal',
+						switcherContainer: div.parentElement,
+						}
 					)
 					ms.push(m)
 				})
@@ -376,10 +378,10 @@ var siteUI = new function() {
 
 	this.disableForceTouch = function() {
 		$('body').on('webkitmouseforcewillbegin webkitmouseforcedown webkitmouseforceup webkitmouseforcechanged', function(e){
-            e.preventDefault()
-            e.stopPropagation()
-            return false
-        })
+          e.preventDefault()
+          e.stopPropagation()
+          return false
+      })
 	}
 
 	this.isFullScreen = function() {

@@ -233,7 +233,7 @@ VizorUI.prototype.setPageTitle = function() {
 		return false;
 
 	var graphname = E2.app.path;
-	var newTitle = "Vizor";
+	var newTitle = "Patches";
 
 	graphname = graphname.split('/')
 	if (graphname.length > 1)

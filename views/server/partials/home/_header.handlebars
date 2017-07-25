@@ -1,13 +1,13 @@
 {{#unless noHeaderTag}}<header>{{/unless}}
 <nav class="primary clearfix in" style="position:relative">
     <h1 id="brandTop" class="brandTop">
-        <a href="/" class="nofx"><span>Vizor</span>
-        <svg class="mobileonly" style="fill:#fff;"><use xlink:href="#vizor-mark" /></svg>
-        <svg class="nomobile" style="fill:#fff;"><use xlink:href="#vizor-top-logo" /></svg></a>
+        <a href="/" class="nofx"><span>Patches</span>
+        <svg><use xlink:href="#patches-wordmark" /></svg>
+        </a>
     </h1>
 
     <ul class="nomobile">
-        <li id="navAbout"><a href="/about">About</a></li>
+        {{!-- <li id="navAbout"><a href="/about">About</a></li> --}}
         <li id="navTutorials"><a href="//blog.vizor.io">Tutorials</a></li>
         {{#if user.username}}
             <li class="account">
@@ -24,9 +24,9 @@
         {{/if}}
     </ul>
 
-    <div class="mobileonly" style="position:absolute; top:16px; right: 10px; width: 30px; height: 30px;">
+    <div class="mobileonly" style="position:absolute; top:14px; right: 10px; width: 30px; height: 30px; display: flex; justify-content: center;">
         <button class="nofx" id="mobileMenuOpenButton">
-            <img src="/images/home/xmenu.png" width="22" height="32" alt="" />
+            <img src="/images/home/xmenu.png" width="14" height="13" alt="" />
         </button>
     </div>
 </nav>

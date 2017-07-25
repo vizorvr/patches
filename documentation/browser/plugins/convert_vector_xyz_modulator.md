@@ -1,11 +1,11 @@
 #Vector to XYZ
 
 ##Description
-Decompose a vector to its individual XYZ components so they can be manipulated individually.
+Decompose a **vector** to its individual **XYZ** components so they can be manipulated individually.
 
 ##Inputs
 ###vector
-Input vector.
+Input **vector**.
 
 ##Outputs
 ###x
