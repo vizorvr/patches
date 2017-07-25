@@ -1,7 +1,7 @@
 #Object member to string
 
 ##Description
-Emits a string representation of specified member of the supplied object.
+Emits a **string** representation of specified member of the supplied object.
 
 ##Inputs
 ###object

@@ -5,11 +5,10 @@ Emits an object representation of the supplied JSON string.
 
 ##Inputs
 ###json
-Input string to be parsed.
+Input **string** to be parsed.
 
 ##Outputs
 ###object
-The object representation of the supplied json.
+The object representation of the supplied JSON.
 
 ##Detail
-

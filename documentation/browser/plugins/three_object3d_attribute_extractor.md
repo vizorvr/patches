@@ -1,11 +1,11 @@
 #Mesh attributes
 
 ##Description
-Extract position, rotation and scale from a Mesh
+Extract **position**, **rotation** and **scale** from a **mesh**.
 
 ##Inputs
 ###object3d
-mesh to extract attributes from
+**Mesh** to extract attributes from.
 
 ##Outputs
 ###position

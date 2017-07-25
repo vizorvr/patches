@@ -1,7 +1,7 @@
 #Plot
 
 ##Description
-Displays the supplied coordiate on a XY plot.
+Displays the supplied coordinate on a XY plot.
 
 ##Inputs
 ###x
@@ -12,4 +12,3 @@ The location on the y-axis.
 
 ##Outputs
 ##Detail
-

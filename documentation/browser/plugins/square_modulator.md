@@ -1,7 +1,7 @@
 #Square
 
 ##Description
-Square oscilator. A **time** value incrementing by one unit per second will yield a 1Hz output signal.
+Square oscillator. A **time** value incrementing by one unit per second will yield a 1Hz output signal.
 
 ##Inputs
 ###time

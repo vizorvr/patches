@@ -1,15 +1,15 @@
 #Object to JSON
 
 ##Description
-Serialize object to JSON (stringify)
+Serialize an **object** to **JSON** (stringify).
 
 ##Inputs
 ###object
-Object to serialize
+Input an **object** to serialize into **JSON**.
 
 ##Outputs
 ###json
-The serialized object
+The serialized **object** as **JSON**.
 
 ##Detail
 

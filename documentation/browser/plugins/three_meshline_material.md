@@ -5,19 +5,19 @@ Vector Line Material
 
 ##Inputs
 ###color
-Color of the material
+Color of the material.
 
 ###sizeAttenuation
 Specify whether line width will get smaller with the distance.
 
 ###lineWidth
-Width of the resulting vector lines
+Width of the resulting vector lines.
 
 ###near
-Near plane distance
+Near plane distance.
 
 ###far
-Far plane distance
+Far plane distance.
 
 ###wireframe
 Render vector lines as wireframe.
@@ -35,7 +35,7 @@ Defines whether this material is transparent. When set to true, the extent to wh
 Which blending to use when displaying objects with this material. Default is Normal. 0 = No, 1 = Normal, 2 = Additive, 3 = Subtractive, 4 = Multiply, 5 = Custom
 
 ###side
-Defines which of the face sides will be rendered - front, back or both. 0 = Front, 1 = Back, 2 = Double Sided
+Defines which of the face sides will be rendered - front, back or both. 0 = Front, 1 = Back, 2 = Double Sided.
 
 ##Outputs
 ###material

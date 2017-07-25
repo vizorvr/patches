@@ -21,7 +21,7 @@ if (argv._.length < 1) {
 	usage:
 
 		$ pull [-up] owner/graph-name [local-name]
-			-u local user email
+			-u local username (this is your e-mail address)
 			-p password
 
 			pulls the 'owner/graph-name' from the remote to local

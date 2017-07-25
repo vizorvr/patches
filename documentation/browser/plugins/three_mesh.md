@@ -5,10 +5,10 @@ THREE.js Mesh
 
 ##Inputs
 ###object3d
-Optional existing mesh to modify
+Optional existing mesh to modify.
 
 ###animation speed
-Animation speed multiplier
+Animation speed multiplier.
 
 ###geometry
 
@@ -38,8 +38,8 @@ Animation speed multiplier
 
 
 ###stereo view
-Affects how this object is rendered in stereo  
-Stereo View - 0: both eyes, 1: left eye only, 2: right eye only, 3: mono view only
+Affects how this object is rendered in stereo.
+Stereo View - 0: both eyes, 1: left eye only, 2: right eye only, 3: mono view only.
 
 ###lock transform
 if enabled, this object's transform is locked and can't be adjusted in the 3d editor.
