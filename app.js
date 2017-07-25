@@ -278,8 +278,6 @@ app.get('/', function(req, res, next) {
 	}
 })
 
-app.get('/v1', homeController.index.bind(homeController))
-
 app.get('/threesixty', threesixtyController.index)
 app.get('/threesixty/featured', threesixtyController.featured)
 
