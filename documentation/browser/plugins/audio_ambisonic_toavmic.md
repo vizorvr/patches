@@ -11,10 +11,10 @@ A 16-channel HOA audio stream.
 Orientation vector of virtual microphone.
 
 ###mic_type
-Type of virtual microphone:<br>
-**0**: Cardioid<br>
-**1**: Supercardioid<br>
-**2**: Hypercardioid<br>
+Type of virtual microphone:
+**0**: Cardioid
+**1**: Supercardioid
+**2**: Hypercardioid
 **3**: max-rE.
 
 ##Outputs

@@ -8,7 +8,10 @@ Decode an ambisonic spherical recording to headphones.
 A 4-channel B-format audio stream to convert.
 
 ###convention
-Ambisonic convention:<br>**0**: ACN/N3D<br>**1**: WXYZ/FuMa<br>**2**: ACN/SN3D.
+Ambisonic convention:
+**0**: ACN/N3D
+**1**: WXYZ/FuMa
+**2**: ACN/SN3D.
 
 ##Outputs
 ###audio_out

@@ -8,11 +8,11 @@ Mirror an ambisonic spherical recording across the principal planes.
 A 4-channel B-format audio stream.
 
 ###mirror_plane
-Plane to mirror:<br>
-**0**: None<br>
-**1**: Front-Back<br>
-**2**: Left-Right<br>
-**3**: Up-Down
+Plane to mirror:
+**0**: None
+**1**: Front-Back
+**2**: Left-Right
+**3**: Up-Down.
 
 ##Outputs
 ###audio_out

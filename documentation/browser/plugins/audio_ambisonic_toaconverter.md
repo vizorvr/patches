@@ -8,9 +8,9 @@ Decode an ambisonic spherical recording to headphones.
 A 16-channel TOA audio stream to convert.
 
 ###convention
-Ambisonic convention:<br>
-**0**: ACN/N3D<br>
-**1**: WXYZ/FuMa<br>
+Ambisonic convention:
+**0**: ACN/N3D
+**1**: WXYZ/FuMa
 **2**: ACN/SN3D.
 
 ##Outputs

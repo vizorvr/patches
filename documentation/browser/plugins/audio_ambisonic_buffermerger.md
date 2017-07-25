@@ -11,8 +11,8 @@ The first 8ch audio buffer.
 The second 8ch audio buffer.
 
 ###filetype
-Audio file format:<br>
-**0**: WAV<br>
+Audio file format:
+**0**: WAV
 **1**: OGG.
 
 ##Outputs

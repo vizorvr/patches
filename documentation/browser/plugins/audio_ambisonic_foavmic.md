@@ -11,10 +11,10 @@ A 4-channel B-format audio stream.
 Orientation vector of virtual microphone.
 
 ###mic_type
-Type of virtual microphone:<br>
-**0**: Cardioid<br>
-**1**: Supercardioid<br>
-**2**: Hypercardioid
+Type of virtual microphone:
+**0**: Cardioid
+**1**: Supercardioid
+**2**: Hypercardioid.
 
 ##Outputs
 ###audio_out
