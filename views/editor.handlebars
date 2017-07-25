@@ -9,14 +9,15 @@
 <header id="editor-header" class="clearfix">
 	<div class="editor-header clearfix">
 		<div id="top-header-logo">
-			<a
+			<a id="logo-link"
                 {{#if user.username}}
                     href="/{{user.username}}" title="Back to your profile page"
                 {{else}}
                     href="/" title="Back to the homepage"
                 {{/if}}
 
-            ><svg class="vizor-top-logo"><use xlink:href="#vizor-top-logo"></use></svg></a>
+            ><svg class="vizor-top-logo"><use xlink:href="#editor-patches-wordmark"></use></svg></a>
+            <!-- p>from <a target="_blank" href="http://vizor.io">Vizor</a></p -->
 		</div>
 		<div class="menu-bar">
 			<div class="buttons button-group" id="grpFileIO" >

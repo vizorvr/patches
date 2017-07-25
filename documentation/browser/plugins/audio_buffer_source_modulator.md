@@ -1,7 +1,7 @@
 #Buffer source
 
 ##Description
-Create a playable audio source from a buffer of audio data.
+Create a playable audio source from a **buffer** of audio data.
 
 ##Inputs
 ###buffer
