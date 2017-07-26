@@ -1,11 +1,11 @@
 #Color
 
 ##Description
-Displays the supplied color in a rectangle on the plugin.
+Displays the supplied **color** in a **rectangle** in the plugin window.
 
 ##Inputs
 ###color
-Input color to be displayed.
+Input **color** to be **displayed**.
 
 ##Outputs
 ##Detail
