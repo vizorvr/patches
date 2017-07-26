@@ -1,75 +1,75 @@
 #XBOX 360 Gamepad
 
 ##Description
-Buttons and axes from HTML5 standard gamepad
+Buttons and axes from a HTML5 standard gamepad.
 
 ##Inputs
 ###pad number
-Gamepad number
+Gamepad **number**.
 
 ##Outputs
 ###button 0
-button 0
+Button **0**.
 
 ###button 1
-button 1
+Button **1**.
 
 ###button 2
-button 2
+Button **2**.
 
 ###button 3
-button 3
+Button **3**.
 
 ###left bumper
-left bumper
+Left bumper.
 
 ###right bumper
-right bumper
+Right bumper.
 
 ###left trigger
-left trigger
+Left trigger.
 
 ###right trigger
-right trigger
+Right trigger.
 
 ###select
-select
+Select.
 
 ###start
-start
+Start.
 
 ###left stick button
-left stick button
+Left stick button.
 
 ###right stick button
-right stick button
+Right stick button.
 
 ###D-pad top
-D-pad top
+D-pad top.
 
 ###D-pad bottom
-D-pad bottom
+D-pad bottom.
 
 ###D-pad left
-D-pad left
+D-pad left.
 
 ###D-pad right
-D-pad right
+D-pad right.
 
 ###extra
-extra
+Extra.
 
 ###left stick X
-left stick X
+Left stick **X**.
 
 ###left stick Y
-left stick Y
+Left stick **Y**.
 
 ###right stick X
-right stick X
+Right stick **X**.
 
 ###right stick Y
-right stick Y
+Right stick **Y**.
 
 ##Detail
 
