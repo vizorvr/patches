@@ -8,10 +8,10 @@ Emits **true value** if condition is **True** and **false value** otherwise. The
 Send **True** to route **true value** to the output and **False** to route **false value**.
 
 ###true value
-**Value** to be send to output if condition is **True**
+**Value** to be send to output if condition is **True**.
 
 ###false value
-**Value** to be send to output if condition is **False**
+**Value** to be send to output if condition is **False**.
 
 ##Outputs
 ###value
