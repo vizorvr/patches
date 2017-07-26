@@ -5,7 +5,7 @@ This plugin plays a protracker-compatible .mod file using a library created by F
 
 ##Inputs
 ###url
-The **url** of the module to play.
+The **URL** of the module to play.
 
 ###play
 Send **True** to start playback and **False** to stop.
