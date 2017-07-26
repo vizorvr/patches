@@ -1,11 +1,11 @@
 #Bool
 
 ##Description
-Displays the text 'True' or 'False' depending on the state of the supplied bool or '-', if no data is being received.
+Displays the text **True** or **False**, depending on the state of the supplied **boolean**. If no data is being received, displays **-**.
 
 ##Inputs
 ###bool
-The input boolean to display.
+The input **boolean** to display.
 
 ##Outputs
 ##Detail
