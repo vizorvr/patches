@@ -1,12 +1,12 @@
 #Action
 
 ##Description
-Push button that emits true when it is clicked.
+A push button that emits **True** whenever it is clicked.
 
 ##Inputs
 ##Outputs
 ###bool
-True once each time the button is clicked.
+Sends a **True** each time the button is clicked.
 
 ##Detail
 
