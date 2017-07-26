@@ -1,18 +1,18 @@
 #More than
 
 ##Description
-Emits true if the supplied **value** is larger than **reference** and false otherwise.
+Emits **True** if the supplied **value** is _larger than_ the **reference** and **False** otherwise.
 
 ##Inputs
 ###value
-Input value to be compared.
+Input **value** to be compared.
 
 ###reference
-Reference to compare **value** to.
+Reference to compare the **value** to.
 
 ##Outputs
 ###bool
-Emits true if **value** is larger than **reference**.
+Emits **True** if **value** is _larger than_ the **reference**.
 
 ##Detail
 
