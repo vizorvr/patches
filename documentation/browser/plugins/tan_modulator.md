@@ -5,7 +5,7 @@ Tan(x).
 
 ##Inputs
 ###value
-Input value.
+Input **value**.
 
 ##Outputs
 ###result

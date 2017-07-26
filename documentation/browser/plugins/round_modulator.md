@@ -1,15 +1,15 @@
 #Round
 
 ##Description
-Emits the input **value** rounded to the nearest integer.
+Emits the input **value** rounded to the nearest **integer**.
 
 ##Inputs
 ###value
-The input value to be rounded.
+The input **value** to be rounded.
 
 ##Outputs
 ###result
-The rounded integer.
+The rounded **integer**.
 
 ##Detail
 

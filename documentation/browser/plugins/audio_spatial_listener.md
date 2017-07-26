@@ -5,13 +5,13 @@ Spatial Listener.
 
 ##Inputs
 ###position
-Position.
+Provide the **position**.
 
 ###forward
-Forward Vector.
+Provide the **Forward Vector**.
 
 ###up
-Up Vector.
+Provide the **Up Vector**.
 
 ##Outputs
 ##Detail

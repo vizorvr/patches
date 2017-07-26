@@ -1,7 +1,7 @@
 #Gaze Clicker
 
 ##Description
-Gaze Clicker
+Gaze Clicker.
 
 ##Inputs
 ###camera
@@ -17,7 +17,7 @@ Gaze Clicker
 
 
 ###eye distance
-Eye Distance for Gaze Clicker icon in VR
+Eye Distance for Gaze Clicker icon in VR.
 
 ##Outputs
 ###scene

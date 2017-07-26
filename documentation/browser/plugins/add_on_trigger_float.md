@@ -5,7 +5,7 @@ When receiving **True**, will output **A** + **B**, otherwise **A**.
 
 ##Inputs
 ###trigger
-On true, this plugin will output A + B, otherwise A
+On **True**, this plugin will output **A** + **B**, otherwise **A**
 
 ###A
 
@@ -15,7 +15,7 @@ On true, this plugin will output A + B, otherwise A
 
 ##Outputs
 ###value
-if trigger is true, will output A + B, otherwise A
+if trigger is **True**, will output **A** + **B**, otherwise **A**
 
 ##Detail
 

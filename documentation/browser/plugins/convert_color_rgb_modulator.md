@@ -5,17 +5,17 @@ Convert a color to its individual **RGB** components so they can be individually
 
 ##Inputs
 ###color
-Input color to be split.
+Input **color** to be split.
 
 ##Outputs
 ###red
-Red channel value.
+**Red** channel **value**.
 
 ###green
-Green channel value.
+**Green** channel **value**.
 
 ###blue
-Blue channel value.
+**Blue** channel **value**.
 
 ##Detail
 

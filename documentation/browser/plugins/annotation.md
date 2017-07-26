@@ -1,7 +1,7 @@
 #Annotation
 
 ##Description
-Add textual hints to the graph.
+Add **textual** hints to the **graph**.
 
 ##Inputs
 ##Outputs

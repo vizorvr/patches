@@ -1,12 +1,12 @@
 #Clock
 
 ##Description
-Emits current absolute time in seconds.
+Emits current absolute **time** in seconds.
 
 ##Inputs
 ##Outputs
 ###seconds
-Current absolute time.
+Current absolute **time**.
 
 ##Detail
 

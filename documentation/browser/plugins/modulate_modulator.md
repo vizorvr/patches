@@ -1,18 +1,18 @@
 #Mod
 
 ##Description
-Modulate **value** such that the result will always be never be negative and less than or equal to **limit**.
+Modulate **value** so that the result will _never_ be negative or _less than_ or _equal_ to **limit**.
 
 ##Inputs
 ###value
-Input value to be modulated.
+Input **value** to be modulated.
 
 ###limit
 Divisor.
 
 ##Outputs
 ###result
-Emits the remainder of **value** divided by **limit**
+Emits the remainder of **value** divided by the **limit**.
 
 ##Detail
 
