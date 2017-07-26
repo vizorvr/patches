@@ -8,7 +8,7 @@ Perform a simple 1st-order lowpass filtering of the supplied value. **Caution:**
 Input **value**. Must be updated every frame for correct operation of the filter.
 
 ###amount
-Filter **amount**. **Zero** is pure passthrough, **0.999** maximum filtering.
+Filter **amount**. **0** is pure passthrough, **0.999** equals maximum filtering.
 
 ##Outputs
 ###result
