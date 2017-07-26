@@ -5,10 +5,10 @@ Trigger playback of a one-shot audio sample.
 
 ##Inputs
 ###buffer
-An audio buffer to create a playable source from.
+An **audio buffer** to create a playable source from.
 
 ###trigger
-Play the sound.
+Send a **trigger** to play the sound.
 
 ##Outputs
 ##Detail
