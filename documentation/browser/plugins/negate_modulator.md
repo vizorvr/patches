@@ -1,15 +1,15 @@
 #Negate
 
 ##Description
-Emits the sign inverted input value.
+Emits the sign inverted input **value**.
 
 ##Inputs
 ###value
-Input value to be negated.
+Input **value** to be negated.
 
 ##Outputs
 ###-value
-The sign-inverted input value.
+The sign-inverted input **value**.
 
 ##Detail
 
