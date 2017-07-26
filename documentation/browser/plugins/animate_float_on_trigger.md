@@ -8,7 +8,7 @@ Animate value from **startValue** to **endValue** on **trigger** (Booldan) over 
 Sending a boolean impulse (**True**) to **trigger** will start the animation.
 
 ###reset
-Reset back to start value.
+Reset back to **Start value**.
 
 ###one-shot
 If **true**, only allow the animation to be triggered once (until reset).
