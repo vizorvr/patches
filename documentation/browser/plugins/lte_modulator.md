@@ -1,18 +1,18 @@
 #Less than or equal
 
 ##Description
-Emits true if the supplied **value** is less than or equal to **reference** and false otherwise.
+Emits **True** if the supplied **value** is _less than_ or _equal_ to **reference** and **False** otherwise.
 
 ##Inputs
 ###value
-Input value to be compared.
+Input **value** to be compared.
 
 ###reference
 Reference to compare **value** to.
 
 ##Outputs
 ###bool
-Emits true if **value** is less than or equal to **reference**.
+Emits **True** if **value** is _less than_ or _equal_ to **reference**.
 
 ##Detail
 
