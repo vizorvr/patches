@@ -1,11 +1,11 @@
 #Bounding Box Extractor
 
 ##Description
-Extract bounding box from Mesh
+Extract bounding box from the **Mesh**.
 
 ##Inputs
 ###object3d
-mesh to extract bounding box from
+**Mesh** to extract bounding box from.
 
 ##Outputs
 ###min
