@@ -8,16 +8,16 @@ Adjust a **texture's** UV coordinates.
 Input a **texture** to be adjusted.
 
 ###u offset
-**Value** for the U Offset. Default is **0**.
+**Value** for the **U Offset**. Default is **0**.
 
 ###v offset
-**Value** for the V Offset. Default is **0**.
+**Value** for the **V Offset**. Default is **0**.
 
 ###u repeat
-**Value** for the U Repeat. Default is **1**.
+**Value** for the **U Repeat**. Default is **1**.
 
 ###v repeat
-**Value** for the V repeat. Default is **1**.
+**Value** for the **V repeat**. Default is **1**.
 
 ###filter
 Filter mode:
