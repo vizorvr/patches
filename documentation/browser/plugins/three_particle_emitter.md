@@ -1,38 +1,38 @@
 #Particle Emitter
 
 ##Description
-Particle emitter generating a point cloud that can beused in a point cloud
+Particle emitter generating a point cloud that can beused in a point cloud.
 
 ##Inputs
 ###particle count
 
 
 ###spawn rate
-the amount of particles to spawn per second
+The amount of particles to spawn per second.
 
 ###random seed
-seed to initialise the random number generator with
+Seed to initialise the random number generator with.
 
 ###direction
-
+The direction the spawned particles.
 
 ###speed
-speed along direction
+Speed along direction.
 
 ###spread
-spread around direction
+Spread around direction.
 
 ###lifetime
-particle lifetime
+Particle lifetime.
 
 ###gravity
-gravity vector
+Gravity vector.
 
 ###noise
-amount of noise to apply to movement
+Amount of noise to apply to movement.
 
 ###geometry
-emit from this geometry
+Emit from this geometry.
 
 ##Outputs
 ###geometry
