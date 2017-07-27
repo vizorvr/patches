@@ -1,7 +1,7 @@
 #Particle Emitter
 
 ##Description
-Particle emitter generating a point cloud that can beused in a point cloud.
+Particle emitter generating a point cloud that can be used in a point cloud.
 
 ##Inputs
 ###particle count
@@ -14,7 +14,7 @@ The amount of particles to spawn per second.
 Seed to initialise the random number generator with.
 
 ###direction
-The direction the spawned particles.
+The direction of the spawned particles.
 
 ###speed
 Speed along direction.
