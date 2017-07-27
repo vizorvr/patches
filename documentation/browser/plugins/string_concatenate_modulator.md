@@ -12,7 +12,7 @@ The second **string**.
 
 ##Outputs
 ###result
-The **string** representing the combination of **first** + **second** (**a**+**b**).
+The **string** representing the combination of **first** + **second** (**a** + **b**).
 
 ##Detail
 
