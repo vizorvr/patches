@@ -11,10 +11,10 @@ THREE.js Plane Geometry
 
 
 ###widthSegments
-Number of horizontal segments
+Number of horizontal (**width**) segments.
 
 ###heightSegments
-Number of vertical segments
+Number of vertical (**height**) segments.
 
 ##Outputs
 ###geometry
