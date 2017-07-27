@@ -1,21 +1,21 @@
 #XYZ to Vector
 
 ##Description
-Create a vector from individual X, Y and Z components.<br><br>Keyboard shortcut&nbsp;&nbsp;&nbsp;<kbd>7</kbd>
+Create a **vector** from individual **X**, **Y** and **Z** components.<br><br>Keyboard shortcut&nbsp;&nbsp;&nbsp;<kbd>7</kbd>
 
 ##Inputs
 ###x
-The input x-component.
+The input X-component.
 
 ###y
-The input y-component.
+The input Y-component.
 
 ###z
-The input z-component.
+The input Z-component.
 
 ##Outputs
 ###vector
-The resulting vector.
+The resulting **vector**.
 
 ##Detail
 
