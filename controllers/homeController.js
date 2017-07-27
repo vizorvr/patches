@@ -29,6 +29,8 @@ const setCache = data => {
 }
 
 function cdnUrl(url) {
+	if (!url)
+		return url
 	return CDN_ROOT + url.replace(/^\/data/, '')
 }
 
@@ -60,15 +62,21 @@ function getHomeStaffPicks() {
 			return dfd.resolve([])
 		}
 
+		var patchesPicks = []
 		// collect staff picked graphs into their categories
 		graphs.map(graph => {
 			graph.staffpicks.map(tag => {
 				if (!staffPicks[tag])
 					staffPicks[tag] = []
 
-				staffPicks[tag].push(fixGraphUrls(graph))
+				var prettyInfo = fixGraphUrls(graph)
+				staffPicks[tag].push(prettyInfo)
+				patchesPicks.push(prettyInfo)
 			})
 		})
+
+		// patches homepage
+		staffPicks['_patches'] = pickFromStaffPicks(patchesPicks, 8)
 
 		dfd.resolve(setCache(staffPicks))
 	})
@@ -76,9 +84,10 @@ function getHomeStaffPicks() {
 	return dfd.promise
 }
 
-function pickFromStaffPicks(array) {
+function pickFromStaffPicks(array, maxLength) {
+	maxLength = maxLength || 3
 	array.sort(function() { return 0.5 - Math.random() }) // shuffle
-	return array.slice(0, 3)
+	return array.slice(0, maxLength)
 }
 
 /**
@@ -111,12 +120,5 @@ exports.index = function(req, res)  {
  * Home > about
  */
 exports.about = function(req, res)  {
-	res.render('server/pages/about', {
-		layout: 'main',
-		meta : {
-			bodyclass : 'bHome bAbout',
-			title: "About Vizor - Explore, Create and Publish VR on the Web",
-			header: false
-		}
-	})
+	return res.redirect('../')
 }

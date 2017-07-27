@@ -1,88 +1,95 @@
 {{#with this.keys}}
-	<div class="twocol clearfix">
-		<div class="col left">
-			<h3>Global</h3>
+    <div class="threecol clearfix">
+        <div class="col left">
+            <h3>Global</h3>
 
-			<dl class="clearfix">
-				<dt>Build / Program</dt>
-				<dd>{{{toggleMode}}}</dd>
-
-				<dt>Editor / VR Camera</dt>
-				<dd>{{{toggleEditorCamera}}}</dd>
-
-				<dt>Enter fullscreen</dt>
-				<dd>{{{toggleFullScreen}}}</dd>
-
-				<dt>Exit fullscreen</dt>
-				<dd><kbd class="wide">Esc</kbd></dd>
-
-				<dt>Cut</dt>
-				<dd>{{{modMeta}}} + <kbd>x</kbd></dd>
-
-				<dt>Copy</dt>
-				<dd>{{{modMeta}}} + <kbd>c</kbd></dd>
-
-				<dt>Paste</dt>
-				<dd>{{{modMeta}}} + <kbd>v</kbd></dd>
-
-				<dt>Undo</dt>
-				<dd>{{{modMeta}}} + <kbd>z</kbd></dd>
-
-				<dt>Hide all panels</dt>
-				<dd>{{{toggleFloatingPanels}}}</dd>
-
-				<dt>Search patches</dt>
-				<dd>{{{focusPatchSearch}}} / {{{focusPatchSearchAlt}}}</dd>
-
+            <dl class="clearfix">
+                <dt>Build / Program</dt>
+                <dd>{{{toggleMode}}}</dd>
+                <dt>Editor / VR Camera</dt>
+                <dd>{{{toggleEditorCamera}}}</dd>
+                <dt>Enter fullscreen</dt>
+                <dd>{{{toggleFullScreen}}}</dd>
+                <dt>Exit fullscreen</dt>
+                <dd><kbd class="wide">Esc</kbd></dd>
+                <dt>Cut</dt>
+                <dd>{{{modMeta}}} + <kbd>x</kbd></dd>
+                <dt>Copy</dt>
+                <dd>{{{modMeta}}} + <kbd>c</kbd></dd>
+                <dt>Paste</dt>
+                <dd>{{{modMeta}}} + <kbd>v</kbd></dd>
+                <dt>Undo</dt>
+                <dd>{{{modMeta}}} + <kbd>z</kbd></dd>
+                <dt>Hide all panels</dt>
+                <dd>{{{toggleFloatingPanels}}}</dd>
+                <dt>Search patches</dt>
+                <dd>{{{focusPatchSearch}}} / {{{focusPatchSearchAlt}}}</dd>
                 <dt>Object inspector</dt>
-				<dd>{{{openInspector}}}</dd>
+                <dd>{{{openInspector}}}</dd>
+            </dl>
 
-			</dl>
-		</div>
-		<div class="col right">
-			<h3>Build</h3>
-			<dl>
-				<dt>Move</dt>
-				<dd>{{{modifyModeMove}}}</dd>
-
-				<dt>Rotate</dt>
-				<dd>{{{modifyModeRotate}}} / {{{modMeta}}}</dd>
-
-				<dt>Scale</dt>
-				<dd>{{{modifyModeScale}}} / {{{modShift}}} + {{{modMeta}}}</dd>
-
-				<dt><abbr title="Sets the selected VR camera position to the current editor position">Zero VR camera</abbr></dt>
-				<dd>{{{moveVRCameraToEditorCamera}}}</dd>
-
-				<dt><abbr title="Switch camera to orthographic mode, i.e. remove all perspective from the camera view.">Orthographic Camera</abbr></dt>
-				<dd>{{{toggleWorldEditorOrthographicCamera}}}</dd>
-
-				<dt><abbr title="Toggle between rectangular and radial helper grids">Switch Grid Type</abbr></dt>
-				<dd>{{{toggleWorldEditorGrid}}}</dd>
-
-				<dt><abbr title="Toggle all build helper objects on/off">Toggle Helpers</abbr></dt>
-				<dd>{{{toggleEditorHelpers}}}</dd>
-
+        </div>
+        <div class="col mid" style="width: 38%">
+            <h3>Build</h3>
+            <dl class="clearfix">
+                <dt>Navigate to patch</dt>
+                <dd>{{{navigateToPatch}}}</dd>
+                <dt>Move</dt>
+                <dd>{{{modifyModeMove}}}</dd>
+                <dt>Rotate</dt>
+                <dd>{{{modifyModeRotate}}} / {{{modMeta}}}</dd>
+                <dt>Scale</dt>
+                <dd>{{{modifyModeScale}}} / {{{modShift}}} + {{{modMeta}}}</dd>
+                <dt><abbr title="Sets the selected VR camera position to the current editor position">Zero VR Camera</abbr></dt>
+                <dd>{{{moveVRCameraToEditorCamera}}}</dd>
+                <dt><abbr title="Switch camera to orthographic mode, i.e. remove all perspective from the camera view.">Orthographic Camera</abbr></dt>
+                <dd>{{{toggleWorldEditorOrthographicCamera}}}</dd>
+                <dt><abbr title="Toggle between rectangular and radial helper grids">Switch Grid Type</abbr></dt>
+                <dd>{{{toggleWorldEditorGrid}}}</dd>
+                <dt><abbr title="Toggle all build helper objects on/off">Toggle Helpers</abbr></dt>
+                <dd>{{{toggleEditorHelpers}}}</dd>
                 <dt><abbr title="Toggle local/global transform handles">Toggle Local Handles</abbr></dt>
                 <dd>{{{toggleWorldEditorLocalGlobalHandles}}}</dd>
+                <dt><abbr title="Align camera to primary axis. Holding shift will reverse camera direction.">Align Camera to Axis</abbr></dt>
+                <dd>{{{toggleWorldEditorXCamera}}} / {{{toggleWorldEditorYCamera}}} / {{{toggleWorldEditorZCamera}}}</dd>
+                <dt><abbr title="Frame the camera view around selected objects">Frame Selection</abbr></dt>
+                <dd>{{{frameViewToSelection}}}</dd>
+            </dl>
 
-				<dt><abbr title="Align camera to primary axis. Holding shift will reverse camera direction.">Align Camera to Axis</abbr></dt>
-				<dd>{{{toggleWorldEditorXCamera}}} / {{{toggleWorldEditorYCamera}}} / {{{toggleWorldEditorZCamera}}}</dd>
+        </div>
+        <div class="col right" style="width: 28%">
 
-				<dt><abbr title="Frame the camera view around selected objects">Frame Selection</abbr></dt>
-				<dd>{{{frameViewToSelection}}}</dd>
-			</dl>
-			<h3>Program</h3>
-			<dl>
-				<dt>Handy patches</dt>
-				<dd><kbd>0</kbd> - <kbd>9</kbd></dd>
+            <h3>Program</h3>
+            <dl class="clearfix">
 
-				<dt>Go to parent graph</dt>
-				<dd>{{{gotoParentGraph}}}</dd>
+                <dt>Go to parent graph</dt>
+                <dd>{{{gotoParentGraph}}}</dd>
 
-				<dt>View source</dt>
-				<dd>{{{viewSource}}}</dd>
-			</dl>
-		</div>
-	</div>
+                <dt>View source</dt>
+                <dd>{{{viewSource}}}</dd>
+
+                <dt>Input proxy</dt>
+                <dd><kbd>1</kbd></dd>
+                <dt>Nested Patch</dt>
+                <dd><kbd>2</kbd></dd>
+                <dt>Slider</dt>
+                <dd><kbd>3</kbd></dd>
+                <dt>Number</dt>
+                <dd><kbd>4</kbd></dd>
+                <dt>Float</dt>
+                <dd><kbd>5</kbd></dd>
+                <dt>Multiply Number</dt>
+                <dd><kbd>6</kbd></dd>
+                <dt>XYZ to Vector</dt>
+                <dd><kbd>7</kbd></dd>
+                <dt>Toggle</dt>
+                <dd><kbd>8</kbd></dd>
+                <dt>Knob</dt>
+                <dd><kbd>9</kbd></dd>
+                <dt>Output proxy</dt>
+                <dd><kbd>0</kbd></dd>
+            </dl>
+
+        </div>
+    </div>
 {{/with}}

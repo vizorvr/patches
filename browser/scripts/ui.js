@@ -233,7 +233,7 @@ VizorUI.prototype.setPageTitle = function() {
 		return false;
 
 	var graphname = E2.app.path;
-	var newTitle = "Vizor";
+	var newTitle = "Patches";
 
 	graphname = graphname.split('/')
 	if (graphname.length > 1)
@@ -939,7 +939,7 @@ VizorUI.checkCompatibleBrowser = function() {
 	}
 	else {
 		heading = 'Browser support';
-		message = '<h4>We want you to fully enjoy Vizor. <br />The editor works best in '+
+		message = '<h4>We want you to fully enjoy Patches. <br />The editor works best in '+
 					 '<a href="http://www.google.com/chrome/" target="_blank"'+
 					 ' alt="Get Chrome">Chrome</a> or '+
 					 '<a href="http://www.mozilla.org/firefox/new/" target="_blank"'+

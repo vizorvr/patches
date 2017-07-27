@@ -5,14 +5,14 @@ Emits the derivative of the incoming **value**.
 
 ##Inputs
 ###reset
-Send true to this slot to clear the internal state.
+Send **true** to this slot to clear the internal state.
 
 ###value
-Input value.
+Input **value**.
 
 ##Outputs
 ###delta
-The delta value from the last frame update.
+The delta **value** from the last frame update.
 
 ##Detail
 

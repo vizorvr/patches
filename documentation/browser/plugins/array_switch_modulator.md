@@ -1,7 +1,7 @@
 #Array Revolver Switch
 
 ##Description
-Revolver style array switch. Set up n inputs, then choose which one to output.
+Revolver style array switch. Set up **n** inputs, then choose which one to output.
 
 ##Inputs
 ###number

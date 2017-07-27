@@ -1,7 +1,7 @@
 #Cosine
 
 ##Description
-Cosine oscilator. A **time** value incrementing by one unit per second will yield a 1Hz output signal.
+Cosine oscillator. A **time** value incrementing by one unit per second will yield a 1Hz output signal.
 
 ##Inputs
 ###time

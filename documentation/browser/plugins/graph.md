@@ -1,7 +1,7 @@
 #Nested Patch
 
 ##Description
-A special patch that structures the graph by containing a group of other patches. View the contents of a Nested Patch by clicking the pencil on top right of the patch. All Nested Patches are purple.
+A Nested Patch can contain other patches. Nest patches to build complex functions or just to tidy things up. Click the pencil icon to edit.<br><br>Keyboard shortcut&nbsp;&nbsp;&nbsp;<kbd>2</kbd>
 
 ##Inputs
 ##Outputs

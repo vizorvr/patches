@@ -146,7 +146,7 @@ describe('Upload', function() {
 				delete json.updatedAt;
 
 				expect({"__v":0,"path":jsonFile,
-					"url":"/data/json/7389a96cf704f2914453a54b34c9f16fa3b89a69.json","tags":[]})
+					"url":"/data/json/ab7571a524dec35a280b8fcbd10c3b39ff4e0546.json","tags":[]})
 				.to.deep.equal(json);
 
 				done(err);

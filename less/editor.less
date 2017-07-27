@@ -4,7 +4,7 @@
 @vp-node-bg:         			#4D7DC2;
 @vp-node-content-bg:			rgba(0,0,0,0.3);
 @vp-node-color: 	 			@device-def-color;
-@vp-node-text-size:				10.5pt;
+@vp-node-text-size:				10.3pt;
 @vp-node-border-radius: 		@border-radius-base;
 
 @vp-node-slot-text-size:		@vp-node-text-size - 1.5pt;
@@ -94,7 +94,7 @@ button.vp.svg {	// for (square) buttons with svg icons inside
 // adjustments for specific buttons
 button.vp.svg {
   svg.cmd_edit_graph {
-	top: 55%;
+	top: 53%;
   }
 }
 
@@ -178,9 +178,9 @@ div.graph-node {
 			  background-color: rgba(0,0,0,0.3);
 		  }
 		  span {
-			  margin: 0px;
-			  padding: 0 20px 0 10px;
-			  line-height: @vp-node-text-size;
+			  margin: 0;
+			  padding: 0 20px 2px 10px;
+			  //line-height: @vp-node-text-size;
 			  font-size: @vp-node-text-size;
 			  height: @device-header-height;
 		  }
@@ -333,7 +333,7 @@ div.graph-node {
 		}
 
 	}
-  	input.node-title-input {	// TODO: move Application.prototype.onNodeHeaderDblClicked event handler to UI
+  	input.node-title-input {
 	  	color: #000 !important;
   		font-size: @vp-node-text-size;
 	}
@@ -701,16 +701,26 @@ div.graph-node.p_inline  {
   }
 }
 
+div.graph-node.p_renaming {
+	.p_header input {
+		&::selection {
+			background: rgba(0, 0, 0, 0.4);
+		}
+		&::-moz-selection {
+			background: rgba(0, 0, 0, 0.4);
+		}
+	}
+	&.p_inline {
+		.p_header .p_wrap {
+			.ic, .ic .p_slot span svg, span.p_title {visibility: visible;}
+		}
+		.p_header input { margin-top:1px; }
+	}
+}
+
 // inline ins or outs
 div.graph-node.p_1in, div.graph-node.p_1out .p_header .p_slot span {width: 26px; min-width: 26px;}
 
-div.graph-node.p_inline {
-  &.p_renaming {
-	 .p_header .p_wrap {
-		.ic, .ic .p_slot span svg, span.p_title {visibility: visible;}
-	  }
-  }
-}
 div.graph-node.p_inline .p_header.p_inline {
   background: none;
   button,svg {
@@ -726,6 +736,10 @@ div.graph-node.p_inline .p_header.p_inline {
 	  height: 18px;
 	}
   }
+	span.p_title {
+		line-height: 32px;
+		vertical-align: top;
+	}
 }
 
 div.ace_content {text-align: left;}

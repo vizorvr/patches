@@ -1,7 +1,7 @@
 #Boolean toggle
 
 ##Description
-Toggle button that emits true and false as it is clicked.
+Toggle button that emits true and false as it is clicked.<br><br>Keyboard shortcut&nbsp;&nbsp;&nbsp;<kbd>8</kbd>
 
 ##Inputs
 ##Outputs

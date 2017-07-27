@@ -6,6 +6,17 @@
 #btn-account-top {
   outline: none;
   border: 0;
+  #userpulldownUsername {
+    line-height: 24px;
+  }
+}
+
+body:not(.bEditor) #btn-account-top {
+  display: inline-flex;
+}
+
+body.bEditor #btn-account-top {
+  flex-direction: column;
 }
 
 #userpulldowncontainer:before {
@@ -71,6 +82,14 @@
         border: 0 none;
         border-radius: 100%;
     }
+}
+
+
+body.bEditor #account .top-userpic {
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  margin: 10px auto -1px;
 }
 
 header nav li.account {

@@ -131,12 +131,13 @@ describe('pageStore', function() {
 
 		assert.equal(po.graphs.__store__, undefined, 'graphs.__store__ is undefined before making store')
 		VizorUI.pageStore()
+		po = global.Vizor.pageObjects
 
 		assert.equal(po.graphs.__store__, true, '.graphs has been made a store')
 		assert.equal(po.profiles.__store__, true, '.profiles has been made a store')
 		assert.equal(po.unknownObj.__store__, true, '.unknownObj has been made a store')
 		assert.equal(po.unknownFlatKey.__store__, undefined, 'unknownFlatKey is not turned into a substore')
-		assert.equal(po.__store__, undefined, 'Vizor.pageObjects itself is not a .__store__')
+
 		done();
 	})
 

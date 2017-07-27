@@ -90,7 +90,7 @@ describe('Graph delete', function() {
 	})
 
 	it('deletes if owner', function(done) {
-		return sendGraph('toDelete')
+		sendGraph('toDelete')
 		.then(function() {
 			agent
 			.delete('/'+username+'/toDelete')
@@ -108,7 +108,7 @@ describe('Graph delete', function() {
 	})
 
 	it('doesn`t delete if not owner', function(done) {
-		return sendGraph('notDelete')
+		sendGraph('notDelete')
 		.then(function() {
 				agent
 					.get('/'+username+'/notDelete')

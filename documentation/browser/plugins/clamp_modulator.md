@@ -5,13 +5,13 @@ Emit a float **value** no less than **min** and no greater than **max**.
 
 ##Inputs
 ###value
-Value to be clipped.
+**Value** to be clipped.
 
 ###min
-Minimum output value.
+Minimum output **value**.
 
 ###max
-Maximum output value.
+Maximum output **value**.
 
 ##Outputs
 ###result

@@ -174,7 +174,7 @@ AccountController.prototype.openSignupModal = function(dfd) {
 
 		E2.models.user.set(user);
 		VizorUI.modalClose();
-		VizorUI.modalAlert('Enjoy Vizor, ' + user.username + '!', 'Welcome')
+		VizorUI.modalAlert('Enjoy Patches, ' + user.username + '!', 'Welcome')
 		dfd.resolve()
 	};
 

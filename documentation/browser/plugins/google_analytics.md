@@ -1,7 +1,7 @@
 #Google Analytics Tracking Property
 
 ##Description
-Lets you track views and Vizor events in your own Google Analytics property.
+Lets you track views and Patches events in your own Google Analytics property.
 
 ##Inputs
 ###trackingId
