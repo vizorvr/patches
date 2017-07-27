@@ -14,25 +14,25 @@ The amount of particles to spawn per second.
 Seed to initialise the random number generator with.
 
 ###direction
-The direction of the spawned particles.
+The **direction** of the spawned particles.
 
 ###speed
-Speed along direction.
+**Speed** along direction.
 
 ###spread
-Spread around direction.
+**Spread** around direction.
 
 ###lifetime
-Particle lifetime.
+Particle **lifetime**.
 
 ###gravity
-Gravity vector.
+**Gravity** vector.
 
 ###noise
-Amount of noise to apply to movement.
+Amount of **noise** to apply to movement.
 
 ###geometry
-Emit from this geometry.
+Emit from this **geometry**.
 
 ##Outputs
 ###geometry
