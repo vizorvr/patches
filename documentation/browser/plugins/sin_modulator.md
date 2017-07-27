@@ -5,11 +5,11 @@ Sin(x).
 
 ##Inputs
 ###value
-Input value.
+Input **value**.
 
 ##Outputs
 ###result
-sin(**value**).
+Sin(**value**).
 
 ##Detail
 
