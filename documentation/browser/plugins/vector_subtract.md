@@ -12,7 +12,7 @@ The second **operand**.
 
 ##Outputs
 ###vector
-Emits Ax - Bx, Ay - By, Az - Bz.
+Emits **Ax - Bx**, **Ay - By**, **Az - Bz**.
 
 ##Detail
 
