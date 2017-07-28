@@ -1,15 +1,15 @@
 #Trigger On Change
 
 ##Description
-Triggers the output once when input changes
+Triggers the **output** a single time, when the **input value** changes.
 
 ##Inputs
 ###value
-Item to watch
+Item to watch for.
 
 ##Outputs
 ###bool
-Triggered for one frame when input value changes
+Triggered for one frame when the **input value** changes.
 
 ##Detail
 

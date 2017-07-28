@@ -1,7 +1,7 @@
 #Read Variable
 
 ##Description
-Read from a local variable using the name of the node.
+Read from a local _variable_ using the name of the **node**.
 
 ##Inputs
 ##Outputs

@@ -5,11 +5,11 @@ Get the duration of the supplied video in seconds.
 
 ##Inputs
 ###video
-Input video.
+Input **video**.
 
 ##Outputs
 ###duration
-Duration in seconds.
+**Duration** in seconds as a **float**.
 
 ##Detail
 

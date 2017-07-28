@@ -1,12 +1,12 @@
 #Touching
 
 ##Description
-While touching eg. a mobile device, this outputs a boolean true.
+While touching eg. a mobile device, this outputs a boolean **True**.
 
 ##Inputs
 ##Outputs
 ###trigger
-True while the touch is ongoing.
+**True** while the touch is ongoing.
 
 ##Detail
 

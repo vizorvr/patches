@@ -5,14 +5,14 @@ Add two floating point values.
 
 ##Inputs
 ###a
-The first operand.
+The first **operand**.
 
 ###b
-The second operand.
+The second **operand**.
 
 ##Outputs
 ###result
-The result of **first** + **second**.
+The result of **A** + **B**.
 
 ##Detail
 

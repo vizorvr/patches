@@ -1,7 +1,7 @@
 #Log
 
 ##Description
-Log(x).
+Log(X).
 
 ##Inputs
 ###value

@@ -1,14 +1,14 @@
 #Array Remove
 
 ##Description
-
+Remove a specific **index** in the array.
 
 ##Inputs
 ###array
-Optional array to change
+Optional **array** to change.
 
 ###index
-Index for object in array
+**Index** for **object** in the **array**.
 
 ##Outputs
 ###array

@@ -1,14 +1,14 @@
 #Scale
 
 ##Description
-Scale the X, Y and Z components of the supplied vector by the supplied factor.
+Scale the **X**, **Y** and **Z** components of the supplied **vector** by the supplied **factor**.
 
 ##Inputs
 ###vector
-The input vector to be scaled.
+The input **vector** to be scaled.
 
 ###scale
-The scale factor.
+The scale **factor**.
 
 ##Outputs
 ###vector

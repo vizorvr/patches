@@ -1,20 +1,20 @@
 #Render To Screen
 
 ##Description
-THREE.js WebGL renderer
+THREE.js WebGL renderer.
 
 ##Inputs
 ###camera
-Camera to use for rendering.
+**Camera** to use for rendering.
 
 ###scene
-Scene to render
+**Scene** to render.
 
 ###bgcolor
-Background color
+Background color.
 
 ###shadowsEnabled
-Master control for whether shadows are rendered
+Master control for whether shadows are rendered. (**True**/**False**)
 
 ##Outputs
 ##Detail

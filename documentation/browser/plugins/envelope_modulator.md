@@ -5,11 +5,11 @@ Envelope modulator
 
 ##Inputs
 ###x
-X value to pick Y with
+**X** value to pick **Y** with.
 
 ##Outputs
 ###y
-The value at x
+The value at **X**.
 
 ##Detail
 

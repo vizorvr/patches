@@ -1,18 +1,18 @@
 #Dot
 
 ##Description
-Emits the dot products of the two supplied vectors.
+Emits the **dot** products of the two supplied **vectors**.
 
 ##Inputs
 ###a
-The first operand.
+The first **operand**.
 
 ###b
-The second operand.
+The second **operand**.
 
 ##Outputs
 ###float
-Emits F dot S.
+Emits **A** dot **B**.
 
 ##Detail
 

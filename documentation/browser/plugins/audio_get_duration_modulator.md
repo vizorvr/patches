@@ -1,15 +1,15 @@
 #Duration
 
 ##Description
-Get the duration of the supplied audio sample in seconds.
+Get the **duration** of the supplied audio sample in **seconds**.
 
 ##Inputs
 ###audio
-Input audio sample.
+Input **audio sample**.
 
 ##Outputs
 ###duration
-Duration in seconds.
+Audio sample **duration** in **seconds**.
 
 ##Detail
 

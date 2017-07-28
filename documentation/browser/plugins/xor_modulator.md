@@ -1,18 +1,18 @@
 #Xor
 
 ##Description
-Emits **true** when the values of the two inputs are different and **false** when they're identical.
+Emits **True** when the values of the two inputs are different and a **False** when they're identical.
 
 ##Inputs
 ###a
-The first operand.
+The first **operand**.
 
 ###b
-The second operand.
+The second **operand**.
 
 ##Outputs
 ###bool
-Emits **true** if **first** _does not equal_ **second** and **false** otherwise.
+Emits **True** if **a** _does not equal_ **b**. Emits a **False** otherwise.
 
 ##Detail
 

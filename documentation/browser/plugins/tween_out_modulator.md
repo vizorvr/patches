@@ -1,15 +1,15 @@
 #Out Tweens
 
 ##Description
-Perform tween out over time.
+Perform **tween out** over **time**.
 
 ##Inputs
 ###time
-Time ranging from zero to one.
+**Time** ranging from **0** to **1**.
 
 ##Outputs
 ###result
-Emits a tween out over **time**.
+Emits a **tween out** over **time**.
 
 ##Detail
 

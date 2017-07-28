@@ -1,11 +1,11 @@
 #Triangle
 
 ##Description
-Triangle oscilator. A **time** value incrementing by one per second will yield a 1Hz output signal.
+Triangle oscillator. A **time** value incrementing by one per second yields a 1Hz output signal.
 
 ##Inputs
 ###time
-The current time in seconds.
+The current **time** in seconds.
 
 ##Outputs
 ###value

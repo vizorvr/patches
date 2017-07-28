@@ -1,21 +1,21 @@
 #RGB to Color
 
 ##Description
-Creates a new color from individual **RGB** components.
+Creates a new **color** from individual **RGB** components.
 
 ##Inputs
 ###red
-Red channel **value**.
+**Red** channel **value**.
 
 ###green
-Green channel **value**.
+**Green** channel **value**.
 
 ###blue
-Blue channel **value**.
+**Blue** channel **value**.
 
 ##Outputs
 ###color
-The output color
+The output **color**.
 
 ##Detail
 
