@@ -21,16 +21,16 @@ if (argv._.length < 1) {
 	usage:
 
 		$ pull [-up] owner/graph-name [local-name]
-			-u local username (this is your e-mail address)
+			-u local user email
 			-p password
 
 			pulls the 'owner/graph-name' from the remote to local
 			- remote can be the full url to the editor, 'user/graph', ...
-			- remote defaults to http://patches.vizor.io
+			- remote defaults to patches.vizor.io
 
 			$ pull fthr/tunnel
 
-			pulls fthr/tunnel from http://patches.vizor.io to local username/tunnel
+			pulls fthr/tunnel from patches.vizor.io to local username/tunnel
 	`)
 
 	process.exit(1)

@@ -645,7 +645,7 @@ exports.getAccount = function(req, res) {
  			var mail = {
  				to: user.email,
  				from: 'info@vizor.io',
- 				subject: 'Reset your password on Vizor',
+ 				subject: 'Reset your Patches password',
  				html: 'You are receiving this email because you (or someone else) have requested the reset of the password for your account.<br/><br/>' +
  				'Please click on the following link, or paste this into your browser to complete the process:<br/><br/>' +
  				'http://' + req.headers.host + '/reset/' + token + '<br/><br/>' +
