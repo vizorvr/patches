@@ -112,6 +112,7 @@ var paths = {
 
 		player: [
 			'./browser/plugins/*.plugin.js',
+			'./browser/plugins/ambisonics/*.plugin.js',
 			'./browser/scripts/player.js',
 			'./browser/scripts/player-run.js'
 		]
