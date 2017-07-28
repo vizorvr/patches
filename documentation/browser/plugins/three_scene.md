@@ -9,7 +9,7 @@ Anything connected here will appear in your Patches scene. Click the port and dr
 
 ##Outputs
 ###scene
-
+Connect this to the **Camera**.
 
 ##Detail
 

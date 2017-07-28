@@ -1,15 +1,15 @@
 #Is In VR
 
 ##Description
-Outputs true if the graph is currently viewed in VR
+Outputs **True** if the graph is currently viewed in **VR**.
 
 ##Inputs
 ##Outputs
 ###fullscreen
-true if in fullscreen, false if not
+**True** if in fullscreen, **False** if not.
 
 ###stereo
-true if in stereo, false if not
+**True** if in stereo, **False** if not.
 
 ##Detail
 

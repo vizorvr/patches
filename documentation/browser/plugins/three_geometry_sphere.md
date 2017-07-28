@@ -8,22 +8,22 @@ THREE.js Sphere Geometry
 
 
 ###widthSegments
-Number of horizontal segments
+Number of horizontal (**width**) segments.
 
 ###heightSegments
-Number of vertical segments
+Number of vertical (**height**) segments.
 
 ###phiStart
-Horizontal starting angle
+Horizontal starting angle.
 
 ###phiLength
-Horizontal sweep angle size
+Horizontal sweep angle size.
 
 ###thetaStart
-Vertical starting angle
+Vertical starting angle.
 
 ###thetaLength
-Vertical sweep angle size
+Vertical sweep angle size.
 
 ##Outputs
 ###geometry

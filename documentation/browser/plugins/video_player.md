@@ -8,16 +8,16 @@ Play a video stream. Playback loops by default.
 The video stream to play.
 
 ###play
-Send true to start playback and false to stop.
+Send **True** to start playback and **False** to stop.
 
 ###muted
-Is audio muted?
+Send **True** to mute audio, **False** to unmute audio.
 
 ###volume
-Set playback volume.
+Set the **Volume** of the playback.
 
 ###time
-Set playback time.
+Set playback **time**.
 
 ##Outputs
 ###texture

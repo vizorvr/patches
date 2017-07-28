@@ -1,12 +1,12 @@
 #Label
 
 ##Description
-Emits a string specified in an input field.
+Emits a **string** specified in the **input** field.
 
 ##Inputs
 ##Outputs
 ###value
-The currently entered text.
+The currently entered **text**.
 
 ##Detail
 

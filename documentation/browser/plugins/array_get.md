@@ -12,7 +12,7 @@ Optional **array** to change.
 
 ##Outputs
 ###item
-
+This outputs the **item** of the selected **index** of the specified **array**.
 
 ##Detail
 

@@ -1,11 +1,11 @@
 #Get typed array
 
 ##Description
-Gets an **item** value from an **array**.
+Gets an **item** value from a specified **array**.
 
 ##Inputs
 ###array
-The **array** to obtain a value from.
+The **array** to obtain the **value** from.
 
 ###index
 The **index** of the **item** to get.
@@ -15,7 +15,7 @@ The **index** of the **item** to get.
 The modified **array**.
 
 ###value
-The value of the chosen **item**.
+The **value** of the chosen **item**.
 
 ##Detail
 

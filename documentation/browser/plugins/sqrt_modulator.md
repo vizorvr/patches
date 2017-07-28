@@ -5,11 +5,11 @@ Sqrt(x).
 
 ##Inputs
 ###value
-Input value.
+Input **value**.
 
 ##Outputs
 ###result
-sqrt(**value**).
+Sqrt(**value**).
 
 ##Detail
 

@@ -1,18 +1,18 @@
 #Cross
 
 ##Description
-Emits the cross products of the two supplied vectors.
+Emits the cross products of the two supplied **vectors**.
 
 ##Inputs
 ###a
-The first operand.
+The first **operand**.
 
 ###b
-The second operand.
+The second **operand**.
 
 ##Outputs
 ###vector
-Emits F cross S.
+Emits **A** cross **B**.
 
 ##Detail
 

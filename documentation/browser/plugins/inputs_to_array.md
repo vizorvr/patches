@@ -1,15 +1,15 @@
 #Inputs to Array
 
 ##Description
-Combine all the input slots into an output array of the same datatype
+Combine all the **input** slots into an output **array** of the same datatype.
 
 ##Inputs
 ##Outputs
 ###array
-The array.
+The **array**.
 
 ###length
-The number of inputs ie. the length of the array.
+The number of **inputs** ie. the length of the **array**.
 
 ##Detail
 

@@ -1,7 +1,7 @@
 #Less than
 
 ##Description
-Emits **true** if the supplied **value** is less than _reference_ and **false** otherwise.
+Emits **True** if the supplied **value** is _less than_ the reference and **False** otherwise.
 
 ##Inputs
 ###value
@@ -12,7 +12,7 @@ _Reference_ to compare **value** to.
 
 ##Outputs
 ###bool
-Emits true if **value** is less than _reference_ and **false** otherwise.
+Emits **True** if **value** is _less than_ reference and **False** otherwise.
 
 ##Detail
 

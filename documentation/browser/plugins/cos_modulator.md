@@ -1,7 +1,7 @@
 #Cos
 
 ##Description
-Cos(x).
+Cos(X).
 
 ##Inputs
 ###value
@@ -9,7 +9,7 @@ Input **value**.
 
 ##Outputs
 ###result
-cos(**value**).
+Cos(**value**).
 
 ##Detail
 
