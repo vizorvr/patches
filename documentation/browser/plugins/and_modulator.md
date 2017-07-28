@@ -1,18 +1,17 @@
 #And
 
 ##Description
-Emit **true** if _and only if_ both inputs are **true**. **False** otherwise.
+Emit **True** if _and only if_ both inputs are **True**. **False** otherwise.
 
 ##Inputs
 ###a
-The first operand.
+The first **operand**.
 
 ###b
-The second operand.
+The second **operand**.
 
 ##Outputs
 ###bool
-Emits true if **first** _and_ **second** are true, and false otherwise.
+Emits **True** if **first** _and_ **second** are **True**, and **False** otherwise.
 
 ##Detail
-
