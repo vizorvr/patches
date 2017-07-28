@@ -107,7 +107,7 @@ var paths = {
 			'./browser/scripts/plugin-manager-bundled.js',
 		
 			'./browser/vendor/toji/webgl-utils/src/wglu-stats.js',
-        		'./browser/vendor/borismus/ray-input.js'
+        	'./browser/vendor/borismus/ray-input.js'
 		],
 
 		player: [
@@ -244,4 +244,5 @@ gulp.task('watch:player', function() {
 gulp.task('golive', ['less:site', 'less:editor', 'less:site360', 'less:vizor2teaser', 'js'])
 
 gulp.task('default', ['less:site', 'less:editor', 'less:site360', 'less:vizor2teaser', 'js', 'push'])
+
 
