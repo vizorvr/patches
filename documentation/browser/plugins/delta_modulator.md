@@ -5,7 +5,7 @@ Emits the derivative of the incoming **value**.
 
 ##Inputs
 ###reset
-Send **true** to this slot to clear the internal state.
+Send **True** to this slot to **clear** the internal state.
 
 ###value
 Input **value**.

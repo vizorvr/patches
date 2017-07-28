@@ -1,15 +1,15 @@
 #Video
 
 ##Description
-Load a Ogg/Theora video from an URL.
+Load a **OGG/Theora** video from an **URL**.
 
 ##Inputs
 ###url
-Use this to load from a URL supplied as a string.
+Use this to load from a **URL** supplied as a **string**.
 
 ##Outputs
 ###video
-An video stream.
+A video stream.
 
 ##Detail
 

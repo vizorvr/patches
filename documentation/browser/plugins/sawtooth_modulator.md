@@ -1,11 +1,11 @@
 #Sawtooth
 
 ##Description
-Sawtooth oscilator. A **time** value incrementing by one unit per second will yield a 1Hz output signal.
+Sawtooth oscillator. A **time** value incrementing by one unit per second will yield a 1Hz output signal.
 
 ##Inputs
 ###time
-Time in seconds.
+**Time** in seconds.
 
 ##Outputs
 ###value

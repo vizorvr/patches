@@ -1,7 +1,7 @@
 #HSL to Color
 
 ##Description
-Create an RGB color from **hue**, **saturation** and **luminosity**.
+Create an **RGB** color from **hue**, **saturation** and **luminosity**.
 
 ##Inputs
 ###hue
@@ -15,7 +15,7 @@ The **luminosity** (brightness) of the output color.
 
 ##Outputs
 ###color
-The corresponding RGB color.
+The corresponding **RGB** color.
 
 ##Detail
 

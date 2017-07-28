@@ -1,18 +1,18 @@
 #Subtract
 
 ##Description
-Subtract the second value from the first and emit the result.
+Subtract the second **value** from the first and emit the result.
 
 ##Inputs
 ###a
-The first operand.
+The first **operand**.
 
 ###b
-The second operand.
+The second **operand**.
 
 ##Outputs
 ###result
-The result of **first** - **second**.
+The result of **first** - **second** (**a** - **b**).
 
 ##Detail
 

@@ -1,18 +1,18 @@
 #Atan2
 
 ##Description
-Atan2(x, y).
+Atan2(X, Y).
 
 ##Inputs
 ###x value
-X value.
+Input the **X** value.
 
 ###y value
-Y value.
+Input the **Y** value.
 
 ##Outputs
 ###result
-atan(**x**,**y**).
+atan(**X**,**Y**).
 
 ##Detail
 

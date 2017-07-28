@@ -11,10 +11,10 @@ THREE.js Circle Geometry
 
 
 ###thetaStart
-Vertical starting angle
+Vertical starting angle.
 
 ###thetaLength
-Vertical sweep angle size
+Vertical sweep angle size.
 
 ##Outputs
 ###geometry

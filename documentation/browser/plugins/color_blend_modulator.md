@@ -1,21 +1,22 @@
 #Blend color
 
 ##Description
-Color x-fader. Perform linear blend between two colors.
+Color crossfader. Performs a linear blend between two colors (Color **A** and Color **B**).
 
 ##Inputs
 ###color A
-First color operand.
+First color **operand**.
 
 ###color B
-Second color operand.
+Second color **operand**.
 
 ###mix
-0: Emit pure color A 1: Emit pure color B
+**0**: Emit only color **A**.
+**1**: Emit only color **B**.
 
 ##Outputs
 ###color
-Linear mix of color A and B: A * (1 - mix) + B * mix
+Linear mix of colors **A** and **B**: A * (1 - mix) + B * mix
 
 ##Detail
 

@@ -1,7 +1,7 @@
 #Entity Patch
 
 ##Description
-3D Entity Patch
+3D Entity Patch.
 
 ##Inputs
 ##Outputs

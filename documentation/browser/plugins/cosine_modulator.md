@@ -5,11 +5,11 @@ Cosine oscillator. A **time** value incrementing by one unit per second will yie
 
 ##Inputs
 ###time
-Time in seconds
+Time in seconds.
 
 ##Outputs
 ###value
-Emits cos(**time** * 2pi)
+Emits Cos(**time** * 2pi).
 
 ##Detail
 

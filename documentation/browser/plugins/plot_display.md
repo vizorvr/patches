@@ -1,14 +1,14 @@
 #Plot
 
 ##Description
-Displays the supplied coordiate on a XY plot.
+Displays the supplied **coordinate** on a **XY** plot.
 
 ##Inputs
 ###x
-The location on the x-axis.
+The location on the **X** axis.
 
 ###y
-The location on the y-axis.
+The location on the **Y** axis.
 
 ##Outputs
 ##Detail

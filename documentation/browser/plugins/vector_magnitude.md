@@ -1,15 +1,15 @@
 #Magnitude
 
 ##Description
-Emits the magnitude (length) of the supplied vector.
+Emits the **magnitude** (length) of the supplied **vector**.
 
 ##Inputs
 ###vector
-Input vector to compute the length of.
+Input **vector** to compute the length of.
 
 ##Outputs
 ###mag
-Emits the magnitude of the input vector.
+Emits the **magnitude** of the input vector.
 
 ##Detail
 

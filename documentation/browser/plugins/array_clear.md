@@ -1,14 +1,14 @@
 #Array Clear
 
 ##Description
-Empties the given array
+Empties the given **array**.
 
 ##Inputs
 ###array
-Optional array to change
+Optional **array** to change.
 
 ###clear
-A true signal here clears the array
+Send a **True** signal to this input to clear the **array**
 
 ##Outputs
 ###array

@@ -5,14 +5,14 @@ Revolver style array switch. Set up **n** inputs, then choose which one to outpu
 
 ##Inputs
 ###number
-Input number to select for output.
+Input **number** to select for output.
 
 ##Outputs
 ###value
-Emits the selected input.
+Emits the selected **input**.
 
 ###length
-Emits the number of inputs = the length of the array.
+Emits the _number of inputs_ = the **length** of the array.
 
 ##Detail
 

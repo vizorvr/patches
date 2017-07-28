@@ -1,18 +1,18 @@
 #Nand
 
 ##Description
-Emits false when both inputs are true and false otherwise.
+Emits **False** when both inputs are **True** and **False** otherwise.
 
 ##Inputs
 ###a
-The first operand.
+The first **operand** (**a**).
 
 ###b
-The second operand.
+The second **operand** (**b**).
 
 ##Outputs
 ###bool
-Emits false if **first** and **second** are true and false otherwise.
+Emits **False** if **a** and **b** are **True** and **False** otherwise.
 
 ##Detail
 
