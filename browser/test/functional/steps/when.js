@@ -10,8 +10,9 @@ module.exports = function () {
     this
         // ---- vizor
         .when(/^I select all nodes$/, function(done) {
-            return this.browser.keys([ctrlKey, 'a'])
-              .then(() => {done()})
+            this.browser
+              .keys([ctrlKey, 'a'])
+              .call(done)
         })
 
         .when(/^I copypaste$/, function(done) {
@@ -26,12 +27,12 @@ module.exports = function () {
         })
 
         .when(/^I publish the project$/, function(done) {
-            return this.browser
+            this.browser
             .click('#btn-publish')
             .waitForVisible('#publishGraphForm', null, true)
             .setValue('#pathInput', 'test'+Date.now())
             .submitForm('#publishGraphForm')
-            .then(() => {done()})
+            .call(done)
         })
 
         // ---- defaults
