@@ -8,11 +8,11 @@ Divides **value** by **scalar** and emits the result.
 Input **value** to be divided.
 
 ###scalar
-Factor to divide **value** by.
+**Factor** to divide **value** by.
 
 ##Outputs
 ###result
-Emits **value** / **scalar**.
+Emits the result of (**value**/**scalar**).
 
 ##Detail
 

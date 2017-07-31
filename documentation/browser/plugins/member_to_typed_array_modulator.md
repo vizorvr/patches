@@ -1,18 +1,18 @@
 #Object member to typed array
 
 ##Description
-Emits an typed array representation of specified member of the supplied object.
+Emits an typed **array** representation of a specified **member** of the supplied **object**.
 
 ##Inputs
 ###object
-Input object.
+Input **object**.
 
 ###member
-Name of the member to be converted.
+Name of the **member** to be converted.
 
 ##Outputs
 ###array
-The typed array representation of the specified member.
+The typed **array** representation of the specified **member** of the **object**.
 
 ##Detail
 

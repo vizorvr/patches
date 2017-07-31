@@ -5,14 +5,14 @@ Delay audio data.
 
 ##Inputs
 ###source
-An audio source to delay.
+An **audio source** to **delay**.
 
 ###delay
-Delay time (in seconds).
+**Delay** time (in seconds).
 
 ##Outputs
 ###source
-A delayed audio source
+The **delayed audio source**.
 
 ##Detail
 

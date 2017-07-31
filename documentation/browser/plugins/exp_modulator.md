@@ -1,7 +1,7 @@
 #Exp
 
 ##Description
-Exp(x).
+Exp(X).
 
 ##Inputs
 ###value
@@ -9,7 +9,7 @@ Input **value**.
 
 ##Outputs
 ###result
-exp(**value**).
+Exp(**value**).
 
 ##Detail
 

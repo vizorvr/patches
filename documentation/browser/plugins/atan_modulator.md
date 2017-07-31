@@ -1,15 +1,15 @@
 #Atan
 
 ##Description
-Atan(x).
+Atan(**X**).
 
 ##Inputs
 ###x value
-X value.
+Input the **X** value.
 
 ##Outputs
 ###result
-atan(**x**).
+atan(**X**).
 
 ##Detail
 

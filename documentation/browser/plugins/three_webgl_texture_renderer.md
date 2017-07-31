@@ -1,27 +1,27 @@
 #Render To Texture
 
 ##Description
-THREE.js WebGL Texture renderer
+THREE.js WebGL Texture renderer.
 
 ##Inputs
 ###camera
-Camera to use for rendering.
+**Camera** to use for rendering.
 
 ###scene
-Scene to render
+**Scene** to render.
 
 ###bgcolor
-Background color
+Background color.
 
 ###width
-texture width
+Texture **width**.
 
 ###height
-texture height
+Texture **height**.
 
 ##Outputs
 ###texture
-render target texture
+Render target **texture**.
 
 ##Detail
 

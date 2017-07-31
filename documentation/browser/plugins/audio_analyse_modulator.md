@@ -8,13 +8,13 @@ Frequency and time domain audio analysis.
 An audio source to analyse.
 
 ###bin-count
-Number of FFT bins. Will be made power-of-two and clamped to 8-2048.
+Number of **FFT bins**. Will be made power-of-two and clamped to 8-2048.
 
 ###multiplier
-Multiplier for each bin value
+Multiplier for each **bin** value.
 
 ###smoothing
-Amount of FFT smoothing between frames
+Amount of FFT smoothing between frames.
 
 ##Outputs
 ###source

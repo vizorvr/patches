@@ -1,6 +1,6 @@
 {
   "name": "Vizor",
-  "version": "0.16.4",
+  "version": "0.16.6",
   "description": "",
   "main": "server.js",
   "dependencies": {
@@ -86,11 +86,11 @@
     "mocha": "2.3.3",
     "multiline": "^0.3.4",
     "q": "https://registry.npmjs.org/q/-/q-1.0.1.tgz",
-    "selenium-standalone": "^5.0.0",
+    "selenium-standalone": "^6.6.0",
     "sinon": "^1.15.4",
     "supertest": "^0.13.0",
     "uglify-js2": "^2.1.11",
-    "webdriverio": "3.4.0",
+    "webdriverio": "4.7.0",
     "yadda": "0.16.0"
   },
   "scripts": {

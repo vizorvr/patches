@@ -1,18 +1,18 @@
 #Concatenate
 
 ##Description
-Concatenates the two supplied strings.
+Concatenates the two supplied **strings**.
 
 ##Inputs
 ###a
-The first string.
+The first **string**.
 
 ###b
-The second string.
+The second **string**.
 
 ##Outputs
 ###result
-The string representing the combination of **first** + **second**.
+The **string** representing the combination of **first** + **second** (**a** + **b**).
 
 ##Detail
 

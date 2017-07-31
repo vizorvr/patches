@@ -9,7 +9,7 @@ Amplification scalar.
 
 ##Outputs
 ###source
-A (de)amplified audio source
+A (de)amplified audio source.
 
 ##Detail
 

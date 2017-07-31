@@ -5,17 +5,17 @@ Set up **n** inputs, then choose which one to output. The output will animate fr
 
 ##Inputs
 ###number
-Input number to select for output.
+Input **number** to select for output.
 
 ###duration
-Duration of blend animation
+**Duration** of blend animation
 
 ##Outputs
 ###value
-Emits the selected input.
+Emits the selected **input**.
 
 ###length
-Emits the number of inputs = the length of the array.
+Emits the number of **inputs** = the **length** of the **array**.
 
 ##Detail
 

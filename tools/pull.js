@@ -25,7 +25,7 @@ if (argv._.length < 1) {
 			-p password
 
 			pulls the 'owner/graph-name' from the remote to local
-			- remote can be full url to the editor, 'user/graph', ...
+			- remote can be the full url to the editor, 'user/graph', ...
 			- remote defaults to patches.vizor.io
 
 			$ pull fthr/tunnel

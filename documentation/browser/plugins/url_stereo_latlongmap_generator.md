@@ -1,15 +1,15 @@
 #Stereo Lat Long Map
 
 ##Description
-Load a stereo latlong map from a URL. JPEG and PNG supported. Hover over the Browse button to select an existing image from the library.
+Load a Stereo Lat Long Map from a **URL**. **JPEG** and **PNG** supported. Click the **Browse** button to select an existing image from your library.
 
 ##Inputs
 ##Outputs
 ###left
-The left side of the loaded lat long map.
+The **left** side of the loaded Lat Long Map.
 
 ###right
-The right side of the loaded lat long map.
+The **right** side of the loaded Lat Long Map.
 
 ##Detail
 

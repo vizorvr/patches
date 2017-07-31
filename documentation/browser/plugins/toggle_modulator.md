@@ -1,11 +1,11 @@
 #Boolean toggle Modulator
 
 ##Description
-For every continous sequence of 'true' values sent to the 'trigger' input slot the emitted value will switch from true to false and visa versa. The initial value is true.
+For every continous sequence of **True** values sent to the **trigger** input slot the emitted **value** will switch from **True** to **False** and vice versa. The initial value is **True**.
 
 ##Inputs
 ###trigger
-Every time true is sent one or more times in a row, the emitted value will switch between true and false, starting with true.
+Every time **True** is sent one or more times in a row, the emitted **value** will switch between **True** and **False**, starting with **True**.
 
 ##Outputs
 ###bool

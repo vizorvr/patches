@@ -1,7 +1,7 @@
 #Equals
 
 ##Description
-Emits **true** if **value** equals **reference** and **false** otherwise.
+Emits **True** if **value** equals **reference**, and **False** otherwise.
 
 ##Inputs
 ###value
@@ -12,7 +12,7 @@ Reference **value** to comprate **value** to.
 
 ##Outputs
 ###bool
-**True** if **value** equals **reference** and **false** otherwise.
+**True** if **value** equals **reference** and **False** otherwise.
 
 ##Detail
 

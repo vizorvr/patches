@@ -9,13 +9,13 @@ Input **vector**.
 
 ##Outputs
 ###x
-The x-component.
+The **X-component**.
 
 ###y
-The y-component.
+The **Y-component**.
 
 ###z
-The z-component.
+The **Z-component**.
 
 ##Detail
 

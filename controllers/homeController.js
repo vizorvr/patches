@@ -77,7 +77,6 @@ function getHomeStaffPicks() {
 
 		// patches homepage
 		staffPicks['_patches'] = pickFromStaffPicks(patchesPicks, 8)
-
 		dfd.resolve(setCache(staffPicks))
 	})
 
@@ -100,7 +99,7 @@ exports.index = function(req, res)  {
 		let picks = {}
 
 		Object.keys(graphs).map(tag => {
-			picks[tag] = pickFromStaffPicks(graphs[tag].slice())
+			picks[tag] = pickFromStaffPicks(graphs[tag].slice(), (tag === '_patches') ? 8 : null)
 		})
 
 		res.render('home', {
