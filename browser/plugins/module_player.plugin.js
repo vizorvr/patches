@@ -9,8 +9,10 @@ E2.p = E2.plugins["module_player"] = function(core, node)
 	
 	this.output_slots = [
 	]
-	
-	core.add_aux_script('module_player/pt.js', function(self) { return function()
+	core.add_aux_script('module_player/ft2.js');
+	core.add_aux_script('module_player/st3.js');
+	core.add_aux_script('module_player/pt.js');
+	core.add_aux_script('module_player/player.js', function(self) { return function()
 	{
 		self.player = new Protracker();
 	}}(this));
