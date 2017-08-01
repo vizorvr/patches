@@ -14,7 +14,7 @@ E2.p = E2.plugins["module_player"] = function(core, node)
 	core.add_aux_script('module_player/pt.js');
 	core.add_aux_script('module_player/player.js', function(self) { return function()
 	{
-		self.player = new Protracker();
+		self.player = new Modplayer();
 	}}(this));
 
 	this.audio = null;
@@ -27,7 +27,7 @@ E2.p.prototype.play = function()
 	if(this.audio && !this.playing && this.should_play)
 	{
 		this.playing = this.should_play = true;
-		this.player.play();
+		this.play();
 	}
 };
 
@@ -37,7 +37,7 @@ E2.p.prototype.pause = function()
 	{
 		this.playing = false;
 		this.should_play = true;
-		this.player.pause();
+		player.pauseaudio();
 	}
 };
 
@@ -47,8 +47,7 @@ E2.p.prototype.stop = function()
 	{
 		if(this.playing)
 		{
-			this.playing = this.should_play = false;
-			this.player.stop();
+			this.stopaudio();
 		}
 	}
 };
@@ -57,8 +56,11 @@ E2.p.prototype.update_input = function(slot, data)
 {
 	if(slot.index === 0)
 	{
+		this.player.onReady=function() {
+				this.play();
+			}
 		this.player.load(data);
-		this.playing = false;
+		this.playing = true;
 	}
 	else if(slot.index === 1)
 		this.should_play = data;
@@ -66,7 +68,7 @@ E2.p.prototype.update_input = function(slot, data)
 
 E2.p.prototype.update_state = function()
 {
-	var player = this.player;
+	var player = this;
 	
 	if(!this.player || !this.player.ready)
 		return;
@@ -74,9 +76,9 @@ E2.p.prototype.update_state = function()
 	if(this.playing !== this.should_play)
 	{
 		if(this.should_play)
-			player.play();
+			this.play();
 		else
-			player.pause();
+			this.pause();
 		
 		this.playing = this.should_play;
 	}
