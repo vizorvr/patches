@@ -1,6 +1,6 @@
 E2.p = E2.plugins["module_player"] = function(core, node)
 {
-	this.desc = 'Play a protracker-compatible .mod file using library by firehawk/tda (firehawk@haxor.fi).';
+	this.desc = 'Play either a Protracker -compatible .MOD file, or a Scream Tracker 3 -compatible .S3M file, or a Fast Tracker 2 -compatible XM file by using library by Firehawk/TDA (firehawk@haxor.fi).';
 	
 	this.input_slots = [ 
 		{ name: 'url', dt: core.datatypes.TEXT, desc: 'The url of the module to play.', def: null },
@@ -9,6 +9,7 @@ E2.p = E2.plugins["module_player"] = function(core, node)
 	
 	this.output_slots = [
 	]
+	core.add_aux_script('module_player/utils.js');
 	core.add_aux_script('module_player/ft2.js');
 	core.add_aux_script('module_player/st3.js');
 	core.add_aux_script('module_player/pt.js');
@@ -47,7 +48,7 @@ E2.p.prototype.stop = function()
 	{
 		if(this.playing)
 		{
-			this.stopaudio();
+			this.stop();
 		}
 	}
 };
