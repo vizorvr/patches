@@ -1,14 +1,5 @@
 E2.p = E2.plugins["module_player"] = function(core, node)
 {
-	this.desc = 'Play either a Protracker -compatible .MOD file, or a Scream Tracker 3 -compatible .S3M file, or a Fast Tracker 2 -compatible XM file by using library by Firehawk/TDA (firehawk@haxor.fi).';
-	
-	this.input_slots = [ 
-		{ name: 'url', dt: core.datatypes.TEXT, desc: 'The url of the module to play.', def: null },
-		{ name: 'play', dt: core.datatypes.BOOL, desc: 'Send true to start playback and false to stop.', def: false },
-	];
-	
-	this.output_slots = [
-	]
 	core.add_aux_script('module_player/utils.js');
 	core.add_aux_script('module_player/ft2.js');
 	core.add_aux_script('module_player/st3.js');
@@ -18,9 +9,29 @@ E2.p = E2.plugins["module_player"] = function(core, node)
 		self.player = new Modplayer();
 	}}(this));
 
+	this.desc = 'Play either a Protracker -compatible .MOD file, or a Scream Tracker 3 -compatible .S3M file, or a Fast Tracker 2 -compatible XM file by using library by Firehawk/TDA (firehawk@haxor.fi).';
+	
+	this.input_slots = [ 
+		{ name: 'url', dt: core.datatypes.TEXT, desc: 'The url of the module to play.', def: null },
+		{ name: 'play', dt: core.datatypes.BOOL, desc: 'Send true to start playback and false to stop.', def: false },
+	];
+
+	this.output_slots = [
+		{ name: 'title', dt: core.datatypes.TEXT, desc: 'The title of the module', def:null},
+		{ name: 'speed', dt: core.datatypes.FLOAT, desc: 'Current BPM', def: null},
+		{ name: 'patternnumber', dt: core.datatypes.FLOAT, desc: 'Current playing pattern number', def: null }
+
+		,
+		
+	]
+
+
+
 	this.audio = null;
 	this.playing = false;
 	this.should_play = false;
+
+
 };
 
 E2.p.prototype.play = function()
@@ -38,7 +49,7 @@ E2.p.prototype.pause = function()
 	{
 		this.playing = false;
 		this.should_play = true;
-		player.pauseaudio();
+		this.pause();
 	}
 };
 
@@ -66,6 +77,34 @@ E2.p.prototype.update_input = function(slot, data)
 	else if(slot.index === 1)
 		this.should_play = data;
 };
+
+E2.p.prototype.update_output = function(slot)
+{
+	var player = this;
+// var playbackpattern = "text" + this.player.currentpattern();
+//console.log("test", playbackpattern)
+	if(slot.index === 0) // Title
+	{
+		return this.player.title;
+//		console.log("Slot number index", slot.index, "Current Playing Pattern: ", this.player.currentpattern(), "Module title", this.player.title, "BPM: ", this.player.bpm
+		console.log(this.player.title);
+			
+			
+	}
+	else if(slot.index === 1) // Speed = BPM
+	{
+		return this.player.bpm
+		console.log(this.player.bpm)
+	}
+	else (slot.index === 2) // Pattern number
+	{
+		var currpatt = this.player.currentpattern();
+		return currpatt;
+		console.log(currpatt);
+	}
+
+};
+
 
 E2.p.prototype.update_state = function()
 {
