@@ -164,7 +164,7 @@
 		var gl = this.domElement.getContext('webgl')
 		var events = E2.core.webVRAdapter.events
 
-		this.stats = new WGLUStats(gl)
+		// this.stats = new WGLUStats(gl)
 
 		this.adapter = E2.core.webVRAdapter
 		this.adapter.on(events.targetResized, this.onTargetResized.bind(this))

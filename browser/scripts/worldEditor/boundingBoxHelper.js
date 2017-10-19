@@ -1,5 +1,5 @@
 function BoundingBoxHelper() {
-	THREE.BoundingBoxHelper.apply(this)
+	THREE.BoxHelper.apply(this)
 
 	this.material.opacity = 0.3
 	this.material.transparent = true
@@ -23,5 +23,5 @@ function BoundingBoxHelper() {
 	}
 }
 
-BoundingBoxHelper.prototype = Object.create(THREE.BoundingBoxHelper.prototype)
+BoundingBoxHelper.prototype = Object.create(THREE.BoxHelper.prototype)
 BoundingBoxHelper.prototype.constructor = BoundingBoxHelper
