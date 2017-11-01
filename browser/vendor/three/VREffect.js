@@ -82,8 +82,7 @@ THREE.VREffect = function ( renderer, onError ) {
 	};
 
 	this.setSize = function ( width, height, updateStyle ) {
-    renderer.setSize( width, height );
-
+    renderer.setSize( width, height, updateStyle );
 	};
 
 	// VR presentation

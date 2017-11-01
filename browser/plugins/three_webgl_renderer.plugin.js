@@ -151,7 +151,7 @@
 			updateCamera(E2.app.worldEditor.getCamera(), s)
 
 		this.renderer.setPixelRatio(s.devicePixelRatio)
-		this.adapter.effect.setSize(s.width, s.height)
+		this.adapter.effect.setSize(s.width, s.height, false)
 	}
 
 	ThreeWebGLRendererPlugin.prototype.state_changed = function(ui) {
