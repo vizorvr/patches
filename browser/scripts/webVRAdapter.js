@@ -163,8 +163,8 @@ VizorWebVRAdapter.prototype.configure = function() {
 
 	var r = E2.core.renderer
 	r._setSize = r.setSize
-	r.setSize = function (width, height) {
-		this._setSize(width, height, false)	// ex .setSizeNoResize()
+	r.setSize = function (width, height) {	// becomes part of RAF loop
+		this._setSize(width, height, false)		// ex .setSizeNoResize(); never update element
 	}.bind(r)
 
 	window._WA = this

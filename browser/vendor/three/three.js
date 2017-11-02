@@ -21257,10 +21257,12 @@
 			_width = width;
 			_height = height;
 
-			_canvas.width = width * _pixelRatio;
-			_canvas.height = height * _pixelRatio;
 
 			if ( updateStyle !== false ) {
+				
+				// gm^vizor.io; moved down from before the block
+				_canvas.width = width * _pixelRatio;
+				_canvas.height = height * _pixelRatio;
 
 				_canvas.style.width = width + 'px';
 				_canvas.style.height = height + 'px';
@@ -21269,14 +21271,6 @@
 
 			this.setViewport( 0, 0, width, height );
 
-		};
-
-
-		this.setSizeNoResize = function(width, height) {
-			// gm^vizor.io
-			_width = width;
-			_height = height;
-			this.setViewport( 0, 0, width, height );
 		};
 
 
