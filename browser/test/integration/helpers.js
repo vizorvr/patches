@@ -105,6 +105,7 @@ exports.reset = function() {
 	global.window.screen = {width: 1280, height: 720}
 
 	global.addEventListener = function() {}
+	global.dispatchEvent = function() {}
 	global.removeEventListener = function() {}
 	global.location = {
 		pathname: 'test/test'
