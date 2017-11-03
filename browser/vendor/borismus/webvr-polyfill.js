@@ -125,7 +125,7 @@
 
 var Util = window.Util || {};
 
-Util.MIN_TIMESTEP = 0.001;
+Util.MIN_TIMESTEP = 0.0008;
 Util.MAX_TIMESTEP = 1;
 
 Util.base64 = function(mimeType, base64) {
@@ -351,6 +351,8 @@ Util.extend = function(dest, src) {
 }
 
 Util.safariCssSizeWorkaround = function(canvas) {
+  return  // gm
+
   // TODO(smus): Remove this workaround when Safari for iOS is fixed.
   // iOS only workaround (for https://bugs.webkit.org/show_bug.cgi?id=152556).
   //
@@ -567,8 +569,10 @@ Util.isInsideCrossDomainIFrame = function() {
   var isFramed = (window.self !== window.top);
   var refDomain = Util.getDomainFromUrl(document.referrer);
   var thisDomain = Util.getDomainFromUrl(window.location.href);
-
-  return isFramed && (refDomain !== thisDomain);
+  
+  // gm
+  return isFramed
+  // return isFramed && (refDomain !== thisDomain) ;
 };
 
 // From http://stackoverflow.com/a/23945027.
@@ -1485,7 +1489,7 @@ var kMiddleRadius = 0.75;
 var kInnerRadius = 0.3125;
 
 // Center line thickness in DP.
-var kCenterLineThicknessDp = 4;
+var kCenterLineThicknessDp = 0;
 
 // Button width in DP.
 var kButtonWidthDp = 28;
@@ -4051,7 +4055,7 @@ FusionPoseSensor.prototype.onOrientationChange_ = function(screenOrientation) {
  */
 FusionPoseSensor.prototype.onMessage_ = function(event) {
   var message = event.data;
-
+  
   // If there's no message type, ignore it.
   if (!message || !message.type) {
     return;
@@ -4059,17 +4063,18 @@ FusionPoseSensor.prototype.onMessage_ = function(event) {
 
   // Ignore all messages that aren't devicemotion.
   var type = message.type.toLowerCase();
-  if (type !== 'devicemotion') {
-    return;
-  }
 
-  // Update device motion.
-  this.updateDeviceMotion_(message.deviceMotionEvent);
+  if (type === 'devicemotion')
+    this.updateDeviceMotion_(message.deviceMotionEvent);
+  
+  if (type === 'orientationchange')
+    this.setScreenTransform_(message.orientation)
 };
 
-FusionPoseSensor.prototype.setScreenTransform_ = function() {
+FusionPoseSensor.prototype.setScreenTransform_ = function(orientation) {
+  orientation = orientation || window.orientation
   this.worldToScreenQ.set(0, 0, 0, 1);
-  switch (window.orientation) {
+  switch (orientation) {
     case 0:
       break;
     case 90:
@@ -4095,11 +4100,12 @@ FusionPoseSensor.prototype.start = function() {
   // domain IFrame. In this case, the polyfill can still work if the containing
   // page sends synthetic devicemotion events. For an example of this, see
   // iframe-message-sender.js in VR View: https://goo.gl/XDtvFZ
-  if (Util.isIOS() && Util.isInsideCrossDomainIFrame()) {
+  if (Util.isInsideCrossDomainIFrame()) {
     window.addEventListener('message', this.onMessageCallback_);
+  } else {
+    window.addEventListener('orientationchange', this.onOrientationChangeCallback_);
+    window.addEventListener('devicemotion', this.onDeviceMotionCallback_);
   }
-  window.addEventListener('orientationchange', this.onOrientationChangeCallback_);
-  window.addEventListener('devicemotion', this.onDeviceMotionCallback_);
 };
 
 FusionPoseSensor.prototype.stop = function() {
@@ -4440,6 +4446,8 @@ TouchPanner.prototype.resetSensor = function() {
 };
 
 TouchPanner.prototype.onTouchStart_ = function(e) {
+  if (('shouldRotateStart' in this) && !this.shouldRotateStart(e))
+    return
   // Only respond if there is exactly one touch.
   // Note that the Daydream controller passes in a `touchstart` event with
   // no `touches` property, so we must check for that case too.
@@ -4463,14 +4471,21 @@ TouchPanner.prototype.onTouchMove_ = function(e) {
     this.rotateDelta.x *= -1;
   }
 
-  var element = document.body;
-  this.theta += 2 * Math.PI * this.rotateDelta.x / element.clientWidth * ROTATE_SPEED;
+  var size = this.getDimensions();
+  this.theta += 2 * Math.PI * this.rotateDelta.x / size.width * ROTATE_SPEED;
 };
 
 TouchPanner.prototype.onTouchEnd_ = function(e) {
   this.isTouching = false;
 };
 
+TouchPanner.prototype.getDimensions = function() {
+  var body = document.body
+  return {
+    width: body.clientWidth,
+    height: body.clientHeight
+  }
+}
 module.exports = TouchPanner;
 
 
@@ -4590,10 +4605,12 @@ RotateInstructions.prototype.show = function(parent) {
     s.marginLeft = '25%';
     s.marginTop = '25%';
   }
+  window.dispatchEvent(new CustomEvent('vrinstructionsshown'))
 };
 
 RotateInstructions.prototype.hide = function() {
   this.overlay.style.display = 'none';
+  window.dispatchEvent(new CustomEvent('vrinstructionshidden'))
 };
 
 RotateInstructions.prototype.showTemporarily = function(ms, parent) {
@@ -5010,6 +5027,8 @@ MouseKeyboardVRDisplay.prototype.getImmediatePose = function() {
 };
 
 MouseKeyboardVRDisplay.prototype.onKeyDown_ = function(e) {
+  if (('shouldRotateStart' in this) && !this.shouldRotateStart(e))
+    return
   // Track WASD and arrow keys.
   if (e.keyCode == 38) { // Up key.
     this.animatePhi_(this.phi_ + KEY_SPEED);
@@ -5060,9 +5079,18 @@ MouseKeyboardVRDisplay.prototype.animateKeyTransitions_ = function(angleName, ta
 };
 
 MouseKeyboardVRDisplay.prototype.onMouseDown_ = function(e) {
+  if (('shouldRotateStart' in this) && !this.shouldRotateStart(e))
+    return
   this.rotateStart_.set(e.clientX, e.clientY);
   this.isDragging_ = true;
 };
+
+MouseKeyboardVRDisplay.prototype.getDimensions = function() {
+  return {
+    width: window.innerWidth,
+    height: window.innerHeight
+  }
+}
 
 // Very similar to https://gist.github.com/mrflix/8351020
 MouseKeyboardVRDisplay.prototype.onMouseMove_ = function(e) {
@@ -5082,8 +5110,9 @@ MouseKeyboardVRDisplay.prototype.onMouseMove_ = function(e) {
   this.rotateStart_.copy(this.rotateEnd_);
 
   // Keep track of the cumulative euler angles.
-  this.phi_ += 2 * Math.PI * this.rotateDelta_.y / screen.height * MOUSE_SPEED_Y;
-  this.theta_ += 2 * Math.PI * this.rotateDelta_.x / screen.width * MOUSE_SPEED_X;
+  var size = this.getDimensions()
+  this.phi_ += 2 * Math.PI * this.rotateDelta_.y / size.height * MOUSE_SPEED_Y;
+  this.theta_ += 2 * Math.PI * this.rotateDelta_.x / size.width * MOUSE_SPEED_X;
 
   // Prevent looking too far up or down.
   this.phi_ = Util.clamp(this.phi_, -Math.PI/2, Math.PI/2);

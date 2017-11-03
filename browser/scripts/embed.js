@@ -54,7 +54,10 @@
 
 
 	window.addEventListener('orientationchange', function() {
-		iframeWindow.postMessage({ orientation: window.orientation }, '*')
+		iframeWindow.postMessage({
+			type: 'orientationchange',
+			orientation: window.orientation
+		}, '*')
 		return true
     }, false)
 
@@ -74,7 +77,7 @@
 
 	document.write('<iframe id="'+iframeId+'" src="'+url+
 		'" width="'+ iframeWidth +'" height="' + iframeHeight +
-		'" frameborder="0" style="box-sizing:border-box;" allowfullscreen></iframe>')
+		'" frameborder="0" style="box-sizing:border-box;" allowfullscreen allowvr></iframe>')
 
 	iframeElement = document.getElementById(iframeId)
 	iframeWindow = document.getElementById(iframeId).contentWindow
@@ -88,20 +91,23 @@
 	}, true)
 	window.addEventListener('resize', resizeIframe)
 	window.addEventListener('devicemotion', function(deviceMotion) {
+		var evtData = {
+			accelerationIncludingGravity: {
+				x: deviceMotion.accelerationIncludingGravity.x,
+				y: deviceMotion.accelerationIncludingGravity.y,
+				z: deviceMotion.accelerationIncludingGravity.z
+			},
+			rotationRate: {
+				alpha: deviceMotion.rotationRate.alpha,
+				beta: deviceMotion.rotationRate.beta,
+				gamma: deviceMotion.rotationRate.gamma
+			},
+			timeStamp: deviceMotion.timeStamp
+		}
 		iframeWindow.postMessage({
-			devicemotion: {
-				accelerationIncludingGravity: {
-					x: deviceMotion.accelerationIncludingGravity.x,
-					y: deviceMotion.accelerationIncludingGravity.y,
-					z: deviceMotion.accelerationIncludingGravity.z
-				},
-				rotationRate: {
-					alpha: deviceMotion.rotationRate.alpha,
-					beta: deviceMotion.rotationRate.beta,
-					gamma: deviceMotion.rotationRate.gamma
-				},
-				timeStamp: deviceMotion.timeStamp
-			}
+			devicemotion: evtData,
+			deviceMotionEvent: evtData,
+			type: 'devicemotion'
 		}, '*')
 	}, false)
 
