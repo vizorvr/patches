@@ -22,8 +22,8 @@ var VizorPlayerUI = function() {
 		controlsDisplayed	: 'controlsDisplayed',
 		controlsHidden		: 'controlsHidden',
 
-		vrInstructionsShown : 'VRInstructionsShown',
-		vrInstructionsHidden: 'VRInstructionsHidden',
+		vrInstructionsShown : 'vrinstructionsshown',
+		vrInstructionsHidden: 'vrinstructionshidden',
 		loadingProgress		: 'progress',
 
 		playerStateChanged	: 'player:stateChanged',
@@ -192,7 +192,7 @@ var VizorPlayerUI = function() {
 		E2.core.on('assetsLoaded', completeLoading)
 
 		// provisions for chrome/android
-		$body
+		$(window)
 			.on(events.vrInstructionsShown, function () {
 				$canvas.hide()
 			})
@@ -337,7 +337,7 @@ var VizorPlayerUI = function() {
 				that.queueHeaderFadeOut()
 			})
 
-		$body
+		$(window)
 			.on(events.vrInstructionsShown, function () {
 				$header.hide()
 				that.fadingIn = that.fadingOut = false
