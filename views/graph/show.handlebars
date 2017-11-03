@@ -62,11 +62,11 @@
 </header>
 
 <div id="playerWrap" style="background: #000 url('{{{previewImage}}}') center center no-repeat; background-size: cover;">
-    <div id="beforeLoadingStage" class="stage"></div>
+    <div id="beforeLoadingStage" class="stage front"></div>
     <div id="loadingStage" class="stage"></div>
     <div id="readyStage" class="stage"></div>
     <div id="errorStage" class="stage"></div>
-    <div id="playingStage" class="stage front">
+    <div id="playingStage" class="stage">
         {{> playerCanvas width="100%" height="100%" graphSrc=graphMinUrl autoplay=autoplay }}
     </div>
 </div>
