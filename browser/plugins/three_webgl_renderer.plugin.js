@@ -151,7 +151,7 @@
 			updateCamera(E2.app.worldEditor.getCamera(), s)
 
 		this.renderer.setPixelRatio(s.devicePixelRatio)
-		this.adapter.effect.setSize(s.width, s.height)
+		this.adapter.effect.setSize(s.width, s.height, false)
 	}
 
 	ThreeWebGLRendererPlugin.prototype.state_changed = function(ui) {
@@ -164,7 +164,7 @@
 		var gl = this.domElement.getContext('webgl')
 		var events = E2.core.webVRAdapter.events
 
-		this.stats = new WGLUStats(gl)
+		// this.stats = new WGLUStats(gl)
 
 		this.adapter = E2.core.webVRAdapter
 		this.adapter.on(events.targetResized, this.onTargetResized.bind(this))

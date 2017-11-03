@@ -16,7 +16,7 @@ THREE.FontLoader.prototype = {
 
 		var scope = this;
 
-		var loader = new THREE.XHRLoader( this.manager );
+		var loader = new THREE.FileLoader( this.manager );
 		loader.load( url, function ( text ) {
 
 			var json;

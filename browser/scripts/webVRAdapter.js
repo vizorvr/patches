@@ -46,8 +46,7 @@ VizorWebVRAdapter.prototype.initialise = function(domElement, renderer) {
 	this.configure()
 
 	this.proxyOrientationChange = true
-	this.proxyDeviceMotion = (typeof VizorUI !== 'undefined') 
-		&& VizorUI.isMobile.iOS()
+	this.proxyDeviceMotion = this.isIOS
 
 	if (document.body.classList)
 		document.body.classList.toggle('hasHMD', this.haveVRDevices)
@@ -71,9 +70,13 @@ VizorWebVRAdapter.events = Object.freeze({
 	targetResized: 			'targetsizechanged'
 })
 
-VizorWebVRAdapter.prototype.canInitiateCameraMove = function(e) {
+/**
+ * @param ev MouseEvent|TouchEvent|KeyboardEvent
+ * @returns boolean
+ */
+VizorWebVRAdapter.prototype.canInitiateCameraMove = function(ev) {
 	if (E2 && E2.app && E2.app.canInitiateCameraMove)
-		return E2.app.canInitiateCameraMove(e)
+		return E2.app.canInitiateCameraMove(ev)
 
 	// default
 	return true
@@ -97,6 +100,34 @@ VizorWebVRAdapter.prototype.configure = function() {
 	w.TOUCH_PANNER_DISABLED	= false
 	w.MOUSE_KEYBOARD_CONTROLS_DISABLED	= false
 
+	function patchDisplay(display) {
+		if (display._vizorPatched)
+			return
+
+		function patchPanner(panner) {
+			panner.shouldRotateStart = that.canInitiateCameraMove.bind(that)
+		}
+		switch (display.displayName) {
+			case 'Mouse and Keyboard VRDisplay (webvr-polyfill)':
+				patchPanner(display)
+				display.getDimensions = that.getDomElementDimensions.bind(that);
+				break;
+			case 'Cardboard VRDisplay (webvr-polyfill)':
+				patchPanner(display.poseSensor_.touchPanner)
+				display.getDimensions = function() {
+					if (this.isPresenting)
+						return this.prototype.getDimensions.call(this)
+					// else
+					return that.getDomElementDimensions()
+				}.bind(display)
+				break;
+			default:
+				// nothing to patch
+		}
+		display._vizorPatched = true
+	}
+	
+
 	navigator.getVRDisplays()
 	.then(function(displays){
 		if (!displays.length) {
@@ -106,25 +137,9 @@ VizorWebVRAdapter.prototype.configure = function() {
 		}
 
 		displays.forEach(function(display) {
+			patchDisplay(display)
 			if (display.capabilities.canPresent)
 				that.haveVRDevices = true
-
-			if (display._vizorPatched)
-				return
-
-			if (typeof display.getManualPannerRef === 'function') {
-				var panner = display.getManualPannerRef()
-				if (!(panner && panner.canInitiateRotation))
-					return
-				panner.canInitiateRotation = function(e){
-					return that.canInitiateCameraMove(e)
-				}
-			} else {
-				console.warn('no display.getManualPannerRef found', display)
-			}
-
-			display._vizorPatched = true
-
 			// note, if display.wrapForFullscreen (removeFullscreenWrapper) is taken out
 			// then the cardboard selector won't show on Android because it would fullscreen the canvas, not its parent element
 		})
@@ -147,16 +162,12 @@ VizorWebVRAdapter.prototype.configure = function() {
 	})
 
 	var r = E2.core.renderer
-	if (typeof r.setSizeNoResize === 'undefined') {
-		console.error('please patch THREE.WebGLRenderer to include a setSizeNoResize method.')
-	}
-	else {
-		r.setSize = function (width, height) {
-			// debug
-			// console.error('renderer.setSize called instead of setSizeNoResize')
-			this.setSizeNoResize(width, height)
-		}.bind(r)
-	}
+	r._setSize = r.setSize
+	r.setSize = function (width, height) {	// becomes part of RAF loop
+		this._setSize(width, height, false)		// ex .setSizeNoResize(); never update element
+	}.bind(r)
+
+	window._WA = this
 }
 
 // patches the web vr manager so that requestFullscreen fullscreens our container
@@ -279,10 +290,9 @@ VizorWebVRAdapter.prototype.onBrowserResize = function() {
 		that.resizeToTarget()
 	}
 
-	if (!this.iOS && this.hmd && !this.hmd.isPolyfilled)
-		doResize()
-	else
-		this._scheduleResize(doResize, timeout)
+	doResize()
+	if (this.iOS || !this.hmd || this.hmd.isPolyfilled)
+    this._scheduleResize(doResize, timeout)
 }
 
 VizorWebVRAdapter.prototype.isElementFullScreen = function() {
@@ -370,43 +380,35 @@ VizorWebVRAdapter.prototype.setTargetSize = function(width, height, devicePixelR
 }
 
 VizorWebVRAdapter.prototype.getTargetSize = function() {
-	var manager = this._manager
 	var hmd = this.hmd
 	var isPresenting = hmd && hmd.isPresenting
 
 	var size = {
 		width: -1,
 		height: -1,
-		devicePixelRatio: 0
+		devicePixelRatio: 0,
+		isPresenting: isPresenting
 	}
 
 	var domSize = this.getDomElementDimensions()
 
+	size.devicePixelRatio = window.devicePixelRatio
 	if (isPresenting) {
-		var leftEye  = hmd.getEyeParameters("left")
-		var rightEye = hmd.getEyeParameters("right")
-
-		var dpr = window.devicePixelRatio
-
-		size.width  = leftEye.renderWidth + rightEye.renderWidth
-		size.height = leftEye.renderHeight // assume they're the same
-		size.width /= dpr
-		size.height /= dpr
-		size.devicePixelRatio = dpr
+		// assume presenting in landscape (eyes are horizontal)
+		size.width = Math.max(screen.width, screen.height)
+		size.height = Math.min(screen.width, screen.height)
 	}
 	else {
 		size.width  = domSize.width
 		size.height = domSize.height
-		size.devicePixelRatio = window.devicePixelRatio
 	}
-
-	size.isPresenting = !!isPresenting
 
 	return size
 }
 
 // event handling
 VizorWebVRAdapter.prototype.onMessageReceived = function(e) {
+	return;
 	if (!e.data)
 		return
 
@@ -507,7 +509,7 @@ VizorWebVRAdapter.prototype.amendVRManagerInstructions = function() {
 	s.display = 'block'
 
 	o.style.height = '100%'
-o.insertBefore(svg, o.firstChild)
+	o.insertBefore(svg, o.firstChild)
 
 
 	r.text.innerHTML = r.text.innerHTML.replace("Cardboard viewer", "VR viewer")
@@ -687,10 +689,6 @@ VizorWebVRAdapter.isNativeWebVRAvailable = function() {
 
 VizorWebVRAdapter.prototype.isNativeWebVRAvailable = VizorWebVRAdapter.isNativeWebVRAvailable
 
-VizorWebVRAdapter.prototype.getEyeParameters = function(eye) {
-	return this.hmd.getEyeParameters(eye)
-}
 
 if (typeof module !== 'undefined')
 	module.exports = VizorWebVRAdapter
-

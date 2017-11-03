@@ -340,7 +340,7 @@ function CreatePlayer(cb) {
 
 	// Shared gl context for three
 	var gl_attributes = {
-		alpha: true,
+		alpha: false,
 		depth: true,
 		stencil: true,
 		antialias: true,
