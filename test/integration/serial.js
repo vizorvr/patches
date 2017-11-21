@@ -11,7 +11,7 @@ function rand() {
 	return Math.floor(Math.random() * 100000)
 }
 
-describe('EditLog', function() {
+describe('Serial', function() {
 	var connection
 
 	before(function(done) {
