@@ -2,8 +2,6 @@ var mongoose = require('mongoose')
 var Schema = mongoose.Schema
 var when = require('when')
 
-var START = 100000 // leave room for old serials
-
 var serialSchema = new mongoose.Schema({
   _id: { type: String },
   counter: { type: Number, default: Date.now() }
@@ -21,7 +19,7 @@ serialSchema.statics.next = function(name) {
 				return dfd.reject(err)
 			}
 
-			return dfd.resolve(START + result.counter)
+			return dfd.resolve(result.counter)
 		})
 
 	return dfd.promise
