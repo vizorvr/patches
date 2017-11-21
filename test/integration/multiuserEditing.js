@@ -328,7 +328,6 @@ describe('Multiuser', function() {
 				// assert that we only get number 2
 				s3.dispatcher.register(function(m) {
 					assert.equal(m.number, 2)
-					assert.equal(m.id, 2)
 					s3.close()
 					s3.once('disconnected', done)
 				})
