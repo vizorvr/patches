@@ -31,7 +31,7 @@ describe('Serial', function() {
 	it('should create serials', function(done) {
 		Serial.next('test-first-'+testId)
 		.then(function(serial) {
-			assert.equal(100001, serial)
+			assert.equal(1, serial)
 			done()
 		})
 		.catch(done)
@@ -42,7 +42,7 @@ describe('Serial', function() {
 		.then(function(serial) {
 			return Serial.next('test-increase-'+testId)
 			.then(function(serial) {
-				assert.equal(100002, serial)
+				assert.equal(2, serial)
 				done()
 			})
 		})
