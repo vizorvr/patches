@@ -129,7 +129,7 @@ VizorWebVRAdapter.prototype.configure = function() {
 	
 
 	navigator.getVRDisplays()
-	.then(function(displays){
+	.then(function(displays) {
 		if (!displays.length) {
 			_webVRPolyfill.enablePolyfill()
 			_webVRPolyfill.populateDevices()
