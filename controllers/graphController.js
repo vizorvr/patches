@@ -5,6 +5,8 @@ var AssetController = require('./assetController')
 var fsPath = require('path')
 var assetHelper = require('../models/asset-helper')
 
+var Serial = require('../models/serial')
+
 var templateCache = require('../lib/templateCache').templateCache
 
 var helper = require('./controllerHelpers')
@@ -12,7 +14,6 @@ var isStringEmpty = require('../lib/stringUtil').isStringEmpty
 var PreviewImageProcessor = require('../lib/previewImageProcessor')
 
 var GraphAnalyser = require('../common/graphAnalyser').GraphAnalyser
-var SerialNumber = require('redis-serial')
 
 var User = require('../models/user')
 var EditLog = require('../models/editLog')
@@ -145,8 +146,6 @@ function GraphController(s, gfs, mongoConnection) {
 	this.redisClient = redis.createClient({
 		host: process.env.REDIS || 'localhost'
 	})
-
-	this.serialNumber = new SerialNumber(this.redisClient)
 
 	this.graphAnalyser = new GraphAnalyser(gfs)
 	this.previewImageProcessor = new PreviewImageProcessor()
@@ -437,7 +436,7 @@ GraphController.prototype.edit = function(req, res, next) {
 	var that = this
 
 	if (!req.params.path) {
-		return this.serialNumber.next('editLog')
+		return Serial.next('editLog')
 		.then(function(serial) {
 			return res.redirect('/' + makeHashid(serial))
 		})
@@ -832,7 +831,7 @@ GraphController.prototype.saveAnonymous = function(req, res, next) {
 				.json({ message: 'Invalid data' })
 		}
 
-		return that.serialNumber.next('anonymousGraph')
+		return Serial.next('anonymousGraph')
 		.then(function(serial) {
 			var uid = makeHashid(serial)
 			var path = that._makePath(anonReq, uid)
