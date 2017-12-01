@@ -392,15 +392,18 @@ VizorWebVRAdapter.prototype.getTargetSize = function() {
 
 	var domSize = this.getDomElementDimensions()
 
-	size.devicePixelRatio = window.devicePixelRatio
 	if (isPresenting) {
-		// assume presenting in landscape (eyes are horizontal)
-		size.width = Math.max(screen.width, screen.height)
-		size.height = Math.min(screen.width, screen.height)
+		// { renderWidth, renderHeight }
+		var left = hmd.getEyeParameters('left')
+		var right = hmd.getEyeParameters('right')
+		size.width = left.renderWidth + right.renderWidth
+		size.height = Math.min(left.renderHeight, right.renderHeight)
+		size.devicePixelRatio = 1
 	}
 	else {
 		size.width  = domSize.width
 		size.height = domSize.height
+		size.devicePixelRatio = window.devicePixelRatio
 	}
 
 	return size

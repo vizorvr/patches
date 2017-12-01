@@ -24,11 +24,11 @@ module.exports = function (done) {
         .url(url)
 		.waitForExist('body.bEditor')
 		.waitForExist('div#canvases')
-		.waitForVisible('div.welcome', 5000)
+		.waitForVisible('.welcome', 5000)
 		.then(function(){
 			browser
-				.click('div.welcome button.close')
-				.waitForExist('div.welcome', null, true)
+				.click('.welcome button.close')
+				.waitForExist('.welcome', null, true)
 				.deleteCookie('vizor100')
 				.then(ff)
 		}, ff)
