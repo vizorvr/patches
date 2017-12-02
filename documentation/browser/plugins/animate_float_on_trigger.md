@@ -1,7 +1,7 @@
 #Animate Float on Trigger
 
 ##Description
-Animate value from **startValue** to **endValue** on **trigger** (Booldan) over time specified by **duration**.
+Animate value from **startValue** to **endValue** on **trigger** (Boolean) over time specified by **duration**.
 
 ##Inputs
 ###trigger
