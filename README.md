@@ -7,7 +7,7 @@ Patches is a visual programming environment for WebGL, WebVR and other HTML5 API
 
 Be sure to [watch the tutorials](http://bit.do/vizor), [read the documentation](http://patches.vizor.io/help/introduction.html) and [read tutorials on Patches](http://blog.vizor.io/). [Plugin API documentation](http://patches.vizor.io/help/plugin_api.html) is available, but unstable.
 
-### Installing
+### Installing on macOS/OSX
 
 Installing a local instance of Patches requires [MongoDB](http://mongodb.org) (MongoDB Server should be 3.2.12), [Redis](http://redis.io), [node.js](https://nodejs.org) (Get [v6.11](https://nodejs.org/en/download/)) and graphicsmagick. To install the required packages, issue the following commands (on Mac using Homebrew):
 
@@ -38,6 +38,17 @@ Running the tests:
     $ npm install -g mocha
     $ npm test
 ```
+
+### Quick list of versions for running with Ubuntu Linux
+
+OS: Ubuntu **16.04.2**
+MongoDB shell version: **3.2.18**
+Redis server **v=3.0.6**
+Node **v6.11.5**
+NPM **5.5.1**
+ 
+Also, if you do not want to downgrade your node version then upgrade the **mongodb** package to **2.2.24** and the **gridfs-stream** package to the latest version.
+
 
 ### Running Patches
 
