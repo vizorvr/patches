@@ -49,6 +49,8 @@ NPM **5.5.1**
  
 Also, if you do not want to downgrade your node version then upgrade the **mongodb** package to **2.2.24** and the **gridfs-stream** package to the latest version.
 
+One more detail, the exiftool can be installed like this `sudo apt-get install libimage-exiftool-perl`
+
 
 ### Running Patches
 
