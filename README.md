@@ -53,7 +53,7 @@ One more detail, the exiftool can be installed like this `sudo apt-get install l
 
 ### How to run Patches locally using Windows
 
-Please consult [WindowsInstallationReadme.md](github.com/vizorvr/patches/blob/develop/WindowsInstallationReadme.md)
+Please consult [WindowsInstallationReadme.md](WindowsInstallationReadme.md)
 
 
 ### Running Patches
