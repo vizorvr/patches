@@ -51,6 +51,10 @@ Also, if you do not want to downgrade your node version then upgrade the **mongo
 
 One more detail, the exiftool can be installed like this `sudo apt-get install libimage-exiftool-perl`
 
+### How to run Patches locally using Windows
+
+Please consult [WindowsInstallationReadme.md](github.com/vizorvr/patches/blob/develop/WindowsInstallationReadme.md)
+
 
 ### Running Patches
 
