@@ -1,3 +1,6 @@
+# Instructions for running Vizor Patches locally using Windows
+## Written by Maya Lekova
+
 1. MongoDB
 	1. Installation instructions can be found [here](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-windows/).
 1. Redis
