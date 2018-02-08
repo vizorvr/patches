@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" class="hVizor">
+	<head id="head">
+		<meta charset='utf-8' />
+        <title>{{graphName}} by {{graphOwner}}</title>
+		<meta id="viewportmeta" name="viewport" content="initial-scale=1, maximum-scale=1, shrink-to-fit=no" />
+        <meta name="keywords" content="vizor, vr, webvr, virtual reality, webgl, visual programming, animation" />
+        <meta name="description" content="Vizor is a platform for creating and sharing VR experiences" />
+        <meta name="og:description" content="Vizor is a platform for creating and sharing VR experiences" />
+        <meta name="og:title" content="{{graphName}} by {{graphOwner}}" />
+        <meta name="og:image" content="{{previewImage}}" />
+        <meta name="og:image:width" content="{{previewImageWidth}}" />
+        <meta name="og:image:height" content="{{previewImageHeight}}" />
+        <meta name="og:restrictions:age" content="13+" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@Vizor_VR" />
+        <meta name="twitter:title" content="{{graphName}} by {{graphOwner}}" />
+        <meta name="twitter:description" content="Vizor is a platform for creating and sharing VR experiences" />
+        <meta name="twitter:image" content="{{previewImage}}" />
+
+        {{#each styles}}
+            <link rel="stylesheet" href="{{this}}" name="css" />
+        {{/each}}
+
+        {{#each scripts}}
+            <script type="text/javascript" src="{{this}}"></script>
+        {{/each}}
+	</head>
+
+	<body class="bPlayer noselect_all dark">
+        <div class="wrap clearfix" id="playerpage">
+
+            <div id="playerWrap" style="background: #000 url('{{previewImage}}') center center no-repeat; background-size: cover;">
+                <div id="beforeLoadingStage" class="stage"></div>
+                <div id="loadingStage" class="stage"></div>
+                <div id="readyStage" class="stage"></div>
+                <div id="errorStage" class="stage"></div>
+                <div id="playingStage" class="stage front">
+                    <canvas
+                        id="webgl-canvas"
+                        class="webgl-canvas-normal"
+                        style="background:transparent;width:100%;height:100%;"
+                        oncontextmenu="return false;"
+                        data-autoplay="true"
+                        data-graph-url="{{graphUrl}}">
+                    </canvas>
+                </div>
+            </div>
+
+            <script>
+                (function() {
+                    E2.track = function() {}
+
+                    if (!window.Vizor)
+                        window.Vizor = {}
+
+                    Vizor.origin = window.location.origin
+                    Vizor.isEditor = false
+                    Vizor.autoplay = true
+                    Vizor.noHeader = true
+                    Vizor.hasAudio = true
+										Vizor.cdnRoot = '/data'
+                    Vizor.graphName = '{{graphName}}'
+                    Vizor.hideWebVRButton = true
+                    Vizor.isEmbedded = false
+                    Vizor.startMode = 1
+
+										$(window).on('vizorLoaded', function() {
+											console.error('Vizor loaded')
+											E2.core.on('assetsLoaded', function() {
+												console.log('assets loaded, playing')
+												// E2.app.player.play()
+											})
+										})
+                })()
+            </script>
+
+            <noscript>
+                <div class="nojs clearfix">
+                    <div style="float: left; margin: 5px 8px 0 0;"><img src="/images/warning.png" width="64px" height="64px" /></div>
+                    <p>This page requires javascript in order to display properly.</p>
+                    <p>
+                        If you're running a script blocker - such as NoScript - please whitelist this page.<br />
+                        If you have disabled javascript in your browser, please enable it and reload.
+                    </p>
+                </div>
+            </noscript>
+        </div>
+	</body>
+</html>
