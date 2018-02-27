@@ -5,6 +5,7 @@ var assert = require('assert');
 var fsPath = require('path');
 var fs = require('fs-extra');
 var EventEmitter = require('events').EventEmitter;
+var mongoose = require('mongoose');
 var mongo = require('mongodb');
 var Grid = require('gridfs-stream');
 
@@ -19,31 +20,16 @@ describe('GridFsStorage', function()
 
 	before(function(done)
 	{
-		var that = this;
-
-		db = new mongo.Db('test'+process.pid,
-			new mongo.Server('localhost', 27017),
-			{ safe: true }
-		);
-
-		db.open(function(err)
-		{
-			if (err) throw err;
-
-			db.collection('fs.files', function(err, coll) {
-				if (err) throw err;
-				coll.ensureIndex({ filename: -1 }, { unique: true }, function() {});
-			});
-
+		mongoose.connect(`localhost:27017/test${process.pid}`);
+		mongoose.connection.on('error', err => { throw err })
+		mongoose.connection.on('connected', () => {
+			db = mongoose.connection.db;
 			grid = Grid(db, mongo);
-
 			gfs = new GridFsStorage('/foo', grid);
-			gfs.on('ready', function()
-			{
+			gfs.on('ready', function() {
 				gfs.copy(images.small, '/images/engilogo.png')
-				.then(function()
-				{
-					done();			
+				.then(function() {
+					done();
 				});
 			});
 		});
@@ -120,4 +106,3 @@ describe('GridFsStorage', function()
 	});
 
 });
-
