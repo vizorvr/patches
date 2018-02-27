@@ -1,6 +1,6 @@
 {
   "name": "Vizor",
-  "version": "0.18.1",
+  "version": "0.18.2",
   "description": "",
   "main": "server.js",
   "dependencies": {
@@ -54,7 +54,7 @@
     "mime": "~1.2.11",
     "minimist": "0.0.8",
     "moment": "^2.9.0",
-    "mongodb": "1.4.38",
+    "mongodb": "1.4.40",
     "mongoose": "4.5.0",
     "morgan": "^1.2.2",
     "multer": "^0.1.6",

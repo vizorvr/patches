@@ -294,7 +294,7 @@ mongoose.connection.on('connected', (connection) => {
 
 function setupModelRoutes(mongoConnection) {
 	var modelRoutes = require('./modelRoutes.js')
-	const cloudStorage = new CloudFileSystemImpl()
+	const cloudStorage = new CloudFileSystemImpl(undefined, undefined, mongoConnection)
 
 	// stat() files in cloud storage
 	app.get(/^\/stat\/.*/, function(req, res) {
