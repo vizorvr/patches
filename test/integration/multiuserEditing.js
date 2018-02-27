@@ -275,9 +275,6 @@ describe('Multiuser', function() {
 				number: 1,
 				ack: 'ack-one'
 			})
-			s1.on('ack-one', function() {
-				s1.close()
-			})
 
 			var s3 = createClient(channel)
 			s3.once('youJoined', function() {
