@@ -54,7 +54,7 @@
     "mime": "~1.2.11",
     "minimist": "0.0.8",
     "moment": "^2.9.0",
-    "mongodb": "2.2.26",
+    "mongodb": "2.2.35",
     "mongoose": "4.11.5",
     "morgan": "^1.2.2",
     "multer": "^0.1.6",
