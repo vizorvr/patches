@@ -193,8 +193,8 @@ VizorWebVRAdapter.prototype.attach = function() {
 	window.addEventListener('vrdisplaypresentchange', this._onVRPresentChange.bind(this), false)
 	window.addEventListener('vrdisplaydeviceparamschange', this._onVRDisplayDeviceParamsChange.bind(this), false)
 
-	// window.addEventListener('vrdisplayactivate', this.enterVR.bind(this))
-	// window.addEventListener('vrdisplaydeactivate', this.exitVROrFullscreen.bind(this))
+	window.addEventListener('vrdisplayactivate', this.enterVR.bind(this))
+	window.addEventListener('vrdisplaydeactivate', this.exitVROrFullscreen.bind(this))
 
 	this._manager.on('initialized', this._onManagerInitialised.bind(this))
 	this._manager.on('modechange', this._onManagerModeChanged.bind(this))
