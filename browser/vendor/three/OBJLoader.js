@@ -466,6 +466,11 @@ THREE.OBJLoader = ( function () {
 
 				} else if ( lineFirstChar === 'l' ) {
 
+					// TODO XXX FIXME HACK
+					// drop these like the old loader used to
+					// fixes Machinedrum - Ocean of Thought obj's
+					continue;
+
 					var lineParts = line.substring( 1 ).trim().split( " " );
 					var lineVertices = [], lineUVs = [];
 
