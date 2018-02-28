@@ -54,7 +54,7 @@ function createClient(channelName, lastEditSeen) {
 			})
 		}
 	})
-	.on('ready', function() {
+	.once('ready', function() {
 		chan.lastEditSeen = lastEditSeen
 
 		if (channelName)
@@ -98,8 +98,8 @@ describe('Multiuser', function() {
 	before(function(done) {
 		global.dataLayer = []
 
-		app.events.on('ready', function() {
-			db = new mongo.Db(DBNAME, 
+		app.events.once('ready', function() {
+			db = new mongo.Db(DBNAME,
 				new mongo.Server('localhost', 27017),
 				{ safe: true })
 
@@ -144,7 +144,7 @@ describe('Multiuser', function() {
 
 	it('should connect', function(done) {
 		s1 = createClient()
-		s1.on('ready', function() {
+		s1.once('ready', function() {
 			done()
 		})
 	})
@@ -191,7 +191,7 @@ describe('Multiuser', function() {
 	it('sends existing edit log on join', function(done) {
 		var channel = 'test2'+Math.random()
 		var edits = []
-		
+
 		s1 = createClient(channel)
 		s1.once('join', burst)
 		s1.once('disconnected', function() {
@@ -203,7 +203,7 @@ describe('Multiuser', function() {
 				edits.push(m)
 
 				if (edits.length === 10) {
-					assert.deepEqual(edits.map(function(e) { return e.number }), 
+					assert.deepEqual(edits.map(function(e) { return e.number }),
 						numbers)
 
 					done()
@@ -228,7 +228,7 @@ describe('Multiuser', function() {
 				edits.push(m)
 
 				if (edits.length === 10) {
-					assert.deepEqual(edits.map(function(e) { return e.number }), 
+					assert.deepEqual(edits.map(function(e) { return e.number }),
 						numbers)
 
 					done()
@@ -242,7 +242,7 @@ describe('Multiuser', function() {
 	it('keeps order of replayed entries', function(done) {
 		var channel = 'test3'+Math.random()
 		var edits = []
-		
+
 		s1 = createClient(channel)
 		s1.once('join', burst)
 		s1.once('disconnected', function() {
@@ -254,7 +254,7 @@ describe('Multiuser', function() {
 				edits.push(m)
 
 				if (edits.length === 10) {
-					assert.deepEqual(edits.map(function(e) { return e.number }), 
+					assert.deepEqual(edits.map(function(e) { return e.number }),
 						numbers)
 
 					done()
@@ -267,16 +267,13 @@ describe('Multiuser', function() {
 		var channel = 'one-'+Math.random()
 		var ogChannel = channel
 		var closed = false
-		
+
 		s1 = createClient(channel)
 		s1.once('join', function() {
 			s1.send({
 				actionType: 'uiPluginStateChanged',
 				number: 1,
 				ack: 'ack-one'
-			})
-			s1.on('ack-one', function() {
-				s1.close()
 			})
 
 			var s3 = createClient(channel)
@@ -306,7 +303,7 @@ describe('Multiuser', function() {
 
 	it('sends log from where left off', function(done) {
 		var channel = 'test'+Math.random()
-		
+
 		s2 = createClient(channel)
 		s1 = createClient(channel)
 
@@ -349,7 +346,7 @@ describe('Multiuser', function() {
 
 	it('relays messages to user from cluster', function(done) {
 		var channel = 'test'+Math.random()
-		
+
 		s1 = createClient(channel)
 		var rc = redisClient()
 
@@ -409,4 +406,3 @@ describe('Multiuser', function() {
 
 
 })
-
