@@ -270,9 +270,7 @@ app.get('/', function(req, res, next) {
 	switch (req.hostname) {
 		case '360.vizor.io':
 		case '360.vizor.lol':
-			return threesixtyController.index(req, res, next)
-		case 'vizor.io':
-			return vizor2TeaserController.index(req, res, next)
+			return res.redirect(301, 'https://vizor.io/new')
 		default:
 			return homeController.index(req, res, next)
 	}
