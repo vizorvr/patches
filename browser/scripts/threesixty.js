@@ -459,7 +459,7 @@ E2.ui.ui360 = new function() {
 	
 	this.addTOSButton = function() {
 		var data = {
-			href: 'https://docs.google.com/document/d/172dWVz8bSEDxS_y2InXpqWhVvbM7w1Z9MSp1-Lw1rIc/edit?usp=sharing',
+			href: 'https://site.vizor.io/patches-tos',
 			id: 'tosbutton',
 			text: 'Terms',
 			svgref : 'vr360-tos',
