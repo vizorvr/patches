@@ -77,7 +77,7 @@
 
 	document.write('<iframe id="'+iframeId+'" src="'+url+
 		'" width="'+ iframeWidth +'" height="' + iframeHeight +
-		'" frameborder="0" style="box-sizing:border-box;" allowfullscreen allowvr></iframe>')
+		'" frameborder="0" allow="gyroscope; accelerometer; xr" style="box-sizing:border-box;" allowfullscreen allowvr></iframe>')
 
 	iframeElement = document.getElementById(iframeId)
 	iframeWindow = document.getElementById(iframeId).contentWindow
