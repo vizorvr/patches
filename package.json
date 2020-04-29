@@ -45,7 +45,7 @@
     "handlebars": "~4.0.0",
     "hashids": "^1.0.2",
     "helmet": "^0.4.2",
-    "jquery": "2.1.0",
+    "jquery": "3.5.0",
     "less": "^1.7.4",
     "lodash": "^2.4.1",
     "lusca": "^1.0.1",
