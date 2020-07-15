@@ -47,7 +47,7 @@
     "helmet": "^0.4.2",
     "jquery": "2.1.0",
     "less": "^1.7.4",
-    "lodash": "^2.4.1",
+    "lodash": "^4.17.19",
     "lusca": "^1.0.1",
     "marked": "0.3.5",
     "method-override": "^2.1.3",
